@@ -1295,26 +1295,6 @@
   });
   html01 += '</div></div></section>';
 
-  // ── YOUR BUDGET / YOUR STYLE ── 3 tiers from BRAND_GUIDE
-  var _bg = BRAND_GUIDE[s.id] || BRAND_GUIDE.classic;
-  html01 += '<section class="ssec ssec-budget" style="--wb-acc:' + theme.acc + ';--wb-brd:' + theme.brd + ';--wb-text:' + theme.text + '">';
-  html01 += '<div class="ssec-inner">';
-  html01 += '<span class="ssec-num">Your Budget / Your Style</span>';
-  html01 += '<h2 class="ssec-budget-title">Shop <em>' + s.name + '</em> at every price point.</h2>';
-  html01 += '<div class="ssec-budget-tiers">';
-  [['aff','Affordable','$15 – $80'],['mid','Mid-range','$80 – $250'],['lux','Luxury','$250+']].forEach(function(t) {
-    var td = _bg[t[0]] || {};
-    html01 += '<div class="ssec-budget-tier">';
-    html01 += '<div class="ssec-budget-tier-head">';
-    html01 += '<span class="ssec-budget-tier-label">' + t[1] + '</span>';
-    html01 += '<span class="ssec-budget-tier-range">' + t[2] + '</span>';
-    html01 += '</div>';
-    html01 += '<p class="ssec-budget-stores">' + (td.stores || '') + '</p>';
-    html01 += '<p class="ssec-budget-note">' + (td.note || '') + '</p>';
-    html01 += '</div>';
-  });
-  html01 += '</div></div></section>';
-
   // ===== Wardrobe Builder HTML (uses FASHION_DIR which is now initialized) =====
   var WB_CATS = [
     { id: 'tops',        label: 'Tops'        },
@@ -1324,7 +1304,7 @@
   ];
   var html02 = '<section class="ssec ssec-builder" style="--wb-acc:' + theme.acc + ';--wb-bg:' + theme.bg + ';--wb-brd:' + theme.brd + ';--wb-text:' + theme.text + '">';
   html02 += '<div class="ssec-inner">';
-  html02 += '<span class="ssec-num">03 — Build Your Wardrobe</span>';
+  html02 += '<span class="ssec-num">02 — Build Your Wardrobe</span>';
   html02 += '<h2 class="wb-title">Style it your way, <em>' + s.name + '.</em></h2>';
   html02 += '<p class="wb-subtitle">Select one piece per category — watch your look come together.</p>';
   html02 += '<div class="wb-layout">';
@@ -1358,14 +1338,6 @@
   html02 += '</div>';
   html02 += '</div></div></section>';
 
-  // ── STYLE NAME DIVIDER ── repeated title block before inspiration
-  html += '<section class="ssec-namebar" style="--nb-acc:' + theme.acc + '">';
-  html += '<div class="ssec-namebar-inner">';
-  html += '<p class="ssec-namebar-eyebrow">The Look</p>';
-  html += '<div class="ssec-namebar-title">' + s.name + '</div>';
-  html += '</div>';
-  html += '</section>';
-
   // ── INSPIRATION — LAST SECTION ──
   var _seenInspo = new Set();
   var _uniqueOutfits = s.outfits.filter(function(o) {
@@ -1375,7 +1347,7 @@
   });
   html += '<section class="ssec ssec-inspo"><div class="ssec-inner">';
   html += '<div class="ssec-inspo-header">';
-  html += '<span class="ssec-num">Inspiration</span>';
+  html += '<span class="ssec-num">03 — Inspiration</span>';
   html += '</div>';
   html += '<div class="ssec-inspo-grid">';
   _uniqueOutfits.forEach(function(o, i) {
