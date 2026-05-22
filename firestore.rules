@@ -2,19 +2,78 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Quiz results and profile data — only the authenticated owner can read/write
+    // ── User profiles & quiz results ────────────────────────────
+    // Only the authenticated owner can read or write their own document.
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Moodboard saved looks — only the authenticated owner can read/write
+    // ── Moodboard saved looks ────────────────────────────────────
     match /moodboards/{userId}/items/{itemId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Block all other collections by default
+    // ── Community circles ────────────────────────────────────────
+    // Access is gated by the user's saved quiz result aesthetic ID.
+    // userAesthetic() reads users/{uid}.quizResult.id from Firestore.
+    // If the user has no quiz result the read throws → denies access.
+    function userAesthetic() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid))
+               .data.quizResult.id;
+    }
+
+    match /communities/{aestheticId}/posts/{postId} {
+
+      // Read: authenticated + quiz result matches this circle
+      allow read: if request.auth != null
+        && userAesthetic() == aestheticId;
+
+      // Create: author must be self, must declare matching aestheticId,
+      // content must be a non-empty string ≤ 1 000 chars
+      allow create: if request.auth != null
+        && userAesthetic() == aestheticId
+        && request.resource.data.authorId   == request.auth.uid
+        && request.resource.data.aestheticId == aestheticId
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0
+        && request.resource.data.content.size() <= 1000;
+
+      // Update: post owner edits content — OR — any circle member
+      // toggles a reaction (only the `reactions` map may change)
+      allow update: if request.auth != null
+        && userAesthetic() == aestheticId
+        && (
+          resource.data.authorId == request.auth.uid
+          ||
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions'])
+        );
+
+      // Delete: only the post's author
+      allow delete: if request.auth != null
+        && resource.data.authorId == request.auth.uid;
+
+      // ── Comments ──────────────────────────────────────────────
+      match /comments/{commentId} {
+
+        allow read: if request.auth != null
+          && userAesthetic() == aestheticId;
+
+        allow create: if request.auth != null
+          && userAesthetic() == aestheticId
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.content is string
+          && request.resource.data.content.size() > 0
+          && request.resource.data.content.size() <= 400;
+
+        allow delete: if request.auth != null
+          && resource.data.authorId == request.auth.uid;
+      }
+    }
+
+    // ── Deny everything else ─────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }
+
   }
 }
