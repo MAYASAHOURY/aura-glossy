@@ -188,11 +188,6 @@ async function fbGetLikedAesthetics() {
   } catch(e) { return []; }
 }
 
-/* ── Auth utilities ────────────────────────────────────────── */
-function isGuest() {
-  return sessionStorage.getItem('aura_guest') === '1';
-}
-
 /* ── Offline banner ────────────────────────────────────────── */
 (function() {
   var _banner = null;
@@ -219,7 +214,7 @@ var _authChannel = null;
 try { _authChannel = new BroadcastChannel('aura_auth'); } catch(e) {}
 if (_authChannel) {
   _authChannel.onmessage = function(e) {
-    if (e.data === 'logout' && !isGuest() && location.pathname.indexOf('login') === -1) {
+    if (e.data === 'logout' && location.pathname.indexOf('login') === -1) {
       /* Verify Firebase says no current user before acting —
          stale BroadcastChannel events can arrive after a re-login in another tab */
       if (!_auth.currentUser) {
@@ -260,21 +255,19 @@ function initAuthGuard() {
       var btn = document.getElementById('nav-auth-btn');
       if (btn) btn.textContent = 'Account';
       _revealPage();
-    } else if (isGuest()) {
-      _revealPage();
     } else {
       /* If we were already confirmed authed and this is a bfcache restore,
          Firebase is just re-initializing — null is transient, NOT a sign-out.
          Do not redirect. Use a long safety timer only. */
       if (_authed && _bfRestored) {
         _guardTimer = setTimeout(function() {
-          if (!_auth.currentUser && !isGuest()) window.location.replace('login.html');
+          if (!_auth.currentUser) window.location.replace('login.html');
         }, 10000);
         return; /* _authed stays true — no false redirect */
       }
       /* Normal path: fresh load or genuine sign-out */
       _guardTimer = setTimeout(function() {
-        if (!_authed && !isGuest() && !_auth.currentUser) {
+        if (!_authed && !_auth.currentUser) {
           if (_authChannel) _authChannel.postMessage('logout');
           window.location.replace('login.html');
         }
@@ -288,7 +281,7 @@ function initAuthGuard() {
     if (!e.persisted) return;
     _bfRestored = true;
     clearTimeout(_guardTimer);
-    if (_authed || isGuest()) {
+    if (_authed) {
       _revealPage();
     }
   });

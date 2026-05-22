@@ -166,14 +166,14 @@
   </div>
 </footer>
 
-<script src="js/intro.js?v=8"></script>
+<script src="js/intro.js?v=9"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/data.js?v=6"></script>
 <script src="js/main.js?v=4"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=6"></script>
+<script src="js/firebase.js?v=7"></script>
 <script src="js/animations.js?v=12"></script>
 <script>
 /* ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦
@@ -191,9 +191,6 @@
    (zero visible flash in either direction).
    ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
 
-localStorage.removeItem('aura_guest'); // clean up legacy flag
-
-function isGuest() { return sessionStorage.getItem('aura_guest') === '1'; }
 function navAuthClick() { window.location.href = 'settings.html'; }
 
 /* ✦✦ Veil helpers ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
@@ -235,13 +232,13 @@ var _loginTimer  = null;
 var _bfRestored  = false; /* true between bfcache restore and next Firebase confirm */
 
 function _onIntroEnd() {
-  if (firebase.auth().currentUser || isGuest()) { _revealPage(); return; }
+  if (firebase.auth().currentUser) { _revealPage(); return; }
   if (_authPending === 'authed')                 { _revealPage(); return; }
   if (_authPending !== 'anon') {
     /* Auth still loading when intro ended — give Firebase time to resolve.
        3s was too short on slow iOS Safari (Firebase takes 4-8s). Use 10s. */
     _loginTimer = setTimeout(function() {
-      if (firebase.auth().currentUser || isGuest()) _revealPage();
+      if (firebase.auth().currentUser) _revealPage();
       else _goToLogin();
     }, 10000);
     return;
@@ -254,7 +251,7 @@ firebase.auth().onAuthStateChanged(function(user) {
   var btn = document.getElementById('nav-auth-btn');
   if (btn) btn.textContent = 'Account';
 
-  if (user || isGuest()) {
+  if (user) {
     _authPending = 'authed';
     _bfRestored  = false; /* Firebase confirmed — reset flag */
     try { localStorage.setItem('aura_intro_seen', '1'); } catch(e) {}
@@ -280,7 +277,7 @@ firebase.auth().onAuthStateChanged(function(user) {
        start the normal 7s redirect timer. Use a long safety-only timer. */
     if (_authPending === 'authed' && _bfRestored) {
       _loginTimer = setTimeout(function() {
-        if (!firebase.auth().currentUser && !isGuest()) _goToLogin();
+        if (!firebase.auth().currentUser) _goToLogin();
       }, 10000); /* safety net only — Firebase will fire user well before this */
       return;   /* ← key: _authPending stays 'authed', no false redirect */
     }
@@ -305,7 +302,7 @@ firebase.auth().onAuthStateChanged(function(user) {
           if (window.location.pathname.indexOf('login') === -1
               && _authPending === 'anon'
               && !firebase.auth().currentUser
-              && !isGuest()) {
+              ) {
             _goToLogin();
           }
         }, 14000);
@@ -314,11 +311,11 @@ firebase.auth().onAuthStateChanged(function(user) {
       /* Came straight from login — Firebase is still persisting the session.
          Use a long safety timer only; user will be confirmed well before this. */
       _loginTimer = setTimeout(function() {
-        if (!firebase.auth().currentUser && !isGuest()) _goToLogin();
+        if (!firebase.auth().currentUser) _goToLogin();
       }, 20000);
     } else {
       _loginTimer = setTimeout(function() {
-        if (!firebase.auth().currentUser && !isGuest()) _goToLogin();
+        if (!firebase.auth().currentUser) _goToLogin();
       }, 7000);
     }
   }
@@ -330,7 +327,7 @@ window.addEventListener('pageshow', function(e) {
   if (!e.persisted) return;
   _bfRestored = true;
   clearTimeout(_loginTimer);
-  if (_authPending === 'authed' || isGuest()) {
+  if (_authPending === 'authed') {
     _revealPage(); /* page was already authenticated — show it immediately */
   }
   /* If _authPending is not 'authed': onAuthStateChanged will fire and handle it */

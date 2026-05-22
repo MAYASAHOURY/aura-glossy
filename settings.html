@@ -174,13 +174,6 @@
 .s-btn-signout { background: transparent; color: #c084a0; border: 1px solid rgba(192,132,160,0.35); }
 .s-btn-signout:hover { background: #c084a0; color: #fff; border-color: #c084a0; }
 
-/* ✦✦ Guest state ✦✦ */
-.s-guest-msg {
-  font-size: 13px;
-  color: #999;
-  line-height: 1.7;
-  margin-bottom: 24px;
-}
 
 /* ✦✦ Loading ✦✦ */
 .s-loading { font-size: 13px; color: #bbb; }
@@ -275,14 +268,6 @@
 
     </div>
 
-    <!-- GUEST -->
-    <div id="state-guest" style="display:none; width:100%; flex-direction:column; align-items:center;">
-      <p class="s-guest-msg">You're browsing as a guest.<br>Sign in to save your moodboard<br>and access your profile.</p>
-      <div class="s-actions">
-        <a href="login.html" class="s-btn s-btn-primary">Sign In / Create Account →</a>
-        <a href="index.html" class="s-btn s-btn-outline">Back to Homepage</a>
-      </div>
-    </div>
 
   </div>
 </section>
@@ -291,7 +276,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=6"></script>
+<script src="js/firebase.js?v=7"></script>
 <script src="js/animations.js?v=12"></script>
 <script>
 initAuthGuard(); /* full-page veil until Firebase confirms auth — consistent with all other protected pages */
@@ -371,21 +356,17 @@ firebase.auth().onAuthStateChanged(async function(user) {
 
     show('state-signedin', true);
 
-  } else if (isGuest()) {
-    if (btn) btn.textContent = 'Account';
-    show('state-guest', true);
-
   } else {
     /* If we were already confirmed authed and this is a bfcache restore,
        Firebase is re-initializing — null is transient, NOT a sign-out. */
     if (_settingsAuthed && _bfRestored) {
       _settingsTimer = setTimeout(function() {
-        if (!firebase.auth().currentUser && !isGuest()) window.location.replace('login.html');
+        if (!firebase.auth().currentUser) window.location.replace('login.html');
       }, 10000);
       return;
     }
     _settingsTimer = setTimeout(function() {
-      if (!_settingsAuthed && !isGuest() && !firebase.auth().currentUser) {
+      if (!_settingsAuthed && !firebase.auth().currentUser) {
         window.location.replace('login.html');
       }
     }, 7000);
@@ -402,7 +383,6 @@ window.addEventListener('pageshow', function(e) {
 
 document.getElementById('signout-btn').addEventListener('click', function() {
   firebase.auth().signOut().then(function() {
-    sessionStorage.removeItem('aura_guest');
     localStorage.removeItem('aura_uid');
     // Replace current history entry so back button can't return to settings
     history.replaceState(null, '', 'login.html');

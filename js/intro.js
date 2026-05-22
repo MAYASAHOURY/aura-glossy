@@ -46,7 +46,7 @@
 
   var REDUCED     = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var SCENE_COUNT = 3;
-  var TOTAL_MS    = 5800;   /* full playthrough duration in ms (after preroll) */
+  var TOTAL_MS    = 9000;   /* full playthrough duration in ms (after preroll) */
 
   var scenes  = intro.querySelectorAll('.scene');
   var skip    = intro.querySelector('.intro-skip');
@@ -207,8 +207,7 @@
 
     var elapsed = ts - startTime;
     var tNorm   = clamp(elapsed / TOTAL_MS, 0, 1);
-    /* Ease so the intro starts briskly and pauses on the final scene */
-    var globalP = easeInOut(tNorm) * SCENE_COUNT;
+    var globalP = tNorm * SCENE_COUNT;
 
     for (var i = 0; i < SCENE_COUNT; i++) {
       applyScene(i, globalP - i);
