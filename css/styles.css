@@ -9753,6 +9753,21 @@ a, button, input, select, textarea,
   margin-inline: auto;
 }
 
+.hub-reload-btn {
+  display: block;
+  margin: 14px auto 0;
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 0.7;
+  transition: opacity .2s;
+}
+.hub-reload-btn:hover { opacity: 1; }
+
 .comm-quiz-btn {
   display: inline-block;
   background: var(--accent);

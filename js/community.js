@@ -51,13 +51,38 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /* ── Load user's quiz result ─────────────────────────────────── */
-function _loadUserQuiz() {
-  return firebase.firestore()
+function _loadUserQuiz(isRetry) {
+  return _db
     .collection('users').doc(_currentUser.uid).get()
     .then(function (snap) {
-      _userQuiz = (snap.exists && snap.data().quizResult) ? snap.data().quizResult : null;
+      var qr = snap.exists && snap.data() && snap.data().quizResult;
+      if (qr && qr.id) {
+        _userQuiz = qr;
+      } else if (!isRetry) {
+        /* Quiz result absent — could be a race condition (quiz save not yet
+           committed when we read). Retry once after 1.5 s before giving up. */
+        return new Promise(function (resolve) {
+          setTimeout(function () {
+            _loadUserQuiz(true).then(resolve);
+          }, 1500);
+        });
+      } else {
+        _userQuiz = null;
+      }
     })
-    .catch(function () { _userQuiz = null; });
+    .catch(function (err) {
+      console.warn('[Community] Failed to load quiz result:',
+        (err && err.code) || '?', (err && err.message) || err);
+      if (!isRetry) {
+        /* Retry once on error (transient network / cold-start token issue) */
+        return new Promise(function (resolve) {
+          setTimeout(function () {
+            _loadUserQuiz(true).then(resolve);
+          }, 1500);
+        });
+      }
+      _userQuiz = null;
+    });
 }
 
 /* ── URL hash router ─────────────────────────────────────────── */
@@ -153,7 +178,19 @@ function _noQuizBanner() {
     '<h2>Find your aesthetic.</h2>' +
     '<p>Take the 5-minute style quiz to unlock your exclusive community circle.</p>' +
     '<a href="quiz.html" class="btn comm-quiz-btn">Take the Style Quiz →</a>' +
+    '<button class="hub-reload-btn" onclick="_retryLoadQuiz()">Already took the quiz? Reload ↻</button>' +
     '</div>';
+}
+
+function _retryLoadQuiz() {
+  var container = document.getElementById('hub-groups');
+  container.innerHTML =
+    '<div class="feed-loading"><div class="auth-veil-dots">' +
+      '<div class="auth-veil-dot"></div>' +
+      '<div class="auth-veil-dot"></div>' +
+      '<div class="auth-veil-dot"></div>' +
+    '</div></div>';
+  _loadUserQuiz(true).then(function () { _renderHub(); });
 }
 
 function _groupCard(group, state) {
@@ -211,7 +248,8 @@ function blockGroupAccess(groupId) {
 
 function _tryEnterGroup(group) {
   if (!_userQuiz) {
-    _showNoQuizModal();
+    /* No quiz result loaded — don't show a blocking modal here.
+       The hub will render the appropriate no-quiz or retry state. */
     showHub();
     return;
   }
@@ -304,7 +342,7 @@ function _startPostsListener(group) {
       '</div>' +
     '</div>';
 
-  _postsUnsub = firebase.firestore()
+  _postsUnsub = _db
     .collection('communities').doc(group.id)
     .collection('posts')
     .orderBy('createdAt', 'desc')
@@ -431,7 +469,7 @@ function _attachFeedHandlers(group) {
 function _toggleReaction(postId, type, group) {
   if (!_currentUser) return;
   var uid = _currentUser.uid;
-  var ref = firebase.firestore()
+  var ref = _db
     .collection('communities').doc(group.id)
     .collection('posts').doc(postId);
   var field = 'reactions.' + type;
@@ -462,7 +500,7 @@ function _loadComments(postId, group) {
   if (!list) return;
   list.innerHTML = '<p class="comments-loading">Loading…</p>';
 
-  firebase.firestore()
+  _db
     .collection('communities').doc(group.id)
     .collection('posts').doc(postId)
     .collection('comments')
@@ -503,7 +541,7 @@ function _submitComment(postId, group) {
   input.disabled = true;
   var name = _currentUser.displayName || _currentUser.email || 'Style Member';
 
-  firebase.firestore()
+  _db
     .collection('communities').doc(group.id)
     .collection('posts').doc(postId)
     .collection('comments')
@@ -524,7 +562,7 @@ function _submitComment(postId, group) {
 
 function _deletePost(postId, group) {
   if (!confirm('Delete this post?')) return;
-  firebase.firestore()
+  _db
     .collection('communities').doc(group.id)
     .collection('posts').doc(postId)
     .delete()
@@ -534,7 +572,7 @@ function _deletePost(postId, group) {
 // Called from inline onclick in comment HTML
 function deleteComment(commentId, postId, groupId) {
   if (!confirm('Delete this comment?')) return;
-  firebase.firestore()
+  _db
     .collection('communities').doc(groupId)
     .collection('posts').doc(postId)
     .collection('comments').doc(commentId)
@@ -597,7 +635,7 @@ function _submitPost() {
 
   var name = _currentUser.displayName || _currentUser.email || 'Style Member';
 
-  firebase.firestore()
+  _db
     .collection('communities').doc(_currentGroup.id)
     .collection('posts')
     .add({
