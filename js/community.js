@@ -430,38 +430,27 @@ function _postCardHTML(post, group) {
     '</article>';
 }
 
-/* ── Feed event handlers ─────────────────────────────────────── */
+/* ── Feed event handlers — single delegated listener per feed ── */
 function _attachFeedHandlers(group) {
   var feed = document.getElementById('posts-feed');
+  if (feed._delegated) return; // already attached; innerHTML changes don't break delegation
+  feed._delegated = true;
 
-  feed.querySelectorAll('.react-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      _toggleReaction(btn.dataset.postId, btn.dataset.type, group);
-    });
+  feed.addEventListener('click', function (e) {
+    var react = e.target.closest('.react-btn');
+    if (react) { _toggleReaction(react.dataset.postId, react.dataset.type, group); return; }
+    var toggle = e.target.closest('.comments-toggle');
+    if (toggle) { _toggleComments(toggle.dataset.postId, group); return; }
+    var send = e.target.closest('.comment-send');
+    if (send) { _submitComment(send.dataset.postId, group); return; }
+    var del = e.target.closest('.post-delete');
+    if (del) { _deletePost(del.dataset.postId, group); return; }
   });
 
-  feed.querySelectorAll('.comments-toggle').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      _toggleComments(btn.dataset.postId, group);
-    });
-  });
-
-  feed.querySelectorAll('.comment-send').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      _submitComment(btn.dataset.postId, group);
-    });
-  });
-
-  feed.querySelectorAll('.comment-input').forEach(function (input) {
-    input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') _submitComment(input.id.replace('ci-', ''), group);
-    });
-  });
-
-  feed.querySelectorAll('.post-delete').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      _deletePost(btn.dataset.postId, group);
-    });
+  feed.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    var input = e.target.closest('.comment-input');
+    if (input) _submitComment(input.id.replace('ci-', ''), group);
   });
 }
 
@@ -474,16 +463,18 @@ function _toggleReaction(postId, type, group) {
     .collection('posts').doc(postId);
   var field = 'reactions.' + type;
 
-  ref.get().then(function (snap) {
-    if (!snap.exists) return;
-    var arr = (snap.data().reactions || {})[type] || [];
-    var isOn = arr.indexOf(uid) !== -1;
-    var update = {};
-    update[field] = isOn
-      ? firebase.firestore.FieldValue.arrayRemove(uid)
-      : firebase.firestore.FieldValue.arrayUnion(uid);
-    return ref.update(update);
-  }).catch(function (e) { console.warn('Reaction failed:', e.message); });
+  /* Read current state from the DOM — avoids a round-trip Firestore read */
+  var btn = document.querySelector(
+    '.react-btn[data-post-id="' + postId + '"][data-type="' + type + '"]'
+  );
+  var isOn = btn && btn.classList.contains('react-btn--on');
+
+  var update = {};
+  update[field] = isOn
+    ? firebase.firestore.FieldValue.arrayRemove(uid)
+    : firebase.firestore.FieldValue.arrayUnion(uid);
+
+  ref.update(update).catch(function (e) { console.warn('Reaction failed:', e.message); });
 }
 
 /* ── Comments ────────────────────────────────────────────────── */

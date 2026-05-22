@@ -223,6 +223,7 @@
   ─────────────────────────────────────────────────────────── */
   function initWindowParallax() {
     if (REDUCED) return;
+    if (window.matchMedia('(pointer: coarse)').matches) return;
     var layers = Array.from(document.querySelectorAll('[data-parallax]'));
     if (!layers.length) return;
 
@@ -253,6 +254,7 @@
   ─────────────────────────────────────────────────────────── */
   function initImageParallax() {
     if (REDUCED) return;
+    if (window.matchMedia('(pointer: coarse)').matches) return;
     var imgs = Array.from(document.querySelectorAll('.parallax-img'));
     if (!imgs.length) return;
 

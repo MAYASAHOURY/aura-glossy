@@ -9365,7 +9365,7 @@ a, button, input, select, textarea,
   background: transparent;
   color: #888;
   cursor: pointer;
-  transition: all 0.18s;
+  transition: background .18s, color .18s, border-color .18s;
 }
 .wb-cat:hover { border-color: var(--wb-acc, #b08050); color: var(--wb-acc, #b08050); }
 .wb-cat.wb-cat-active {
@@ -9381,7 +9381,7 @@ a, button, input, select, textarea,
   background: transparent;
   color: #aaa;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: background .15s, color .15s, border-color .15s;
   border-radius: 2px;
 }
 .wb-tier:hover { color: var(--wb-acc, #b08050); border-color: var(--wb-acc, #b08050); }
@@ -9404,7 +9404,7 @@ a, button, input, select, textarea,
   background: rgba(255,255,255,0.82);
   border: 1px solid rgba(10,10,10,0.07);
   cursor: pointer;
-  transition: all 0.18s;
+  transition: border-color .18s, background .18s, box-shadow .18s;
   gap: 10px;
 }
 .wb-item:hover { border-color: var(--wb-acc, #b08050); background: #fff; }
@@ -9441,7 +9441,7 @@ a, button, input, select, textarea,
   font-size: 16px; line-height: 1;
   cursor: pointer; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s;
+  transition: background .15s, border-color .15s, color .15s;
 }
 .wb-add-btn:hover { border-color: var(--wb-acc, #b08050); color: var(--wb-acc, #b08050); }
 .wb-add-btn.wb-add-btn-sel {
@@ -9470,7 +9470,7 @@ a, button, input, select, textarea,
 .wb-slot {
   padding: 11px 13px; border: 1px solid rgba(255,255,255,0.08);
   display: flex; align-items: center; gap: 10px; min-height: 46px;
-  transition: all 0.2s;
+  transition: opacity .2s, border-color .2s, background .2s;
 }
 .wb-slot.wb-slot-empty { opacity: 0.42; }
 .wb-slot.wb-slot-filled {
@@ -9514,7 +9514,7 @@ a, button, input, select, textarea,
 .wb-clear {
   width: 100%; padding: 10px; background: transparent;
   color: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.08);
-  font-size: 10px; cursor: pointer; transition: all 0.15s;
+  font-size: 10px; cursor: pointer; transition: color .15s, border-color .15s;
 }
 .wb-clear:hover { color: rgba(255,255,255,0.55); border-color: rgba(255,255,255,0.22); }
 
@@ -9563,7 +9563,7 @@ a, button, input, select, textarea,
   background: transparent;
   color: #666;
   cursor: pointer;
-  transition: all 0.18s;
+  transition: background .18s, color .18s, border-color .18s;
 }
 .sfn-cat-btn:hover { border-color: #0a0a0a; color: #0a0a0a; }
 .sfn-cat-btn.sfn-active { background: #0a0a0a; border-color: #0a0a0a; color: #fff; }
@@ -9581,7 +9581,7 @@ a, button, input, select, textarea,
   background: transparent;
   color: #666;
   cursor: pointer;
-  transition: all 0.18s;
+  transition: background .18s, color .18s, border-color .18s;
   white-space: nowrap;
   text-align: left;
 }
@@ -9665,7 +9665,7 @@ a, button, input, select, textarea,
   display: flex; align-items: center; gap: 6px;
   background: none; border: 1px solid rgba(10,10,10,0.12);
   padding: 7px 14px; cursor: pointer;
-  font-size: 11px; color: #888; transition: all 0.18s;
+  font-size: 11px; color: #888; transition: color .18s, border-color .18s;
 }
 .ssec-inspo-header .aesthetic-like-btn svg { width: 13px; height: 13px; }
 .ssec-inspo-header .aesthetic-like-btn:hover,
@@ -10173,7 +10173,7 @@ a, button, input, select, textarea,
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--ink-soft);
-  transition: all .18s;
+  transition: background .18s, color .18s, border-color .18s;
 }
 
 .ctab.active,
@@ -10416,7 +10416,7 @@ a, button, input, select, textarea,
   font-size: 0.82rem;
   line-height: 1;
   color: var(--gray);
-  transition: all .18s;
+  transition: background .18s, color .18s, border-color .18s;
 }
 
 .react-btn span {
@@ -10446,7 +10446,7 @@ a, button, input, select, textarea,
   padding: 5px 12px;
   border: 1px solid var(--border);
   border-radius: 40px;
-  transition: all .18s;
+  transition: background .18s, color .18s;
 }
 
 .comments-toggle:hover {
@@ -10629,7 +10629,7 @@ a, button, input, select, textarea,
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  transition: all .2s;
+  transition: background .2s, border-color .2s;
 }
 
 .access-primary-btn:hover {
@@ -10648,7 +10648,7 @@ a, button, input, select, textarea,
   font-size: 0.84rem;
   cursor: pointer;
   font-family: var(--font-sans);
-  transition: all .18s;
+  transition: background .18s, color .18s;
 }
 
 .btn-ghost:hover {
@@ -10760,4 +10760,104 @@ a, button, input, select, textarea,
     padding: 32px 24px;
   }
   .cib-enter-btn { width: 100%; text-align: center; }
+}
+
+/* ============================================================
+   MOBILE PERFORMANCE
+   All rules below target touch devices only (pointer: coarse)
+   and are purely speed/smoothness improvements — no visual
+   changes on desktop.
+   ============================================================ */
+
+/* 1. Remove 300ms tap delay on all interactive elements */
+a, button, [role="button"], input, textarea, select,
+.quiz-option, .style-card, .group-card, .react-btn,
+.ctab, .filter-chip, .nav-logo, .nav-links a, .nav-auth-btn,
+.s-btn, .btn, .composer-post-btn, .comment-send,
+.comments-toggle, .wb-cat, .wb-tier, .wb-add-btn {
+  touch-action: manipulation;
+}
+
+/* 2. Disable backdrop-filter on touch (GPU-expensive; replaced with solid fallback) */
+@media (pointer: coarse) {
+  .nav {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(245, 242, 238, 0.97);
+  }
+  .access-modal {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(10, 10, 10, 0.65);
+  }
+  .group-card-frost {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(251, 248, 244, 0.82);
+  }
+  /* Auth veil + quiz modal overlay */
+  #aura-veil,
+  .quiz-modal-overlay {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* 3. Prevent iOS auto-zoom on input focus (triggered when font-size < 16px) */
+@media (pointer: coarse) {
+  .composer-text,
+  .comment-input,
+  .composer-img-input,
+  input[type="text"],
+  input[type="url"],
+  input[type="email"],
+  input[type="password"],
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* 4. Disable parallax transforms on touch — avoids getBoundingClientRect thrashing */
+@media (pointer: coarse) {
+  .parallax-img {
+    transform: none !important;
+    will-change: auto;
+  }
+}
+
+/* 5. Contain layout/style within community feed to prevent full-page repaints while typing */
+.posts-feed {
+  contain: layout style;
+}
+.post-card {
+  contain: layout style;
+}
+
+/* 6. Smooth momentum scrolling on iOS for scroll containers */
+@media (pointer: coarse) {
+  .group-content,
+  .posts-feed,
+  .hub-groups {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* 7. Disable hover-triggered box-shadow on touch (hover doesn't exist but sticky :hover
+      state on iOS causes layout after tap) */
+@media (pointer: coarse) {
+  .group-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .group-card--mine:hover {
+    box-shadow: 0 0 0 1px var(--group-color), var(--shadow-sm);
+  }
+  .post-card:hover {
+    box-shadow: none;
+  }
+  .cib-enter-btn:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }
