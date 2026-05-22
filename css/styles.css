@@ -10263,7 +10263,7 @@ a, button, input, select, textarea,
 
 .feed-empty {
   text-align: center;
-  padding: 80px 32px;
+  padding: 40px 32px 80px;
 }
 
 .feed-empty-symbol {
