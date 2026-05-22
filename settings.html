@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Account — Aura Glossy</title>
+<meta name="description" content="Manage your Aura Glossy account. View your style aesthetic, saved moodboard, and profile settings.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=13">
+<style>
+
+.settings-page {
+  min-height: 100vh;
+  padding: 100px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+.settings-heading {
+  text-align: center;
+}
+.settings-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+.settings-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 400;
+  color: #0a0a0a;
+  line-height: 1.1;
+}
+.settings-title em { font-style: italic; color: #c084a0; }
+
+/* ✦✦ THE BIG CIRCLE ✦✦ */
+.settings-circle {
+  width: 560px;
+  height: 560px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(10,10,10,0.12);
+  background: #faf8f5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 64px;
+  position: relative;
+  box-shadow: 0 8px 60px rgba(10,10,10,0.06);
+  text-align: center;
+}
+
+/* subtle inner ring */
+.settings-circle::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(10,10,10,0.05);
+  pointer-events: none;
+}
+
+/* ✦✦ Avatar ✦✦ */
+.s-avatar-wrap {
+  margin-bottom: 16px;
+}
+.s-avatar-img {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(244,143,177,0.35);
+  box-shadow: 0 4px 24px rgba(244,143,177,0.25);
+}
+.s-avatar-initial {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 32%, #fde8f0, #f4a0be 55%, #e8729a);
+  border: none;
+  box-shadow:
+    0 0 0 5px rgba(253,232,240,0.55),
+    0 0 0 10px rgba(244,160,190,0.18),
+    0 8px 32px rgba(232,114,154,0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.s-avatar-initial::after {
+  content: '';
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, rgba(255,255,255,0.55), transparent 65%);
+  pointer-events: none;
+}
+
+/* ✦✦ Name & email ✦✦ */
+.s-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: #0a0a0a;
+  margin-bottom: 4px;
+}
+.s-email {
+  font-size: 12px;
+  color: #aaa;
+  letter-spacing: 0.03em;
+  margin-bottom: 24px;
+}
+
+/* ✦✦ Info rows ✦✦ */
+.s-rows {
+  width: 100%;
+  margin-bottom: 24px;
+}
+.s-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(10,10,10,0.07);
+}
+.s-row:first-child { border-top: 1px solid rgba(10,10,10,0.07); }
+.s-row-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #bbb;
+}
+.s-row-value {
+  font-size: 12px;
+  color: #0a0a0a;
+}
+
+/* ✦✦ Buttons ✦✦ */
+.s-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.s-btn {
+  width: 100%;
+  padding: 11px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+.s-btn-primary { background: #0a0a0a; color: #fff; }
+.s-btn-primary:hover { background: #c084a0; transform: translateY(-1px); }
+.s-btn-outline { background: transparent; color: #0a0a0a; border: 1px solid rgba(10,10,10,0.18); }
+.s-btn-outline:hover { border-color: #0a0a0a; }
+.s-btn-signout { background: transparent; color: #c084a0; border: 1px solid rgba(192,132,160,0.35); }
+.s-btn-signout:hover { background: #c084a0; color: #fff; border-color: #c084a0; }
+
+/* ✦✦ Guest state ✦✦ */
+.s-guest-msg {
+  font-size: 13px;
+  color: #999;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+/* ✦✦ Loading ✦✦ */
+.s-loading { font-size: 13px; color: #bbb; }
+
+/* ✦✦ Mobile ✦✦ */
+@media (max-width: 620px) {
+  .settings-circle {
+    width: 92vw;
+    height: 92vw;
+    padding: 40px 28px;
+  }
+  .s-avatar-img, .s-avatar-initial { width: 64px; height: 64px; font-size: 22px; }
+  .s-name { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">AURA GLOSS<span>Y</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="quiz.html">Style Quiz</a></li>
+    <li><a href="index.html#styles">Aesthetics</a></li>
+    <li><a href="stylist.html">AI Stylist</a></li>
+    <li><a href="moodboard.html">Moodboard</a></li>
+    <li><a href="brands.html">Partners</a></li>
+  </ul>
+  <button class="nav-auth-btn" id="nav-auth-btn" onclick="navAuthClick()">Account</button>
+  <div class="nav-burger" aria-label="Open menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
+</nav>
+
+<section class="settings-page">
+
+  <div class="settings-heading">
+    <p class="settings-eyebrow">Your profile</p>
+    <h1 class="settings-title">Account <em>settings.</em></h1>
+  </div>
+
+  <div class="settings-circle">
+
+    <!-- LOADING -->
+    <div id="state-loading" class="s-loading">Loading…</div>
+
+    <!-- SIGNED IN -->
+    <div id="state-signedin" style="display:none; width:100%; flex-direction:column; align-items:center;">
+
+      <div class="s-avatar-wrap">
+        <img class="s-avatar-img" id="s-avatar" src="" alt="" style="display:none">
+        <div class="s-avatar-initial" id="s-initial">✦</div>
+      </div>
+
+      <p class="s-name" id="s-name">…</p>
+      <p class="s-email" id="s-email">…</p>
+
+      <div class="s-rows">
+        <div class="s-row">
+          <span class="s-row-label">Name</span>
+          <span class="s-row-value" id="r-name">…</span>
+        </div>
+        <div class="s-row">
+          <span class="s-row-label">Email</span>
+          <span class="s-row-value" id="r-email">…</span>
+        </div>
+        <div class="s-row">
+          <span class="s-row-label">Provider</span>
+          <span class="s-row-value" id="r-provider">…</span>
+        </div>
+        <div class="s-row">
+          <span class="s-row-label">Aesthetic</span>
+          <span class="s-row-value" id="r-aesthetic">…</span>
+        </div>
+        <div class="s-row">
+          <span class="s-row-label">Moodboard</span>
+          <span class="s-row-value" id="r-moodboard">…</span>
+        </div>
+        <div class="s-row">
+          <span class="s-row-label">Liked</span>
+          <span class="s-row-value" id="r-liked">…</span>
+        </div>
+        <div class="s-row">
+          <span class="s-row-label">Viewed</span>
+          <span class="s-row-value" id="r-recent">…</span>
+        </div>
+      </div>
+
+      <div class="s-actions">
+        <a href="moodboard.html" class="s-btn s-btn-primary">View Moodboard →</a>
+        <a href="index.html" class="s-btn s-btn-outline">Back to Homepage</a>
+        <button class="s-btn s-btn-signout" id="signout-btn">Sign Out</button>
+      </div>
+
+    </div>
+
+    <!-- GUEST -->
+    <div id="state-guest" style="display:none; width:100%; flex-direction:column; align-items:center;">
+      <p class="s-guest-msg">You're browsing as a guest.<br>Sign in to save your moodboard<br>and access your profile.</p>
+      <div class="s-actions">
+        <a href="login.html" class="s-btn s-btn-primary">Sign In / Create Account →</a>
+        <a href="index.html" class="s-btn s-btn-outline">Back to Homepage</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="js/monitor.js?v=2"></script>
+<script src="js/firebase.js?v=6"></script>
+<script src="js/animations.js?v=12"></script>
+<script>
+initAuthGuard(); /* full-page veil until Firebase confirms auth — consistent with all other protected pages */
+function navAuthClick() {
+  window.location.href = 'settings.html';
+}
+
+function show(id, flex) {
+  var el = document.getElementById(id);
+  el.style.display = flex ? 'flex' : 'block';
+}
+
+var _settingsAuthed = false;
+var _settingsTimer  = null;
+var _bfRestored     = false;
+
+firebase.auth().onAuthStateChanged(async function(user) {
+  clearTimeout(_settingsTimer);
+  var btn = document.getElementById('nav-auth-btn');
+  document.getElementById('state-loading').style.display = 'none';
+
+  if (user) {
+    _settingsAuthed = true;
+    _bfRestored     = false;
+    localStorage.removeItem('aura_uid');
+    if (btn) btn.textContent = 'Account';
+
+    var name     = user.displayName || user.email.split('@')[0];
+    var email    = user.email || '—';
+    var photo    = user.photoURL;
+    var provider = user.providerData[0]
+      ? (user.providerData[0].providerId === 'google.com' ? 'Google' : 'Email / Password')
+      : 'Email / Password';
+
+    document.getElementById('s-name').textContent     = name;
+    document.getElementById('s-email').textContent    = email;
+    document.getElementById('r-name').textContent     = name;
+    document.getElementById('r-email').textContent    = email;
+    document.getElementById('r-provider').textContent = provider;
+
+    if (photo) {
+      var img = document.getElementById('s-avatar');
+      img.src = photo;
+      img.style.display = 'block';
+      document.getElementById('s-initial').style.display = 'none';
+    } else {
+      document.getElementById('s-initial').textContent = '';
+    }
+
+    try {
+      var items = await fbLoadAll();
+      document.getElementById('r-moodboard').textContent =
+        items.length + ' saved ' + (items.length === 1 ? 'look' : 'looks');
+    } catch(e) {
+      document.getElementById('r-moodboard').textContent = '—';
+    }
+
+    try {
+      var profileDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+      var data = profileDoc.exists ? profileDoc.data() : {};
+
+      var quizResult = data.quizResult;
+      document.getElementById('r-aesthetic').textContent =
+        quizResult ? quizResult.name : 'Not taken yet';
+
+      var liked  = data.likedAesthetics || [];
+      var viewed = data.recentlyViewed  || [];
+      document.getElementById('r-liked').textContent =
+        liked.length ? liked.map(function(a) { return a.name; }).join(' · ') : 'None yet';
+      document.getElementById('r-recent').textContent =
+        viewed.length ? viewed.slice(0, 3).map(function(v) { return v.name; }).join(' · ') : 'None yet';
+    } catch(e) {
+      document.getElementById('r-aesthetic').textContent = '—';
+      document.getElementById('r-liked').textContent     = '—';
+      document.getElementById('r-recent').textContent    = '—';
+    }
+
+    show('state-signedin', true);
+
+  } else if (isGuest()) {
+    if (btn) btn.textContent = 'Account';
+    show('state-guest', true);
+
+  } else {
+    /* If we were already confirmed authed and this is a bfcache restore,
+       Firebase is re-initializing — null is transient, NOT a sign-out. */
+    if (_settingsAuthed && _bfRestored) {
+      _settingsTimer = setTimeout(function() {
+        if (!firebase.auth().currentUser && !isGuest()) window.location.replace('login.html');
+      }, 10000);
+      return;
+    }
+    _settingsTimer = setTimeout(function() {
+      if (!_settingsAuthed && !isGuest() && !firebase.auth().currentUser) {
+        window.location.replace('login.html');
+      }
+    }, 7000);
+  }
+});
+
+/* bfcache guard — set _bfRestored so the null-check above knows not to redirect */
+window.addEventListener('pageshow', function(e) {
+  if (!e.persisted) return;
+  _bfRestored = true;
+  clearTimeout(_settingsTimer);
+  /* Content was already revealed on first load — no action needed if authed */
+});
+
+document.getElementById('signout-btn').addEventListener('click', function() {
+  firebase.auth().signOut().then(function() {
+    sessionStorage.removeItem('aura_guest');
+    localStorage.removeItem('aura_uid');
+    // Replace current history entry so back button can't return to settings
+    history.replaceState(null, '', 'login.html');
+    window.location.replace('login.html');
+  });
+});
+</script>
+
+</body>
+</html>
+

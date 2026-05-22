@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream: #F7F4EE;
+  --cream-dark: #EDE9E0;
+  --aura-black: #0A0A0A;
+  --charcoal: #1C1C1C;
+  --warm-gray: #8A8278;
+  --gold: #C4973B;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--aura-black);
+  color: var(--cream);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--gold);
+  color: var(--aura-black);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+  background: var(--aura-black);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--warm-gray);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+/* Smooth image loading */
+img {
+  transition: opacity 0.4s ease;
+}
+
+/* Editorial text utilities */
+@layer utilities {
+  .text-editorial {
+    font-family: var(--font-cormorant), Georgia, serif;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 0.95;
+  }
+
+  .text-label {
+    font-family: var(--font-montserrat), system-ui, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+  }
+
+  .text-body {
+    font-family: var(--font-inter), system-ui, sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .gradient-vignette {
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 10, 10, 0.2) 0%,
+      rgba(10, 10, 10, 0) 40%,
+      rgba(10, 10, 10, 0.85) 100%
+    );
+  }
+
+  .gradient-vignette-full {
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 10, 10, 0.5) 0%,
+      rgba(10, 10, 10, 0.1) 50%,
+      rgba(10, 10, 10, 0.9) 100%
+    );
+  }
+}

@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Partners — Aura Glossy</title>
+<meta name="description" content="Aura Glossy's fashion brand partners. Shop curated looks from Zara, COS, Mango, Uniqlo, ASOS, Nike, and more.">
+<meta property="og:title" content="Brand Partners — Aura Glossy">
+<meta property="og:description" content="Discover Aura Glossy's curated fashion brand partners across every budget and aesthetic.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://auraglossy.com/images/home/hero-1.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://auraglossy.com/brands.html">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=13">
+<style>
+/* ✦✦ Brands page specific styles ✦✦ */
+
+/* Hero */
+.brands-hero {
+  background: var(--ink);
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  padding: 120px 24px 100px;
+}
+
+.brands-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 110%, rgba(201,139,134,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(122,92,78,0.10) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+.brands-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.brands-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.brands-hero .eyebrow {
+  color: var(--rose);
+  border-color: rgba(201,139,134,0.3);
+}
+
+.brands-hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin: 28px 0 24px;
+}
+
+.brands-hero-title em {
+  font-style: italic;
+  color: var(--rose);
+}
+
+.brands-hero-sub {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: rgba(255,255,255,0.65);
+  max-width: 580px;
+  margin: 0 auto 48px;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.brands-hero-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-dark {
+  background: var(--white);
+  color: var(--ink);
+}
+
+.btn-dark:hover {
+  background: var(--cream);
+}
+
+.btn-outline-light {
+  border: 1px solid rgba(255,255,255,0.35);
+  color: var(--white);
+  padding: 14px 32px;
+  border-radius: 100px;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 0.25s, background 0.25s;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-outline-light:hover {
+  border-color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.06);
+}
+
+.brands-hero-scroll {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.4;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+.brands-hero-scroll-line {
+  width: 1px;
+  height: 40px;
+  background: var(--white);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 0.8; transform: scaleY(1.15); }
+}
+
+/* Stats bar */
+.brands-stats {
+  background: var(--cream);
+  padding: 56px 24px;
+}
+
+.brands-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--beige);
+  border: 1px solid var(--beige);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.brands-stat-item {
+  background: var(--cream);
+  padding: 48px 36px;
+  text-align: center;
+  transition: background 0.25s;
+}
+
+.brands-stat-item:hover {
+  background: var(--bg-soft);
+}
+
+.brands-stat-num {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1;
+  margin-bottom: 10px;
+  letter-spacing: -0.03em;
+}
+
+.brands-stat-label {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+/* How it works */
+.brands-how {
+  padding: 100px 24px;
+  background: var(--bg);
+}
+
+.brands-how-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+  max-width: 1100px;
+  margin: 64px auto 0;
+}
+
+.brands-how-step {
+  padding: 48px 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  position: relative;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+.brands-how-step:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.brands-step-num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--rose);
+  letter-spacing: 0.12em;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.brands-step-title {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 16px;
+  line-height: 1.25;
+}
+
+.brands-step-desc {
+  color: var(--ink-soft);
+  font-size: 0.925rem;
+  line-height: 1.75;
+}
+
+/* Partners grid */
+.brands-partners {
+  padding: 100px 24px;
+  background: var(--ink);
+  color: var(--white);
+  text-align: center;
+}
+
+.brands-partners .eyebrow {
+  color: var(--rose);
+  border-color: rgba(201,139,134,0.3);
+}
+
+.brands-partners-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  color: var(--white);
+  margin: 24px 0 16px;
+}
+
+.brands-partners-sub {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.9rem;
+  margin-bottom: 64px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+.brands-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2px;
+  max-width: 1100px;
+  margin: 0 auto 24px;
+  background: rgba(255,255,255,0.06);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.brands-logo-item {
+  background: rgba(255,255,255,0.03);
+  padding: 36px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s;
+}
+
+.brands-logo-item:hover {
+  background: rgba(255,255,255,0.09);
+}
+
+.brands-logo-name {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  transition: color 0.25s;
+}
+
+.brands-logo-item:hover .brands-logo-name {
+  color: rgba(255,255,255,0.95);
+}
+
+.brands-partners-note {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.06em;
+  margin-top: 32px;
+}
+
+/* Tiers */
+.brands-tiers {
+  padding: 100px 24px;
+  background: var(--bg-soft);
+}
+
+.brands-tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1100px;
+  margin: 64px auto 0;
+  align-items: stretch;
+}
+
+.brands-tier {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 52px 40px;
+  position: relative;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  display: flex;
+  flex-direction: column;
+}
+
+.brands-tier:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+.brands-tier.featured {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--white);
+  transform: scale(1.03);
+}
+
+.brands-tier.featured:hover {
+  transform: scale(1.03) translateY(-6px);
+}
+
+.brands-tier-badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--rose);
+  color: var(--white);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 5px 18px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.brands-tier-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 16px;
+}
+
+.brands-tier.featured .brands-tier-label {
+  color: var(--blush);
+}
+
+.brands-tier-name {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.brands-tier.featured .brands-tier-name {
+  color: var(--white);
+}
+
+.brands-tier-price {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-bottom: 36px;
+  font-style: italic;
+}
+
+.brands-tier.featured .brands-tier-price {
+  color: rgba(255,255,255,0.55);
+}
+
+.brands-tier-features {
+  list-style: none;
+  flex: 1;
+  margin-bottom: 40px;
+}
+
+.brands-tier-features li {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+.brands-tier.featured .brands-tier-features li {
+  color: rgba(255,255,255,0.75);
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+
+.brands-tier-features li::before {
+  content: '→';
+  color: var(--rose);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.brands-tier-cta {
+  display: block;
+  text-align: center;
+  padding: 15px 32px;
+  border-radius: 100px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-decoration: none;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  background: transparent;
+}
+
+.brands-tier-cta:hover {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.brands-tier.featured .brands-tier-cta {
+  background: var(--white);
+  color: var(--ink);
+  border-color: var(--white);
+}
+
+.brands-tier.featured .brands-tier-cta:hover {
+  background: var(--cream);
+}
+
+/* Contact section */
+.brands-contact {
+  padding: 100px 24px;
+  background: var(--bg);
+}
+
+.brands-contact-inner {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.brands-contact-intro {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.brands-contact-intro p {
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1.75;
+  margin-top: 20px;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.brands-contact-direct {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+.brands-contact-direct a {
+  color: var(--accent);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+.brands-contact-direct a:hover {
+  color: var(--rose);
+}
+
+.brands-form {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 56px 52px;
+  box-shadow: var(--shadow-sm);
+}
+
+.brands-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.brands-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.brands-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.brands-input,
+.brands-textarea {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  width: 100%;
+  -webkit-appearance: none;
+}
+
+.brands-input:focus,
+.brands-textarea:focus {
+  border-color: var(--rose);
+  box-shadow: 0 0 0 3px rgba(201,139,134,0.12);
+  background: var(--white);
+}
+
+.brands-textarea {
+  resize: vertical;
+  min-height: 130px;
+  line-height: 1.6;
+}
+
+.brands-form-submit {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.brands-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 40px;
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  border-radius: 100px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.2s;
+}
+
+.brands-submit-btn:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+}
+
+.brands-submit-btn svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s;
+}
+
+.brands-submit-btn:hover svg {
+  transform: translateX(3px);
+}
+
+.brands-form-note {
+  font-size: 0.78rem;
+  color: var(--gray);
+  letter-spacing: 0.02em;
+}
+
+.brands-success-msg {
+  display: none;
+  background: linear-gradient(135deg, #f0f7f0, #e8f5e8);
+  border: 1px solid rgba(60,140,60,0.2);
+  border-radius: var(--radius-md);
+  padding: 28px 32px;
+  text-align: center;
+  margin-top: 24px;
+}
+
+.brands-success-msg.visible {
+  display: block;
+  animation: fadeInUp 0.4s var(--ease) both;
+}
+
+.brands-success-msg p {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--ink);
+}
+
+.brands-success-msg span {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-top: 6px;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Section headings shared */
+.brands-section-head {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.brands-section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  color: var(--ink);
+  margin: 20px 0 16px;
+  letter-spacing: -0.02em;
+}
+
+.brands-section-sub {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.75;
+  font-weight: 300;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .brands-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .brands-how-grid { grid-template-columns: 1fr; gap: 24px; }
+  .brands-logo-grid { grid-template-columns: repeat(3, 1fr); }
+  .brands-tiers-grid { grid-template-columns: 1fr; }
+  .brands-tier.featured { transform: none; }
+  .brands-tier.featured:hover { transform: translateY(-6px); }
+  .brands-form { padding: 36px 28px; }
+  .brands-form-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .brands-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .brands-logo-grid { grid-template-columns: repeat(2, 1fr); }
+  .brands-stat-item { padding: 32px 20px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">AURA GLOSS<span>Y</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="quiz.html">Style Quiz</a></li>
+    <li><a href="index.html#styles">Aesthetics</a></li>
+    <li><a href="stylist.html">AI Stylist</a></li>
+    <li><a href="moodboard.html">Moodboard</a></li>
+    <li><a href="brands.html" class="active">Partners</a></li>
+  </ul>
+  <button class="nav-auth-btn" id="nav-auth-btn" onclick="navAuthClick()">Account</button>
+  <div class="nav-burger" aria-label="Open menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ✦✦ HERO ✦✦ -->
+<section class="brands-hero">
+  <div class="brands-hero-inner">
+    <span class="eyebrow">For fashion brands &amp; retailers</span>
+    <h1 class="brands-hero-title">Your brand.<br><em>Her world.</em></h1>
+    <p class="brands-hero-sub">Aura Glossy connects fashion brands with millions of style-conscious women through intelligent aesthetic matching — placing your products exactly where they belong.</p>
+    <div class="brands-hero-actions">
+      <a href="#contact" class="btn btn-dark">
+        Partner with Aura Glossy
+        <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a href="#how-it-works" class="btn-outline-light">See how it works</a>
+    </div>
+  </div>
+  <div class="brands-hero-scroll">
+    <div class="brands-hero-scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ✦✦ STATS BAR ✦✦ -->
+<section class="brands-stats reveal">
+  <div class="brands-stats-grid">
+    <div class="brands-stat-item">
+      <div class="brands-stat-num">2.4M+</div>
+      <div class="brands-stat-label">Style profiles created</div>
+    </div>
+    <div class="brands-stat-item">
+      <div class="brands-stat-num">89%</div>
+      <div class="brands-stat-label">Purchase intent rate</div>
+    </div>
+    <div class="brands-stat-item">
+      <div class="brands-stat-num">12</div>
+      <div class="brands-stat-label">Aesthetic categories</div>
+    </div>
+    <div class="brands-stat-item">
+      <div class="brands-stat-num">40+</div>
+      <div class="brands-stat-label">Countries reached</div>
+    </div>
+  </div>
+</section>
+
+<!-- ✦✦ HOW IT WORKS ✦✦ -->
+<section id="how-it-works" class="brands-how section reveal">
+  <div class="brands-section-head container">
+    <span class="eyebrow">The Aura Glossy difference</span>
+    <h2 class="brands-section-title">Built for brands that care about context.</h2>
+    <p class="brands-section-sub">We don't just show products — we place them inside a woman's aesthetic world, making every recommendation feel personal and intentional.</p>
+  </div>
+  <div class="brands-how-grid container">
+    <div class="brands-how-step">
+      <span class="brands-step-num">01 → Intelligence</span>
+      <h3 class="brands-step-title">Your products, matched intelligently</h3>
+      <p class="brands-step-desc">Aura Glossy's AI maps every item to the precise aesthetic — Classic, Minimalist, Korean, Y2K, and more — matching your collection to the exact woman who already loves that world. No guesswork, no wasted impressions.</p>
+    </div>
+    <div class="brands-how-step">
+      <span class="brands-step-num">02 → Placement</span>
+      <h3 class="brands-step-title">Editorial placement, not just ads</h3>
+      <p class="brands-step-desc">Your brand appears inside curated style guides, AI Stylist conversations, and outfit builders — woven into editorial content that women trust. Products feel discovered, not pushed.</p>
+    </div>
+    <div class="brands-how-step">
+      <span class="brands-step-num">03 → Conversion</span>
+      <h3 class="brands-step-title">Real conversions, zero friction</h3>
+      <p class="brands-step-desc">Every product link goes directly to your store. No intermediary marketplace, no commission cut on sales. Women click through to you. Your store. Your data. Your relationship.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ✦✦ CURRENT PARTNERS ✦✦ -->
+<section class="brands-partners reveal">
+  <span class="eyebrow">Trusted by</span>
+  <h2 class="brands-partners-title">The brands already inside Aura Glossy.</h2>
+  <p class="brands-partners-sub">Leading retailers whose collections are already matched across our 12 aesthetic worlds.</p>
+
+  <div class="brands-logo-grid">
+    <div class="brands-logo-item"><span class="brands-logo-name">Zara</span></div>
+    <div class="brands-logo-item"><span class="brands-logo-name">H&amp;M</span></div>
+    <div class="brands-logo-item"><span class="brands-logo-name">Mango</span></div>
+    <div class="brands-logo-item"><span class="brands-logo-name">COS</span></div>
+    <div class="brands-logo-item"><span class="brands-logo-name">Uniqlo</span></div>
+    <div class="brands-logo-item"><span class="brands-logo-name">ASOS</span></div>
+    <div class="brands-logo-item"><span class="brands-logo-name">Pull&amp;Bear</span></div>
+    <div class="brands-logo-item"><span class="brands-logo-name">Bershka</span></div>
+    <div class="brands-logo-item"><span class="brands-logo-name">Nike</span></div>
+    <div class="brands-logo-item"><span class="brands-logo-name">Adidas</span></div>
+    <div class="brands-logo-item"><span class="brands-logo-name">Sephora</span></div>
+    <div class="brands-logo-item" style="background:rgba(201,139,134,0.07);"><span class="brands-logo-name" style="color:rgba(255,255,255,0.35); font-style:italic; letter-spacing:0.06em; font-weight:400;">Your brand →</span></div>
+  </div>
+  <p class="brands-partners-note">All brand names used for illustrative purposes only. Partnership listings reflect affiliate and referral arrangements.</p>
+</section>
+
+<!-- ✦✦ TIERS ✦✦ -->
+<section class="brands-tiers section reveal">
+  <div class="brands-section-head container">
+    <span class="eyebrow">Partnership tiers</span>
+    <h2 class="brands-section-title">Choose how you want to show up.</h2>
+    <p class="brands-section-sub">Every tier is designed to grow with your brand — from a first listing to full editorial integration.</p>
+  </div>
+
+  <div class="brands-tiers-grid container">
+
+    <!-- Editorial -->
+    <div class="brands-tier">
+      <div class="brands-tier-label">Editorial</div>
+      <div class="brands-tier-name">Editorial</div>
+      <div class="brands-tier-price">Free listing · No commitment</div>
+      <ul class="brands-tier-features">
+        <li>Brand listed in relevant style guides</li>
+        <li>Products linked across aesthetic pages</li>
+        <li>Included in Style Quiz results</li>
+        <li>Basic monthly click report</li>
+        <li>Access to the Partner Portal</li>
+      </ul>
+      <a href="#contact" class="brands-tier-cta">Get started</a>
+    </div>
+
+    <!-- Featured -->
+    <div class="brands-tier featured">
+      <div class="brands-tier-badge">Most popular</div>
+      <div class="brands-tier-label">Featured</div>
+      <div class="brands-tier-name">Featured</div>
+      <div class="brands-tier-price">Partnership · Custom arrangement</div>
+      <ul class="brands-tier-features">
+        <li>Priority placement across all aesthetics</li>
+        <li>AI Stylist integration — brand recommended directly</li>
+        <li>Analytics dashboard with user insight reports</li>
+        <li>Curated outfit builder inclusion</li>
+        <li>Moodboard featured placement</li>
+        <li>Dedicated partner manager</li>
+      </ul>
+      <a href="#contact" class="brands-tier-cta">Partner with us</a>
+    </div>
+
+    <!-- Exclusive -->
+    <div class="brands-tier">
+      <div class="brands-tier-label">Exclusive</div>
+      <div class="brands-tier-name">Exclusive</div>
+      <div class="brands-tier-price">Premium · Tailored to your brand</div>
+      <ul class="brands-tier-features">
+        <li>Hero placement on homepage &amp; style pages</li>
+        <li>Dedicated aesthetic world co-created with Aura Glossy</li>
+        <li>Co-branded editorial campaigns &amp; content</li>
+        <li>First-access to new platform features</li>
+        <li>Full attribution &amp; conversion analytics</li>
+        <li>White-glove onboarding &amp; creative support</li>
+      </ul>
+      <a href="#contact" class="brands-tier-cta">Get in touch</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ✦✦ CONTACT ✦✦ -->
+<section id="contact" class="brands-contact section reveal">
+  <div class="brands-contact-inner">
+    <div class="brands-contact-intro">
+      <span class="eyebrow">Start the conversation</span>
+      <h2 class="brands-section-title" style="text-align:center;">Ready to be part of<br><em>her world?</em></h2>
+      <p>Tell us about your brand and we'll find the right partnership tier together. No pressure — just a conversation.</p>
+      <p class="brands-contact-direct">Prefer to reach out directly? <a href="mailto:hello@auraglossy.com">hello@auraglossy.com</a></p>
+    </div>
+
+    <div class="brands-form" id="brands-form-wrap">
+      <form id="brands-contact-form" novalidate>
+        <div class="brands-form-row">
+          <div class="brands-field">
+            <label class="brands-label" for="bc-brand">Brand name</label>
+            <input type="text" id="bc-brand" class="brands-input" placeholder="e.g. Zara, COS…" required>
+          </div>
+          <div class="brands-field">
+            <label class="brands-label" for="bc-name">Your name</label>
+            <input type="text" id="bc-name" class="brands-input" placeholder="First &amp; last name" required>
+          </div>
+        </div>
+        <div class="brands-form-row">
+          <div class="brands-field">
+            <label class="brands-label" for="bc-email">Email address</label>
+            <input type="email" id="bc-email" class="brands-input" placeholder="you@brand.com" required>
+          </div>
+          <div class="brands-field">
+            <label class="brands-label" for="bc-website">Website</label>
+            <input type="url" id="bc-website" class="brands-input" placeholder="https://yourbrand.com">
+          </div>
+        </div>
+        <div class="brands-field">
+          <label class="brands-label" for="bc-message">Message</label>
+          <textarea id="bc-message" class="brands-textarea" placeholder="Tell us about your brand, what you're looking for, and any questions you have…"></textarea>
+        </div>
+        <div class="brands-form-submit">
+          <button type="submit" class="brands-submit-btn">
+            Send enquiry
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <span class="brands-form-note">We reply within 48 hours, always.</span>
+        </div>
+      </form>
+      <div class="brands-success-msg" id="brands-success">
+        <p>Thank you. We'll be in touch within 48 hours.</p>
+        <span>A member of the Aura Glossy partnerships team will reach out to discuss next steps.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div><div class="footer-brand">AURA GLOSS<span>Y</span></div><p class="footer-tagline">A curated fashion universe.</p></div>
+      <div class="footer-col"><h4>Discover</h4><ul><li><a href="quiz.html">Style quiz</a></li><li><a href="index.html#styles">All aesthetics</a></li><li><a href="stylist.html">AI stylist</a></li><li><a href="moodboard.html">Moodboard</a></li><li><a href="brands.html">Partners</a></li></ul></div>
+      <div class="footer-col"><h4>Aesthetics</h4><ul><li><a href="style.html#classic">Classic</a></li><li><a href="style.html#minimalist">Minimalist</a></li><li><a href="style.html#korean">Korean</a></li><li><a href="style.html#elegant">Elegant</a></li></ul></div>
+      <div class="footer-col"><h4>Shop partners</h4><ul><li>Zara · COS · Mango</li><li>H&amp;M · Uniqlo · ASOS</li><li>SHEIN · Bershka · Pull&amp;Bear</li><li>Nike · Adidas · Sephora</li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Aura Glossy</span><span>Designed with care, dressed with intention.</span></div>
+  </div>
+</footer>
+
+<script src="js/data.js?v=6"></script>
+<script src="js/main.js?v=4"></script>
+<script src="js/animations.js?v=12"></script>
+<script>
+(function() {
+  // Smooth scroll for in-page anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Contact form
+  var form = document.getElementById('brands-contact-form');
+  var success = document.getElementById('brands-success');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var btn = form.querySelector('.brands-submit-btn');
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
+      setTimeout(function() {
+        form.style.display = 'none';
+        success.classList.add('visible');
+      }, 800);
+    });
+  }
+})();
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="js/monitor.js?v=2"></script>
+<script src="js/firebase.js?v=6"></script>
+<script>
+function navAuthClick() { window.location.href = 'settings.html'; }
+initAuthGuard();
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,81 @@
+[build]
+  publish = "."
+  command = ""
+  functions = "netlify/functions"
+
+# ── Firebase Auth handler: no CSP (proxied from Firebase, needs its own scripts) ──
+[[headers]]
+  for = "/__/auth/*"
+  [headers.values]
+    Content-Security-Policy = ""
+    X-Frame-Options = ""
+
+# ── Security headers — applied to every response ────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    # Content Security Policy
+    # script-src: self + inline (required for inline <script> blocks) + Firebase CDN + Google APIs
+    # style-src:  self + inline (required for style attributes) + Google Fonts
+    # connect-src: Firestore, Firebase Auth, Firebase Storage, Brevo function
+    # frame-src: Google OAuth redirect flow + Firebase Auth domain
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https://images.unsplash.com https://*.googleapis.com https://*.gstatic.com data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebasestorage.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://accounts.google.com https://*.firebaseapp.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://accounts.google.com;"
+
+# ── HTML pages: never cache — fixes back-button after logout ────
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-store, no-cache, must-revalidate, private"
+
+# ── Versioned JS/CSS assets: cache aggressively ─────────────────
+# Safe because all assets use ?v=N query strings; bump N to bust cache.
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# ── Static assets: cache 30 days ────────────────────────────────
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "/favicon.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+# ── Netlify Functions CORS ───────────────────────────────────────
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "https://auraglossy.com"
+    Access-Control-Allow-Methods = "POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
+
+# ── Firebase Auth handler proxy ──────────────────────────────────
+# Proxies /__/auth/* to Firebase so the entire OAuth flow stays on
+# auraglossy.com — fixes iOS Safari ITP blocking cross-origin
+# window.opener.postMessage and sessionStorage from firebaseapp.com.
+# authDomain is now "auraglossy.com" in firebase.js config.
+[[redirects]]
+  from = "/__/auth/*"
+  to = "https://aura-fashion-fc2d4.firebaseapp.com/__/auth/:splat"
+  status = 200
+  force = true
+
+# ── Custom 404 page ──────────────────────────────────────────────
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moodboard — Aura Glossy</title>
+<meta name="description" content="Your personal Aura Glossy moodboard. Save and collect fashion inspiration, outfits, and looks from across the platform.">
+<meta property="og:title" content="Moodboard — Aura Glossy">
+<meta property="og:description" content="Save and collect your favorite fashion looks and build your personal style moodboard.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://auraglossy.com/images/home/hero-1.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://auraglossy.com/moodboard.html">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=13">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">AURA GLOSS<span>Y</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="quiz.html">Style Quiz</a></li>
+    <li><a href="index.html#styles">Aesthetics</a></li>
+    <li><a href="stylist.html">AI Stylist</a></li>
+    <li><a href="moodboard.html" class="active">Moodboard</a></li>
+    <li><a href="brands.html">Partners</a></li>
+  </ul>
+  <button class="nav-auth-btn" id="nav-auth-btn" onclick="navAuthClick()">Account</button>
+  <div class="nav-burger" aria-label="Open menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
+</nav>
+
+<section class="moodboard-page">
+  <div class="moodboard-header">
+    <span class="eyebrow">Your collection</span>
+    <h1>Your <em>moodboard.</em></h1>
+    <p style="color: var(--ink-soft); max-width: 540px; margin: 16px auto 0;">Every look you've saved across the platform. Hover any image to remove it.</p>
+  </div>
+  <div id="moodboard-container"></div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div><div class="footer-brand">AURA GLOSS<span>Y</span></div><p class="footer-tagline">A curated fashion universe.</p></div>
+      <div class="footer-col"><h4>Discover</h4><ul><li><a href="quiz.html">Style quiz</a></li><li><a href="index.html#styles">All aesthetics</a></li><li><a href="stylist.html">AI stylist</a></li><li><a href="moodboard.html">Moodboard</a></li><li><a href="brands.html">Partners</a></li></ul></div>
+      <div class="footer-col"><h4>Aesthetics</h4><ul><li><a href="style.html#classic">Classic</a></li><li><a href="style.html#minimalist">Minimalist</a></li><li><a href="style.html#korean">Korean</a></li><li><a href="style.html#elegant">Elegant</a></li></ul></div>
+      <div class="footer-col"><h4>Shop partners</h4><ul><li>Zara · COS · Mango</li><li>H&M · Uniqlo · ASOS</li><li>SHEIN · Bershka · Pull&Bear</li><li>Nike · Adidas · Sephora</li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Aura Glossy</span><span>Designed with care, dressed with intention.</span></div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="js/data.js?v=6"></script>
+<script src="js/main.js?v=4"></script>
+<script src="js/monitor.js?v=2"></script>
+<script src="js/firebase.js?v=6"></script>
+<script src="js/animations.js?v=12"></script>
+<script>
+(function() {
+  const container = document.getElementById('moodboard-container');
+  let currentFilter = 'all';
+
+  /* ✦✦ Loading state ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+  container.innerHTML = '<div style="text-align:center;padding:80px 24px;color:var(--ink-soft);">Loading your moodboard…</div>';
+
+  /* ✦✦ Empty state ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+  function buildEmptyState() {
+    const teaser = [];
+    Object.values(STYLES).forEach(s => {
+      teaser.push({ img: s.heroImg, label: s.name });
+      if (s.outfits[0]) teaser.push({ img: s.outfits[0].img, label: s.name });
+    });
+    teaser.sort(() => Math.random() - 0.5);
+
+    let html = '<div class="moodboard-empty"><div class="icon">✦</div>';
+    html += '<h3>Your moodboard is empty</h3>';
+    html += "<p>Save outfits across the platform and they'll collect here.</p>";
+    html += '<a href="index.html#styles" class="btn">Start exploring</a></div>';
+    html += '<div class="moodboard-teaser"><h4>A taste of what you can save</h4>';
+    html += '<div class="moodboard-teaser-grid">';
+    teaser.slice(0, 15).forEach(t => {
+      html += '<div class="mood-cell"><img src="' + t.img + '" alt="' + t.label + '" loading="lazy">';
+      html += '<span class="mood-cell-label">' + t.label + '</span></div>';
+    });
+    html += '</div></div>';
+    return html;
+  }
+
+  /* ✦✦ Main render ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+  function render(items) {
+    if (!items.length) { container.innerHTML = buildEmptyState(); return; }
+
+    const styles  = [...new Set(items.map(i => i.style).filter(Boolean))];
+    const filtered = currentFilter === 'all' ? items : items.filter(i => i.style === currentFilter);
+
+    let html = '<div style="max-width:1280px;margin:0 auto 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">';
+    html += '<p style="color:var(--ink-soft);"><strong>' + items.length + '</strong> ' + (items.length === 1 ? 'look' : 'looks') + ' saved</p>';
+    html += '<button id="clear-all" class="btn btn-outline" style="padding:10px 22px;font-size:11px;">Clear all</button>';
+    html += '</div>';
+
+    if (styles.length > 1) {
+      html += '<div class="filter-bar" id="moodboard-filter">';
+      html += '<button class="filter-chip ' + (currentFilter === 'all' ? 'active' : '') + '" data-style="all">All (' + items.length + ')</button>';
+      styles.forEach(st => {
+        const count = items.filter(i => i.style === st).length;
+        html += '<button class="filter-chip ' + (currentFilter === st ? 'active' : '') + '" data-style="' + st + '">' + st + ' (' + count + ')</button>';
+      });
+      html += '</div>';
+    }
+
+    if (!filtered.length) {
+      html += '<div class="empty-result">No saved looks for ' + currentFilter + '.</div>';
+    } else {
+      html += '<div class="moodboard-grid">';
+      filtered.forEach(item => {
+        html += '<div class="inspiration-item">';
+        html += '<img src="' + item.img + '" alt="' + (item.label || '') + '" loading="lazy">';
+        html += '<button class="save-btn saved" data-id="' + item.id + '" aria-label="Remove">';
+        html += '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+        html += '</button>';
+        html += '<div class="inspiration-item-overlay">' + (item.style ? item.style + ' · ' : '') + (item.label || '') + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    container.innerHTML = html;
+
+    /* Remove button */
+    container.querySelectorAll('.save-btn').forEach(btn => {
+      btn.addEventListener('click', async e => {
+        e.preventDefault();
+        const id = btn.dataset.id;
+        await fbRemove(id);
+        showToast('Removed from moodboard');
+        const updated = await fbLoadAll();
+        render(updated);
+      });
+    });
+
+    /* Filter */
+    const filt = document.getElementById('moodboard-filter');
+    if (filt) {
+      filt.addEventListener('click', e => {
+        const b = e.target.closest('.filter-chip');
+        if (!b) return;
+        currentFilter = b.dataset.style;
+        render(items);
+      });
+    }
+
+    /* Clear all */
+    const clearBtn = document.getElementById('clear-all');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', async () => {
+        if (!confirm('Clear your entire moodboard?')) return;
+        await Promise.all(items.map(i => fbRemove(i.id)));
+        currentFilter = 'all';
+        showToast('Moodboard cleared');
+        render([]);
+      });
+    }
+  }
+
+  /* ✦✦ Load from Firestore on page open ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+  fbLoadAll().then(items => render(items));
+
+})();
+</script>
+<script>
+function navAuthClick() { window.location.href = 'settings.html'; }
+initAuthGuard();
+</script>
+
+</body>
+</html>
+

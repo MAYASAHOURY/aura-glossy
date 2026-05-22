@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aesthetics — Aura Glossy</title>
+<meta name="description" content="Explore all 9 fashion aesthetics on Aura Glossy. Classic, Minimalist, Streetwear, Korean, Y2K, Elegant, Casual, Soft Girl, and Vintage — curated outfits and shoppable looks.">
+<meta property="og:title" content="Aesthetics — Aura Glossy">
+<meta property="og:description" content="Explore 9 curated fashion aesthetics. Outfits, inspiration galleries, and shoppable looks for every style identity.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://auraglossy.com/images/home/hero-1.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://auraglossy.com/style.html">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=16">
+<script>
+  history.scrollRestoration = 'manual';
+  window.addEventListener('load', function() { window.scrollTo(0, 0); });
+</script>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">AURA GLOSS<span>Y</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="quiz.html">Style Quiz</a></li>
+    <li><a href="index.html#styles" class="active">Aesthetics</a></li>
+    <li><a href="stylist.html">AI Stylist</a></li>
+    <li><a href="moodboard.html">Moodboard</a></li>
+    <li><a href="brands.html">Partners</a></li>
+  </ul>
+  <button class="nav-auth-btn" id="nav-auth-btn" onclick="navAuthClick()">Account</button>
+  <div class="nav-burger" aria-label="Open menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
+</nav>
+
+<main id="style-content"></main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div><div class="footer-brand">AURA GLOSS<span>Y</span></div><p class="footer-tagline">A curated fashion universe.</p></div>
+      <div class="footer-col"><h4>Discover</h4><ul><li><a href="quiz.html">Style quiz</a></li><li><a href="index.html#styles">All aesthetics</a></li><li><a href="stylist.html">AI stylist</a></li><li><a href="moodboard.html">Moodboard</a></li><li><a href="brands.html">Partners</a></li></ul></div>
+      <div class="footer-col"><h4>Aesthetics</h4><ul><li><a href="style.html#classic">Classic</a></li><li><a href="style.html#minimalist">Minimalist</a></li><li><a href="style.html#korean">Korean</a></li><li><a href="style.html#elegant">Elegant</a></li></ul></div>
+      <div class="footer-col"><h4>Shop partners</h4><ul><li>Zara · COS · Mango</li><li>H&M · Uniqlo · ASOS</li><li>SHEIN · Bershka · Pull&Bear</li><li>Nike · Adidas · Sephora</li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Aura Glossy</span><span>Designed with care, dressed with intention.</span></div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="js/data.js?v=6"></script>
+<script src="js/main.js?v=4"></script>
+<script src="js/monitor.js?v=2"></script>
+<script src="js/firebase.js?v=6"></script>
+<script src="js/style-page.js?v=10"></script>
+<script src="js/animations.js?v=12"></script>
+<script>
+function navAuthClick() { window.location.href = 'settings.html'; }
+initAuthGuard();
+</script>
+
+</body>
+</html>

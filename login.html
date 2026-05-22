@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Join Aura Glossy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:    #0a0a0a;
+  --cream:  #f5f2ee;
+  --rose:   #c084a0;
+  --soft:   rgba(255,255,255,0.55);
+  --border: rgba(255,255,255,0.15);
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-sans:    'Inter', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; height: 100vh; }
+
+/* ✦✦ Layout ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+.auth-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100vh;
+}
+
+/* ✦✦ LEFT: photo panel ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+.auth-photo {
+  position: relative;
+  overflow: hidden;
+}
+.auth-photo img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+.auth-photo-veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.5) 100%);
+}
+.auth-photo-top {
+  position: absolute; top: 24px; left: 28px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+}
+.auth-photo-bottom {
+  position: absolute; bottom: 28px; left: 28px;
+  display: flex; gap: 20px;
+}
+.auth-photo-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+}
+
+/* ✦✦ RIGHT: form panel ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+.auth-form-panel {
+  background: #0d0d0d;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 56px;
+  overflow-y: auto;
+  position: relative;
+}
+
+.auth-logo {
+  position: absolute;
+  top: 32px; right: 40px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 0.22em;
+  color: #fff;
+  text-decoration: none;
+}
+
+.auth-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 18px;
+}
+.auth-title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 400;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+.auth-title em { font-style: italic; color: var(--rose); }
+.auth-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 36px;
+  line-height: 1.6;
+}
+
+/* ✦✦ Tabs (Join / Sign In) ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.auth-tab {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  background: none;
+  border: none;
+  padding: 0 0 14px;
+  margin-right: 28px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+}
+.auth-tab.active {
+  color: #fff;
+}
+.auth-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 1px;
+  background: #fff;
+}
+
+/* ✦✦ Form ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+.auth-fields { display: flex; flex-direction: column; gap: 0; }
+.auth-field {
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  transition: border-color 0.2s;
+}
+.auth-field:focus-within { border-color: rgba(255,255,255,0.5); }
+.auth-field input {
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  padding: 18px 0;
+  caret-color: var(--rose);
+}
+.auth-field input::placeholder { color: rgba(255,255,255,0.3); }
+
+/* ✦✦ Buttons ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+.auth-cta {
+  margin-top: 32px;
+  width: 100%;
+  padding: 17px 24px;
+  background: #fff;
+  color: #0a0a0a;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background 0.2s, transform 0.15s;
+}
+.auth-cta:hover { background: #f0ece6; transform: translateY(-1px); }
+
+.auth-or {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.2);
+  margin: 20px 0;
+  position: relative;
+}
+.auth-or::before, .auth-or::after {
+  content: '';
+  position: absolute;
+  top: 50%; width: 42%;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+}
+.auth-or::before { left: 0; }
+.auth-or::after  { right: 0; }
+
+.auth-google {
+  width: 100%;
+  padding: 15px 24px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.auth-google:hover { border-color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1); }
+
+.auth-guest {
+  margin-top: 14px;
+  width: 100%;
+  padding: 15px 24px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.4);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+}
+.auth-guest:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.65); }
+
+.auth-switch {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255,255,255,0.3);
+}
+.auth-switch button {
+  background: none; border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ✦✦ Signed-in state ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+.auth-user { display: none; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
+.auth-avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); }
+.auth-user-name { font-family: var(--font-display); font-size: 22px; color: #fff; }
+.auth-user-email { font-size: 13px; color: rgba(255,255,255,0.4); }
+.auth-user-actions { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-top: 8px; }
+.auth-user-actions a {
+  display: block; padding: 16px; text-align: center;
+  background: #fff; color: #0a0a0a;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  text-decoration: none; transition: background 0.2s;
+}
+.auth-user-actions a:hover { background: #f0ece6; }
+.auth-signout {
+  background: none; border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.4);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 14px; cursor: pointer; transition: border-color 0.2s, color 0.2s; width: 100%;
+}
+.auth-signout:hover { border-color: rgba(255,255,255,0.35); color: rgba(255,255,255,0.7); }
+
+/* ✦✦ Error ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+.auth-error {
+  font-size: 12px; color: #f87171;
+  margin-top: 12px; display: none;
+}
+
+/* ✦✦ Mobile ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+@media (max-width: 768px) {
+  body { overflow: auto; }
+  .auth-wrap { grid-template-columns: 1fr; height: auto; min-height: 100vh; }
+  .auth-photo { height: 45vh; }
+  .auth-form-panel { padding: 40px 28px 56px; overflow: visible; }
+  .auth-logo { top: 20px; right: 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="auth-wrap">
+
+  <!-- LEFT: photo -->
+  <div class="auth-photo">
+    <img src="signin-bg.jpg" alt="Aura Glossy Fashion">
+    <div class="auth-photo-veil"></div>
+    <div class="auth-photo-top">AURA GLOSSY &nbsp;·&nbsp; 2026</div>
+    <div class="auth-photo-bottom">
+      <span class="auth-photo-tag">Style</span>
+      <span class="auth-photo-tag">Identity</span>
+      <span class="auth-photo-tag">Presence</span>
+    </div>
+  </div>
+
+  <!-- RIGHT: form -->
+  <div class="auth-form-panel">
+    <a href="login.html" class="auth-logo">AURA GLOSSY</a>
+
+    <!-- Not signed in -->
+    <div id="auth-forms">
+      <p class="auth-eyebrow">Begin your story</p>
+
+      <!-- TABS -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-join">Join</button>
+        <button class="auth-tab" id="tab-signin">Sign in</button>
+      </div>
+
+      <!-- JOIN FORM -->
+      <div id="form-join">
+        <div class="auth-fields">
+          <div class="auth-field"><input type="text" id="join-name" placeholder="Your name" autocomplete="name"></div>
+          <div class="auth-field"><input type="email" id="join-email" placeholder="Email address" autocomplete="email"></div>
+          <div class="auth-field"><input type="password" id="join-pass" placeholder="Create password" autocomplete="new-password"></div>
+        </div>
+        <p class="auth-error" id="join-error"></p>
+        <button class="auth-cta" id="join-btn">Create account →</button>
+      </div>
+
+      <!-- SIGN IN FORM -->
+      <div id="form-signin" style="display:none">
+        <div class="auth-fields">
+          <div class="auth-field"><input type="email" id="si-email" placeholder="Email address" autocomplete="email"></div>
+          <div class="auth-field"><input type="password" id="si-pass" placeholder="Password" autocomplete="current-password"></div>
+        </div>
+        <p class="auth-error" id="si-error"></p>
+        <button class="auth-cta" id="si-btn">Sign in →</button>
+      </div>
+
+      <div class="auth-or">or</div>
+      <button class="auth-google" id="google-btn">
+        <svg width="18" height="18" viewBox="0 0 48 48">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        Continue with Google
+      </button>
+      <a href="index.html" class="auth-guest" id="guest-link">Continue as guest →</a>
+      <p class="auth-switch" id="switch-text">
+        Already a member? <button id="switch-btn">Sign in</button>
+      </p>
+    </div>
+
+    <!-- Signed in state -->
+    <div class="auth-user" id="auth-user">
+      <img class="auth-avatar" id="user-avatar" src="" alt="">
+      <p class="auth-user-name" id="user-name"></p>
+      <p class="auth-user-email" id="user-email"></p>
+      <div class="auth-user-actions">
+        <a href="moodboard.html">View my Moodboard →</a>
+        <a href="index.html">Go to Homepage →</a>
+        <button class="auth-signout" id="signout-btn">Sign out</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="js/monitor.js?v=2"></script>
+<script src="js/firebase.js?v=6"></script>
+<script src="js/animations.js?v=12"></script>
+<script>
+(function() {
+  const auth     = firebase.auth();
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  /* ✦✦ Rate limiting: max 5 failed attempts — 30s lockout ✦✦✦ */
+  var _rl = { count: 0, lockedUntil: 0 };
+  function rlCheck(errEl) {
+    if (Date.now() < _rl.lockedUntil) {
+      var secs = Math.ceil((_rl.lockedUntil - Date.now()) / 1000);
+      showErr(errEl, 'Too many attempts. Please wait ' + secs + ' seconds.');
+      return false;
+    }
+    return true;
+  }
+  function rlFail() {
+    _rl.count++;
+    if (_rl.count >= 5) { _rl.lockedUntil = Date.now() + 30000; _rl.count = 0; }
+  }
+  function rlReset() { _rl.count = 0; _rl.lockedUntil = 0; }
+
+  const formsEl   = document.getElementById('auth-forms');
+  const userEl    = document.getElementById('auth-user');
+
+  /* ✦✦ Tab switch ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+  let mode = 'join';
+  document.getElementById('tab-join').addEventListener('click', () => setMode('join'));
+  document.getElementById('tab-signin').addEventListener('click', () => setMode('signin'));
+  document.getElementById('switch-btn').addEventListener('click', () => setMode(mode === 'join' ? 'signin' : 'join'));
+
+  function setMode(m) {
+    mode = m;
+    document.getElementById('form-join').style.display    = m === 'join'   ? 'block' : 'none';
+    document.getElementById('form-signin').style.display  = m === 'signin' ? 'block' : 'none';
+    document.getElementById('tab-join').classList.toggle('active', m === 'join');
+    document.getElementById('tab-signin').classList.toggle('active', m === 'signin');
+    document.getElementById('switch-text').innerHTML = m === 'join'
+      ? 'Already a member? <button id="switch-btn">Sign in</button>'
+      : 'New here? <button id="switch-btn">Create account</button>';
+    document.getElementById('switch-btn').addEventListener('click', () => setMode(mode === 'join' ? 'signin' : 'join'));
+  }
+
+  /* ✦✦ Guest flag ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+  document.getElementById('guest-link').addEventListener('click', function(e) {
+    e.preventDefault();
+    sessionStorage.setItem('aura_guest', '1'); // clears automatically when tab closes
+    sessionStorage.setItem('aura_skip_intro', '1');
+    window.location.replace('index.html');
+  });
+
+  /* ✦✦ bfcache guard — when browser restores this page from cache
+     and the user is now signed in, skip straight to homepage.
+     Use 800ms delay + aura_just_authed flag consistent with main flow. */
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted && auth.currentUser) {
+      if (_navigating) return;
+      _navigating = true;
+      sessionStorage.setItem('aura_skip_intro', '1');
+      sessionStorage.setItem('aura_just_authed', '1');
+      setTimeout(function() {
+        window.location.replace('index.html');
+      }, 800);
+    }
+  });
+
+  /* ✦✦ Auth state ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+  var _navigating = false; /* prevent double-redirect */
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      if (_navigating) return;
+      _navigating = true;
+      sessionStorage.removeItem('aura_guest');
+      sessionStorage.setItem('aura_skip_intro', '1');
+      sessionStorage.setItem('aura_just_authed', '1'); /* tells index.html: use long timer */
+      /* 800 ms delay — lets Firebase finish writing auth session to IndexedDB
+         before we navigate away, preventing the session-loss loop on iOS Safari */
+      setTimeout(function() {
+        window.location.replace('index.html');
+      }, 800);
+    } else {
+      formsEl.style.display = 'block';
+      userEl.style.display  = 'none';
+    }
+  });
+
+  /* ✦✦ Brevo: add contact via server-side Netlify function ✦✦✦ */
+  function addToBrevo(email, name) {
+    fetch('/.netlify/functions/add-contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, name: name || '' })
+    }).catch(e => console.warn('Brevo sync failed:', e));
+  }
+
+  /* ✦✦ Create account ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+  document.getElementById('join-btn').addEventListener('click', async () => {
+    const name  = document.getElementById('join-name').value.trim();
+    const email = document.getElementById('join-email').value.trim();
+    const pass  = document.getElementById('join-pass').value;
+    const errEl = document.getElementById('join-error');
+    const btn   = document.getElementById('join-btn');
+    errEl.style.display = 'none';
+    if (!rlCheck(errEl)) return;
+    if (!email || !pass) { showErr(errEl, 'Please fill in all fields.'); return; }
+    btn.disabled = true; btn.textContent = 'Creating account…';
+    try {
+      const cred = await auth.createUserWithEmailAndPassword(email, pass);
+      if (name) await cred.user.updateProfile({ displayName: name });
+      localStorage.removeItem('aura_uid');
+      sessionStorage.removeItem('aura_guest');
+      rlReset();
+      addToBrevo(email, name);
+      /* DO NOT navigate here — onAuthStateChanged (with 800ms delay) handles it.
+         Navigating immediately aborts Firebase's IndexedDB write on iOS Safari. */
+      btn.textContent = 'Redirecting…';
+    } catch(e) {
+      rlFail();
+      showErr(errEl, friendlyErr(e.code));
+      btn.disabled = false; btn.textContent = 'Create account →';
+    }
+  });
+
+  /* ✦✦ Sign in ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+  document.getElementById('si-btn').addEventListener('click', async () => {
+    const email = document.getElementById('si-email').value.trim();
+    const pass  = document.getElementById('si-pass').value;
+    const errEl = document.getElementById('si-error');
+    const btn   = document.getElementById('si-btn');
+    errEl.style.display = 'none';
+    if (!rlCheck(errEl)) return;
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    try {
+      await auth.signInWithEmailAndPassword(email, pass);
+      localStorage.removeItem('aura_uid');
+      sessionStorage.removeItem('aura_guest');
+      rlReset();
+      /* DO NOT navigate here — onAuthStateChanged (with 800ms delay) handles it.
+         Navigating immediately aborts Firebase's IndexedDB write on iOS Safari. */
+      btn.textContent = 'Redirecting…';
+    } catch(e) {
+      rlFail();
+      showErr(errEl, friendlyErr(e.code));
+      btn.disabled = false; btn.textContent = 'Sign in →';
+    }
+  });
+
+  /* ✦✦ Google ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+  /* Auth strategy:
+     - Mobile  → signInWithRedirect (Netlify proxies /__/auth/* to Firebase so
+                 everything stays on auraglossy.com — no cross-origin ITP issue,
+                 no window.opener reset, sessionStorage preserved throughout)
+     - Desktop → signInWithPopup (no navigation, popup resolves cleanly)
+
+     authDomain is "auraglossy.com" (firebase.js) so redirect_uri is
+     https://auraglossy.com/__/auth/handler (registered in Google Cloud Console). */
+
+  var isMobile = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
+
+  /* Pick up result when page returns from a redirect sign-in */
+  auth.getRedirectResult().then(function(result) {
+    if (result && result.user) {
+      if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
+        addToBrevo(result.user.email, result.user.displayName);
+      }
+      localStorage.removeItem('aura_uid');
+      sessionStorage.removeItem('aura_guest');
+      /* onAuthStateChanged (with 800ms delay) handles navigation */
+    }
+  }).catch(function(e) {
+    if (e.code && e.code !== 'auth/no-current-user') {
+      console.error('Google redirect error:', e.code, e.message);
+      showErr(document.getElementById('join-error'), friendlyErr(e.code));
+    }
+  });
+
+  document.getElementById('google-btn').addEventListener('click', function() {
+    var errEl = document.getElementById('join-error');
+    errEl.style.display = 'none';
+    if (isMobile) {
+      /* Redirect flow — safe on mobile because authDomain = auraglossy.com
+         and Netlify proxies /__/auth/* so sessionStorage never crosses origins */
+      auth.signInWithRedirect(provider);
+    } else {
+      /* Popup flow for desktop */
+      auth.signInWithPopup(provider).then(function(result) {
+        if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
+          addToBrevo(result.user.email, result.user.displayName);
+        }
+        localStorage.removeItem('aura_uid');
+        sessionStorage.removeItem('aura_guest');
+        /* onAuthStateChanged (with 800ms delay) handles navigation */
+      }).catch(function(e) {
+        if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
+          /* User dismissed — no error */
+        } else {
+        console.error('Google sign-in error:', e.code, e.message);
+        showErr(errEl, friendlyErr(e.code));
+      }
+    });
+    } /* end else (desktop) */
+  });
+
+  /* ✦✦ Sign out ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+  document.getElementById('signout-btn').addEventListener('click', () => auth.signOut());
+
+  function showErr(el, msg) { el.textContent = msg; el.style.display = 'block'; }
+  function friendlyErr(code) {
+    const map = {
+      'auth/email-already-in-use':  'This email is already registered.',
+      'auth/invalid-email':         'Invalid email address.',
+      'auth/weak-password':         'Password must be at least 6 characters.',
+      'auth/user-not-found':        'No account found with this email.',
+      'auth/wrong-password':        'Incorrect password.',
+      'auth/invalid-credential':    'Incorrect email or password.',   /* Firebase v9+ unified code */
+      'auth/popup-closed-by-user':  'Sign-in cancelled.',
+      'auth/network-request-failed':'No internet connection. Please check your network.',
+      'auth/too-many-requests':     'Too many attempts. Please wait a moment and try again.',
+      'auth/user-disabled':         'This account has been disabled.',
+      'auth/operation-not-allowed': 'This sign-in method is not enabled.',
+    };
+    return map[code] || 'Something went wrong. Please try again.';
+  }
+})();
+</script>
+
+</body>
+</html>
+
