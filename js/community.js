@@ -399,7 +399,7 @@ function _postCardHTML(post, group) {
         '<span class="post-time">' + time + '</span>' +
       '</div>' +
       '<span class="post-type-pill">' + typeTag + '</span>' +
-      (isOwn ? '<button class="post-delete" data-post-id="' + post.id + '" title="Delete post">×</button>' : '') +
+      (isOwn ? '<button class="post-delete" data-post-id="' + post.id + '" title="Delete post"><svg width="11" height="12" viewBox="0 0 11 12" fill="none"><path d="M1 2.5h9M3.5 2.5V1.5h4v1M2 2.5l.5 7h7l.5-7M4 5v3M7 5v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' : '') +
     '</div>' +
 
     // Body
@@ -518,7 +518,7 @@ function _commentHTML(id, c, group, postId) {
       '<span class="comment-time">' + time + '</span>' +
     '</div>' +
     (isOwn
-      ? '<button class="comment-delete" data-comment-id="' + id + '" data-post-id="' + postId + '" data-group-id="' + group.id + '">×</button>'
+      ? '<button class="comment-delete" data-comment-id="' + id + '" data-post-id="' + postId + '" data-group-id="' + group.id + '" title="Delete comment"><svg width="10" height="11" viewBox="0 0 10 11" fill="none"><path d="M1 2.5h8M3 2.5V1.5h4v1M1.5 2.5l.5 6.5h6l.5-6.5M3.5 5v2.5M6.5 5v2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'
       : '') +
     '</div>';
 }
@@ -551,35 +551,51 @@ function _submitComment(postId, group) {
     .finally(function () { input.disabled = false; });
 }
 
-function _deletePost(postId, group) {
-  if (!confirm('Delete this post?')) return;
-  _db
-    .collection('communities').doc(group.id)
-    .collection('posts').doc(postId)
-    .delete()
-    .catch(function (e) { console.warn('Delete post failed:', e.message); });
+function _confirmDelete(message, onConfirm) {
+  document.getElementById('access-modal-box').innerHTML =
+    '<div class="access-icon" style="color:var(--rose)">⊘</div>' +
+    '<h3>Delete this?</h3>' +
+    '<p>' + message + '</p>' +
+    '<div class="access-actions">' +
+      '<button class="btn access-primary-btn" style="background:var(--rose);border-color:var(--rose)" id="confirm-delete-yes">Delete</button>' +
+      '<button class="btn-ghost" onclick="closeAccessModal()">Cancel</button>' +
+    '</div>';
+  document.getElementById('access-modal').style.display = 'flex';
+  document.getElementById('confirm-delete-yes').addEventListener('click', function () {
+    closeAccessModal();
+    onConfirm();
+  });
 }
 
-// Called from inline onclick in comment HTML
-function deleteComment(commentId, postId, groupId) {
-  if (!confirm('Delete this comment?')) return;
-  _db
-    .collection('communities').doc(groupId)
-    .collection('posts').doc(postId)
-    .collection('comments').doc(commentId)
-    .delete()
-    .then(function () {
-      var el = document.getElementById('cmt-' + commentId);
-      if (el) el.remove();
-    })
-    .catch(function (e) { console.warn('Delete comment failed:', e.message); });
+function _deletePost(postId, group) {
+  _confirmDelete('This post will be permanently removed.', function () {
+    _db
+      .collection('communities').doc(group.id)
+      .collection('posts').doc(postId)
+      .delete()
+      .catch(function (e) { console.warn('Delete post failed:', e.message); });
+  });
 }
 
 // Delegate comment-delete clicks (added via innerHTML)
 document.addEventListener('click', function (e) {
   var btn = e.target.closest('.comment-delete');
   if (!btn) return;
-  deleteComment(btn.dataset.commentId, btn.dataset.postId, btn.dataset.groupId);
+  var commentId = btn.dataset.commentId;
+  var postId    = btn.dataset.postId;
+  var groupId   = btn.dataset.groupId;
+  _confirmDelete('This comment will be permanently removed.', function () {
+    _db
+      .collection('communities').doc(groupId)
+      .collection('posts').doc(postId)
+      .collection('comments').doc(commentId)
+      .delete()
+      .then(function () {
+        var el = document.getElementById('cmt-' + commentId);
+        if (el) el.remove();
+      })
+      .catch(function (e) { console.warn('Delete comment failed:', e.message); });
+  });
 });
 
 /* ── Post composer ───────────────────────────────────────────── */

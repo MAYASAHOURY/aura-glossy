@@ -9866,7 +9866,7 @@ a, button, input, select, textarea,
 
 .comm-hero {
   text-align: center;
-  padding: 96px 24px 56px;
+  padding: 72px 24px 40px;
   max-width: 600px;
   margin: 0 auto;
 }
@@ -9888,7 +9888,7 @@ a, button, input, select, textarea,
 .hub-quiz-cta {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 60px 32px;
+  padding: 36px 24px;
   background: linear-gradient(135deg, rgba(196,168,130,.07), rgba(196,168,130,.02));
   border: 1px solid var(--cream);
   border-radius: var(--radius-lg);
@@ -10125,7 +10125,7 @@ a, button, input, select, textarea,
 .group-content {
   max-width: 700px;
   margin: 0 auto;
-  padding: 44px 24px 120px;
+  padding: 64px 24px 120px;
 }
 
 /* ── Post composer ──────────────────────────────────────────── */
@@ -10142,7 +10142,14 @@ a, button, input, select, textarea,
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 18px 20px 0;
+  padding: 18px 20px 10px;
+}
+
+.composer-label {
+  font-size: 0.84rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin: 0;
 }
 
 .composer-avatar {
@@ -10162,6 +10169,7 @@ a, button, input, select, textarea,
 .composer-tabs {
   display: flex;
   gap: 4px;
+  flex-wrap: wrap;
 }
 
 .ctab {
@@ -10228,10 +10236,13 @@ a, button, input, select, textarea,
 }
 
 .composer-hint {
+  display: block;
+  padding: 4px 20px 2px;
   font-size: 0.76rem;
   color: var(--rose);
   font-style: italic;
 }
+.composer-hint:empty { display: none; }
 
 .composer-post-btn {
   padding: 8px 26px;
@@ -10365,10 +10376,12 @@ a, button, input, select, textarea,
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: color .18s, background .18s;
+  opacity: 0.28;
+  transition: color .18s, background .18s, opacity .18s;
 }
 
-.post-delete:hover { color: var(--rose); background: var(--blush); }
+.post-card:hover .post-delete { opacity: 0.65; }
+.post-delete:hover { color: var(--rose); background: var(--blush); opacity: 1; }
 
 .post-body { padding: 0 18px 14px; }
 
@@ -10508,14 +10521,17 @@ a, button, input, select, textarea,
 }
 
 .comment-delete {
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: var(--gray);
-  padding: 2px 4px;
+  padding: 2px 6px;
+  border-radius: 50%;
   flex-shrink: 0;
-  transition: color .18s;
+  opacity: 0.25;
+  transition: color .18s, opacity .18s, background .18s;
 }
 
-.comment-delete:hover { color: var(--rose); }
+.comment-item:hover .comment-delete { opacity: 0.6; }
+.comment-delete:hover { color: var(--rose); opacity: 1; }
 
 .comments-loading,
 .no-comments {
@@ -10683,6 +10699,12 @@ a, button, input, select, textarea,
   .access-modal-box { padding: 40px 24px 32px; }
   .composer-tabs { gap: 2px; }
   .ctab { padding: 5px 9px; font-size: 0.67rem; }
+}
+
+/* On touch devices delete buttons are always visible — no hover state */
+@media (pointer: coarse) {
+  .post-delete,
+  .comment-delete { opacity: 0.5; }
 }
 
 /* ── My-community identity banner ───────────────────────────── */
