@@ -10883,3 +10883,282 @@ a, button, [role="button"], input, textarea, select,
     box-shadow: none;
   }
 }
+
+/* ================================================================
+   Onboarding guide
+   ================================================================ */
+
+/* Freeze scroll while guide is active */
+body.onboard-active { overflow: hidden; }
+
+/* ── Backdrop (click-blocker; on mobile also provides the dim) ── */
+.onboard-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  pointer-events: all;
+  cursor: default;
+  animation: onboardFadeIn .44s var(--ease) both;
+}
+
+@keyframes onboardFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Mobile dim (spotlight hidden on mobile, so overlay provides it) */
+@media (max-width: 680px) {
+  .onboard-overlay { background: rgba(10, 7, 5, 0.72); }
+}
+
+/* ── Spotlight cutout ────────────────────────────────────────── */
+/* Transparent element whose huge box-shadow dims everything outside it */
+.onboard-spotlight {
+  position: fixed;
+  z-index: 9991;
+  pointer-events: none;
+  background: transparent;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 100vmax rgba(10, 7, 5, 0.72),
+    0 0 0 2px rgba(196, 168, 130, 0.45),
+    0 0 28px rgba(196, 168, 130, 0.20);
+  transition:
+    left   .55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    top    .55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    width  .55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    height .55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    opacity .32s ease;
+  animation: onboardSpotPulse 3s ease-in-out infinite;
+}
+
+@keyframes onboardSpotPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 100vmax rgba(10, 7, 5, 0.72),
+      0 0 0 2px   rgba(196, 168, 130, 0.35),
+      0 0 24px    rgba(196, 168, 130, 0.10);
+  }
+  50% {
+    box-shadow:
+      0 0 0 100vmax rgba(10, 7, 5, 0.72),
+      0 0 0 3px   rgba(196, 168, 130, 0.62),
+      0 0 36px    rgba(196, 168, 130, 0.28);
+  }
+}
+
+/* ── Tooltip card ────────────────────────────────────────────── */
+.onboard-tooltip {
+  position: fixed;
+  z-index: 9992;
+  pointer-events: all;
+  padding: 30px 28px 22px;
+  max-width: 380px;
+
+  /* Glass-cream surface */
+  background: rgba(251, 248, 244, 0.97);
+  backdrop-filter: blur(28px) saturate(1.5);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5);
+  border: 1px solid rgba(210, 190, 165, 0.28);
+  border-radius: 22px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.75),
+    0 4px 24px  rgba(60, 45, 35, 0.13),
+    0 20px 64px rgba(60, 45, 35, 0.18),
+    0 0 80px    rgba(196, 168, 130, 0.07);
+
+  /* Entrance animation */
+  opacity: 0;
+  transform: translateY(14px) scale(0.97);
+  transition:
+    opacity   .42s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform .42s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    left .55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    top  .55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.onboard-tooltip--in {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ── Close × button ──────────────────────────────────────────── */
+.onboard-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--gray);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .18s, color .18s;
+}
+.onboard-close-btn:hover { background: var(--bg-soft); color: var(--ink); }
+
+/* ── Step symbol ─────────────────────────────────────────────── */
+.onboard-step-symbol {
+  font-size: 1.75rem;
+  color: var(--beige-dark);
+  margin-bottom: 12px;
+  line-height: 1;
+  animation: onboardSymbolPop .48s var(--ease) both;
+}
+
+@keyframes onboardSymbolPop {
+  from { opacity: 0; transform: scale(0.6) rotate(-18deg); }
+  to   { opacity: 1; transform: scale(1)   rotate(0deg);   }
+}
+
+/* ── Content ─────────────────────────────────────────────────── */
+.onboard-headline {
+  font-family: var(--font-display);
+  font-size: clamp(1.22rem, 3vw, 1.5rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin-bottom: 11px;
+}
+
+.onboard-body {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  line-height: 1.68;
+  margin-bottom: 10px;
+}
+
+.onboard-tip {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  color: var(--gray);
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  margin-top: 4px;
+}
+
+/* ── Actions row ─────────────────────────────────────────────── */
+.onboard-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 22px;
+  gap: 10px;
+}
+
+.onboard-back-btn {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+  flex-shrink: 0;
+}
+.onboard-back-btn:hover { border-color: var(--beige-dark); color: var(--ink); }
+
+.onboard-next-btn {
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  background: var(--ink);
+  border: none;
+  border-radius: 40px;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: background .22s, transform .18s, box-shadow .22s;
+  white-space: nowrap;
+}
+.onboard-next-btn:hover {
+  background: var(--rose);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(201, 139, 134, 0.38);
+}
+
+.onboard-next--final {
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  letter-spacing: 0.07em;
+}
+.onboard-next--final:hover {
+  background: linear-gradient(135deg, var(--rose), var(--accent));
+  box-shadow: 0 8px 28px rgba(122, 92, 78, 0.32);
+}
+
+/* ── Footer: dots + skip ─────────────────────────────────────── */
+.onboard-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.onboard-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.onboard-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background .3s, transform .3s, width .28s;
+}
+
+.onboard-dot--on {
+  background: var(--beige-dark);
+  transform: scale(1.2);
+  width: 14px;
+  border-radius: 3px;
+}
+
+.onboard-skip-btn {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray);
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  padding: 4px 0;
+  transition: opacity .2s;
+}
+.onboard-skip-btn:hover { opacity: 1; }
+
+/* ── Mobile: pin tooltip to bottom of screen ─────────────────── */
+@media (max-width: 680px) {
+  .onboard-tooltip {
+    position: fixed !important;
+    left: 14px !important;
+    right: 14px !important;
+    bottom: 28px !important;
+    top: auto !important;
+    width: auto !important;
+    max-width: none !important;
+    /* Override JS-applied transform */
+    transform: translateY(18px) scale(0.98) !important;
+    border-radius: 20px;
+    padding: 26px 22px 18px;
+  }
+  .onboard-tooltip--in {
+    transform: translateY(0) scale(1) !important;
+  }
+}
