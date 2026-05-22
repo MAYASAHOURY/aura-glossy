@@ -3,6 +3,10 @@
   command = ""
   functions = "netlify/functions"
 
+[build.environment]
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
+  NODE_ENV = "production"
+
 # ── Firebase Auth handler: no CSP (proxied from Firebase, needs its own scripts) ──
 [[headers]]
   for = "/__/auth/*"
