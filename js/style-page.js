@@ -626,14 +626,22 @@
   // ===== Build markup =====
   let html = '';
 
-  // ── HERO SECTION ── full bleed image + style name
-  var html_hero = '<section class="ssec-hero" style="--hero-acc:' + theme.acc + '">';
-  html_hero += '<div class="ssec-hero-bg" style="background-image:url(\'' + s.heroImg + '\')"></div>';
-  html_hero += '<div class="ssec-hero-overlay"></div>';
-  html_hero += '<div class="ssec-hero-content">';
-  html_hero += '<span class="ssec-hero-eyebrow">Aesthetic</span>';
-  html_hero += '<h1 class="ssec-hero-name">' + s.name + '</h1>';
-  html_hero += '<p class="ssec-hero-sub">' + desc + '</p>';
+  // ── HERO SECTION ── side layout: text left, image right
+  var _heroLetter = (s.name || '').charAt(0);
+  var html_hero = '<section class="style-hero" data-bg-letter="' + _heroLetter + '">';
+  html_hero += '<div class="style-hero-content">';
+  html_hero += '<span class="style-hero-tag">Aesthetic</span>';
+  html_hero += '<h1>' + s.name + '</h1>';
+  html_hero += '<p class="style-hero-desc">' + desc + '</p>';
+  html_hero += '<div class="style-hero-meta">';
+  if (s.metaMood)        html_hero += '<div class="style-hero-meta-item"><h5>' + s.metaMood        + '</h5><p>Mood</p></div>';
+  if (s.metaSeason)      html_hero += '<div class="style-hero-meta-item"><h5>' + s.metaSeason      + '</h5><p>Season</p></div>';
+  if (s.metaPersonality) html_hero += '<div class="style-hero-meta-item"><h5>' + s.metaPersonality + '</h5><p>Personality</p></div>';
+  html_hero += '</div>';
+  html_hero += '</div>';
+  html_hero += '<div class="style-hero-visual">';
+  html_hero += '<div class="style-hero-img-main"><img src="' + s.heroImg + '" alt="' + s.name + '" fetchpriority="high"></div>';
+  if (s.accentImg) html_hero += '<div class="style-hero-img-accent"><img src="' + s.accentImg + '" alt="" loading="lazy"></div>';
   html_hero += '</div>';
   html_hero += '</section>';
 
@@ -1295,48 +1303,207 @@
   });
   html01 += '</div></div></section>';
 
-  // ===== Wardrobe Builder HTML (uses FASHION_DIR which is now initialized) =====
-  var WB_CATS = [
+  // ===== Shop Finder HTML =====
+  var SFN_CATS = [
     { id: 'tops',        label: 'Tops'        },
-    { id: 'pants',       label: 'Bottoms'     },
+    { id: 'bottoms',     label: 'Bottoms'     },
+    { id: 'dresses',     label: 'Dresses'     },
+    { id: 'jackets',     label: 'Jackets'     },
     { id: 'shoes',       label: 'Shoes'       },
-    { id: 'accessories', label: 'Accessories' }
+    { id: 'boots',       label: 'Boots'       },
+    { id: 'bags',        label: 'Bags'        },
+    { id: 'accessories', label: 'Accessories' },
+    { id: 'jewelry',     label: 'Jewelry'     },
+    { id: 'makeup',      label: 'Makeup'      },
+    { id: 'fragrances',  label: 'Fragrances'  }
   ];
-  var html02 = '<section class="ssec ssec-builder" style="--wb-acc:' + theme.acc + ';--wb-bg:' + theme.bg + ';--wb-brd:' + theme.brd + ';--wb-text:' + theme.text + '">';
+  var SFN_QUERIES = {
+    classic: {
+      tops:        ['classic white button down shirt', 'silk blouse women elegant', 'cotton oxford shirt women'],
+      bottoms:     ['tailored trousers women classic', 'classic pleated wide leg pants', 'straight leg dress pants'],
+      dresses:     ['wrap dress midi women', 'classic sheath dress office', 'shirt dress belted women'],
+      jackets:     ['wool blazer women tailored', 'trench coat women classic', 'double breasted blazer women'],
+      shoes:       ['pointed toe heels women classic', 'classic leather pumps women', 'oxford shoes women flat'],
+      boots:       ['knee high leather boots women', 'chelsea boots women classic', 'leather ankle boots women'],
+      bags:        ['structured leather handbag women', 'leather tote bag work', 'classic shoulder bag women'],
+      accessories: ['silk scarf women', 'pearl earrings classic', 'leather belt women classic'],
+      jewelry:     ['pearl necklace women classic', 'gold chain necklace women', 'pearl stud earrings gold'],
+      makeup:      ['red lipstick classic women', 'natural coverage foundation', 'lengthening mascara classic'],
+      fragrances:  ['floral elegant perfume women', 'classic eau de parfum women', 'chanel type floral perfume']
+    },
+    minimalist: {
+      tops:        ['white minimal t shirt women', 'clean cut tank top women', 'simple linen shirt women'],
+      bottoms:     ['straight leg pants neutral minimal', 'wide leg trousers beige', 'minimalist linen pants women'],
+      dresses:     ['minimal slip dress women', 'simple column dress neutral', 'clean linen midi dress'],
+      jackets:     ['oversized blazer neutral women', 'minimal trench coat women', 'clean cut jacket neutral'],
+      shoes:       ['minimal white sneakers women', 'simple leather mules women', 'white leather flats women'],
+      boots:       ['simple ankle boots neutral women', 'minimal leather boots beige', 'clean chelsea boots neutral'],
+      bags:        ['minimal leather tote bag', 'simple structured leather bag', 'clean minimal shoulder bag'],
+      accessories: ['simple gold hoop earrings', 'minimal leather belt women', 'clean minimal sunglasses'],
+      jewelry:     ['simple gold ring women', 'thin gold chain necklace', 'minimal gold jewelry set'],
+      makeup:      ['tinted moisturizer natural finish', 'no makeup skin tint', 'clean girl makeup essentials'],
+      fragrances:  ['clean minimalist perfume women', 'white musk fragrance women', 'simple fresh scent women']
+    },
+    streetwear: {
+      tops:        ['graphic tee oversized women', 'streetwear crop hoodie women', 'boxy graphic crop top'],
+      bottoms:     ['cargo pants women streetwear', 'baggy jeans women streetwear', 'jogger pants women'],
+      dresses:     ['jersey mini dress women', 'sporty t shirt dress women', 'oversized dress streetwear'],
+      jackets:     ['bomber jacket women streetwear', 'puffer jacket oversized women', 'varsity jacket women'],
+      shoes:       ['chunky platform sneakers women', 'high top sneakers women bold', 'dad sneakers women'],
+      boots:       ['combat boots women lug sole', 'chunky platform boots women', 'dr martens style boots'],
+      bags:        ['mini crossbody chain bag', 'canvas tote bag streetwear', 'bucket bag women urban'],
+      accessories: ['beanie hat women', 'bucket hat streetwear', 'chain belt women streetwear'],
+      jewelry:     ['chunky gold chain necklace', 'large hoop earrings bold', 'chunky rings streetwear set'],
+      makeup:      ['glossy clear lip gloss', 'bold colorful eyeshadow palette', 'graphic liner makeup'],
+      fragrances:  ['urban fresh cologne women', 'bold woody fragrance women', 'unisex modern perfume']
+    },
+    korean: {
+      tops:        ['korean style blouse women cute', 'bow collar top women', 'korean knit top pastel'],
+      bottoms:     ['korean wide leg pants women', 'pleated mini skirt plaid', 'korean a line skirt women'],
+      dresses:     ['korean casual dress cute', 'babydoll dress women cute', 'korean floral dress mini'],
+      jackets:     ['korean oversized cardigan women', 'pastel oversized hoodie women', 'korean cropped jacket'],
+      shoes:       ['mary jane platform shoes women', 'platform loafers chunky women', 'ballet flats cute women'],
+      boots:       ['platform ankle boots cute women', 'chunky lug sole boots cute', 'heeled ankle boots women'],
+      bags:        ['mini shoulder bag cute women', 'korean style small bag', 'crescent bag women cute'],
+      accessories: ['bow hair clips set women', 'cute korean hair accessories', 'pastel hair clips ribbon'],
+      jewelry:     ['cute star earrings women', 'dainty layering necklace women', 'cute charm jewelry set'],
+      makeup:      ['korean glass skin foundation', 'dewy skin tint natural', 'korean tinted lip balm'],
+      fragrances:  ['sweet floral perfume women', 'soft clean floral fragrance', 'light fruity women perfume']
+    },
+    y2k: {
+      tops:        ['y2k butterfly crop top women', 'rhinestone embellished top y2k', 'y2k baby tee graphic'],
+      bottoms:     ['low rise jeans y2k women', 'pleated mini skirt y2k', 'flared pants y2k women'],
+      dresses:     ['y2k mini dress women party', 'metallic mini dress silver', 'butterfly print mini dress'],
+      jackets:     ['y2k faux fur jacket women', 'metallic jacket women silver', 'velvet blazer women y2k'],
+      shoes:       ['platform chunky heels women y2k', 'butterfly slide sandals', 'jelly platform shoes women'],
+      boots:       ['platform boots women knee high', 'patent leather ankle boots', 'chunky heel boots women'],
+      bags:        ['mini rhinestone bag women y2k', 'butterfly charm bag women', 'clear mini bag y2k'],
+      accessories: ['tinted y2k sunglasses women', 'butterfly hair clips pack', 'y2k choker necklace set'],
+      jewelry:     ['rhinestone jewelry set y2k', 'butterfly charm bracelet', 'layered necklace set y2k'],
+      makeup:      ['glitter eyeshadow palette y2k', 'glossy lip gloss pink shimmer', 'pink shimmer blush powder'],
+      fragrances:  ['fruity sweet perfume women', 'pink candy body mist sweet', 'sweet bubblegum spray women']
+    },
+    elegant: {
+      tops:        ['silk blouse women elegant', 'satin camisole top women', 'chiffon blouse women elegant'],
+      bottoms:     ['wide leg dress pants elegant', 'midi pencil skirt elegant', 'silk midi skirt women'],
+      dresses:     ['elegant midi dress women formal', 'cocktail dress formal women', 'satin evening dress'],
+      jackets:     ['structured blazer women elegant', 'cape coat women formal', 'cashmere coat women luxury'],
+      shoes:       ['strappy stiletto heels women', 'satin pointed pumps women', 'slingback heels women'],
+      boots:       ['thigh high boots heeled women', 'pointed heeled ankle boots', 'sleek leather boots heel'],
+      bags:        ['evening clutch bag women satin', 'elegant structured bag women', 'minaudiere clutch party'],
+      accessories: ['crystal statement earrings women', 'silk headband women elegant', 'sheer gloves women'],
+      jewelry:     ['diamond pendant necklace women', 'pearl drop earrings elegant', 'gold statement necklace'],
+      makeup:      ['full coverage luxury foundation', 'classic red matte lipstick', 'luxury highlight palette'],
+      fragrances:  ['luxury floral perfume women', 'rose oud eau de parfum', 'sophisticated elegant perfume']
+    },
+    casual: {
+      tops:        ['casual t shirt women cotton', 'oversized sweatshirt women', 'relaxed fit shirt women'],
+      bottoms:     ['casual straight jeans women', 'everyday leggings women soft', 'relaxed chinos women'],
+      dresses:     ['casual sundress women everyday', 'everyday t shirt dress', 'simple casual day dress'],
+      jackets:     ['denim jacket women casual', 'zip up hoodie women', 'casual utility jacket women'],
+      shoes:       ['white sneakers women casual', 'slip on shoes women everyday', 'loafers women casual'],
+      boots:       ['casual ankle boots flat women', 'everyday chelsea boots women', 'simple rain boots women'],
+      bags:        ['canvas tote bag everyday', 'casual crossbody bag women', 'everyday backpack women'],
+      accessories: ['baseball cap women casual', 'simple watch women everyday', 'casual canvas belt'],
+      jewelry:     ['simple gold stud earrings', 'everyday necklace gold women', 'casual bracelet women'],
+      makeup:      ['bb cream everyday coverage', 'tinted lip balm spf women', 'waterproof mascara everyday'],
+      fragrances:  ['fresh daily perfume women', 'clean everyday fragrance light', 'light airy scent women']
+    },
+    softgirl: {
+      tops:        ['soft girl crop top pastel', 'pastel baby tee women', 'ruffle collar top cute women'],
+      bottoms:     ['plaid mini skirt soft girl', 'pastel pleated skirt women', 'floral print mini skirt cute'],
+      dresses:     ['pastel babydoll dress women', 'soft girl aesthetic dress', 'cottagecore floral dress mini'],
+      jackets:     ['fluffy cardigan pastel women', 'pastel oversized hoodie women', 'bow cropped jacket women'],
+      shoes:       ['platform mary janes women', 'pastel chunky heels women', 'cute platform ballet shoes'],
+      boots:       ['pink platform boots women', 'pastel chunky ankle boots', 'ribbon bow ankle boots cute'],
+      bags:        ['pastel mini bag women cute', 'heart shaped bag women', 'soft plush bag charm women'],
+      accessories: ['butterfly hair clips set women', 'pastel hair bow ribbon', 'cute hair accessories soft'],
+      jewelry:     ['heart earrings gold cute women', 'pastel pearl jewelry set', 'charm necklace layered cute'],
+      makeup:      ['soft pink blush palette women', 'pastel eyeshadow palette cute', 'glossy pink lip tint'],
+      fragrances:  ['sweet cherry blossom perfume', 'cotton candy body mist women', 'soft pink floral perfume']
+    },
+    vintage: {
+      tops:        ['vintage floral blouse women', 'retro button down shirt women', '70s boho top women'],
+      bottoms:     ['vintage high waist flare jeans', 'retro wide leg pants women', 'vintage corduroy pants'],
+      dresses:     ['vintage floral midi dress women', 'retro wrap dress 70s', 'boho vintage maxi dress'],
+      jackets:     ['vintage denim jacket women', 'retro moto leather jacket women', 'vintage corduroy jacket'],
+      shoes:       ['vintage mary jane heels women', 'retro platform wedge shoes', '70s wedge sandals women'],
+      boots:       ['western cowboy boots women', 'vintage inspired ankle boots', 'vintage platform boots women'],
+      bags:        ['vintage structured shoulder bag', 'retro wicker basket bag', 'boho fringe bag women'],
+      accessories: ['vintage round sunglasses women', 'retro bandana scarf silk', '70s wide belt women'],
+      jewelry:     ['vintage gold drop earrings', 'retro layered chain necklace', 'vintage statement ring women'],
+      makeup:      ['retro red lip classic matte', 'vintage pin up makeup kit', 'cat eye liner liquid'],
+      fragrances:  ['vintage musk perfume women', 'retro patchouli fragrance women', 'earthy vintage perfume']
+    }
+  };
+
+  function sfnUrl(store, q) {
+    var e = encodeURIComponent(q);
+    var map = {
+      'SHEIN':            'https://www.shein.com/search?q=' + e,
+      'H&M':              'https://www2.hm.com/en_us/search-results.html?q=' + e,
+      'Bershka':          'https://www.bershka.com/en/search?search=' + e,
+      'Pull&Bear':        'https://www.pullandbear.com/en/search?search=' + e,
+      'Temu':             'https://www.temu.com/search_result.html?search_key=' + e,
+      'AliExpress':       'https://www.aliexpress.com/wholesale?SearchText=' + e,
+      'Zara':             'https://www.zara.com/en/en/search?searchTerm=' + e,
+      'ASOS':             'https://www.asos.com/search/?q=' + e,
+      'COS':              'https://www.cos.com/en_gbp/search/?q=' + e,
+      'Uniqlo':           'https://www.uniqlo.com/us/en/search?q=' + e,
+      'Stradivarius':     'https://www.stradivarius.com/en/search?search=' + e,
+      'Urban Outfitters': 'https://www.urbanoutfitters.com/search?q=' + e,
+      'Reformation':      'https://www.thereformation.com/search?q=' + e,
+      'Jacquemus':        'https://jacquemus.com/search?q=' + e,
+      'Acne Studios':     'https://www.acnestudios.com/en/search?q=' + e,
+      'Toteme':           'https://toteme-studio.com/en/search/?q=' + e,
+      'Tiffany & Co.':    'https://www.tiffany.com/search/?q=' + e,
+      'Sephora':          'https://www.sephora.com/search?keyword=' + e,
+      'Dior Beauty':      'https://www.dior.com/en_us/beauty/search?q=' + e
+    };
+    return map[store] || ('#' + e);
+  }
+
+  function sfnStores(budget, cat) {
+    var beauty = (cat === 'makeup' || cat === 'fragrances');
+    var acc    = (cat === 'shoes' || cat === 'boots' || cat === 'bags' || cat === 'jewelry');
+    if (budget === 'aff') return ['SHEIN','H&M','Bershka','Pull&Bear','Temu','AliExpress'];
+    if (budget === 'mid') {
+      if (beauty) return ['ASOS','Urban Outfitters','H&M'];
+      if (acc)    return ['Zara','ASOS','COS','Stradivarius','Urban Outfitters'];
+      return ['Zara','ASOS','COS','Uniqlo','Stradivarius','Urban Outfitters'];
+    }
+    if (budget === 'lux') {
+      if (beauty)            return ['Dior Beauty','Sephora'];
+      if (cat === 'jewelry') return ['Tiffany & Co.','Acne Studios','Toteme'];
+      return ['Reformation','Jacquemus','Acne Studios','Toteme'];
+    }
+    return [];
+  }
+
+  var html02 = '<section class="ssec ssec-shopfinder" style="--sfn-acc:' + theme.acc + ';--sfn-bg:' + theme.bg + ';--sfn-brd:' + theme.brd + ';--sfn-text:' + theme.text + '">';
   html02 += '<div class="ssec-inner">';
   html02 += '<span class="ssec-num">02 — Build Your Wardrobe</span>';
-  html02 += '<h2 class="wb-title">Style it your way, <em>' + s.name + '.</em></h2>';
-  html02 += '<p class="wb-subtitle">Select one piece per category — watch your look come together.</p>';
-  html02 += '<div class="wb-layout">';
-  html02 += '<div class="wb-catalog">';
-  html02 += '<div class="wb-nav">';
-  html02 += '<div class="wb-cat-row">';
-  WB_CATS.forEach(function(cat, i) {
-    html02 += '<button class="wb-cat' + (i === 0 ? ' wb-cat-active' : '') + '" data-wcat="' + cat.id + '">' + cat.label + '</button>';
+  html02 += '<h2 class="sfn-title">Find your piece, <em>shop it now.</em></h2>';
+  html02 += '<div class="sfn-controls">';
+  html02 += '<div class="sfn-ctrl-block">';
+  html02 += '<p class="sfn-ctrl-q">What are you looking for?</p>';
+  html02 += '<div class="sfn-cats">';
+  SFN_CATS.forEach(function(cat, i) {
+    html02 += '<button class="sfn-cat-btn' + (i === 0 ? ' sfn-active' : '') + '" data-sfncat="' + cat.id + '">' + cat.label + '</button>';
   });
   html02 += '</div>';
-  html02 += '<div class="wb-tier-row">';
-  [['all','All'],['aff','Affordable'],['mid','Mid-range'],['lux','Luxury']].forEach(function(t, i) {
-    html02 += '<button class="wb-tier' + (i === 0 ? ' wb-tier-active' : '') + '" data-wtier="' + t[0] + '">' + t[1] + '</button>';
-  });
-  html02 += '</div></div>';
-  html02 += '<div class="wb-items" id="wb-items" data-wb-id="' + s.id + '"></div>';
   html02 += '</div>';
-  html02 += '<div class="wb-preview" id="wb-preview">';
-  html02 += '<div class="wb-preview-label">Your Look</div>';
-  html02 += '<div class="wb-slots" id="wb-slots">';
-  WB_CATS.forEach(function(cat) {
-    html02 += '<div class="wb-slot wb-slot-empty" id="wb-slot-' + cat.id + '" data-wslot="' + cat.id + '">';
-    html02 += '<span class="wb-slot-cat">' + cat.label + '</span>';
-    html02 += '<span class="wb-slot-empty-label">Not selected</span>';
-    html02 += '</div>';
+  html02 += '<div class="sfn-ctrl-block sfn-budget-block">';
+  html02 += '<p class="sfn-ctrl-q">What is your budget?</p>';
+  html02 += '<div class="sfn-budgets">';
+  [['all','All'],['aff','Affordable'],['mid','Mid-range'],['lux','Luxury']].forEach(function(b, i) {
+    html02 += '<button class="sfn-bud-btn' + (i === 0 ? ' sfn-active' : '') + '" data-sfnbud="' + b[0] + '">' + b[1] + '</button>';
   });
   html02 += '</div>';
-  html02 += '<div class="wb-total-row"><span class="wb-total-label">Est. total</span><span class="wb-total-val" id="wb-total">—</span></div>';
-  html02 += '<button class="wb-shop-all" id="wb-shop-all" disabled>Shop all pieces →</button>';
-  html02 += '<button class="wb-clear" id="wb-clear">Clear selection</button>';
   html02 += '</div>';
-  html02 += '</div></div></section>';
+  html02 += '</div>';
+  html02 += '<div class="sfn-results" id="sfn-results" data-sfn-id="' + s.id + '"></div>';
+  html02 += '</div></section>';
 
   // ── INSPIRATION — LAST SECTION ──
   var _seenInspo = new Set();
@@ -1363,122 +1530,64 @@
 
   root.innerHTML = html_hero + html01 + html02 + html;
 
-  // Wardrobe Builder interactivity
-  (function initWardrobeBuilder() {
-    var itemsEl = document.getElementById('wb-items');
-    if (!itemsEl) return;
-    var styleId = itemsEl.dataset.wbId;
-    var wbDir = (typeof FASHION_DIR !== 'undefined') ? (FASHION_DIR[styleId] || FASHION_DIR.classic) : null;
-    if (!wbDir) return;
+  // Shop Finder interactivity
+  (function initShopFinder() {
+    var resultsEl = document.getElementById('sfn-results');
+    if (!resultsEl) return;
+    var styleId = resultsEl.dataset.sfnId;
+    var queries = SFN_QUERIES[styleId] || SFN_QUERIES.classic;
+    var TIER_LABELS = { aff: 'Affordable', mid: 'Mid-range', lux: 'Luxury' };
+    var activeCat = 'tops';
+    var activeBud = 'all';
 
-    var WB_CATS_LOCAL = [
-      { id: 'tops',        label: 'Tops'        },
-      { id: 'pants',       label: 'Bottoms'     },
-      { id: 'shoes',       label: 'Shoes'       },
-      { id: 'accessories', label: 'Accessories' }
-    ];
-    var activeCat  = 'tops';
-    var activeTier = 'all';
-    var selection  = {};
-
-    function parsePrice(p) {
-      return parseFloat((p || '').replace(/[^0-9.]/g, '')) || 0;
-    }
-
-    function renderItems() {
-      var catData = wbDir[activeCat] || {};
-      var tiers = activeTier === 'all' ? ['aff','mid','lux'] : [activeTier];
-      var rows = [];
-      tiers.forEach(function(t) { (catData[t] || []).forEach(function(item) { rows.push({ item: item, tier: t }); }); });
-      if (!rows.length) { itemsEl.innerHTML = '<p class="wb-empty">No items in this category.</p>'; return; }
-      itemsEl.innerHTML = rows.map(function(row) {
-        var item = row.item;
-        var sel = selection[activeCat] && selection[activeCat].name === item.name;
-        var url = (typeof buildUrl === 'function') ? buildUrl(item.store, item.q) : '#';
-        return '<div class="wb-item' + (sel ? ' wb-item-sel' : '') + '" data-wcat="' + activeCat + '" data-wname="' + item.name.replace(/"/g,'&quot;') + '" data-wstore="' + item.store + '" data-wprice="' + item.price + '" data-wurl="' + url + '">' +
-          '<div class="wb-item-info">' +
-            '<span class="wb-tier-dot wb-tier-dot-' + row.tier + '"></span>' +
-            '<span class="wb-item-name">' + item.name + '</span>' +
-            '<span class="wb-item-meta"><span class="wb-item-store">' + item.store + '</span><span class="wb-item-price">' + item.price + '</span></span>' +
-          '</div>' +
-          '<button class="wb-add-btn' + (sel ? ' wb-add-btn-sel' : '') + '">' + (sel ? '✓' : '+') + '</button>' +
-        '</div>';
-      }).join('');
-      itemsEl.querySelectorAll('.wb-item').forEach(function(el) {
-        el.addEventListener('click', function() {
-          var cat = el.dataset.wcat;
-          if (selection[cat] && selection[cat].name === el.dataset.wname) {
-            delete selection[cat];
-          } else {
-            selection[cat] = { name: el.dataset.wname, store: el.dataset.wstore, price: el.dataset.wprice, url: el.dataset.wurl };
-          }
-          renderItems();
-          updatePreview();
-        });
-      });
-    }
-
-    function updatePreview() {
-      var total = 0, hasAny = false;
-      WB_CATS_LOCAL.forEach(function(cat) {
-        var slot = document.getElementById('wb-slot-' + cat.id);
-        if (!slot) return;
-        var sel = selection[cat.id];
-        if (sel) {
-          hasAny = true;
-          total += parsePrice(sel.price);
-          slot.className = 'wb-slot wb-slot-filled';
-          slot.innerHTML = '<span class="wb-slot-cat">' + cat.label + '</span>' +
-            '<div class="wb-slot-item"><span class="wb-slot-name">' + sel.name + '</span><span class="wb-slot-price">' + sel.price + '</span></div>' +
-            '<button class="wb-slot-remove" data-wrmcat="' + cat.id + '">×</button>';
-          slot.querySelector('.wb-slot-remove').addEventListener('click', function(e) {
-            e.stopPropagation();
-            delete selection[cat.id];
-            renderItems();
-            updatePreview();
-          });
-        } else {
-          slot.className = 'wb-slot wb-slot-empty';
-          slot.innerHTML = '<span class="wb-slot-cat">' + cat.label + '</span><span class="wb-slot-empty-label">Not selected</span>';
+    function renderResults() {
+      var qList = queries[activeCat] || [];
+      var tiers = activeBud === 'all' ? ['aff','mid','lux'] : [activeBud];
+      var out = '';
+      tiers.forEach(function(t) {
+        var stores = sfnStores(t, activeCat);
+        if (!stores.length) return;
+        if (activeBud === 'all') {
+          out += '<div class="sfn-tier-block">';
+          out += '<span class="sfn-tier-label sfn-tier-' + t + '">' + TIER_LABELS[t] + '</span>';
         }
+        out += '<div class="sfn-cards' + (activeBud !== 'all' ? ' sfn-cards-solo' : '') + '">';
+        stores.forEach(function(store, si) {
+          var q = qList[si % qList.length];
+          var url = sfnUrl(store, q);
+          out += '<a class="sfn-card" href="' + url + '" target="_blank" rel="noopener noreferrer">';
+          out += '<span class="sfn-card-store">' + store + '</span>';
+          out += '<span class="sfn-card-q">' + q + '</span>';
+          out += '<span class="sfn-card-arrow">→</span>';
+          out += '</a>';
+        });
+        out += '</div>';
+        if (activeBud === 'all') out += '</div>';
       });
-      var totalEl = document.getElementById('wb-total');
-      if (totalEl) totalEl.textContent = total > 0 ? '$' + total.toFixed(0) : '—';
-      var shopBtn = document.getElementById('wb-shop-all');
-      if (shopBtn) shopBtn.disabled = !hasAny;
+      resultsEl.innerHTML = out || '<p class="sfn-empty">No results for this combination.</p>';
     }
 
-    document.querySelectorAll('.wb-cat').forEach(function(btn) {
+    document.querySelectorAll('.sfn-cat-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        activeCat = btn.dataset.wcat;
-        document.querySelectorAll('.wb-cat').forEach(function(b) { b.classList.toggle('wb-cat-active', b.dataset.wcat === activeCat); });
-        renderItems();
-      });
-    });
-    document.querySelectorAll('.wb-tier').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        activeTier = btn.dataset.wtier;
-        document.querySelectorAll('.wb-tier').forEach(function(b) { b.classList.toggle('wb-tier-active', b.dataset.wtier === activeTier); });
-        renderItems();
-      });
-    });
-    var shopAllBtn = document.getElementById('wb-shop-all');
-    if (shopAllBtn) {
-      shopAllBtn.addEventListener('click', function() {
-        Object.values(selection).forEach(function(item) {
-          if (item && item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
+        activeCat = btn.dataset.sfncat;
+        document.querySelectorAll('.sfn-cat-btn').forEach(function(b) {
+          b.classList.toggle('sfn-active', b.dataset.sfncat === activeCat);
         });
+        renderResults();
       });
-    }
-    var clearBtn = document.getElementById('wb-clear');
-    if (clearBtn) {
-      clearBtn.addEventListener('click', function() {
-        selection = {};
-        renderItems();
-        updatePreview();
+    });
+
+    document.querySelectorAll('.sfn-bud-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        activeBud = btn.dataset.sfnbud;
+        document.querySelectorAll('.sfn-bud-btn').forEach(function(b) {
+          b.classList.toggle('sfn-active', b.dataset.sfnbud === activeBud);
+        });
+        renderResults();
       });
-    }
-    renderItems();
+    });
+
+    renderResults();
   })();
 
   // Scroll to top after render — overrides browser scroll restoration
@@ -1498,15 +1607,16 @@
     });
   });
 
-  // Hotspot interactions — hover on desktop, tap on touch
+  // Hotspot interactions
+  // Desktop: hover to preview (320 ms grace period so the popup doesn't vanish
+  //          while moving from dot to panel), click to pin/lock open.
+  // Touch:   tap to open, tap same dot or outside to close.
   (function initHotspots() {
     var hsDots = Array.from(document.querySelectorAll('.hs-dot'));
     if (!hsDots.length) return;
     var isHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    var _locked = null; /* dot currently click-pinned open */
 
-    function closeAll(except) {
-      hsDots.forEach(function(d) { if (d !== except) d.classList.remove('open'); });
-    }
     function setEdge(dot) {
       var wrap = dot.closest('.hs-outfit-wrap');
       if (!wrap) return;
@@ -1518,19 +1628,68 @@
       dot.classList.toggle('panel-below', yPct < 32);
     }
 
+    function closeAll(except) {
+      hsDots.forEach(function(d) {
+        if (d !== except) {
+          d.classList.remove('open', 'locked');
+          if (d === _locked) _locked = null;
+        }
+      });
+    }
+
     if (isHover) {
+      /* ── Desktop: hover preview + click-to-lock ──────────── */
       hsDots.forEach(function(dot) {
-        var panel = dot.querySelector('.hs-panel');
-        dot.addEventListener('mouseenter', function() { setEdge(dot); dot.classList.add('open'); });
-        dot.addEventListener('mouseleave', function(e) {
-          if (panel && panel.contains(e.relatedTarget)) return;
-          dot.classList.remove('open');
+        var panel  = dot.querySelector('.hs-panel');
+        var _timer = null;
+
+        function open() {
+          clearTimeout(_timer);
+          closeAll(dot);
+          setEdge(dot);
+          dot.classList.add('open');
+        }
+        function scheduleClose() {
+          clearTimeout(_timer);
+          /* 320 ms grace — plenty of time to move from dot → panel */
+          _timer = setTimeout(function() {
+            if (dot !== _locked) dot.classList.remove('open');
+          }, 320);
+        }
+        function cancelClose() { clearTimeout(_timer); }
+
+        dot.addEventListener('mouseenter', open);
+        dot.addEventListener('mouseleave', function() {
+          if (dot !== _locked) scheduleClose();
         });
-        if (panel) panel.addEventListener('mouseleave', function(e) {
-          if (!dot.contains(e.relatedTarget)) dot.classList.remove('open');
+        if (panel) {
+          /* Moving into the panel cancels the pending close */
+          panel.addEventListener('mouseenter', cancelClose);
+          panel.addEventListener('mouseleave', function() {
+            if (dot !== _locked) scheduleClose();
+          });
+        }
+
+        /* Click: pin open (or unpin if already locked) */
+        dot.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (_locked === dot) {
+            /* Already pinned — unpin and close */
+            _locked = null;
+            dot.classList.remove('locked', 'open');
+          } else {
+            /* Pin this dot open */
+            if (_locked) { _locked.classList.remove('locked', 'open'); }
+            _locked = dot;
+            cancelClose();
+            setEdge(dot);
+            dot.classList.add('open', 'locked');
+          }
         });
       });
+
     } else {
+      /* ── Touch: tap to open, tap same dot or outside to close ── */
       hsDots.forEach(function(dot) {
         dot.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -1539,8 +1698,15 @@
           if (!wasOpen) { setEdge(dot); dot.classList.add('open'); }
         });
       });
-      document.addEventListener('click', function() { closeAll(); });
     }
+
+    /* Tap / click outside → close everything */
+    document.addEventListener('click', function() {
+      closeAll();
+      _locked = null;
+    });
+
+    /* Clicks inside a panel stay inside the panel */
     document.querySelectorAll('.hs-panel').forEach(function(p) {
       p.addEventListener('click', function(e) { e.stopPropagation(); });
     });
