@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=15">
+<link rel="stylesheet" href="css/styles.css?v=20">
 <style>
 
 .settings-page {
@@ -248,6 +248,10 @@
           <span class="s-row-value" id="r-aesthetic">…</span>
         </div>
         <div class="s-row">
+          <span class="s-row-label">Community</span>
+          <span class="s-row-value" id="r-community">…</span>
+        </div>
+        <div class="s-row">
           <span class="s-row-label">Moodboard</span>
           <span class="s-row-value" id="r-moodboard">…</span>
         </div>
@@ -262,7 +266,8 @@
       </div>
 
       <div class="s-actions">
-        <a href="moodboard.html" class="s-btn s-btn-primary">View Moodboard →</a>
+        <a href="community.html" class="s-btn s-btn-primary" id="s-circle-btn" style="display:none">My Style Circle →</a>
+        <a href="moodboard.html" class="s-btn s-btn-outline">View Moodboard →</a>
         <a href="index.html" class="s-btn s-btn-outline">Back to Homepage</a>
         <button class="s-btn s-btn-signout" id="signout-btn">Sign Out</button>
       </div>
@@ -342,6 +347,15 @@ firebase.auth().onAuthStateChanged(async function(user) {
       var quizResult = data.quizResult;
       document.getElementById('r-aesthetic').textContent =
         quizResult ? quizResult.name : 'Not taken yet';
+
+      var commEl = document.getElementById('r-community');
+      if (quizResult) {
+        commEl.innerHTML = '<a href="community.html#' + quizResult.id + '" style="color:inherit;text-decoration:underline;text-underline-offset:3px">' + quizResult.name + ' circle →</a>';
+        var circleBtn = document.getElementById('s-circle-btn');
+        if (circleBtn) { circleBtn.href = 'community.html#' + quizResult.id; circleBtn.style.display = 'block'; }
+      } else {
+        commEl.textContent = '—';
+      }
 
       var liked  = data.likedAesthetics || [];
       var viewed = data.recentlyViewed  || [];
