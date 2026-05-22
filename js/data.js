@@ -868,48 +868,58 @@ softgirl: {
 // ----------------------------------------
 const QUIZ = [
   {
-    q: 'How would you describe your style?',
+    q: 'What kind of outfits make you feel most like yourself?',
+    hint: 'Think about what you\'d actually wear on a free day — not what\'s trending, just what feels right.',
+    helpText: 'There\'s no wrong answer here. Just picture opening your wardrobe on a relaxed morning — which energy are you most drawn to?',
     options: [
-      { icon: '🧥', text: 'Polished and put together',   tag: 'classic' },
-      { icon: '☁️', text: 'Easy and comfortable',         tag: 'casual' },
-      { icon: '🔥', text: 'Bold and unapologetic',       tag: 'streetwear' },
-      { icon: '🤍', text: 'Quiet and minimal',           tag: 'minimalist' }
+      { icon: '🧥', text: 'Polished and put together',   mood: 'blazers, structure, clean lines',           tag: 'classic' },
+      { icon: '☁️', text: 'Easy and comfortable',         mood: 'soft fabrics, relaxed fits, casual ease',  tag: 'casual' },
+      { icon: '🔥', text: 'Bold and unapologetic',       mood: 'statement pieces, loud energy',             tag: 'streetwear' },
+      { icon: '🤍', text: 'Quiet and minimal',           mood: 'neutral tones, simple cuts, nothing extra', tag: 'minimalist' }
     ]
   },
   {
-    q: 'Pick a color palette.',
+    q: 'Which color world feels most like home?',
+    hint: 'Which of these palettes feels most calming, exciting, or simply most "you"?',
+    helpText: 'Colors reflect personality more than we think. Just pick the palette you\'d most likely fill your wardrobe — or your bedroom — with.',
     options: [
-      { icon: '🪞', text: 'Cream, oat, ivory',           tag: 'minimalist' },
-      { icon: '🌸', text: 'Blush, pearl, soft rose',     tag: 'elegant' },
-      { icon: '🎀', text: 'Pastel pink and lace',        tag: 'softgirl' },
-      { icon: '✨', text: 'Pink chrome and bubblegum',   tag: 'y2k' }
+      { icon: '🪞', text: 'Cream, oat, ivory',           mood: 'soft, serene, barely-there',   tag: 'minimalist' },
+      { icon: '🌸', text: 'Blush, pearl, soft rose',     mood: 'delicate, feminine, warm',      tag: 'elegant' },
+      { icon: '🎀', text: 'Pastel pink and lace',        mood: 'sweet, dreamy, romantic',       tag: 'softgirl' },
+      { icon: '✨', text: 'Pink chrome and bubblegum',   mood: 'playful, glossy, nostalgic',    tag: 'y2k' }
     ]
   },
   {
-    q: 'A perfect weekend looks like…',
+    q: 'Your ideal Saturday looks like…',
+    hint: 'Just pick the scene that instantly makes you feel happy and at home.',
+    helpText: 'The environments we love tend to mirror the aesthetics we dress in. Whether it\'s a cosy café or a bustling city street — it all connects.',
     options: [
-      { icon: '🥐', text: 'A pastel café with a book',         tag: 'korean' },
-      { icon: '🍷', text: 'A quiet wine bar at dinner',         tag: 'elegant' },
-      { icon: '🎧', text: 'City streets with friends',         tag: 'streetwear' },
-      { icon: '🍂', text: 'Hunting through a vintage market',  tag: 'vintage' }
+      { icon: '🥐', text: 'A pastel café with a book',         mood: 'soft lighting, matcha, a pretty corner', tag: 'korean' },
+      { icon: '🍷', text: 'A quiet wine bar at dinner',         mood: 'candlelight, elegance, slow evenings',   tag: 'elegant' },
+      { icon: '🎧', text: 'City streets with friends',         mood: 'music, energy, exploring everywhere',    tag: 'streetwear' },
+      { icon: '🍂', text: 'Hunting through a vintage market',  mood: 'old treasures, Sunday morning, finds',   tag: 'vintage' }
     ]
   },
   {
-    q: 'Pick a shoe.',
+    q: 'If you could only wear one pair of shoes forever…',
+    hint: 'Forget practicality — which one just feels most like you?',
+    helpText: 'Shoes are one of the most honest parts of an outfit. Your instinctive pick says a lot about your real style personality.',
     options: [
-      { icon: '👟', text: 'White sneakers',           tag: 'casual' },
-      { icon: '🥿', text: 'Leather loafers',          tag: 'classic' },
-      { icon: '👠', text: 'Heels or satin mules',     tag: 'elegant' },
-      { icon: '🎀', text: 'Mary Janes or ballet flats', tag: 'softgirl' }
+      { icon: '👟', text: 'White sneakers',              mood: 'clean, versatile, effortless',         tag: 'casual' },
+      { icon: '🥿', text: 'Leather loafers',             mood: 'polished, quiet, timeless',            tag: 'classic' },
+      { icon: '👠', text: 'Heels or satin mules',        mood: 'elevated, feminine, intentional',      tag: 'elegant' },
+      { icon: '🎀', text: 'Mary Janes or ballet flats',  mood: 'soft, sweet, effortlessly pretty',     tag: 'softgirl' }
     ]
   },
   {
-    q: 'Your fashion icon is closest to…',
+    q: 'Whose style makes you think "I wish that was mine"?',
+    hint: 'Go with your gut — whichever vibe feels most exciting, not most realistic.',
+    helpText: 'We\'re not asking who you are — we\'re asking who you\'d love to dress like for a week. That instinctive pull tells us the aesthetic you\'re most drawn to.',
     options: [
-      { icon: '🎬', text: 'Audrey Hepburn — timeless',          tag: 'classic' },
-      { icon: '🎤', text: 'A K-pop idol with iced americano',   tag: 'korean' },
-      { icon: '⭐', text: 'Paris Hilton circa 2003',             tag: 'y2k' },
-      { icon: '🌻', text: 'A 70s flower child',                 tag: 'vintage' }
+      { icon: '🎬', text: 'Audrey Hepburn — timeless',           mood: 'pearls, trench coats, quiet perfection',     tag: 'classic' },
+      { icon: '🎤', text: 'A K-pop idol with an iced americano', mood: 'cute layers, effortless cool, Seoul style',  tag: 'korean' },
+      { icon: '⭐', text: 'Paris Hilton circa 2003',              mood: 'pink everything, mini skirts, born iconic',  tag: 'y2k' },
+      { icon: '🌻', text: 'A 70s flower child',                  mood: 'suede boots, flared jeans, vintage charm',   tag: 'vintage' }
     ]
   }
 ];

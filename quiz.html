@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20">
+<link rel="stylesheet" href="css/styles.css?v=21">
 </head>
 <body>
 
@@ -50,16 +50,49 @@
   </div>
 </footer>
 
-<script src="js/data.js?v=6"></script>
+<script src="js/data.js?v=7"></script>
 <script src="js/main.js?v=4"></script>
-<script src="js/animations.js?v=12"></script>
+<script src="js/animations.js?v=13"></script>
 <script>
 (function() {
   const container = document.getElementById('quiz-container');
   let stepIndex = 0;
   let answers = [];
+  let autoTimer = null;
+
+  function showHelpModal(step) {
+    const overlay = document.createElement('div');
+    overlay.className = 'quiz-modal-overlay';
+    overlay.innerHTML =
+      '<div class="quiz-modal-card">' +
+        '<div class="quiz-modal-icon">✦</div>' +
+        '<p class="quiz-modal-title">No wrong answers.</p>' +
+        '<p class="quiz-modal-body">' + (step.helpText || 'Just pick the option that feels most natural — your instinct is always right.') + '</p>' +
+        '<button class="quiz-modal-close" id="modal-close-btn">Got it ✦</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    const close = () => {
+      overlay.style.transition = 'opacity 0.2s ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 200);
+    };
+    overlay.querySelector('#modal-close-btn').addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+    const onKey = (e) => { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', onKey); } };
+    document.addEventListener('keydown', onKey);
+  }
+
+  function advance() {
+    const el = document.getElementById('quiz-step');
+    if (el) {
+      el.classList.add('exiting');
+      setTimeout(() => { stepIndex++; render(); }, 300);
+    }
+  }
 
   function render() {
+    clearTimeout(autoTimer);
     if (stepIndex >= QUIZ.length) { renderResult(); return; }
     const step = QUIZ[stepIndex];
     const progress = (stepIndex / QUIZ.length) * 100;
@@ -71,16 +104,31 @@
 
     html += '<div class="quiz-step" id="quiz-step">';
     html += '<p class="quiz-question-num">Question ' + (stepIndex + 1) + '</p>';
+
+    html += '<div class="quiz-top-row">';
     html += '<h2 class="quiz-question">' + step.q + '</h2>';
+    html += '<button class="quiz-help-btn" id="quiz-help-btn" type="button" aria-label="Help with this question">';
+    html += '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-linecap="round"/></svg>';
+    html += ' Help me</button>';
+    html += '</div>';
+
+    if (step.hint) {
+      html += '<p class="quiz-hint">' + step.hint + '</p>';
+    }
+
     html += '<div class="quiz-options quiz-options-clean">';
     step.options.forEach((opt, i) => {
       const sel = answers[stepIndex] === opt.tag ? ' selected' : '';
       html += '<button class="quiz-option' + sel + '" data-tag="' + opt.tag + '" data-idx="' + i + '">';
       html += '<span class="quiz-option-icon">' + opt.icon + '</span>';
+      html += '<span class="quiz-option-label">';
       html += '<span class="quiz-option-text">' + opt.text + '</span>';
+      if (opt.mood) { html += '<span class="quiz-option-mood">' + opt.mood + '</span>'; }
+      html += '</span>';
       html += '</button>';
     });
     html += '</div>';
+
     html += '<div class="quiz-nav">';
     html += '<button id="prev-btn"' + (stepIndex === 0 ? ' disabled' : '') + '>← Back</button>';
     html += '<button id="next-btn"' + (!answers[stepIndex] ? ' disabled' : '') + '>' + (stepIndex === QUIZ.length - 1 ? 'See result →' : 'Next →') + '</button>';
@@ -91,25 +139,37 @@
 
     container.querySelectorAll('.quiz-option').forEach(btn => {
       btn.addEventListener('click', () => {
+        clearTimeout(autoTimer);
         answers[stepIndex] = btn.dataset.tag;
         container.querySelectorAll('.quiz-option').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         document.getElementById('next-btn').disabled = false;
+
+        /* Auto-advance after a short pause — unless this is the last question */
+        if (stepIndex < QUIZ.length - 1) {
+          autoTimer = setTimeout(advance, 460);
+        }
       });
+    });
+
+    document.getElementById('quiz-help-btn').addEventListener('click', () => {
+      showHelpModal(step);
     });
 
     document.getElementById('prev-btn').addEventListener('click', () => {
       if (stepIndex > 0) {
-        const step = document.getElementById('quiz-step');
-        step.classList.add('exiting');
+        clearTimeout(autoTimer);
+        const el = document.getElementById('quiz-step');
+        el.classList.add('exiting');
         setTimeout(() => { stepIndex--; render(); }, 300);
       }
     });
 
     document.getElementById('next-btn').addEventListener('click', () => {
       if (!answers[stepIndex]) return;
-      const step = document.getElementById('quiz-step');
-      step.classList.add('exiting');
+      clearTimeout(autoTimer);
+      const el = document.getElementById('quiz-step');
+      el.classList.add('exiting');
       setTimeout(() => { stepIndex++; render(); }, 300);
     });
   }
