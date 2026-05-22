@@ -7911,7 +7911,7 @@ body.page-atelier {
    SPECIAL TOUCH 1 — Custom rose-gold cursor
    ============================================================ */
 @media (pointer: fine) {
-  * { cursor: none !important; }
+  html.custom-cursor-active * { cursor: none !important; }
 }
 .cursor-dot {
   width: 7px; height: 7px;
