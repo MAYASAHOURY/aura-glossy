@@ -10514,3 +10514,80 @@ a, button, input, select, textarea,
   .composer-tabs { gap: 2px; }
   .ctab { padding: 5px 9px; font-size: 0.67rem; }
 }
+
+/* ── My-community identity banner ───────────────────────────── */
+.comm-identity-banner {
+  grid-column: 1 / -1;
+  border: 1.5px solid var(--group-color);
+  border-radius: var(--radius-lg);
+  padding: 44px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  transition: box-shadow .25s var(--ease);
+  margin-bottom: 8px;
+}
+
+.comm-identity-banner:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,.09);
+}
+
+.cib-eyebrow {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+
+.cib-name {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.05;
+  margin-bottom: 8px;
+}
+
+.cib-tagline {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+
+.cib-right { flex-shrink: 0; }
+
+.cib-enter-btn {
+  display: inline-block;
+  padding: 16px 36px;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-xl);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform .2s var(--ease), box-shadow .2s;
+}
+
+.cib-enter-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.18);
+}
+
+@media (max-width: 640px) {
+  .comm-identity-banner {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    padding: 32px 24px;
+  }
+  .cib-enter-btn { width: 100%; text-align: center; }
+}

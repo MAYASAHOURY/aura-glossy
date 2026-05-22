@@ -85,25 +85,42 @@ function showHub() {
 }
 
 function _renderHub() {
-  var container = document.getElementById('hub-groups');
+  var container  = document.getElementById('hub-groups');
+  var heroSub    = document.querySelector('.comm-hero-sub');
+  var heroEyebrow = document.querySelector('.comm-hero .eyebrow');
+  var heroH1     = document.querySelector('.comm-hero h1');
 
   if (!_userQuiz) {
+    // No result yet — invite them to take the quiz
+    if (heroEyebrow) heroEyebrow.textContent = 'Private Circles';
+    if (heroH1)      heroH1.textContent      = 'Find your community.';
+    if (heroSub)     heroSub.textContent      = 'Take the style quiz to discover your aesthetic and unlock your exclusive circle.';
     container.innerHTML = _noQuizBanner() + COMM_GROUPS.map(function (g) {
       return _groupCard(g, 'noquiz');
     }).join('');
     return;
   }
 
-  // User's own group first
+  // User has a quiz result — greet them by name
+  var myGroup = COMM_GROUPS.find(function (g) { return g.id === _userQuiz.id; });
+  if (heroEyebrow) heroEyebrow.textContent = 'Your Style Circle';
+  if (heroH1)      heroH1.textContent      = 'Welcome back.';
+  if (heroSub)     heroSub.innerHTML       =
+    'You belong to the <strong style="color:' + (myGroup ? myGroup.color : 'inherit') + '">' +
+    _esc(_userQuiz.name) + '</strong> circle.';
+
+  // User's own group first, then others
   var sorted = COMM_GROUPS.slice().sort(function (a, b) {
     if (a.id === _userQuiz.id) return -1;
     if (b.id === _userQuiz.id) return  1;
     return 0;
   });
 
-  container.innerHTML = sorted.map(function (g) {
-    return _groupCard(g, g.id === _userQuiz.id ? 'mine' : 'locked');
-  }).join('');
+  container.innerHTML =
+    (myGroup ? _myGroupBanner(myGroup) : '') +
+    sorted.map(function (g) {
+      return _groupCard(g, g.id === _userQuiz.id ? 'mine' : 'locked');
+    }).join('');
 
   // Keyboard accessibility for cards
   container.querySelectorAll('.group-card').forEach(function (card) {
@@ -113,10 +130,27 @@ function _renderHub() {
   });
 }
 
+/* ── My community identity banner (shown when quiz result exists) ─ */
+function _myGroupBanner(group) {
+  var bgTint = group.color + '0f'; // ~6% opacity tint of the aesthetic color
+  return '<div class="comm-identity-banner" style="--group-color:' + group.color + ';background:' + bgTint + '">' +
+    '<div class="cib-left">' +
+      '<span class="cib-eyebrow">Your community</span>' +
+      '<h2 class="cib-name" style="color:' + group.color + '">' + _esc(group.name) + '</h2>' +
+      '<p class="cib-tagline">' + _esc(group.tagline) + '</p>' +
+    '</div>' +
+    '<div class="cib-right">' +
+      '<button class="cib-enter-btn" style="background:' + group.color + '" onclick="enterGroup(\'' + group.id + '\')">' +
+        'Enter My Community →' +
+      '</button>' +
+    '</div>' +
+    '</div>';
+}
+
 function _noQuizBanner() {
   return '<div class="hub-quiz-cta">' +
-    '<p class="eyebrow">Discover yourself first</p>' +
-    '<h2>What\'s your aesthetic?</h2>' +
+    '<p class="eyebrow">Not sure yet?</p>' +
+    '<h2>Find your aesthetic.</h2>' +
     '<p>Take the 5-minute style quiz to unlock your exclusive community circle.</p>' +
     '<a href="quiz.html" class="btn comm-quiz-btn">Take the Style Quiz →</a>' +
     '</div>';
