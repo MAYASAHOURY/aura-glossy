@@ -1,14 +1,24 @@
 /* ================================================================
-   AURA — First-time onboarding guide   (onboarding.js v1)
+   AURA — First-time onboarding guide   (onboarding.js v2)
 
-   Shows once after first sign-in. Dims the page, spotlights each
-   nav element in sequence, and guides the user through the platform.
+   Shows EXACTLY ONCE per user account — enforced by reading
+   Firestore BEFORE deciding whether to show, so the guide never
+   repeats even if localStorage is cleared or the user is on a
+   new device.
 
-   Replay:  navigate to  index.html?onboard=1
-            or use Settings → "Replay Aura Guide"
+   Decision tree on every page load:
+     1. Is this a replay request (?onboard=1)?  → show, skip all checks
+     2. Did we already process this UID this session? → skip
+     3. Does localStorage have the flag?        → skip (fast path)
+     4. Does Firestore have onboardedAt?        → sync localStorage, skip
+     5. None of the above                       → first time, show guide
 
-   Storage: localStorage  aura_onboarded = '1'
-            Firestore      users/{uid}.onboardedAt = serverTimestamp()
+   Completion writes:
+     localStorage  →  aura_onboarded = '1'
+     Firestore     →  users/{uid}.onboardedAt = serverTimestamp()
+
+   Replay (manual only):
+     Settings → "Replay Aura Guide" → index.html?onboard=1
    ================================================================ */
 
 (function () {
@@ -57,25 +67,29 @@
     },
   ];
 
-  /* ── State ───────────────────────────────────────────────── */
-  var _el   = {};       // {overlay, spotlight, tooltip}
-  var _step = 0;
-  var _uid  = null;
+  /* ── State ──────────────────────────────────────────────────── */
+  var _el          = {};    // { overlay, spotlight, tooltip }
+  var _step        = 0;
+  var _uid         = null;
+  var _isReplay    = false; // set by ?onboard=1 before auth resolves
+  var _checkedUids = {};    // prevents re-triggering the same UID in one page session
   var _resizeTimer = null;
 
-  /* ── Public API ──────────────────────────────────────────── */
+  /* ── Public API ─────────────────────────────────────────────── */
   window.startOnboarding = startOnboarding;
   window.closeOnboarding = closeOnboarding;
   window._onboardNext    = onboardNext;
   window._onboardBack    = onboardBack;
 
-  /* ── Boot ────────────────────────────────────────────────── */
+  /* ── Boot ───────────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', function () {
-    /* Replay via ?onboard=1 URL param */
+
+    /* Detect replay request BEFORE auth resolves so the flag is ready */
     var params = new URLSearchParams(location.search);
     if (params.get(REPLAY_PARAM) === '1') {
       localStorage.removeItem(STORAGE_KEY);
       history.replaceState(null, '', location.pathname);
+      _isReplay = true;
     }
 
     if (typeof onAuthChange !== 'function') return;
@@ -83,29 +97,72 @@
     onAuthChange(function (user) {
       _uid = user ? user.uid : null;
       if (!user) return;
-      if (!localStorage.getItem(STORAGE_KEY)) {
-        _waitForIntro(function () { startOnboarding(); });
+
+      /* ── Guard 1: only run the check once per UID per page session.
+         onAuthStateChanged can fire multiple times (token refresh, etc.)
+         and we must not queue up duplicate guide checks. */
+      if (_checkedUids[user.uid]) return;
+      _checkedUids[user.uid] = true;
+
+      /* ── Guard 2: explicit replay — bypass all completion checks */
+      if (_isReplay) {
+        _isReplay = false; // consume so it doesn't fire again
+        _waitForIntro(function () { startOnboarding(true); });
+        return;
       }
+
+      /* ── Guard 3: fast path — localStorage already flagged on this device */
+      if (localStorage.getItem(STORAGE_KEY)) return;
+
+      /* ── Guard 4: Firestore check — handles cross-device case.
+         Read onboardedAt from the user's Firestore doc. If it exists,
+         the guide was already completed on another device. Sync
+         localStorage and stop. Only show if the field is genuinely absent. */
+      if (typeof _db === 'undefined') {
+        /* Firestore not yet available — rely on localStorage alone */
+        _waitForIntro(function () { startOnboarding(); });
+        return;
+      }
+
+      _db.collection('users').doc(user.uid).get()
+        .then(function (doc) {
+          var data = doc.exists ? doc.data() : null;
+          if (data && data.onboardedAt) {
+            /* Already done on another device — sync flag locally and stop */
+            localStorage.setItem(STORAGE_KEY, '1');
+            return;
+          }
+          /* Genuinely first time on any device — show the guide */
+          _waitForIntro(function () { startOnboarding(); });
+        })
+        .catch(function () {
+          /* Firestore unreachable — fall back to localStorage gate.
+             If localStorage is empty we show; on the next visit
+             localStorage will have the flag from _markDone(). */
+          _waitForIntro(function () { startOnboarding(); });
+        });
     });
   });
 
-  /* Wait until the cinematic preroll (#intro-preroll) finishes before
-     showing the guide, so we don't interrupt the first-impression moment. */
+  /* ── Wait for cinematic preroll to finish ───────────────────── */
+  /* Observes #intro-preroll and defers the guide until it fades out,
+     so the first-impression moment isn't interrupted. */
   function _waitForIntro(cb) {
     var preroll = document.getElementById('intro-preroll');
     if (!preroll) { setTimeout(cb, 800); return; }
 
-    /* Check if it's already hidden */
     var st = getComputedStyle(preroll);
-    if (st.display === 'none' || st.opacity === '0' || parseFloat(st.opacity) < 0.1) {
+    if (st.display === 'none' || parseFloat(st.opacity) < 0.1) {
       setTimeout(cb, 600);
       return;
     }
 
-    /* Observe style/class changes — fires when intro.js hides the preroll */
+    var fired = false;
     var observer = new MutationObserver(function () {
+      if (fired) return;
       var s = getComputedStyle(preroll);
       if (parseFloat(s.opacity) < 0.1 || s.display === 'none' || s.visibility === 'hidden') {
+        fired = true;
         observer.disconnect();
         setTimeout(cb, 700);
       }
@@ -113,38 +170,40 @@
     observer.observe(preroll, { attributes: true, attributeFilter: ['style', 'class'] });
 
     /* Hard fallback — start after 4 s regardless */
-    setTimeout(function () { observer.disconnect(); cb(); }, 4000);
+    setTimeout(function () {
+      if (fired) return;
+      fired = true;
+      observer.disconnect();
+      cb();
+    }, 4000);
   }
 
-  /* ── Start ───────────────────────────────────────────────── */
+  /* ── Start ──────────────────────────────────────────────────── */
   function startOnboarding(force) {
     if (!force && localStorage.getItem(STORAGE_KEY)) return;
-    if (document.getElementById('onboard-overlay')) return;
+    if (document.getElementById('onboard-overlay')) return; // already running
 
     _step = 0;
     _buildDOM();
     _showStep(0);
   }
 
-  /* ── DOM construction ────────────────────────────────────── */
+  /* ── DOM construction ───────────────────────────────────────── */
   function _buildDOM() {
-    /* Click-blocker backdrop — prevents clicking through to nav links */
     _el.overlay = document.createElement('div');
     _el.overlay.id        = 'onboard-overlay';
     _el.overlay.className = 'onboard-overlay';
 
-    /* Spotlight — transparent element whose box-shadow dims everything outside */
     _el.spotlight = document.createElement('div');
     _el.spotlight.id        = 'onboard-spotlight';
     _el.spotlight.className = 'onboard-spotlight';
 
-    /* Tooltip card */
     _el.tooltip = document.createElement('div');
     _el.tooltip.id        = 'onboard-tooltip';
     _el.tooltip.className = 'onboard-tooltip';
-    _el.tooltip.setAttribute('role',        'dialog');
-    _el.tooltip.setAttribute('aria-modal',  'true');
-    _el.tooltip.setAttribute('aria-label',  'Aura style guide');
+    _el.tooltip.setAttribute('role',       'dialog');
+    _el.tooltip.setAttribute('aria-modal', 'true');
+    _el.tooltip.setAttribute('aria-label', 'Aura style guide');
 
     document.body.appendChild(_el.overlay);
     document.body.appendChild(_el.spotlight);
@@ -155,12 +214,11 @@
     document.addEventListener('keydown', _onKey);
   }
 
-  /* ── Step rendering ──────────────────────────────────────── */
+  /* ── Step rendering ─────────────────────────────────────────── */
   function _showStep(idx) {
     var step = STEPS[idx];
     if (!step) { closeOnboarding(); return; }
 
-    /* Fade out first, then swap content */
     _el.tooltip.classList.remove('onboard-tooltip--in');
 
     var dots = STEPS.map(function (_, i) {
@@ -174,9 +232,7 @@
 
       '<h3 class="onboard-headline">' + step.headline + '</h3>' +
       '<p class="onboard-body">'     + step.body     + '</p>' +
-      (step.tip
-        ? '<p class="onboard-tip">' + step.tip + '</p>'
-        : '') +
+      (step.tip ? '<p class="onboard-tip">' + step.tip + '</p>' : '') +
 
       '<div class="onboard-actions">' +
         (idx > 0
@@ -192,7 +248,6 @@
         '<button class="onboard-skip-btn" onclick="closeOnboarding()">Skip guide</button>' +
       '</div>';
 
-    /* Position, then fade in */
     _positionStep(idx);
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
@@ -201,31 +256,26 @@
     });
   }
 
-  /* ── Positioning ─────────────────────────────────────────── */
+  /* ── Positioning ────────────────────────────────────────────── */
   function _positionStep(idx) {
     var step     = STEPS[idx];
     var isMobile = window.innerWidth <= 680;
     var rect     = _getRect(step.target);
 
-    /* Spotlight */
     if (rect && !isMobile) {
       _el.spotlight.style.cssText =
-        'left:'   + (rect.left   - PAD)         + 'px;' +
-        'top:'    + (rect.top    - PAD)          + 'px;' +
-        'width:'  + (rect.width  + PAD * 2)      + 'px;' +
-        'height:' + (rect.height + PAD * 2)      + 'px;' +
+        'left:'   + (rect.left   - PAD)    + 'px;' +
+        'top:'    + (rect.top    - PAD)    + 'px;' +
+        'width:'  + (rect.width  + PAD*2)  + 'px;' +
+        'height:' + (rect.height + PAD*2)  + 'px;' +
         'opacity:1;';
     } else {
-      /* No spotlight on mobile — overlay handles the dim */
       _el.spotlight.style.cssText = 'opacity:0;width:0;height:0;top:-9999px;left:-9999px;';
     }
 
-    /* Tooltip — desktop only (mobile is CSS-pinned to bottom) */
     if (!isMobile) {
       _placeTooltip(rect);
-    }
-    /* On mobile: clear inline styles, let CSS take over */
-    else {
+    } else {
       _el.tooltip.removeAttribute('style');
     }
   }
@@ -246,7 +296,6 @@
     var MARGIN = 18;
     var vpW    = window.innerWidth;
     var vpH    = window.innerHeight;
-
     var left, top;
 
     if (rect) {
@@ -260,11 +309,8 @@
       } else {
         top = Math.max(MARGIN, (vpH - 300) / 2);
       }
-
-      /* Center on target, clamped */
       left = rect.left + rect.width / 2 - TW / 2;
     } else {
-      /* Centered on screen */
       left = (vpW - TW) / 2;
       top  = (vpH - 320) / 2;
     }
@@ -278,7 +324,7 @@
       'width:' + TW   + 'px;';
   }
 
-  /* ── Navigation ──────────────────────────────────────────── */
+  /* ── Navigation ─────────────────────────────────────────────── */
   function onboardNext() {
     _step++;
     if (_step >= STEPS.length) { closeOnboarding(); return; }
@@ -289,11 +335,10 @@
     if (_step > 0) { _step--; _showStep(_step); }
   }
 
-  /* ── Complete / close ────────────────────────────────────── */
+  /* ── Complete / close ───────────────────────────────────────── */
   function closeOnboarding() {
     _markDone();
 
-    /* Fade everything out before removing */
     var fadeTargets = [_el.overlay, _el.spotlight, _el.tooltip];
     fadeTargets.forEach(function (el) {
       if (!el) return;
@@ -311,6 +356,8 @@
   }
 
   function _markDone() {
+    /* Write completion immediately to both localStorage and Firestore
+       so the next check (any device) will find it. */
     localStorage.setItem(STORAGE_KEY, '1');
     if (_uid && typeof _db !== 'undefined') {
       try {
@@ -322,20 +369,18 @@
     }
   }
 
-  /* ── Events ──────────────────────────────────────────────── */
+  /* ── Events ─────────────────────────────────────────────────── */
   function _onResize() {
     clearTimeout(_resizeTimer);
     _resizeTimer = setTimeout(function () {
-      if (document.getElementById('onboard-overlay')) {
-        _positionStep(_step);
-      }
+      if (document.getElementById('onboard-overlay')) _positionStep(_step);
     }, 120);
   }
 
   function _onKey(e) {
-    if (e.key === 'Escape')                     { closeOnboarding(); return; }
-    if (e.key === 'ArrowRight' || e.key === 'Enter') { onboardNext();     return; }
-    if (e.key === 'ArrowLeft'  && _step > 0)    { onboardBack(); }
+    if (e.key === 'Escape')                              { closeOnboarding(); return; }
+    if (e.key === 'ArrowRight' || e.key === 'Enter')     { onboardNext();     return; }
+    if (e.key === 'ArrowLeft'  && _step > 0)             { onboardBack(); }
   }
 
 })();
