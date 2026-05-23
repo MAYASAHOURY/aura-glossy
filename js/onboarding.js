@@ -66,24 +66,32 @@
   }
   function buildSteps() {
     return [
-      /* ── Step 1: full-screen WELCOME hero card ─────────────────── */
+      /* ── Step 1: WELCOME — centered card, no spotlight ────────────
+         Mockup spec: small bottom-pinned card on mobile, no big
+         hero. Action row shows "Skip tour" + "Next →" — no Back
+         (it's the first step), no spotlight target (just a friendly
+         intro before the guided steps begin). */
       {
         welcome:  true,
-        hero:     true,                   /* full-screen centered card */
-        headline: _t('onboarding.welcome_headline', 'Welcome to Aura Glossy'),
-        body:     _t('onboarding.welcome_body',     'A short tour. Three quick stops, then you\'re off.')
+        headline: _t('onboarding.welcome_headline', 'Welcome to Aura Glossy.'),
+        body:     _t('onboarding.welcome_body',     "We'll take you on a quick tour. It only takes a few steps.")
       },
 
-      /* ── Step 2: STYLE QUIZ — spotlight ────────────────────────── */
+      /* ── Step 2: STYLE QUIZ — spotlight on the big hero CTA ──────
+         Targets the prominent "Take the Style Quiz" button at the
+         top of the homepage on both desktop AND mobile. A button-
+         sized target gives the spotlight ring room to read clearly. */
       {
-        target:        '.nav-links a[href="quiz.html"]',
-        mobileTarget:  '.hero-actions a[href="quiz.html"]',
-        mobileScrollTo:'.hero',
-        headline:      _t('onboarding.quiz_headline', 'I suggest starting with the quiz.'),
-        body:          _t('onboarding.quiz_body',     'It helps Aura discover your style.')
+        target:    '.hero-actions a[href="quiz.html"]',
+        scrollTo:  '.hero',
+        headline:  _t('onboarding.quiz_headline', 'Start with a quick quiz.'),
+        body:      _t('onboarding.quiz_body',     'It helps Aura discover your style.')
       },
 
-      /* ── Step 3: COMMUNITY — spotlight ─────────────────────────── */
+      /* ── Step 3: COMMUNITY — spotlight inside open burger menu ───
+         Desktop nav is visible. Mobile: opens burger menu and
+         spotlights the COMMUNITY link inside it. Menu auto-closes
+         when we advance to the next step. */
       {
         target:        '.nav-links a[href="community.html"]',
         mobileTarget:  '.nav.nav-open .nav-links a[href="community.html"]',
@@ -92,21 +100,25 @@
         body:          _t('onboarding.community_body',     'Based on your quiz answers.')
       },
 
-      /* ── Step 4: AESTHETICS — spotlight ────────────────────────── */
+      /* ── Step 4: AESTHETICS — spotlight on EXPLORE AESTHETICS btn
+         Mockup spec: highlight the "EXPLORE AESTHETICS" hero button
+         (not the style cards section below). Card sits above the
+         button with an arrow pointing down to it. Scroll back to
+         hero in case the user scrolled while the menu was open. */
       {
-        target:        '.nav-links a[href="#styles"]',
-        mobileTarget:  '#styles .style-card:first-child',
-        mobileScrollTo:'#styles',
-        headline:      _t('onboarding.aesthetics_headline', 'Explore every aesthetic.'),
-        body:          _t('onboarding.aesthetics_body',     'You can browse them all here — it\'s really interesting.')
+        target:    '.hero-actions a[href="#styles"]',
+        scrollTo:  '.hero',
+        headline:  _t('onboarding.aesthetics_headline', 'You can also explore more aesthetics.'),
+        body:      _t('onboarding.aesthetics_body',     'Browse all aesthetic circles.')
       },
 
-      /* ── Step 5: full-screen FINAL hero card ───────────────────── */
+      /* ── Step 5: FINAL — centered card, single CTA ───────────────
+         Mockup spec: small centered card, no spotlight, single
+         "Let's Go →" button. Closing this card ends the tour. */
       {
-        hero:     true,                   /* full-screen centered card */
         final:    true,
-        headline: _t('onboarding.final_headline', "You're ready to start."),
-        body:     _t('onboarding.final_body',     'Have fun exploring.')
+        headline: _t('onboarding.final_headline', "In the end, let's start."),
+        body:     _t('onboarding.final_body',     "You're all set. Let's begin your journey.")
       }
     ];
   }
@@ -298,79 +310,86 @@
     _step = idx;
 
     _el.tooltip.classList.remove('onboard-tooltip--in');
-    /* Toggle the hero variant — full-screen centered card. */
-    _el.tooltip.classList.toggle('onboard-tooltip--hero', !!step.hero);
+    /* Centered variant for welcome + final steps (no spotlight target).
+       Replaces the previous full-screen "hero" variant — mockup spec
+       wanted the same card style across all steps, just centered when
+       there's nothing to anchor to. */
+    _el.tooltip.classList.toggle('onboard-tooltip--centered', !!(step.welcome || step.final));
 
     var dots = '';
     for (var i = 0; i < STEPS.length; i++) {
       dots += '<span class="onboard-dot' + (i === idx ? ' onboard-dot--on' : '') + '"></span>';
     }
 
-    var nextLabel = step.final   ? _t('onboarding.next_final', 'Start Now')
-                  : step.welcome ? _t('onboarding.next_show',  "Let's go →")
+    var nextLabel = step.final   ? _t('onboarding.next_final', "Let's Go →")
+                  : step.welcome ? _t('onboarding.next_show',  'Next →')
                   :                _t('common.next',           'Next →');
-    var backLabel = _t('common.back', 'Back');
-    var skipLabel = _t('common.skip', 'Skip');
-    var eyebrowTx = _t('onboarding.eyebrow', 'Aura Guide');
+    var backLabel = _t('common.back',                 'Back');
+    var skipLabel = _t('onboarding.skip_tour',        'Skip tour');
 
     var html =
       '<span class="onboard-beak"></span>' +
       '<button class="onboard-x" type="button" aria-label="' + _t('common.close', 'Close') + '">×</button>';
 
-    /* Hero steps get a decorative mark + an eyebrow to anchor the
-       brand. The mark is bigger on the welcome step and a tiny dot
-       on the final step. */
-    if (step.hero) {
-      html += '<div class="onboard-eyebrow">' + eyebrowTx + '</div>';
-      html += '<div class="onboard-mark">✦</div>';
-    }
-
     html += '<h3 class="onboard-headline">' + step.headline + '</h3>' +
             '<p class="onboard-body">'      + step.body     + '</p>';
 
-    if (step.hero) {
-      /* Hero steps: single centered CTA, no Back / Skip clutter. */
-      html += '<div class="onboard-actions onboard-actions--hero">' +
-                '<button class="onboard-next' + (step.final ? ' onboard-next--final' : '') +
-                  '" type="button">' + nextLabel + '</button>' +
+    /* Action row — left side varies by step type:
+         • Welcome (first):  "Skip tour" link
+         • Middle:           "Back" button
+         • Final:            nothing (single centered CTA)                */
+    if (step.final) {
+      html += '<div class="onboard-actions onboard-actions--single">' +
+                '<button class="onboard-next onboard-next--final" type="button">' +
+                  nextLabel +
+                '</button>' +
               '</div>';
     } else {
-      html += '<div class="onboard-actions">' +
-                (idx > 0
-                  ? '<button class="onboard-back" type="button">' + backLabel + '</button>'
-                  : '<span></span>') +
-                '<button class="onboard-next' + (step.final ? ' onboard-next--final' : '') +
-                  '" type="button">' + nextLabel + '</button>' +
+      html += '<div class="onboard-actions">';
+      if (step.welcome) {
+        html += '<button class="onboard-skip-inline" type="button">' + skipLabel + '</button>';
+      } else if (idx > 0) {
+        html += '<button class="onboard-back" type="button">' + backLabel + '</button>';
+      } else {
+        html += '<span></span>';
+      }
+      html += '<button class="onboard-next" type="button">' + nextLabel + '</button>' +
               '</div>';
     }
 
-    /* Footer (dots + skip) — shown on every step EXCEPT the final
-       hero card, where the big "Start Now" is the only action. */
-    if (!step.final) {
-      html += '<div class="onboard-footer">' +
-                '<div class="onboard-dots">' + dots + '</div>' +
-                '<button class="onboard-skip" type="button">' + skipLabel + '</button>' +
-              '</div>';
-    } else {
-      html += '<div class="onboard-footer onboard-footer--hero">' +
-                '<div class="onboard-dots">' + dots + '</div>' +
-              '</div>';
-    }
+    /* Footer with dots — every step shows progress. Final step omits
+       the additional Skip button since "Let's Go" is the only action. */
+    html += '<div class="onboard-footer' + (step.final ? ' onboard-footer--single' : '') + '">' +
+              '<div class="onboard-dots">' + dots + '</div>' +
+              (step.final || step.welcome
+                ? ''
+                : '<button class="onboard-skip" type="button">' + skipLabel + '</button>') +
+            '</div>';
 
     _el.tooltip.innerHTML = html;
     _el.beak = _el.tooltip.querySelector('.onboard-beak');
 
     /* Wire controls (no inline handlers -> no global leakage). */
     _el.tooltip.querySelector('.onboard-x').addEventListener('click', closeOnboarding);
-    _el.tooltip.querySelector('.onboard-skip').addEventListener('click', closeOnboarding);
+    var skipBtn = _el.tooltip.querySelector('.onboard-skip');
+    if (skipBtn) skipBtn.addEventListener('click', closeOnboarding);
+    var skipInline = _el.tooltip.querySelector('.onboard-skip-inline');
+    if (skipInline) skipInline.addEventListener('click', closeOnboarding);
     _el.tooltip.querySelector('.onboard-next').addEventListener('click', function () { _go(idx + 1); });
     var back = _el.tooltip.querySelector('.onboard-back');
     if (back) back.addEventListener('click', function () { _go(idx - 1); });
 
-    _position(idx);
-    requestAnimationFrame(function () {
+    /* Position the spotlight + card FIRST, then fade the card in.
+       If we faded in synchronously, the card would briefly appear
+       at some default location and then jump when the spotlight
+       settles (most visible on Step 3, where opening the burger
+       menu takes a couple hundred ms). Awaiting positioning keeps
+       the entry animation smooth and on-target every time. */
+    _position(idx).then(function () {
       requestAnimationFrame(function () {
-        _el.tooltip.classList.add('onboard-tooltip--in');
+        requestAnimationFrame(function () {
+          _el.tooltip.classList.add('onboard-tooltip--in');
+        });
       });
     });
   }
@@ -383,8 +402,15 @@
 
   /* ================================================================
      MOBILE HELPERS  -  menu open/close + smooth scroll-into-view
-     ================================================================ */
-  function _isMobile() { return window.innerWidth <= 680; }
+     ================================================================
+     The breakpoint here MUST match the CSS breakpoint at which the
+     nav burger appears (768px in styles.css). If onboarding's idea
+     of "mobile" is narrower than the nav's, we end up trying to
+     spotlight `.nav-links a` elements that are hidden behind a
+     closed burger — the spotlight lands on nothing and the user
+     sees a floating tooltip with no target. 768 = "burger is the
+     only nav surface" = "use mobile flow". */
+  function _isMobile() { return window.innerWidth <= 768; }
 
   function _setMenuOpen(open) {
     var nav = document.querySelector('.nav');
@@ -441,49 +467,107 @@
     return _smoothScrollTo(targetY);
   }
 
+  /* Only scroll if the target isn't already comfortably in view.
+     Used by desktop too — we never want a "phantom scroll" when
+     the user is already looking at the right place. */
+  function _scrollIntoViewIfNeeded(sel) {
+    var el = document.querySelector(sel);
+    if (!el) return Promise.resolve();
+    var r   = el.getBoundingClientRect();
+    var vpH = window.innerHeight;
+    /* Comfortable = top is below the nav AND bottom fits in viewport */
+    if (r.top >= 80 && r.bottom <= vpH - 40) return Promise.resolve();
+    return _scrollIntoView(sel);
+  }
+
+  /* Wait until a selector has a stable, on-screen rect, or give up.
+     Used after triggering an animation (e.g. opening the burger
+     menu) — we can't predict the transition duration across browsers,
+     so we poll once per frame for up to `maxMs` ms. Resolves with the
+     rect on success, or null on timeout (caller falls back gracefully). */
+  function _waitForRect(sel, maxMs) {
+    return new Promise(function (resolve) {
+      var deadline = Date.now() + (maxMs || 600);
+      function check() {
+        var r = _rectOf(sel);
+        if (r && r.width > 0 && r.height > 0) return resolve(r);
+        if (Date.now() > deadline) return resolve(null);
+        requestAnimationFrame(check);
+      }
+      check();
+    });
+  }
+
   /* ================================================================
      POSITIONING  -  spotlight + card + arrow
+
+     Returns a Promise that resolves once the spotlight + card are
+     in their final position. _render() awaits it before fading the
+     card in, so the tooltip never flashes in some default location
+     while the spotlight is still waiting for a scroll / menu-open
+     to complete.
      ================================================================ */
   function _position(idx) {
     var step     = STEPS[idx];
     var isMobile = _isMobile();
 
-    /* Hero steps (welcome + final): full-screen centered card with no
-       spotlight or scroll. Skip all anchoring logic. */
-    if (step.hero) {
+    /* Welcome + final steps: centered card, no spotlight, no scroll.
+       Same card style as the spotlight steps (per mockup spec) — just
+       anchored to viewport center because there's nothing to point at. */
+    if (step.welcome || step.final) {
       _el.spotlight.style.cssText = 'opacity:0;width:0;height:0;left:-9999px;top:-9999px;';
       _el.tooltip.classList.remove('onboard-tooltip--below', 'onboard-tooltip--above');
-      _placeHero();
-      if (isMobile) _setMenuOpen(false); /* tidy nav state */
-      return;
+      _placeHero();                                     /* still centers, just no hero variant class */
+      _setMenuOpen(false);                              /* tidy nav state on both viewports */
+      return Promise.resolve();
     }
 
-    /* On mobile, run any setup the step needs BEFORE we measure rects.
-       This is what makes spotlights actually work on phones:
-         • open the hamburger menu so nav links become visible
-         • smooth-scroll a section into view
-       Once setup is done we measure and position synchronously. */
-    var setup = Promise.resolve();
-    if (isMobile) {
-      _setMenuOpen(!!step.mobileOpenMenu);
-      if (step.mobileOpenMenu) {
-        /* Wait for the menu drop-in animation to settle */
-        setup = new Promise(function (r) { setTimeout(r, 220); });
-      } else if (step.mobileScrollTo) {
-        setup = _scrollIntoView(step.mobileScrollTo);
-      } else if (window.scrollY > 8) {
-        /* Default: ensure we're at the top so the target is reachable */
+    /* Pre-positioning setup. Whichever path we take MUST resolve before
+       we measure the target's rect — otherwise we'd measure stale state. */
+    var setup;
+    if (isMobile && step.mobileOpenMenu) {
+      /* Open the burger menu and wait until the target link inside it
+         actually has a non-zero rect. This is more robust than the
+         fixed 220ms wait we used to do — any browser CSS transition
+         duration works, including reduced-motion (which is instant). */
+      _setMenuOpen(true);
+      var mobileSel = step.mobileTarget || step.target;
+      setup = _waitForRect(mobileSel, 700);
+    } else {
+      /* Make sure the burger is closed for every other step,
+         including on desktop where it should never be open. */
+      _setMenuOpen(false);
+
+      /* Pick the scroll-to target. mobileScrollTo applies on mobile
+         only; scrollTo applies on both viewports. */
+      var scrollSel = isMobile
+        ? (step.mobileScrollTo || step.scrollTo)
+        :  step.scrollTo;
+      if (scrollSel) {
+        setup = _scrollIntoViewIfNeeded(scrollSel);
+      } else if (isMobile && window.scrollY > 8) {
+        /* No explicit scrollTo on mobile — scroll to top so the
+           burger / hero targets are reliably reachable. */
         setup = _scrollIntoView('body');
+      } else {
+        setup = Promise.resolve();
       }
     }
 
-    setup.then(function () {
+    return setup.then(function () {
       var selector = isMobile ? (step.mobileTarget || step.target) : step.target;
       var rect     = selector ? _rectOf(selector) : null;
 
-      /* --- Spotlight --- */
+      /* --- Spotlight ---
+         Pad sized so the cream ring around a nav-link target feels
+         like a deliberate "box around the button" rather than a
+         tight outline. We give a little more pad to small targets
+         (nav links ~50px wide) so the spotlight reads as obvious. */
       if (rect) {
-        var pad = isMobile ? 7 : PAD;
+        var smallTarget = rect.width < 120 || rect.height < 36;
+        var pad = isMobile
+          ? (smallTarget ? 13 : 11)
+          : (smallTarget ? 16 : 14);
         _el.spotlight.style.cssText =
           'left:'   + (rect.left   - pad)     + 'px;' +
           'top:'    + (rect.top    - pad)     + 'px;' +
@@ -524,36 +608,77 @@
     return r;
   }
 
-  /* ── Mobile card placement ────────────────────────────────────────
-     Card pinned to bottom (with safe-area inset). If the spotlight
-     would overlap the card, we shift the card to the top instead.
+  /* ── Mobile / tablet card placement ────────────────────────────────
+     Card is anchored DIRECTLY ABOVE OR BELOW the spotlight target with
+     a small GAP, so the tooltip visibly belongs to the thing it's
+     pointing at — never "floating in the middle". The user instantly
+     reads: "the box with the cream ring is the thing, and the card
+     right next to it explains it."
+
+     Decision tree:
+       1. No target (hero / final / fallback) → centered card near bottom
+       2. Below the target has room → place below
+       3. Above the target has room → place above
+       4. Neither fits cleanly (very tall target) → pin to whichever
+          side has more room, allowing partial overlap. The dim still
+          makes the target obvious.
+
+     Width is capped at 460px so iPad-portrait doesn't stretch the
+     card edge-to-edge — it stays centered like a real anchored card,
+     not a full-width banner.
      ───────────────────────────────────────────────────────────────── */
   function _placeMobile(rect) {
-    var vpH    = window.innerHeight;
-    var M      = 14;
-    var safeBt = 22; /* visual bottom margin */
-    /* Estimate card height from current content; offsetHeight is
-       reliable once content is rendered. Fallback 220px. */
-    var CH     = _el.tooltip.offsetHeight || 220;
+    var vpW        = window.innerWidth;
+    var vpH        = window.innerHeight;
+    var M          = 14;            /* horizontal viewport margin */
+    var GAP        = 14;            /* gap between target and card */
+    var NAV_GUARD  = 70;            /* reserve under the fixed nav (60px nav + breathing) */
+    var SAFE_BT    = 22;            /* card-bottom inset; the card's own padding-bottom
+                                       handles safe-area-inset-bottom via CSS env() */
+    var MAX_W      = 460;
+    /* offsetHeight is reliable once the HTML has been written into
+       the tooltip — which _render() does before calling _position().
+       Fallback covers the very first paint when offsetHeight=0. */
+    var CH         = _el.tooltip.offsetHeight || 240;
 
-    /* Where would the card sit if pinned bottom? */
-    var bottomCardTop = vpH - CH - safeBt;
+    var width  = Math.min(vpW - M * 2, MAX_W);
+    var leftPx = Math.round((vpW - width) / 2);
+    var top;
 
-    /* If the spotlight target is in the lower half AND would overlap
-       the bottom card, pin to top instead. */
-    var pinTop = false;
-    if (rect) {
-      /* Bottom card overlaps target if target's bottom edge > card's top */
-      if (rect.bottom > bottomCardTop - 10) pinTop = true;
+    if (!rect) {
+      /* No anchor → centered horizontally, near the bottom safe area */
+      top = vpH - CH - SAFE_BT;
+    } else {
+      var spaceBelow = vpH - rect.bottom - GAP - M;       /* px under target */
+      var spaceAbove = rect.top - GAP - NAV_GUARD;        /* px above target, below nav */
+
+      if (spaceBelow >= CH) {
+        /* Card fits cleanly below — preferred placement (reading order) */
+        top = rect.bottom + GAP;
+      } else if (spaceAbove >= CH) {
+        /* Card fits cleanly above — use it */
+        top = rect.top - GAP - CH;
+      } else if (spaceBelow >= spaceAbove) {
+        /* Neither fits perfectly — pin to bottom, accept some overlap.
+           This typically happens when target is very tall (a hero
+           image or a whole style card) on a short viewport. The
+           dim + ring still make the target obvious. */
+        top = vpH - CH - M;
+      } else {
+        /* Above has more room — pin below nav */
+        top = NAV_GUARD;
+      }
     }
 
+    /* Final clamp so we never extend off-screen in either direction */
+    top = Math.max(NAV_GUARD, Math.min(vpH - CH - M, top));
+
     _el.tooltip.style.cssText =
-      'left:'   + M + 'px;' +
-      'right:'  + M + 'px;' +
-      'width:'  + 'auto;' +
-      (pinTop
-        ? 'top:'    + (88) + 'px; bottom: auto;'
-        : 'bottom:' + safeBt + 'px; top: auto;');
+      'left:'   + leftPx        + 'px;' +
+      'right: auto;' +
+      'width:'  + width         + 'px;' +
+      'top:'    + Math.round(top) + 'px;' +
+      'bottom: auto;';
   }
 
   /* Card anchored beneath (or above) the target, arrow pointing at it. */

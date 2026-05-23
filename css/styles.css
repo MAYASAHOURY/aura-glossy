@@ -237,13 +237,30 @@ h1, h2, h3, h4 {
   flex-direction: column;
   gap: 5px;
   cursor: pointer;
+  /* Hit-area + iOS responsiveness:
+     - touch-action: manipulation removes the double-tap-zoom delay
+     - -webkit-tap-highlight-color: transparent kills the grey flash
+       Instagram / TikTok / Safari show on every tap
+     - padding pads the hit-area so the burger is easier to land on
+       without bloating the visible icon (the spans stay the same size) */
+  padding: 8px;
+  margin: -8px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .nav-burger span {
   width: 24px;
   height: 1.5px;
   background: var(--ink);
-  transition: transform 0.3s var(--ease), background-color 0.3s var(--ease), opacity 0.3s var(--ease);
+  /* Snappier morph — 180ms reads as "instant" to the user, where 300ms
+     felt like the menu was waiting on something. transform+opacity are
+     compositor-only so this never thrashes layout. */
+  transition: transform 0.18s var(--ease), opacity 0.18s var(--ease);
+  will-change: transform, opacity;
+  transform-origin: center;
 }
 
 /* Hamburger → X animation when open */
@@ -11270,141 +11287,99 @@ a, button, [role="button"], input, textarea, select,
 }
 
 /* ================================================================
-   HERO CARD VARIANT — full-screen centered welcome / final cards
-   ================================================================
-   Used on the first ("Welcome to Aura Glossy") and last ("You're
-   ready to start.") steps. These dominate the viewport with big
-   emotional typography and a single primary CTA — they should feel
-   like a real first-impression moment, not a small subtitle tooltip.
+   CENTERED CARD VARIANT — welcome + final steps
+
+   Per the mockup spec: same card style as the spotlight steps, just
+   anchored to viewport center because there's nothing to point at.
+   No giant headlines, no decorative mark — keeps the tour visually
+   consistent across all 5 steps.
    ================================================================ */
-.onboard-tooltip--hero {
-  /* Override anchored positioning — center via fixed + transform */
+.onboard-tooltip--centered {
+  /* Center on viewport — overrides the anchored top/left/bottom set
+     by _placeMobile() / _placeAnchored() for spotlight steps. */
   position: fixed !important;
   left: 50% !important;
   top:  50% !important;
   right: auto !important;
   bottom: auto !important;
-  transform: translate(-50%, -50%) scale(.96);
-  width: min(92vw, 480px) !important;
-  padding: 56px 40px 36px !important;
-  background: #fbf8f4;
-  border: 1px solid rgba(201, 162, 117, 0.35);
-  border-radius: 24px;
-  box-shadow:
-    0 4px 18px  rgba(20, 14, 8, 0.18),
-    0 30px 80px rgba(20, 14, 8, 0.32);
-  text-align: center;
-  transition: opacity .42s var(--ease), transform .42s var(--ease);
+  transform: translate(-50%, -50%) scale(.98);
+  width: min(360px, calc(100vw - 28px)) !important;
 }
-.onboard-tooltip--hero.onboard-tooltip--in {
+.onboard-tooltip--centered.onboard-tooltip--in {
   transform: translate(-50%, -50%) scale(1);
 }
 
-/* Bigger, more emotional typography on hero cards */
-.onboard-tooltip--hero .onboard-eyebrow {
-  font-size: .68rem;
-  letter-spacing: .26em;
-  color: var(--beige-dark);
-  margin-bottom: 18px;
-}
-.onboard-tooltip--hero .onboard-mark {
-  font-size: 2.1rem;
-  color: var(--rose);
-  margin-bottom: 18px;
-  line-height: 1;
-}
-.onboard-tooltip--hero .onboard-headline {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 6vw, 40px);
-  font-style: italic;
-  font-weight: 400;
-  line-height: 1.16;
-  letter-spacing: -0.015em;
-  color: var(--ink);
-  margin: 0 0 16px;
-  text-align: center;
-}
-.onboard-tooltip--hero .onboard-body {
-  font-size: 15px;
-  color: var(--ink-soft);
-  line-height: 1.55;
-  margin: 0 auto 32px;
-  max-width: 360px;
-  text-align: center;
-}
+/* Hide the beak on centered cards (no anchor target to point at) */
+.onboard-tooltip--centered .onboard-beak { display: none !important; }
 
-/* Single big CTA, centered */
-.onboard-actions--hero {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 4px !important;
-}
-.onboard-tooltip--hero .onboard-next {
+/* Welcome's inline Skip-tour link — left side of the action row.
+   Styled like a quiet text button so it doesn't compete with Next. */
+.onboard-skip-inline {
+  background: none;
+  border: 0;
+  padding: 8px 6px;
+  font-family: var(--font-sans);
   font-size: .82rem;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  padding: 16px 40px;
-  border-radius: 999px;
-  min-width: 200px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color .18s ease;
 }
-.onboard-tooltip--hero .onboard-next--final {
-  background: linear-gradient(135deg, var(--ink), #3a2a22);
-  box-shadow: 0 8px 24px rgba(58, 44, 34, 0.28);
-}
-.onboard-tooltip--hero .onboard-next--final:hover {
-  background: linear-gradient(135deg, var(--rose), var(--beige-dark));
-  box-shadow: 0 12px 32px rgba(201, 139, 134, 0.42);
+.onboard-skip-inline:hover,
+.onboard-skip-inline:focus-visible {
+  color: var(--ink);
+  outline: none;
 }
 
-/* Hero card footer (dots only, no skip) */
-.onboard-footer--hero {
-  margin-top: 22px !important;
-  padding-top: 18px !important;
+/* Final step: single centered CTA (no Back). Stretches naturally on
+   mobile. The button uses the same rose-on-ink gradient as before. */
+.onboard-actions--single {
+  display: flex !important;
   justify-content: center !important;
-  border-top: 1px solid rgba(0, 0, 0, .06);
+  align-items: center;
+  margin-top: 20px !important;
 }
-.onboard-footer--hero .onboard-dots { margin: 0 auto; }
-
-/* Hide the beak on hero cards (no anchor target) */
-.onboard-tooltip--hero .onboard-beak { display: none !important; }
-
-/* Hero × close stays in the corner but more subtle than normal */
-.onboard-tooltip--hero .onboard-x {
-  top: 14px;
-  right: 14px;
-  opacity: 0.45;
+.onboard-tooltip--centered .onboard-next--final {
+  background: linear-gradient(135deg, var(--ink), #3a2a22);
+  color: #fff;
+  padding: 13px 36px;
+  min-width: 160px;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(58, 44, 34, 0.24);
 }
-.onboard-tooltip--hero .onboard-x:hover { opacity: 1; }
+.onboard-tooltip--centered .onboard-next--final:hover {
+  background: linear-gradient(135deg, var(--rose), var(--beige-dark));
+  box-shadow: 0 10px 26px rgba(201, 139, 134, 0.40);
+}
 
-/* Mobile / tablet: hero card uses near-full width but stays comfortably
-   tall. ≤ 768 matches the JS _isMobile() breakpoint so tablet hero
-   steps render with the same proportions as phone. */
-@media (max-width: 768px) {
-  .onboard-tooltip--hero {
-    /* Cap at 460px so tablets don't stretch the card edge-to-edge */
-    width: min(460px, calc(100vw - 28px)) !important;
-    padding: 44px 26px 28px !important;
-    /* Leave safe-area room for the iPhone home-indicator */
-    padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px)) !important;
+/* Final-step footer: dots only, centered (no Skip button) */
+.onboard-footer--single {
+  justify-content: center !important;
+  border-top: none !important;
+  margin-top: 14px !important;
+  padding-top: 8px !important;
+}
+.onboard-footer--single .onboard-dots { margin: 0 auto; }
+
+/* Mobile-only adjustments for centered cards */
+@media (max-width: 680px) {
+  .onboard-tooltip--centered {
+    /* Slightly tighter padding on phones so the card doesn't look
+       lonely on small screens. */
+    padding: 22px 22px 16px !important;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
   }
-  .onboard-tooltip--hero .onboard-headline {
-    font-size: clamp(26px, 6vw, 36px);
+  .onboard-tooltip--centered .onboard-headline {
+    font-size: 1.18rem;
   }
-  .onboard-tooltip--hero .onboard-body {
-    font-size: 14px;
-  }
-  .onboard-tooltip--hero .onboard-next {
-    padding: 14px 28px;
-    font-size: .78rem;
-    min-width: 0;
-    width: 100%;
-    max-width: 280px;
+  .onboard-tooltip--centered .onboard-body {
+    font-size: .88rem;
   }
 }
 
 /* RTL: keep the centered card centered, but flip the close button */
-html[dir="rtl"] .onboard-tooltip--hero .onboard-x {
+html[dir="rtl"] .onboard-tooltip--centered .onboard-x {
   right: auto;
   left: 14px;
 }

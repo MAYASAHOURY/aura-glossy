@@ -230,27 +230,28 @@
         no_quiz_yet: 'Not taken yet'
       },
       onboarding: {
-        /* Hero welcome (centered full-screen card) */
-        welcome_headline: 'Welcome to Aura Glossy',
-        welcome_body:     'A short tour. Three quick stops, then you\'re off.',
-        next_show:        'Let\'s go →',
+        /* Step 1 — Welcome (centered card, no spotlight) */
+        welcome_headline: 'Welcome to Aura Glossy.',
+        welcome_body:     "We'll take you on a quick tour. It only takes a few steps.",
+        next_show:        'Next →',
+        skip_tour:        'Skip tour',
 
-        /* Step 1 — Style Quiz */
-        quiz_headline:    'I suggest starting with the quiz.',
+        /* Step 2 — Style Quiz (spotlight on hero CTA) */
+        quiz_headline:    'Start with a quick quiz.',
         quiz_body:        'It helps Aura discover your style.',
 
-        /* Step 2 — Community */
+        /* Step 3 — Community (opens menu, spotlight on link) */
         community_headline: 'This is your community.',
         community_body:     'Based on your quiz answers.',
 
-        /* Step 3 — Aesthetics */
-        aesthetics_headline: 'Explore every aesthetic.',
-        aesthetics_body:     'You can browse them all here — it\'s really interesting.',
+        /* Step 4 — Aesthetics (spotlight on Explore Aesthetics button) */
+        aesthetics_headline: 'You can also explore more aesthetics.',
+        aesthetics_body:     'Browse all aesthetic circles.',
 
-        /* Final hero card */
-        final_headline:   "You're ready to start.",
-        final_body:       'Have fun exploring.',
-        next_final:       'Start Now',
+        /* Step 5 — Final (centered card, single CTA) */
+        final_headline:   "In the end, let's start.",
+        final_body:       "You're all set. Let's begin your journey.",
+        next_final:       "Let's Go →",
 
         eyebrow:          'Aura Guide'
       },
@@ -434,22 +435,23 @@
         no_quiz_yet: 'Aún no realizado'
       },
       onboarding: {
-        welcome_headline:   'Bienvenido a Aura Glossy',
-        welcome_body:       'Un tour rápido. Tres paradas y listo.',
-        next_show:          'Empezar →',
+        welcome_headline:   'Bienvenido a Aura Glossy.',
+        welcome_body:       'Te llevaremos por un tour rápido. Solo unos pasos.',
+        next_show:          'Siguiente →',
+        skip_tour:          'Saltar tour',
 
-        quiz_headline:      'Te sugiero empezar por el quiz.',
+        quiz_headline:      'Empieza con un quiz rápido.',
         quiz_body:          'Ayuda a Aura a descubrir tu estilo.',
 
         community_headline: 'Esta es tu comunidad.',
         community_body:     'Basada en tus respuestas del quiz.',
 
-        aesthetics_headline:'Explora todas las estéticas.',
-        aesthetics_body:    'Aquí puedes verlas todas — es realmente interesante.',
+        aesthetics_headline:'También puedes explorar más estéticas.',
+        aesthetics_body:    'Navega por todos los círculos de estética.',
 
-        final_headline:     'Estás listo para empezar.',
-        final_body:         'Disfruta explorando.',
-        next_final:         'Empezar ahora',
+        final_headline:     'Para terminar, empecemos.',
+        final_body:         'Ya está todo listo. Empieza tu camino.',
+        next_final:         '¡Vamos! →',
 
         eyebrow:            'Guía de Aura'
       },
@@ -633,22 +635,23 @@
         no_quiz_yet: 'لم تأخذه بعد'
       },
       onboarding: {
-        welcome_headline:   'أهلاً بك في Aura Glossy',
-        welcome_body:       'جولة سريعة، ثلاث خطوات وستكون جاهزاً.',
-        next_show:          'هيا بنا ←',
+        welcome_headline:   'أهلاً بك في Aura Glossy.',
+        welcome_body:       'سنأخذك في جولة سريعة. خطوات قليلة فقط.',
+        next_show:          'التالي ←',
+        skip_tour:          'تخطّي الجولة',
 
-        quiz_headline:      'أنصحك بالبدء بالاختبار.',
+        quiz_headline:      'ابدأ باختبار سريع.',
         quiz_body:          'يساعد Aura على اكتشاف ستايلك.',
 
         community_headline: 'هذا هو مجتمعك.',
         community_body:     'بناءً على إجاباتك في الاختبار.',
 
-        aesthetics_headline:'استكشف كل الجماليات.',
-        aesthetics_body:    'يمكنك تصفّحها جميعاً هنا — مثيرة للاهتمام حقاً.',
+        aesthetics_headline:'يمكنك أيضاً استكشاف المزيد من الجماليات.',
+        aesthetics_body:    'تصفّح كل دوائر الجماليات.',
 
-        final_headline:     'أنت جاهز للبدء.',
-        final_body:         'استمتع بالاستكشاف.',
-        next_final:         'ابدأ الآن',
+        final_headline:     'وفي النهاية، لنبدأ.',
+        final_body:         'كل شيء جاهز. لنبدأ رحلتك.',
+        next_final:         'هيا بنا ←',
 
         eyebrow:            'دليل Aura'
       },
@@ -831,22 +834,23 @@
         no_quiz_yet: 'עוד לא בוצע'
       },
       onboarding: {
-        welcome_headline:   'ברוכה הבאה ל-Aura Glossy',
-        welcome_body:       'סיור קצר. שלוש תחנות ואת מוכנה.',
-        next_show:          'יוצאים לדרך ←',
+        welcome_headline:   'ברוכה הבאה ל-Aura Glossy.',
+        welcome_body:       'ניקח אותך לסיור קצר. רק כמה שלבים.',
+        next_show:          'הבא ←',
+        skip_tour:          'דילוג על הסיור',
 
-        quiz_headline:      'אני מציעה להתחיל בחידון.',
+        quiz_headline:      'התחילי בחידון קצר.',
         quiz_body:          'הוא עוזר ל-Aura לגלות את הסגנון שלך.',
 
         community_headline: 'זו הקהילה שלך.',
         community_body:     'מבוססת על התשובות שלך בחידון.',
 
-        aesthetics_headline:'גלי את כל האסתטיקות.',
-        aesthetics_body:    'אפשר לעיין בכולן כאן — באמת מעניין.',
+        aesthetics_headline:'את גם יכולה לחקור עוד אסתטיקות.',
+        aesthetics_body:    'דפדפי בין כל מעגלי האסתטיקה.',
 
-        final_headline:     'את מוכנה להתחיל.',
-        final_body:         'תיהני מהחקירה.',
-        next_final:         'מתחילים עכשיו',
+        final_headline:     'בסוף, בואי נתחיל.',
+        final_body:         'הכול מוכן. בואי נתחיל את המסע שלך.',
+        next_final:         'יוצאים לדרך ←',
 
         eyebrow:            'מדריך Aura'
       },
