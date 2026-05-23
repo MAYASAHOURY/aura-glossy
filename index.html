@@ -16,53 +16,64 @@
 <meta name="twitter:image" content="https://auraglossy.com/images/home/hero-1.jpg">
 <link rel="canonical" href="https://auraglossy.com/">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script>
+/* ─────────────────────────────────────────────────────────────────
+   AURA — SYNCHRONOUS AUTH GATE (must be first head script)
+
+   Runs BEFORE Firebase loads. Decides instantly whether to show
+   the page or redirect to login, using a localStorage flag that
+   firebase.js keeps in sync with onAuthStateChanged.
+
+   Why this exists:
+   • The platform is gated (sign-in required for everything).
+   • Firebase IndexedDB hydration takes 4-12s on TikTok/Instagram
+     in-app WebViews, which previously meant 4-12s of blank screen
+     before any decision was made.
+   • This gate decides in <1ms. If session flag is missing, we
+     replace-navigate to login.html before any layout / paint /
+     downstream script. User never sees a flash of the homepage.
+
+   Storage-blocked browsers (iOS private mode): we let them through
+   here and defer to Firebase's own guard. Worst case they see a
+   brief loader. We DO NOT silently bypass auth — initAuthGuard /
+   the listener at the bottom still enforces.
+   ───────────────────────────────────────────────────────────────── */
+(function () {
+  try {
+    if (!localStorage.getItem('aura_has_session')) {
+      /* Hide the current page so we never flash homepage content
+         while the browser processes the navigation. */
+      document.documentElement.style.visibility = 'hidden';
+      window.location.replace('login.html');
+      return;
+    }
+  } catch (e) { /* storage blocked — Firebase will gate below */ }
+
+  /* ── Environment hints (kept from the loading-reliability pass) ── */
+  try {
+    var ua = navigator.userAgent || '';
+    var isInApp =
+      /TikTok|musical_ly|Instagram|FBAN|FBAV|FB_IAB|FBIOS|Twitter|Snapchat|Pinterest|Line\/|MicroMessenger|WeChat/i.test(ua);
+    var conn  = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    var isSlow = !!(conn && (conn.saveData || /(^|-)2g$/i.test(conn.effectiveType || '')));
+    if (isInApp || isSlow) {
+      try { sessionStorage.setItem('aura_skip_intro', '1'); } catch(e) {}
+      try { localStorage.setItem('aura_intro_seen', '1'); } catch(e) {}
+      document.documentElement.setAttribute('data-inapp', '1');
+    }
+  } catch (e) {}
+
+  /* Hard safety: veil fades after 1.2s no matter what */
+  window.__auraVeilSafetyMs = 1200;
+})();
+</script>
 <link rel="preload" as="image" href="images/home/hero-1.jpg" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=27">
-<script>
-/* ─────────────────────────────────────────────────────────────────
-   AURA — CRITICAL FIRST-PAINT GUARD (runs BEFORE everything else)
-
-   Purpose: guarantee homepage paints within ~1 second on every
-   device + browser, including TikTok/Instagram/Facebook in-app
-   WebViews where Firebase IndexedDB is slow or blocked.
-
-   Strategy:
-     1. Detect environment (in-app browser / slow network / saveData)
-        and pre-set the "skip intro" flag for these contexts.
-     2. Schedule a HARD safety timer that forces the veil out after
-        1.2s no matter what. Auth can resolve later in the background;
-        the user sees content immediately.
-     3. Stay tiny + synchronous + zero deps so it can't fail.
-   ───────────────────────────────────────────────────────────────── */
-(function(){
-  try {
-    var ua = navigator.userAgent || '';
-    var isInApp =
-      /TikTok|musical_ly|Instagram|FBAN|FBAV|FB_IAB|FBIOS|Twitter|Snapchat|Pinterest|Line\/|MicroMessenger|WeChat/i.test(ua);
-
-    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    var isSlow = !!(conn && (conn.saveData || /(^|-)2g$/i.test(conn.effectiveType || '')));
-
-    /* In-app browsers + slow networks: skip the cinematic intro entirely.
-       They get straight to homepage content — same as a returning user. */
-    if (isInApp || isSlow) {
-      try { sessionStorage.setItem('aura_skip_intro', '1'); } catch(e) {}
-      try { localStorage.setItem('aura_intro_seen', '1'); } catch(e) {}
-      document.documentElement.setAttribute('data-inapp', '1');
-    }
-  } catch(e) {}
-
-  /* HARD SAFETY: regardless of auth state, the page veil fades out
-     after 1200ms. If Firebase resolves earlier the auth script will
-     fade it sooner — this is the floor, not the ceiling. */
-  window.__auraVeilSafetyMs = 1200;
-})();
-</script>
+<link rel="stylesheet" href="css/styles.css?v=29">
 </head>
 <body>
 
@@ -215,7 +226,7 @@
 <script src="js/data.js?v=6" defer></script>
 <script src="js/main.js?v=4" defer></script>
 <script src="js/monitor.js?v=2" defer></script>
-<script src="js/firebase.js?v=8" defer></script>
+<script src="js/firebase.js?v=9" defer></script>
 <script src="js/animations.js?v=15" defer></script>
 <script src="js/onboarding.js?v=7" defer></script>
 <script>
@@ -281,17 +292,24 @@ setTimeout(_revealPage, window.__auraVeilSafetyMs || 1200);
 /* ── If the cinematic intro is running, lift the veil when it ends ── */
 window.addEventListener('aura:homepage-reveal', _revealPage, { once: true });
 
-/* ── Auth state listener — updates nav, never blocks or redirects ── */
+/* ── Auth state listener — updates nav, redirects if session is stale ──
+   The synchronous head-gate already lets us through if the localStorage
+   flag was set. Once Firebase finishes IndexedDB hydration we have the
+   real truth. If it says null, the flag was stale (logged out elsewhere,
+   session revoked, etc.) and we bounce to login. If it says user, we're
+   good — just update the nav. Either way the veil is lifted instantly. */
 function _initAuthListener() {
   if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return false;
   try {
     firebase.auth().onAuthStateChanged(function(user) {
       var btn = document.getElementById('nav-auth-btn');
       if (btn) btn.textContent = user ? 'Account' : 'Sign in';
-      /* As soon as Firebase tells us anything, we can fade the veil
-         out a bit faster than the safety floor — but we never wait
-         on it. */
       _revealPage();
+      if (!user) {
+        /* Stale-session bounce. firebase.js already cleared the
+           aura_has_session flag; navigate so the next load is clean. */
+        window.location.replace('login.html');
+      }
     });
     return true;
   } catch(e) { return false; }

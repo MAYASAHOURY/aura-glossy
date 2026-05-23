@@ -10823,29 +10823,26 @@ a, button, [role="button"], input, textarea, select,
   touch-action: manipulation;
 }
 
-/* 2. Disable backdrop-filter on touch (GPU-expensive; replaced with solid fallback) */
+/* 2. Disable backdrop-filter SITE-WIDE on touch devices.
+   backdrop-filter forces a full-screen compositor pass for every
+   element using it, and we had ~24 declarations site-wide. On older
+   iPhones and TikTok/Instagram WebViews this is a major source of
+   scroll jank and tap latency. Every element using it already has
+   a fallback `background:` color in the same rule, so removing the
+   blur leaves a clean semi-transparent panel — visually 95% as
+   premium, computationally near-free. */
 @media (pointer: coarse) {
-  .nav {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: rgba(245, 242, 238, 0.97);
+  *,
+  *::before,
+  *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
-  .access-modal {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: rgba(10, 10, 10, 0.65);
-  }
-  .group-card-frost {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: rgba(251, 248, 244, 0.82);
-  }
-  /* Auth veil + quiz modal overlay */
-  #aura-veil,
-  .quiz-modal-overlay {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
+  /* Bump background opacity on a few high-traffic chrome elements
+     where the blur was previously what made content readable. */
+  .nav                { background: rgba(245, 242, 238, 0.97); }
+  .access-modal       { background: rgba(10, 10, 10, 0.85); }
+  .group-card-frost   { background: rgba(251, 248, 244, 0.92); }
 }
 
 /* 3. Prevent iOS auto-zoom on input focus (triggered when font-size < 16px) */
@@ -10868,6 +10865,26 @@ a, button, [role="button"], input, textarea, select,
     transform: none !important;
     will-change: auto;
   }
+}
+
+/* 4b. Disable continuous decorative animations on touch.
+   These ran 8+ infinite animations in parallel on the quote-cloud
+   section alone — a constant ~5% CPU hit on mid-range Android phones,
+   killing scroll FPS. Bubbles still ANIMATE IN once via the existing
+   stagger (.bubble-pre → .bubble-in) — they just stop floating after. */
+@media (pointer: coarse) {
+  .quote-bubble,
+  .quote-bubble.qb-1, .quote-bubble.qb-2, .quote-bubble.qb-3,
+  .quote-bubble.qb-4, .quote-bubble.qb-5, .quote-bubble.qb-6,
+  .quote-bubble.qb-7, .quote-bubble.qb-8,
+  .quote-bubble.bubble-in.qb-1, .quote-bubble.bubble-in.qb-2,
+  .quote-bubble.bubble-in.qb-3, .quote-bubble.bubble-in.qb-4,
+  .quote-bubble.bubble-in.qb-5, .quote-bubble.bubble-in.qb-6,
+  .quote-bubble.bubble-in.qb-7, .quote-bubble.bubble-in.qb-8 {
+    animation: none !important;
+    transform: none !important;
+  }
+  .layered-type-img { animation: none; }
 }
 
 /* 5. Contain layout/style within community feed to prevent full-page repaints while typing */

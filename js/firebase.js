@@ -21,6 +21,28 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
   return _auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 }).catch(function() {});
 
+/* ─────────────────────────────────────────────────────────────────
+   SESSION FLAG — single source of truth for the synchronous head
+   auth-gate that every protected page runs BEFORE Firebase loads.
+
+   Firebase auth state lives in IndexedDB and is only readable
+   asynchronously (after `firebase.auth()` finishes hydration).
+   That async wait is what caused 7-20s blank-screen deadlocks for
+   TikTok / Instagram in-app browsers where IndexedDB is slow.
+
+   We mirror Firebase's state into localStorage so head-scripts
+   on protected pages can decide instantly whether to render or
+   redirect to login. Updated every time Firebase fires, so it
+   stays in sync across tabs and browser sessions.
+   ───────────────────────────────────────────────────────────────── */
+var AURA_SESSION_KEY = 'aura_has_session';
+_auth.onAuthStateChanged(function (user) {
+  try {
+    if (user) localStorage.setItem(AURA_SESSION_KEY, '1');
+    else      localStorage.removeItem(AURA_SESSION_KEY);
+  } catch (e) { /* private mode — flag stays whatever it was */ }
+});
+
 /* ── User ID: real account OR anonymous fallback ───────────── */
 function _getUid() {
   const user = _auth.currentUser;

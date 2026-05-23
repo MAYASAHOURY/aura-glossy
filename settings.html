@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>/* Synchronous auth gate — redirect to login if no session marker. */
+(function(){try{if(!localStorage.getItem('aura_has_session')){document.documentElement.style.visibility='hidden';window.location.replace('login.html');return;}}catch(e){}})();</script>
 <meta name="robots" content="noindex, nofollow">
 <title>Account — Aura Glossy</title>
 <meta name="description" content="Manage your Aura Glossy account. View your style aesthetic, saved moodboard, and profile settings.">
@@ -10,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=24">
+<link rel="stylesheet" href="css/styles.css?v=29">
 <style>
 
 .settings-page {
@@ -282,8 +284,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=7"></script>
-<script src="js/animations.js?v=14"></script>
+<script src="js/firebase.js?v=9"></script>
+<script src="js/animations.js?v=15"></script>
 <script>
 initAuthGuard(); /* full-page veil until Firebase confirms auth — consistent with all other protected pages */
 function navAuthClick() {

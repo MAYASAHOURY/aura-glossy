@@ -157,7 +157,8 @@ body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; hei
   outline: none;
   color: #fff;
   font-family: var(--font-sans);
-  font-size: 15px;
+  /* 16px to prevent iOS auto-zoom on focus (any value < 16 triggers zoom) */
+  font-size: 16px;
   padding: 18px 0;
   caret-color: var(--rose);
 }
@@ -308,8 +309,8 @@ body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; hei
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=7"></script>
-<script src="js/animations.js?v=14"></script>
+<script src="js/firebase.js?v=9"></script>
+<script src="js/animations.js?v=15"></script>
 <script>
 (function() {
   const auth     = firebase.auth();
@@ -360,6 +361,7 @@ body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; hei
       _navigating = true;
       sessionStorage.setItem('aura_skip_intro', '1');
       sessionStorage.setItem('aura_just_authed', '1');
+      sessionStorage.setItem('aura_onboard_trigger', '1'); /* first-run guide: a genuine sign-in/sign-up just happened */
       setTimeout(function() {
         window.location.replace('index.html');
       }, 800);
@@ -374,6 +376,7 @@ body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; hei
       _navigating = true;
       sessionStorage.setItem('aura_skip_intro', '1');
       sessionStorage.setItem('aura_just_authed', '1'); /* tells index.html: use long timer */
+      sessionStorage.setItem('aura_onboard_trigger', '1'); /* first-run guide: a genuine sign-in/sign-up just happened */
       /* 800 ms delay — lets Firebase finish writing auth session to IndexedDB
          before we navigate away, preventing the session-loss loop on iOS Safari */
       setTimeout(function() {

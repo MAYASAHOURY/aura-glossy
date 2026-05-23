@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>/* Synchronous auth gate — redirect to login if no session marker.
+  Avoids the 4-12s blank-screen Firebase-IndexedDB wait on TikTok/IG WebViews. */
+(function(){try{if(!localStorage.getItem('aura_has_session')){document.documentElement.style.visibility='hidden';window.location.replace('login.html');return;}}catch(e){}})();</script>
 <title>Style Quiz — Aura Glossy</title>
 <meta name="description" content="Take the Aura Glossy style quiz and discover your personal fashion aesthetic. 10 questions to find your unique style identity.">
 <meta property="og:title" content="Style Quiz — Aura Glossy">
@@ -15,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=24">
+<link rel="stylesheet" href="css/styles.css?v=29">
 </head>
 <body>
 
@@ -51,7 +54,7 @@
 
 <script src="js/data.js?v=7"></script>
 <script src="js/main.js?v=4"></script>
-<script src="js/animations.js?v=14"></script>
+<script src="js/animations.js?v=15"></script>
 <script>
 (function() {
   const container = document.getElementById('quiz-container');
@@ -325,7 +328,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=7"></script>
+<script src="js/firebase.js?v=9"></script>
 <script>
 function navAuthClick() { window.location.href = 'settings.html'; }
 initAuthGuard();
