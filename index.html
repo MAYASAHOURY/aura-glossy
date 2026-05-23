@@ -17,6 +17,12 @@
 <link rel="canonical" href="https://auraglossy.com/">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <script>
+/* Pre-paint lang/dir setter — chooses saved language, falls back to
+   browser language (en/es/ar/he) then 'en'. Sets <html dir="rtl"> for
+   ar/he so the page never flashes LTR before i18n.js runs. */
+(function(){try{var l=localStorage.getItem('aura_lang');if(!l){var nl=(navigator.language||'en').toLowerCase().slice(0,2);l=(['en','es','ar','he'].indexOf(nl)>=0)?nl:'en';}document.documentElement.lang=l;document.documentElement.dir=(l==='ar'||l==='he')?'rtl':'ltr';}catch(e){}})();
+</script>
+<script>
 /* ─────────────────────────────────────────────────────────────────
    AURA — SYNCHRONOUS AUTH GATE (must be first head script)
 
@@ -73,7 +79,7 @@
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=29">
+<link rel="stylesheet" href="css/styles.css?v=30">
 </head>
 <body>
 
@@ -146,29 +152,30 @@
 <nav class="nav">
   <a href="index.html" class="nav-logo">AURA GLOSS<span>Y</span></a>
   <ul class="nav-links">
-    <li><a href="index.html" class="active">Home</a></li>
-    <li><a href="quiz.html">Style Quiz</a></li>
-    <li><a href="#styles">Aesthetics</a></li>
-    <li><a href="moodboard.html">Moodboard</a></li>
-    <li><a href="community.html">Community</a></li>
-    <li><a href="brands.html">Partners</a></li>
+    <li><a href="index.html" class="active" data-i18n="nav.home">Home</a></li>
+    <li><a href="quiz.html" data-i18n="nav.quiz">Style Quiz</a></li>
+    <li><a href="#styles" data-i18n="nav.aesthetics">Aesthetics</a></li>
+    <li><a href="moodboard.html" data-i18n="nav.moodboard">Moodboard</a></li>
+    <li><a href="community.html" data-i18n="nav.community">Community</a></li>
+    <li><a href="brands.html" data-i18n="nav.partners">Partners</a></li>
   </ul>
-  <button class="nav-auth-btn" id="nav-auth-btn" onclick="navAuthClick()">Account</button>
-  <div class="nav-burger" aria-label="Open menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
+  <button class="nav-auth-btn" id="nav-auth-btn" onclick="navAuthClick()" data-i18n="nav.account">Account</button>
+  <div id="lang-switcher" class="nav-lang-slot"></div>
+  <div class="nav-burger" aria-label="Open menu" data-i18n-attr="aria-label:nav.open_menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
 </nav>
 
 <!-- HERO -->
 <section class="hero hero-minimal">
   <div class="hero-grid">
     <div class="hero-content" data-parallax="0.06">
-      <span class="eyebrow">A curated fashion universe</span>
-      <h1 class="hero-title">Discover your aesthetic.<br><em>Own your style.</em></h1>
+      <span class="eyebrow" data-i18n="hero.eyebrow">A curated fashion universe</span>
+      <h1 class="hero-title"><span data-i18n="hero.title_a">Discover your aesthetic.</span><br><em data-i18n="hero.title_b">Own your style.</em></h1>
       <div class="hero-actions">
         <a href="quiz.html" class="btn btn-large">
-          Take the Style Quiz
+          <span data-i18n="hero.cta_quiz">Take the Style Quiz</span>
           <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
-        <a href="#styles" class="btn btn-outline btn-large">Explore aesthetics</a>
+        <a href="#styles" class="btn btn-outline btn-large" data-i18n="hero.cta_explore">Explore aesthetics</a>
       </div>
     </div>
     <div class="hero-visual" data-parallax="0.14">
@@ -210,15 +217,16 @@
 <footer class="footer">
   <div class="container">
     <div class="footer-grid">
-      <div><div class="footer-brand">AURA GLOSS<span>Y</span></div><p class="footer-tagline">A curated fashion universe.</p></div>
-      <div class="footer-col"><h4>Discover</h4><ul><li><a href="quiz.html">Style quiz</a></li><li><a href="#styles">All aesthetics</a></li><li><a href="moodboard.html">Moodboard</a></li><li><a href="brands.html">Partners</a></li></ul></div>
-      <div class="footer-col"><h4>Aesthetics</h4><ul><li><a href="style.html#classic">Classic</a></li><li><a href="style.html#minimalist">Minimalist</a></li><li><a href="style.html#korean">Korean</a></li><li><a href="style.html#elegant">Elegant</a></li></ul></div>
-      <div class="footer-col"><h4>Shop partners</h4><ul><li>Zara · COS · Mango</li><li>H&M · Uniqlo · ASOS</li><li>SHEIN · Bershka · Pull&Bear</li><li>Nike · Adidas · Sephora</li></ul></div>
+      <div><div class="footer-brand">AURA GLOSS<span>Y</span></div><p class="footer-tagline" data-i18n="footer.tagline">A curated fashion universe.</p></div>
+      <div class="footer-col"><h4 data-i18n="footer.col_discover">Discover</h4><ul><li><a href="quiz.html" data-i18n="footer.link_quiz">Style quiz</a></li><li><a href="#styles" data-i18n="footer.link_all">All aesthetics</a></li><li><a href="moodboard.html" data-i18n="nav.moodboard">Moodboard</a></li><li><a href="brands.html" data-i18n="nav.partners">Partners</a></li></ul></div>
+      <div class="footer-col"><h4 data-i18n="footer.col_aesthetics">Aesthetics</h4><ul><li><a href="style.html#classic">Classic</a></li><li><a href="style.html#minimalist">Minimalist</a></li><li><a href="style.html#korean">Korean</a></li><li><a href="style.html#elegant">Elegant</a></li></ul></div>
+      <div class="footer-col"><h4 data-i18n="footer.col_partners">Shop partners</h4><ul><li>Zara · COS · Mango</li><li>H&M · Uniqlo · ASOS</li><li>SHEIN · Bershka · Pull&Bear</li><li>Nike · Adidas · Sephora</li></ul></div>
     </div>
-    <div class="footer-bottom"><span>© 2026 Aura Glossy</span><span>Designed with care, dressed with intention.</span></div>
+    <div class="footer-bottom"><span data-i18n="footer.copyright">© 2026 Aura Glossy</span><span data-i18n="footer.designed">Designed with care, dressed with intention.</span></div>
   </div>
 </footer>
 
+<script src="js/i18n.js?v=2" defer></script>
 <script src="js/intro.js?v=10" defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js" defer></script>
@@ -228,7 +236,7 @@
 <script src="js/monitor.js?v=2" defer></script>
 <script src="js/firebase.js?v=9" defer></script>
 <script src="js/animations.js?v=15" defer></script>
-<script src="js/onboarding.js?v=7" defer></script>
+<script src="js/onboarding.js?v=8" defer></script>
 <script>
 /* ─────────────────────────────────────────────────────────────────
    AURA — Homepage auth gate (PUBLIC-BY-DEFAULT, NON-BLOCKING)

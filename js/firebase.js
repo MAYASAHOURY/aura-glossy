@@ -146,15 +146,68 @@ async function fbLoadAll() {
   }
 }
 
-/* ── Quiz result save ──────────────────────────────────────── */
-/* Saves full quiz data: id, name, auraColor, mantra, breakdown, answers */
+/* ── Quiz result save ──────────────────────────────────────────────
+   Saves full quiz data: id, name, auraColor, mantra, breakdown, answers.
+
+   COMMUNITY-ACCESS INVARIANT (do not change without reading this):
+   A user belongs to exactly ONE community at any moment — the one whose
+   id matches users/{uid}.quizResult.id. A retake must therefore HARD
+   REPLACE the quizResult map, not deep-merge into it. We use update()
+   (replaces the whole `quizResult` field) and fall back to set() if the
+   user doc doesn't exist yet.
+
+   After a successful write we (1) mirror the latest id to localStorage
+   for synchronous reads, (2) bust client-side caches that were keyed to
+   the previous aesthetic, and (3) broadcast on the `aura_quiz` channel
+   so any other open tab/page invalidates immediately instead of waiting
+   for its Firestore snapshot to catch up.
+─────────────────────────────────────────────────────────────────── */
 async function fbSaveQuizResult(data) {
   var user = _auth.currentUser;
-  if (!user) return;
-  var payload = Object.assign({ completedAt: Date.now() }, data);
-  await _db.collection('users').doc(user.uid)
-    .set({ quizResult: payload }, { merge: true })
-    .catch(function(e) { console.warn('Quiz save failed:', e.message); });
+  if (!user || !data || !data.id) return;
+
+  var now = Date.now();
+  var payload = Object.assign({
+    completedAt: now,
+    updatedAt:   now
+  }, data);
+
+  var ref = _db.collection('users').doc(user.uid);
+
+  /* update() REPLACES the quizResult field entirely (no deep-merge).
+     If the user doc is missing (brand-new account), fall back to set. */
+  try {
+    await ref.update({ quizResult: payload });
+  } catch(e) {
+    if (e && (e.code === 'not-found' || /No document to update/i.test(e.message || ''))) {
+      try {
+        await ref.set({ quizResult: payload });
+      } catch(err) {
+        console.warn('Quiz save (set fallback) failed:', err.message);
+        return;
+      }
+    } else {
+      console.warn('Quiz save failed:', e.message);
+      return;
+    }
+  }
+
+  /* Synchronous mirror — lets any code read the latest id without waiting
+     for Firestore. Used by client-side gates and the cache-bust check. */
+  try { localStorage.setItem('aura_quiz_id', payload.id); } catch(e) {}
+
+  /* Bust client-side caches that may have been keyed to the previous result */
+  try { sessionStorage.removeItem('aura_liked_ae'); } catch(e) {}
+
+  /* Cross-tab broadcast — other open pages bust their caches and re-render
+     against the latest id immediately, without waiting on snapshot latency. */
+  try {
+    if (typeof BroadcastChannel !== 'undefined') {
+      var ch = new BroadcastChannel('aura_quiz');
+      ch.postMessage({ type: 'quiz-changed', uid: user.uid, id: payload.id, updatedAt: now });
+      ch.close();
+    }
+  } catch(e) {}
 }
 
 /* ── Recently viewed aesthetics ────────────────────────────── */
@@ -230,6 +283,70 @@ async function fbGetLikedAesthetics() {
   window.addEventListener('offline', _showBanner);
   if (!navigator.onLine) _showBanner();
 })();
+
+/* ── Quiz identity mirror & live aesthetic gate ────────────────────
+   `aura_quiz_id` is a synchronous mirror of users/{uid}.quizResult.id.
+   It is the single client-side source of truth for "which community
+   does this user currently belong to" — read it instead of stashing
+   a copy anywhere else, so old-aesthetic access can never leak from
+   stale state. The mirror is refreshed on every auth state change and
+   on every cross-tab `aura_quiz` broadcast.
+─────────────────────────────────────────────────────────────────── */
+function getCurrentQuizId() {
+  try { return localStorage.getItem('aura_quiz_id') || null; }
+  catch(e) { return null; }
+}
+
+/* Confirm with Firestore — used by pages that need the freshest value */
+async function refreshQuizIdMirror() {
+  var user = _auth.currentUser;
+  if (!user) {
+    try { localStorage.removeItem('aura_quiz_id'); } catch(e) {}
+    return null;
+  }
+  try {
+    var snap = await _db.collection('users').doc(user.uid).get();
+    var id   = snap.exists && snap.data() && snap.data().quizResult && snap.data().quizResult.id;
+    try {
+      if (id) localStorage.setItem('aura_quiz_id', id);
+      else    localStorage.removeItem('aura_quiz_id');
+    } catch(e) {}
+    return id || null;
+  } catch(e) {
+    return getCurrentQuizId();
+  }
+}
+
+/* Maintain the mirror automatically as auth changes. On sign-out we
+   clear it so a different user (or a guest) cannot inherit access. */
+_auth.onAuthStateChanged(function(user) {
+  if (user) {
+    /* Sign-in / re-auth: pull the latest id from Firestore. The page's
+       own listeners may also fire — this is just defensive. */
+    refreshQuizIdMirror();
+  } else {
+    try { localStorage.removeItem('aura_quiz_id'); } catch(e) {}
+    try { sessionStorage.removeItem('aura_liked_ae'); } catch(e) {}
+  }
+});
+
+/* Cross-tab quiz-change listener: bust caches + refresh the mirror.
+   Pages that care about live state (community.js) attach their own
+   re-render logic on top of this via the same channel. */
+var _quizChannel = null;
+try { _quizChannel = new BroadcastChannel('aura_quiz'); } catch(e) {}
+if (_quizChannel) {
+  _quizChannel.onmessage = function(e) {
+    if (!e || !e.data || e.data.type !== 'quiz-changed') return;
+    var user = _auth.currentUser;
+    if (!user || (e.data.uid && e.data.uid !== user.uid)) return;
+    try {
+      if (e.data.id) localStorage.setItem('aura_quiz_id', e.data.id);
+      else           localStorage.removeItem('aura_quiz_id');
+    } catch(_) {}
+    try { sessionStorage.removeItem('aura_liked_ae'); } catch(_) {}
+  };
+}
 
 /* ── Multi-tab logout sync via BroadcastChannel ────────────── */
 var _authChannel = null;

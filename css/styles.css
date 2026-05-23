@@ -11239,3 +11239,240 @@ a, button, [role="button"], input, textarea, select,
   }
   .onboard-tooltip--in { transform: none; }
 }
+
+/* ================================================================
+   i18n — language switcher UI + RTL layout adjustments
+
+   Slot markup (any page can include this in the nav):
+     <div id="lang-switcher"></div>           (mobile burger menu)
+     <div id="lang-switcher-settings"></div>  (settings page)
+
+   i18n.js auto-fills the slot with a pill selector showing each
+   language in its NATIVE script (English / Español / العربية / עברית).
+   ================================================================ */
+
+/* ── Slot in the nav: hidden on desktop, visible inside open burger ── */
+.nav-lang-slot {
+  display: none;   /* hidden by default; shown when burger opens on mobile */
+}
+@media (max-width: 768px) {
+  .nav.nav-open .nav-lang-slot {
+    display: block;
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    margin-top: 0;
+    /* When burger menu is open, this sits below .nav-links inside the
+       drop-down panel. Position is relative to the .nav-open .nav-links
+       which is `position: fixed; top: 60px` already. */
+  }
+  /* Actually place it inside the .nav-open .nav-links flow. We use a
+     "second pinned panel" approach so the existing .nav-links list isn't
+     disturbed. */
+  .nav.nav-open .nav-lang-slot {
+    position: static;
+    margin: 8px 0 0;
+    padding: 0;
+    background: transparent;
+    border-bottom: none;
+  }
+}
+
+/* The .aura-lang widget itself */
+.aura-lang {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.aura-lang-label {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft, #5b524a);
+}
+.aura-lang-pills {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.aura-lang-pill {
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 12px;
+  padding: 7px 12px;
+  border: 1px solid rgba(10, 10, 10, 0.14);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink, #2a2520);
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  /* Each pill's text uses its own language's font via lang="xx" attr */
+  white-space: nowrap;
+}
+.aura-lang-pill:hover {
+  background: rgba(10, 10, 10, 0.04);
+  border-color: rgba(10, 10, 10, 0.25);
+}
+.aura-lang-pill.is-active {
+  background: var(--ink, #2a2520);
+  color: var(--bg, #fbf8f4);
+  border-color: var(--ink, #2a2520);
+}
+.aura-lang-pill[lang="ar"]   { font-size: 13px; }
+.aura-lang-pill[lang="he"]   { font-size: 13px; }
+
+/* In the burger menu we want this stacked + more breathing room */
+.nav.nav-open .nav-lang-slot .aura-lang {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 0 4px;
+  border-top: 1px solid var(--border, #e8e4df);
+  margin-top: 6px;
+}
+
+/* Settings page slot: dedicated row */
+#lang-switcher-settings {
+  margin-top: 8px;
+}
+#lang-switcher-settings .aura-lang {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+#lang-switcher-settings .aura-lang-label {
+  font-size: 9px;
+}
+#lang-switcher-settings .aura-lang-pills {
+  width: 100%;
+  justify-content: stretch;
+}
+#lang-switcher-settings .aura-lang-pill {
+  flex: 1 1 0;
+  padding: 9px 8px;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* ================================================================
+   RTL layout adjustments — applied when <html dir="rtl">
+
+   Strategy: do as little as possible. Flexbox automatically reverses
+   for `dir="rtl"`, so most layouts Just Work. We only override where:
+     • text-align was explicitly set
+     • absolute positioning uses left/right
+     • icons / chevrons should flip
+   ================================================================ */
+
+/* Body keeps the same fonts but Arabic/Hebrew need glyph fallbacks */
+html[lang="ar"] {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Arabic',
+               'Geeza Pro', 'Tahoma', 'Arial', sans-serif;
+}
+html[lang="he"] {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Hebrew',
+               'Arial Hebrew', 'Tahoma', 'Arial', sans-serif;
+}
+/* Playfair Display doesn't carry Arabic/Hebrew glyphs — fall back to
+   system serifs for display-font headlines in those scripts. */
+html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3,
+html[lang="ar"] .nav-logo, html[lang="ar"] .hero-title,
+html[lang="ar"] .settings-title, html[lang="ar"] .onboard-headline {
+  font-family: 'Cairo', 'Tajawal', 'Amiri', 'Times New Roman', serif;
+}
+html[lang="he"] h1, html[lang="he"] h2, html[lang="he"] h3,
+html[lang="he"] .nav-logo, html[lang="he"] .hero-title,
+html[lang="he"] .settings-title, html[lang="he"] .onboard-headline {
+  font-family: 'Frank Ruhl Libre', 'David Libre', 'Arial Hebrew',
+               'Times New Roman', serif;
+}
+
+/* Hero text alignment flips */
+html[dir="rtl"] .hero-content,
+html[dir="rtl"] .moodboard-header,
+html[dir="rtl"] .settings-heading,
+html[dir="rtl"] .quiz-page,
+html[dir="rtl"] .footer-grid > *,
+html[dir="rtl"] .footer-col {
+  text-align: right;
+}
+html[dir="rtl"] .hero-actions { justify-content: flex-end; }
+
+/* Footer bottom row — flex auto-reverses already, just keep alignment */
+html[dir="rtl"] .footer-bottom { direction: rtl; }
+
+/* CTA arrow icons flip horizontally so they "point" toward end-of-line */
+html[dir="rtl"] .btn-arrow {
+  transform: scaleX(-1);
+}
+
+/* Hero image cluster uses absolute positioning with left/right — swap them.
+   On wide screens this matters; on mobile the whole hero-visual is
+   already responsive. */
+html[dir="rtl"] .hero-img-1 { left: auto; right: 0; }
+html[dir="rtl"] .hero-img-2 { left: auto; right: auto; }
+html[dir="rtl"] .hero-img-3 { right: auto; left: 0; }
+
+/* Nav: flex order is auto-reversed by dir=rtl. Just make sure the
+   burger sits at the visual leading edge in mobile RTL. */
+html[dir="rtl"] .nav-burger { margin-left: 0; margin-right: auto; }
+
+/* Mobile nav-open menu — items left-align on RTL becomes right-align */
+@media (max-width: 768px) {
+  html[dir="rtl"] .nav.nav-open .nav-links {
+    align-items: flex-end;
+  }
+  html[dir="rtl"] .nav.nav-open .nav-lang-slot .aura-lang {
+    align-items: flex-end;
+  }
+}
+
+/* Onboarding tooltip — beak alignment is symmetric, just make sure text
+   reads RTL. The card itself already has dir inherited from <html>. */
+html[dir="rtl"] .onboard-tooltip {
+  text-align: right;
+}
+html[dir="rtl"] .onboard-actions {
+  flex-direction: row-reverse;
+}
+html[dir="rtl"] .onboard-x {
+  right: auto;
+  left: 11px;
+}
+@media (max-width: 680px) {
+  html[dir="rtl"] .onboard-x { left: 8px; right: auto; }
+}
+
+/* Community composer: textarea aligned to start, which RTL flips */
+html[dir="rtl"] .composer-text,
+html[dir="rtl"] .comment-input,
+html[dir="rtl"] .composer-img-input,
+html[dir="rtl"] input,
+html[dir="rtl"] textarea {
+  text-align: right;
+}
+
+/* Login form: tabs & switch text */
+html[dir="rtl"] .auth-tab { margin-right: 0; margin-left: 28px; }
+
+/* Style cards (homepage grid): numbers in corner, overlay text alignment */
+html[dir="rtl"] .style-card-num { left: auto; right: 16px; }
+html[dir="rtl"] .style-card-tag { right: auto; left: 16px; }
+html[dir="rtl"] .style-card-overlay { text-align: right; }
+
+/* Quiz options: keep icons on the start side via flexbox auto-flip */
+html[dir="rtl"] .quiz-option { text-align: right; }
+html[dir="rtl"] .quiz-nav    { flex-direction: row-reverse; }
+
+/* Settings circle rows — labels start-aligned, values end-aligned */
+html[dir="rtl"] .s-row { flex-direction: row-reverse; }
+
+/* Mobile menu link panel: ensure right-edge alignment in RTL */
+@media (max-width: 768px) {
+  html[dir="rtl"] .nav.nav-open .nav-links {
+    text-align: right;
+  }
+}

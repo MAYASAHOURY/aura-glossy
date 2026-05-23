@@ -49,7 +49,8 @@
 
   /* ---- Tour steps -------------------------------------------------
      Each anchored step targets a real element that exists on the
-     homepage. Copy is deliberately tiny — one short sentence each.
+     homepage. Copy is read from the i18n dictionary so the entire
+     tour translates instantly when the user switches language.
 
      `target`        — selector used on desktop (always-visible nav link)
      `mobileTarget`  — selector used on mobile, where nav-links are
@@ -59,42 +60,66 @@
                        mobile target is visible inside it.
      `mobileScrollTo`— before showing, smooth-scroll this selector
                        into the upper third of the viewport. */
-  var STEPS = [
-    {
-      welcome:  true,
-      headline: 'Welcome to Aura.',
-      body:     'A quick look at where to start.'
-    },
-    {
-      target:        '.nav-links a[href="quiz.html"]',
-      mobileTarget:  '.hero-actions a[href="quiz.html"]',
-      mobileScrollTo:'.hero',
-      headline:      'Start with the quiz.',
-      body:          'Find your style in 10 questions.'
-    },
-    {
-      target:        '.nav-links a[href="community.html"]',
-      mobileTarget:  '.nav.nav-open .nav-links a[href="community.html"]',
-      mobileOpenMenu:true,
-      headline:      'Join your circle.',
-      body:          'Meet people who share your taste.'
-    },
-    {
-      target:        '.nav-links a[href="moodboard.html"]',
-      mobileTarget:  '.nav.nav-open .nav-links a[href="moodboard.html"]',
-      mobileOpenMenu:true,
-      headline:      'Save looks you love.',
-      body:          'Build your inspiration.'
-    },
-    {
-      target:        '.nav-links a[href="#styles"]',
-      mobileTarget:  '#styles .style-card:first-child',
-      mobileScrollTo:'#styles',
-      headline:      'Find your style.',
-      body:          'Browse curated aesthetics.',
-      final:         true
-    }
-  ];
+  function _t(key, fallback) {
+    if (window.Aura && window.Aura.i18n) return window.Aura.i18n.t(key) || fallback;
+    return fallback;
+  }
+  function buildSteps() {
+    return [
+      {
+        welcome:  true,
+        headline: _t('onboarding.welcome_headline', 'Welcome to Aura.'),
+        body:     _t('onboarding.welcome_body',     'A quick look at where to start.')
+      },
+      {
+        target:        '.nav-links a[href="quiz.html"]',
+        mobileTarget:  '.hero-actions a[href="quiz.html"]',
+        mobileScrollTo:'.hero',
+        headline:      _t('onboarding.quiz_headline', 'Start with the quiz.'),
+        body:          _t('onboarding.quiz_body',     'Find your style in 10 questions.')
+      },
+      {
+        target:        '.nav-links a[href="community.html"]',
+        mobileTarget:  '.nav.nav-open .nav-links a[href="community.html"]',
+        mobileOpenMenu:true,
+        headline:      _t('onboarding.community_headline', 'Join your circle.'),
+        body:          _t('onboarding.community_body',     'Meet people who share your taste.')
+      },
+      {
+        target:        '.nav-links a[href="moodboard.html"]',
+        mobileTarget:  '.nav.nav-open .nav-links a[href="moodboard.html"]',
+        mobileOpenMenu:true,
+        headline:      _t('onboarding.moodboard_headline', 'Save looks you love.'),
+        body:          _t('onboarding.moodboard_body',     'Build your inspiration.')
+      },
+      {
+        target:        '.nav-links a[href="#styles"]',
+        mobileTarget:  '#styles .style-card:first-child',
+        mobileScrollTo:'#styles',
+        headline:      _t('onboarding.aesthetics_headline', 'Find your style.'),
+        body:          _t('onboarding.aesthetics_body',     'Browse curated aesthetics.')
+      },
+      {
+        /* Language-selector step — points at the lang switcher inside
+           the burger menu (on desktop the switcher is also in the menu). */
+        target:        '#lang-switcher .aura-lang-pills',
+        mobileTarget:  '.nav.nav-open #lang-switcher .aura-lang-pills',
+        mobileOpenMenu:true,
+        headline:      _t('onboarding.lang_headline', 'Aura speaks your language.'),
+        body:          _t('onboarding.lang_body',     'Switch languages anytime here.'),
+        final:         true
+      }
+    ];
+  }
+  var STEPS = buildSteps();
+
+  /* Re-build steps when the user switches language so subsequent
+     renders use the new translations. If the tour is currently open,
+     re-render the active step to update the visible copy. */
+  window.addEventListener('aura:langchange', function () {
+    STEPS = buildSteps();
+    if (document.getElementById('onboard-overlay')) _render(_step);
+  });
 
   /* ---- State ------------------------------------------------------ */
   var _el       = {};      /* { overlay, spotlight, tooltip, beak }     */
@@ -280,16 +305,19 @@
       dots += '<span class="onboard-dot' + (i === idx ? ' onboard-dot--on' : '') + '"></span>';
     }
 
-    var nextLabel = step.final   ? 'Start exploring ✦'
-                  : step.welcome ? 'Show me around →'
-                  :                'Next →';
+    var nextLabel = step.final   ? _t('onboarding.next_final', 'Start exploring ✦')
+                  : step.welcome ? _t('onboarding.next_show',  'Show me around →')
+                  :                _t('common.next',           'Next →');
+    var backLabel = _t('common.back', 'Back');
+    var skipLabel = _t('common.skip', 'Skip');
+    var eyebrowTx = _t('onboarding.eyebrow', 'Aura Guide');
 
     var html =
       '<span class="onboard-beak"></span>' +
-      '<button class="onboard-x" type="button" aria-label="Close guide">×</button>';
+      '<button class="onboard-x" type="button" aria-label="' + _t('common.close', 'Close') + '">×</button>';
 
     if (step.welcome) {
-      html += '<div class="onboard-eyebrow">Aura Guide</div>' +
+      html += '<div class="onboard-eyebrow">' + eyebrowTx + '</div>' +
               '<div class="onboard-mark">✦</div>';
     }
 
@@ -298,14 +326,14 @@
       '<p class="onboard-body">'      + step.body     + '</p>' +
       '<div class="onboard-actions">' +
         (idx > 0
-          ? '<button class="onboard-back" type="button">Back</button>'
+          ? '<button class="onboard-back" type="button">' + backLabel + '</button>'
           : '<span></span>') +
         '<button class="onboard-next' + (step.final ? ' onboard-next--final' : '') +
           '" type="button">' + nextLabel + '</button>' +
       '</div>' +
       '<div class="onboard-footer">' +
         '<div class="onboard-dots">' + dots + '</div>' +
-        '<button class="onboard-skip" type="button">Skip</button>' +
+        '<button class="onboard-skip" type="button">' + skipLabel + '</button>' +
       '</div>';
 
     _el.tooltip.innerHTML = html;
