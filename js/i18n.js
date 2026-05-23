@@ -219,11 +219,14 @@
         title_a: 'Account', title_b: 'settings.',
         row_name: 'Name', row_email: 'Email', row_provider: 'Provider',
         row_aesthetic: 'Aesthetic', row_community: 'Community',
+        row_moodboard: 'Moodboard', row_liked: 'Liked', row_viewed: 'Viewed',
         row_joined: 'Joined', row_language: 'Language',
-        signout_btn: 'Sign out',
-        moodboard_link: 'View my Moodboard →',
+        signout_btn: 'Sign Out',
+        my_circle: 'My Style Circle →',
+        moodboard_link: 'View Moodboard →',
         quiz_link: 'Take the style quiz →',
-        replay_guide: 'Replay Aura Guide',
+        replay_guide: 'Replay Aura Guide ✦',
+        back_home: 'Back to Homepage',
         no_quiz_yet: 'Not taken yet'
       },
       onboarding: {
@@ -420,11 +423,14 @@
         title_a: 'Ajustes de', title_b: 'cuenta.',
         row_name: 'Nombre', row_email: 'Correo', row_provider: 'Proveedor',
         row_aesthetic: 'Estética', row_community: 'Comunidad',
+        row_moodboard: 'Moodboard', row_liked: 'Me gusta', row_viewed: 'Vistos',
         row_joined: 'Miembro desde', row_language: 'Idioma',
         signout_btn: 'Cerrar sesión',
+        my_circle: 'Mi círculo de estilo →',
         moodboard_link: 'Ver mi Moodboard →',
         quiz_link: 'Hacer el quiz de estilo →',
-        replay_guide: 'Repetir la guía de Aura',
+        replay_guide: 'Repetir la guía de Aura ✦',
+        back_home: 'Volver a inicio',
         no_quiz_yet: 'Aún no realizado'
       },
       onboarding: {
@@ -616,11 +622,14 @@
         title_a: 'إعدادات', title_b: 'الحساب.',
         row_name: 'الاسم', row_email: 'البريد', row_provider: 'مزوّد الحساب',
         row_aesthetic: 'الجمالية', row_community: 'المجتمع',
+        row_moodboard: 'لوحة الإلهام', row_liked: 'المُعجَب بها', row_viewed: 'الأخيرة',
         row_joined: 'تاريخ الانضمام', row_language: 'اللغة',
         signout_btn: 'تسجيل الخروج',
+        my_circle: 'دائرة أسلوبي ←',
         moodboard_link: 'عرض لوحتي ←',
         quiz_link: 'ابدأ اختبار الستايل ←',
-        replay_guide: 'إعادة دليل Aura',
+        replay_guide: 'إعادة دليل Aura ✦',
+        back_home: 'العودة إلى الصفحة الرئيسية',
         no_quiz_yet: 'لم تأخذه بعد'
       },
       onboarding: {
@@ -811,11 +820,14 @@
         title_a: 'הגדרות', title_b: 'החשבון.',
         row_name: 'שם', row_email: 'אימייל', row_provider: 'ספק',
         row_aesthetic: 'אסתטיקה', row_community: 'קהילה',
+        row_moodboard: 'לוח השראה', row_liked: 'לייקים', row_viewed: 'נצפו',
         row_joined: 'תאריך הצטרפות', row_language: 'שפה',
         signout_btn: 'התנתקות',
+        my_circle: 'מעגל הסגנון שלי ←',
         moodboard_link: 'לוח ההשראה שלי ←',
         quiz_link: 'התחלת חידון סגנון ←',
-        replay_guide: 'הפעלת מדריך Aura מחדש',
+        replay_guide: 'הפעלת מדריך Aura מחדש ✦',
+        back_home: 'חזרה לדף הבית',
         no_quiz_yet: 'עוד לא בוצע'
       },
       onboarding: {
@@ -1047,21 +1059,22 @@
       opt.setAttribute('data-lang', code);
       opt.setAttribute('lang', code);
 
-      var flag = document.createElement('span');
-      flag.className = 'aura-lang-option-flag';
-      flag.setAttribute('aria-hidden', 'true');
-      flag.textContent = FLAG[code] || '';
-      opt.appendChild(flag);
-
+      /* Just the native name — no codes, no flags. Clean and premium. */
       var nm = document.createElement('span');
       nm.className = 'aura-lang-option-name';
       nm.textContent = DISPLAY[code] || code;
       opt.appendChild(nm);
 
-      var cd = document.createElement('span');
-      cd.className = 'aura-lang-option-code';
-      cd.textContent = code.toUpperCase();
-      opt.appendChild(cd);
+      /* Small checkmark on the active row — communicates "selected"
+         without a heavy background fill. */
+      var check = document.createElement('span');
+      check.className = 'aura-lang-option-check';
+      check.setAttribute('aria-hidden', 'true');
+      check.innerHTML =
+        '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+          '<polyline points="3 8.5 6.5 12 13 5"/>' +
+        '</svg>';
+      opt.appendChild(check);
 
       opt.addEventListener('click', function (e) {
         e.stopPropagation();

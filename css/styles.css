@@ -11389,31 +11389,188 @@ html[dir="rtl"] .onboard-tooltip--hero .onboard-x {
    language in its NATIVE script (English / Español / العربية / עברית).
    ================================================================ */
 
-/* ── Slot in the nav: hidden on desktop, visible inside open burger ── */
+/* ── Slot placement ────────────────────────────────────────────
+   Desktop: visible inline in the nav (next to Account button).
+   Mobile: hidden until the burger menu opens, then it appears at
+   the top of the open menu panel.
+─────────────────────────────────────────────────────────────── */
 .nav-lang-slot {
-  display: none;   /* hidden by default; shown when burger opens on mobile */
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
 }
+html[dir="rtl"] .nav-lang-slot { margin-right: 0; margin-left: 8px; }
+
 @media (max-width: 768px) {
+  .nav-lang-slot { display: none; }
   .nav.nav-open .nav-lang-slot {
     display: block;
-    position: fixed;
-    top: auto;
-    left: 0;
-    right: 0;
-    margin-top: 0;
-    /* When burger menu is open, this sits below .nav-links inside the
-       drop-down panel. Position is relative to the .nav-open .nav-links
-       which is `position: fixed; top: 60px` already. */
-  }
-  /* Actually place it inside the .nav-open .nav-links flow. We use a
-     "second pinned panel" approach so the existing .nav-links list isn't
-     disturbed. */
-  .nav.nav-open .nav-lang-slot {
     position: static;
-    margin: 8px 0 0;
+    margin: 4px 0 12px;
     padding: 0;
     background: transparent;
     border-bottom: none;
+  }
+}
+
+/* ================================================================
+   NEW: dropdown-style language switcher
+   ── Trigger: globe icon + current native name + chevron
+   ── Menu:    popover with flag + native name + uppercase code
+   The legacy `.aura-lang-pill` styles below are kept for back-compat
+   but are no longer rendered by buildSwitcher().
+================================================================ */
+
+.aura-lang-dropdown {
+  position: relative;
+  display: inline-block;
+  /* Resets so we don't inherit the burger-menu vertical layout */
+  background: transparent;
+}
+
+.aura-lang-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px 7px 11px;
+  background: transparent;
+  border: 1px solid rgba(10, 10, 10, 0.18);
+  border-radius: 999px;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 13px;
+  line-height: 1;
+  color: var(--ink, #2a2520);
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+  white-space: nowrap;
+}
+.aura-lang-trigger:hover {
+  background: rgba(10, 10, 10, 0.045);
+  border-color: rgba(10, 10, 10, 0.32);
+}
+.aura-lang-trigger:focus-visible {
+  outline: 2px solid rgba(10, 10, 10, 0.55);
+  outline-offset: 2px;
+}
+
+.aura-lang-trigger-globe {
+  width: 15px;
+  height: 15px;
+  opacity: 0.78;
+  flex-shrink: 0;
+}
+.aura-lang-trigger-name {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+/* RTL/Arabic and Hebrew labels render slightly larger so glyph weight matches */
+.aura-lang-trigger-name[lang="ar"],
+.aura-lang-trigger-name[lang="he"] { font-size: 14px; }
+.aura-lang-trigger-chevron {
+  width: 10px;
+  height: 10px;
+  opacity: 0.55;
+  flex-shrink: 0;
+  transition: transform 0.18s ease;
+}
+.aura-lang-dropdown.is-open .aura-lang-trigger-chevron {
+  transform: rotate(180deg);
+}
+
+/* ── Popover ────────────────────────────────────────────────── */
+.aura-lang-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  padding: 6px;
+  background: var(--bg, #fbf8f4);
+  border: 1px solid rgba(10, 10, 10, 0.10);
+  border-radius: 14px;
+  box-shadow:
+    0 14px 36px rgba(10, 10, 10, 0.10),
+    0 2px 6px  rgba(10, 10, 10, 0.04);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+  z-index: 200;
+}
+.aura-lang-dropdown.is-open .aura-lang-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0s;
+}
+
+/* RTL: menu hangs from the trigger's start edge instead of the end */
+html[dir="rtl"] .aura-lang-menu { right: auto; left: 0; }
+
+/* ── Option rows ───────────────────────────────────────────── */
+.aura-lang-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 13px;
+  color: var(--ink, #2a2520);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.14s ease;
+  /* Each row uses its language's font so e.g. עברית renders correctly */
+}
+html[dir="rtl"] .aura-lang-option { text-align: right; }
+.aura-lang-option:hover  { background: rgba(10, 10, 10, 0.045); }
+.aura-lang-option:focus-visible {
+  outline: none;
+  background: rgba(10, 10, 10, 0.06);
+}
+.aura-lang-option.is-active {
+  background: rgba(10, 10, 10, 0.08);
+}
+
+.aura-lang-option-name {
+  flex: 1;
+  font-weight: 500;
+}
+.aura-lang-option-name[lang="ar"],
+.aura-lang-option-name[lang="he"] { font-size: 14px; }
+/* Checkmark — visible only on the currently-selected language */
+.aura-lang-option-check {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  opacity: 0;
+  color: var(--rose, #c98b86);
+  transition: opacity 0.14s ease;
+}
+.aura-lang-option-check svg { width: 100%; height: 100%; display: block; }
+.aura-lang-option.is-active .aura-lang-option-check { opacity: 1; }
+.aura-lang-option.is-active { color: var(--ink, #2a2520); background: rgba(10, 10, 10, 0.05); }
+
+/* Inside the burger menu on mobile: trigger fills width, menu is static */
+@media (max-width: 768px) {
+  .nav.nav-open .nav-lang-slot .aura-lang-dropdown {
+    display: block;
+    width: 100%;
+  }
+  .nav.nav-open .nav-lang-slot .aura-lang-trigger {
+    width: 100%;
+    justify-content: space-between;
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  .nav.nav-open .nav-lang-slot .aura-lang-menu {
+    position: static;
+    width: 100%;
+    margin-top: 6px;
+    box-shadow: none;
+    border: 1px solid rgba(10, 10, 10, 0.08);
   }
 }
 

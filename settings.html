@@ -213,14 +213,14 @@
 <section class="settings-page">
 
   <div class="settings-heading">
-    <p class="settings-eyebrow">Your profile</p>
-    <h1 class="settings-title">Account <em>settings.</em></h1>
+    <p class="settings-eyebrow" data-i18n="settings.eyebrow">Your profile</p>
+    <h1 class="settings-title"><span data-i18n="settings.title_a">Account</span> <em data-i18n="settings.title_b">settings.</em></h1>
   </div>
 
   <div class="settings-circle">
 
     <!-- LOADING -->
-    <div id="state-loading" class="s-loading">Loading…</div>
+    <div id="state-loading" class="s-loading" data-i18n="common.loading">Loading…</div>
 
     <!-- SIGNED IN -->
     <div id="state-signedin" style="display:none; width:100%; flex-direction:column; align-items:center;">
@@ -235,45 +235,45 @@
 
       <div class="s-rows">
         <div class="s-row">
-          <span class="s-row-label">Name</span>
+          <span class="s-row-label" data-i18n="settings.row_name">Name</span>
           <span class="s-row-value" id="r-name">…</span>
         </div>
         <div class="s-row">
-          <span class="s-row-label">Email</span>
+          <span class="s-row-label" data-i18n="settings.row_email">Email</span>
           <span class="s-row-value" id="r-email">…</span>
         </div>
         <div class="s-row">
-          <span class="s-row-label">Provider</span>
+          <span class="s-row-label" data-i18n="settings.row_provider">Provider</span>
           <span class="s-row-value" id="r-provider">…</span>
         </div>
         <div class="s-row">
-          <span class="s-row-label">Aesthetic</span>
+          <span class="s-row-label" data-i18n="settings.row_aesthetic">Aesthetic</span>
           <span class="s-row-value" id="r-aesthetic">…</span>
         </div>
         <div class="s-row">
-          <span class="s-row-label">Community</span>
+          <span class="s-row-label" data-i18n="settings.row_community">Community</span>
           <span class="s-row-value" id="r-community">…</span>
         </div>
         <div class="s-row">
-          <span class="s-row-label">Moodboard</span>
+          <span class="s-row-label" data-i18n="settings.row_moodboard">Moodboard</span>
           <span class="s-row-value" id="r-moodboard">…</span>
         </div>
         <div class="s-row">
-          <span class="s-row-label">Liked</span>
+          <span class="s-row-label" data-i18n="settings.row_liked">Liked</span>
           <span class="s-row-value" id="r-liked">…</span>
         </div>
         <div class="s-row">
-          <span class="s-row-label">Viewed</span>
+          <span class="s-row-label" data-i18n="settings.row_viewed">Viewed</span>
           <span class="s-row-value" id="r-recent">…</span>
         </div>
       </div>
 
       <div class="s-actions">
-        <a href="community.html" class="s-btn s-btn-primary" id="s-circle-btn" data-go-my-community style="display:none">My Style Circle →</a>
-        <a href="moodboard.html" class="s-btn s-btn-outline">View Moodboard →</a>
-        <a href="index.html?onboard=1" class="s-btn s-btn-outline">Replay Aura Guide ✦</a>
-        <a href="index.html" class="s-btn s-btn-outline">Back to Homepage</a>
-        <button class="s-btn s-btn-signout" id="signout-btn">Sign Out</button>
+        <a href="community.html" class="s-btn s-btn-primary" id="s-circle-btn" data-go-my-community data-i18n="settings.my_circle" style="display:none">My Style Circle →</a>
+        <a href="moodboard.html" class="s-btn s-btn-outline" data-i18n="settings.moodboard_link">View Moodboard →</a>
+        <a href="index.html?onboard=1" class="s-btn s-btn-outline" data-i18n="settings.replay_guide">Replay Aura Guide ✦</a>
+        <a href="index.html" class="s-btn s-btn-outline" data-i18n="settings.back_home">Back to Homepage</a>
+        <button class="s-btn s-btn-signout" id="signout-btn" data-i18n="settings.signout_btn">Sign Out</button>
       </div>
 
     </div>
@@ -285,7 +285,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="js/i18n.js?v=5"></script>
+<script src="js/i18n.js?v=6"></script>
 <script src="js/monitor.js?v=2"></script>
 <script src="js/firebase.js?v=10"></script>
 <script src="js/animations.js?v=15"></script>
