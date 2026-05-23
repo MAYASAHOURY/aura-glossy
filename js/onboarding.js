@@ -66,48 +66,47 @@
   }
   function buildSteps() {
     return [
+      /* ── Step 1: full-screen WELCOME hero card ─────────────────── */
       {
         welcome:  true,
-        headline: _t('onboarding.welcome_headline', 'Welcome to Aura.'),
-        body:     _t('onboarding.welcome_body',     'A quick look at where to start.')
+        hero:     true,                   /* full-screen centered card */
+        headline: _t('onboarding.welcome_headline', 'Welcome to Aura Glossy'),
+        body:     _t('onboarding.welcome_body',     'A short tour. Three quick stops, then you\'re off.')
       },
+
+      /* ── Step 2: STYLE QUIZ — spotlight ────────────────────────── */
       {
         target:        '.nav-links a[href="quiz.html"]',
         mobileTarget:  '.hero-actions a[href="quiz.html"]',
         mobileScrollTo:'.hero',
-        headline:      _t('onboarding.quiz_headline', 'Start with the quiz.'),
-        body:          _t('onboarding.quiz_body',     'Find your style in 10 questions.')
+        headline:      _t('onboarding.quiz_headline', 'I suggest starting with the quiz.'),
+        body:          _t('onboarding.quiz_body',     'It helps Aura discover your style.')
       },
+
+      /* ── Step 3: COMMUNITY — spotlight ─────────────────────────── */
       {
         target:        '.nav-links a[href="community.html"]',
         mobileTarget:  '.nav.nav-open .nav-links a[href="community.html"]',
         mobileOpenMenu:true,
-        headline:      _t('onboarding.community_headline', 'Join your circle.'),
-        body:          _t('onboarding.community_body',     'Meet people who share your taste.')
+        headline:      _t('onboarding.community_headline', 'This is your community.'),
+        body:          _t('onboarding.community_body',     'Based on your quiz answers.')
       },
-      {
-        target:        '.nav-links a[href="moodboard.html"]',
-        mobileTarget:  '.nav.nav-open .nav-links a[href="moodboard.html"]',
-        mobileOpenMenu:true,
-        headline:      _t('onboarding.moodboard_headline', 'Save looks you love.'),
-        body:          _t('onboarding.moodboard_body',     'Build your inspiration.')
-      },
+
+      /* ── Step 4: AESTHETICS — spotlight ────────────────────────── */
       {
         target:        '.nav-links a[href="#styles"]',
         mobileTarget:  '#styles .style-card:first-child',
         mobileScrollTo:'#styles',
-        headline:      _t('onboarding.aesthetics_headline', 'Find your style.'),
-        body:          _t('onboarding.aesthetics_body',     'Browse curated aesthetics.')
+        headline:      _t('onboarding.aesthetics_headline', 'Explore every aesthetic.'),
+        body:          _t('onboarding.aesthetics_body',     'You can browse them all here — it\'s really interesting.')
       },
+
+      /* ── Step 5: full-screen FINAL hero card ───────────────────── */
       {
-        /* Language-selector step — points at the lang switcher inside
-           the burger menu (on desktop the switcher is also in the menu). */
-        target:        '#lang-switcher .aura-lang-pills',
-        mobileTarget:  '.nav.nav-open #lang-switcher .aura-lang-pills',
-        mobileOpenMenu:true,
-        headline:      _t('onboarding.lang_headline', 'Aura speaks your language.'),
-        body:          _t('onboarding.lang_body',     'Switch languages anytime here.'),
-        final:         true
+        hero:     true,                   /* full-screen centered card */
+        final:    true,
+        headline: _t('onboarding.final_headline', "You're ready to start."),
+        body:     _t('onboarding.final_body',     'Have fun exploring.')
       }
     ];
   }
@@ -299,14 +298,16 @@
     _step = idx;
 
     _el.tooltip.classList.remove('onboard-tooltip--in');
+    /* Toggle the hero variant — full-screen centered card. */
+    _el.tooltip.classList.toggle('onboard-tooltip--hero', !!step.hero);
 
     var dots = '';
     for (var i = 0; i < STEPS.length; i++) {
       dots += '<span class="onboard-dot' + (i === idx ? ' onboard-dot--on' : '') + '"></span>';
     }
 
-    var nextLabel = step.final   ? _t('onboarding.next_final', 'Start exploring ✦')
-                  : step.welcome ? _t('onboarding.next_show',  'Show me around →')
+    var nextLabel = step.final   ? _t('onboarding.next_final', 'Start Now')
+                  : step.welcome ? _t('onboarding.next_show',  "Let's go →")
                   :                _t('common.next',           'Next →');
     var backLabel = _t('common.back', 'Back');
     var skipLabel = _t('common.skip', 'Skip');
@@ -316,25 +317,45 @@
       '<span class="onboard-beak"></span>' +
       '<button class="onboard-x" type="button" aria-label="' + _t('common.close', 'Close') + '">×</button>';
 
-    if (step.welcome) {
-      html += '<div class="onboard-eyebrow">' + eyebrowTx + '</div>' +
-              '<div class="onboard-mark">✦</div>';
+    /* Hero steps get a decorative mark + an eyebrow to anchor the
+       brand. The mark is bigger on the welcome step and a tiny dot
+       on the final step. */
+    if (step.hero) {
+      html += '<div class="onboard-eyebrow">' + eyebrowTx + '</div>';
+      html += '<div class="onboard-mark">✦</div>';
     }
 
-    html +=
-      '<h3 class="onboard-headline">' + step.headline + '</h3>' +
-      '<p class="onboard-body">'      + step.body     + '</p>' +
-      '<div class="onboard-actions">' +
-        (idx > 0
-          ? '<button class="onboard-back" type="button">' + backLabel + '</button>'
-          : '<span></span>') +
-        '<button class="onboard-next' + (step.final ? ' onboard-next--final' : '') +
-          '" type="button">' + nextLabel + '</button>' +
-      '</div>' +
-      '<div class="onboard-footer">' +
-        '<div class="onboard-dots">' + dots + '</div>' +
-        '<button class="onboard-skip" type="button">' + skipLabel + '</button>' +
-      '</div>';
+    html += '<h3 class="onboard-headline">' + step.headline + '</h3>' +
+            '<p class="onboard-body">'      + step.body     + '</p>';
+
+    if (step.hero) {
+      /* Hero steps: single centered CTA, no Back / Skip clutter. */
+      html += '<div class="onboard-actions onboard-actions--hero">' +
+                '<button class="onboard-next' + (step.final ? ' onboard-next--final' : '') +
+                  '" type="button">' + nextLabel + '</button>' +
+              '</div>';
+    } else {
+      html += '<div class="onboard-actions">' +
+                (idx > 0
+                  ? '<button class="onboard-back" type="button">' + backLabel + '</button>'
+                  : '<span></span>') +
+                '<button class="onboard-next' + (step.final ? ' onboard-next--final' : '') +
+                  '" type="button">' + nextLabel + '</button>' +
+              '</div>';
+    }
+
+    /* Footer (dots + skip) — shown on every step EXCEPT the final
+       hero card, where the big "Start Now" is the only action. */
+    if (!step.final) {
+      html += '<div class="onboard-footer">' +
+                '<div class="onboard-dots">' + dots + '</div>' +
+                '<button class="onboard-skip" type="button">' + skipLabel + '</button>' +
+              '</div>';
+    } else {
+      html += '<div class="onboard-footer onboard-footer--hero">' +
+                '<div class="onboard-dots">' + dots + '</div>' +
+              '</div>';
+    }
 
     _el.tooltip.innerHTML = html;
     _el.beak = _el.tooltip.querySelector('.onboard-beak');
@@ -427,6 +448,16 @@
     var step     = STEPS[idx];
     var isMobile = _isMobile();
 
+    /* Hero steps (welcome + final): full-screen centered card with no
+       spotlight or scroll. Skip all anchoring logic. */
+    if (step.hero) {
+      _el.spotlight.style.cssText = 'opacity:0;width:0;height:0;left:-9999px;top:-9999px;';
+      _el.tooltip.classList.remove('onboard-tooltip--below', 'onboard-tooltip--above');
+      _placeHero();
+      if (isMobile) _setMenuOpen(false); /* tidy nav state */
+      return;
+    }
+
     /* On mobile, run any setup the step needs BEFORE we measure rects.
        This is what makes spotlights actually work on phones:
          • open the hamburger menu so nav links become visible
@@ -440,7 +471,7 @@
         setup = new Promise(function (r) { setTimeout(r, 220); });
       } else if (step.mobileScrollTo) {
         setup = _scrollIntoView(step.mobileScrollTo);
-      } else if (window.scrollY > 8 && !step.welcome) {
+      } else if (window.scrollY > 8) {
         /* Default: ensure we're at the top so the target is reachable */
         setup = _scrollIntoView('body');
       }
@@ -474,6 +505,13 @@
         _placeCentered();
       }
     });
+  }
+
+  /* Full-screen hero card placement — centered, large, no spotlight. */
+  function _placeHero() {
+    /* Reset any size constraints we set in _placeMobile so the CSS
+       rules for .onboard-tooltip--hero can size the card fully. */
+    _el.tooltip.style.cssText = '';
   }
 
   function _rectOf(sel) {

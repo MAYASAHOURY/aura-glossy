@@ -38,9 +38,19 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
 var AURA_SESSION_KEY = 'aura_has_session';
 _auth.onAuthStateChanged(function (user) {
   try {
-    if (user) localStorage.setItem(AURA_SESSION_KEY, '1');
-    else      localStorage.removeItem(AURA_SESSION_KEY);
-  } catch (e) { /* private mode — flag stays whatever it was */ }
+    if (user) {
+      localStorage.setItem(AURA_SESSION_KEY, '1');
+    } else {
+      localStorage.removeItem(AURA_SESSION_KEY);
+      /* SHARED-DEVICE FIX: clear per-device onboarding markers on
+         sign-out so the NEXT account on this browser starts fresh.
+         The same user signing back in is still protected from a
+         replay by the Firestore `users/{uid}.onboardedAt` check
+         in onboarding.js — that's the per-account source of truth. */
+      localStorage.removeItem('aura_onboarded');
+      sessionStorage.removeItem('aura_onboard_trigger');
+    }
+  } catch (e) { /* private mode — flags stay whatever they were */ }
 });
 
 /* ── User ID: real account OR anonymous fallback ───────────── */

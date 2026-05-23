@@ -10947,40 +10947,41 @@ a, button, [role="button"], input, textarea, select,
 
 /* On mobile the spotlight is hidden, so the overlay carries the dim */
 @media (max-width: 680px) {
-  .onboard-overlay { background: rgba(12, 9, 7, 0.74); }
+  .onboard-overlay { background: rgba(8, 6, 4, 0.82); }
 }
 
-/* ---- Spotlight: transparent box whose huge shadow dims everything else ----
-   POSITION CHANGES ARE INSTANT (no transition on left/top/width/height).
-   The position must always match the actual target rect immediately;
-   any easing on layout properties caused stuck-at-(-9999,-9999) bugs on
-   browsers that struggle to transition auto → px or compose with the
-   running keyframe animation. Only opacity is smoothly faded. */
+/* ---- Spotlight ----
+   Brighter on the new design — feedback was the previous version felt
+   too subtle. Stronger ambient dim, a white-cream ring around the
+   target, and a noticeable pulse to draw the eye. POSITION CHANGES
+   ARE INSTANT (no transition on left/top/width/height) — easing on
+   layout properties caused stuck-at-(-9999,-9999) bugs in some
+   browsers. Only opacity is smoothly faded. */
 .onboard-spotlight {
   position: fixed;
   z-index: 9991;
   pointer-events: none;
   background: transparent;
-  border-radius: 11px;
+  border-radius: 14px;
   box-shadow:
-    0 0 0 100vmax rgba(12, 9, 7, 0.74),
-    0 0 0 2px rgba(201, 162, 117, 0.55),
-    0 0 22px 4px rgba(201, 162, 117, 0.22);
+    0 0 0 100vmax rgba(8, 6, 4, 0.82),
+    0 0 0 3px   rgba(255, 252, 247, 0.92),
+    0 0 28px 6px rgba(201, 162, 117, 0.55);
   transition: opacity .3s ease;
-  animation: onboardPulse 2.6s ease-in-out infinite;
+  animation: onboardPulse 2.2s ease-in-out infinite;
 }
 @keyframes onboardPulse {
   0%, 100% {
     box-shadow:
-      0 0 0 100vmax rgba(12, 9, 7, 0.74),
-      0 0 0 2px rgba(201, 162, 117, 0.42),
-      0 0 16px 2px rgba(201, 162, 117, 0.12);
+      0 0 0 100vmax rgba(8, 6, 4, 0.82),
+      0 0 0 3px    rgba(255, 252, 247, 0.8),
+      0 0 22px 4px rgba(201, 162, 117, 0.35);
   }
   50% {
     box-shadow:
-      0 0 0 100vmax rgba(12, 9, 7, 0.74),
-      0 0 0 3px rgba(201, 162, 117, 0.72),
-      0 0 30px 6px rgba(201, 162, 117, 0.34);
+      0 0 0 100vmax rgba(8, 6, 4, 0.82),
+      0 0 0 4px    rgba(255, 252, 247, 1),
+      0 0 42px 10px rgba(201, 162, 117, 0.70);
   }
 }
 
@@ -11238,6 +11239,143 @@ a, button, [role="button"], input, textarea, select,
     transform: none;
   }
   .onboard-tooltip--in { transform: none; }
+}
+
+/* ================================================================
+   HERO CARD VARIANT — full-screen centered welcome / final cards
+   ================================================================
+   Used on the first ("Welcome to Aura Glossy") and last ("You're
+   ready to start.") steps. These dominate the viewport with big
+   emotional typography and a single primary CTA — they should feel
+   like a real first-impression moment, not a small subtitle tooltip.
+   ================================================================ */
+.onboard-tooltip--hero {
+  /* Override anchored positioning — center via fixed + transform */
+  position: fixed !important;
+  left: 50% !important;
+  top:  50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) scale(.96);
+  width: min(92vw, 480px) !important;
+  padding: 56px 40px 36px !important;
+  background: #fbf8f4;
+  border: 1px solid rgba(201, 162, 117, 0.35);
+  border-radius: 24px;
+  box-shadow:
+    0 4px 18px  rgba(20, 14, 8, 0.18),
+    0 30px 80px rgba(20, 14, 8, 0.32);
+  text-align: center;
+  transition: opacity .42s var(--ease), transform .42s var(--ease);
+}
+.onboard-tooltip--hero.onboard-tooltip--in {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Bigger, more emotional typography on hero cards */
+.onboard-tooltip--hero .onboard-eyebrow {
+  font-size: .68rem;
+  letter-spacing: .26em;
+  color: var(--beige-dark);
+  margin-bottom: 18px;
+}
+.onboard-tooltip--hero .onboard-mark {
+  font-size: 2.1rem;
+  color: var(--rose);
+  margin-bottom: 18px;
+  line-height: 1;
+}
+.onboard-tooltip--hero .onboard-headline {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 6vw, 40px);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.16;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin: 0 0 16px;
+  text-align: center;
+}
+.onboard-tooltip--hero .onboard-body {
+  font-size: 15px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0 auto 32px;
+  max-width: 360px;
+  text-align: center;
+}
+
+/* Single big CTA, centered */
+.onboard-actions--hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4px !important;
+}
+.onboard-tooltip--hero .onboard-next {
+  font-size: .82rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 16px 40px;
+  border-radius: 999px;
+  min-width: 200px;
+}
+.onboard-tooltip--hero .onboard-next--final {
+  background: linear-gradient(135deg, var(--ink), #3a2a22);
+  box-shadow: 0 8px 24px rgba(58, 44, 34, 0.28);
+}
+.onboard-tooltip--hero .onboard-next--final:hover {
+  background: linear-gradient(135deg, var(--rose), var(--beige-dark));
+  box-shadow: 0 12px 32px rgba(201, 139, 134, 0.42);
+}
+
+/* Hero card footer (dots only, no skip) */
+.onboard-footer--hero {
+  margin-top: 22px !important;
+  padding-top: 18px !important;
+  justify-content: center !important;
+  border-top: 1px solid rgba(0, 0, 0, .06);
+}
+.onboard-footer--hero .onboard-dots { margin: 0 auto; }
+
+/* Hide the beak on hero cards (no anchor target) */
+.onboard-tooltip--hero .onboard-beak { display: none !important; }
+
+/* Hero × close stays in the corner but more subtle than normal */
+.onboard-tooltip--hero .onboard-x {
+  top: 14px;
+  right: 14px;
+  opacity: 0.45;
+}
+.onboard-tooltip--hero .onboard-x:hover { opacity: 1; }
+
+/* Mobile: hero card uses near-full width but stays comfortably tall */
+@media (max-width: 680px) {
+  .onboard-tooltip--hero {
+    width: calc(100vw - 28px) !important;
+    padding: 44px 26px 28px !important;
+    /* Leave safe-area room for the iPhone home-indicator */
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .onboard-tooltip--hero .onboard-headline {
+    font-size: clamp(26px, 8vw, 34px);
+  }
+  .onboard-tooltip--hero .onboard-body {
+    font-size: 14px;
+  }
+  .onboard-tooltip--hero .onboard-next {
+    padding: 14px 28px;
+    font-size: .78rem;
+    min-width: 0;
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* RTL: keep the centered card centered, but flip the close button */
+html[dir="rtl"] .onboard-tooltip--hero .onboard-x {
+  right: auto;
+  left: 14px;
 }
 
 /* ================================================================

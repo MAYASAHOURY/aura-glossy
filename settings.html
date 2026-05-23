@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=30">
+<link rel="stylesheet" href="css/styles.css?v=31">
 <style>
 
 .settings-page {
@@ -269,7 +269,7 @@
       </div>
 
       <div class="s-actions">
-        <a href="community.html" class="s-btn s-btn-primary" id="s-circle-btn" style="display:none">My Style Circle →</a>
+        <a href="community.html" class="s-btn s-btn-primary" id="s-circle-btn" data-go-my-community style="display:none">My Style Circle →</a>
         <a href="moodboard.html" class="s-btn s-btn-outline">View Moodboard →</a>
         <a href="index.html?onboard=1" class="s-btn s-btn-outline">Replay Aura Guide ✦</a>
         <a href="index.html" class="s-btn s-btn-outline">Back to Homepage</a>
@@ -285,9 +285,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="js/i18n.js?v=2"></script>
+<script src="js/i18n.js?v=3"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=9"></script>
+<script src="js/firebase.js?v=10"></script>
 <script src="js/animations.js?v=15"></script>
 <script>
 initAuthGuard(); /* full-page veil until Firebase confirms auth — consistent with all other protected pages */
@@ -355,11 +355,20 @@ firebase.auth().onAuthStateChanged(async function(user) {
 
       var commEl = document.getElementById('r-community');
       if (quizResult) {
-        commEl.innerHTML = '<a href="community.html#' + quizResult.id + '" style="color:inherit;text-decoration:underline;text-underline-offset:3px">' + quizResult.name + ' circle →</a>';
+        commEl.innerHTML = '<a href="community.html#' + quizResult.id + '" data-go-my-community style="color:inherit;text-decoration:underline;text-underline-offset:3px">' + quizResult.name + ' circle →</a>';
         var circleBtn = document.getElementById('s-circle-btn');
         if (circleBtn) { circleBtn.href = 'community.html#' + quizResult.id; circleBtn.style.display = 'block'; }
       } else {
-        commEl.textContent = '—';
+        /* No quiz yet — point both entry points at the quiz so the user
+           can take it. They will be granted the matching community right
+           after they finish. */
+        commEl.innerHTML = '<a href="quiz.html" style="color:inherit;text-decoration:underline;text-underline-offset:3px">Take the quiz first →</a>';
+        var circleBtnNoQuiz = document.getElementById('s-circle-btn');
+        if (circleBtnNoQuiz) {
+          circleBtnNoQuiz.textContent = 'Take the Style Quiz →';
+          circleBtnNoQuiz.href = 'quiz.html';
+          circleBtnNoQuiz.style.display = 'block';
+        }
       }
 
       var liked  = data.likedAesthetics || [];
@@ -404,11 +413,81 @@ window.addEventListener('pageshow', function(e) {
 document.getElementById('signout-btn').addEventListener('click', function() {
   firebase.auth().signOut().then(function() {
     localStorage.removeItem('aura_uid');
+    localStorage.removeItem('aura_quiz_id');  // clear identity mirror on sign-out
     // Replace current history entry so back button can't return to settings
     history.replaceState(null, '', 'login.html');
     window.location.replace('login.html');
   });
 });
+
+/* ─────────────────────────────────────────────────────────────────
+   "Go to my community" — click-time live resolution
+   ─────────────────────────────────────────────────────────────────
+   Any link/button with data-go-my-community is rewritten on click to
+   the user's CURRENT quiz id (read synchronously from the localStorage
+   mirror that firebase.js keeps in sync). This protects against the
+   tiny window where the page was rendered with an older id and the
+   user clicks before the live-refresh below has had time to fire.
+
+   If the user has no quiz result, we route them to the quiz instead.
+─────────────────────────────────────────────────────────────────── */
+document.addEventListener('click', function (e) {
+  var el = e.target.closest('[data-go-my-community]');
+  if (!el) return;
+  var id = null;
+  try { id = localStorage.getItem('aura_quiz_id'); } catch (_) {}
+  var dest = id ? ('community.html#' + id) : 'quiz.html';
+  /* Always set the href so middle-click / right-click → open-in-new-tab
+     also lands at the right place, then let the default action proceed. */
+  if (el.tagName === 'A') el.setAttribute('href', dest);
+  else { e.preventDefault(); window.location.href = dest; }
+}, true);
+
+/* ─────────────────────────────────────────────────────────────────
+   Live refresh on cross-tab quiz change
+   ─────────────────────────────────────────────────────────────────
+   When the user retakes the quiz in another tab, fbSaveQuizResult
+   broadcasts on 'aura_quiz'. We re-fetch the user doc and patch the
+   three quiz-dependent rows (aesthetic, community, "My Style Circle"
+   button) so settings always reflects the latest aesthetic.
+─────────────────────────────────────────────────────────────────── */
+function _settingsRefreshQuizFields() {
+  var user = firebase.auth().currentUser;
+  if (!user) return;
+  firebase.firestore().collection('users').doc(user.uid).get().then(function (snap) {
+    var data = snap.exists ? snap.data() : {};
+    var qr   = data.quizResult || null;
+    var aEl  = document.getElementById('r-aesthetic');
+    var cEl  = document.getElementById('r-community');
+    var btn  = document.getElementById('s-circle-btn');
+    if (aEl) aEl.textContent = qr ? qr.name : 'Not taken yet';
+    if (qr && qr.id) {
+      if (cEl) cEl.innerHTML = '<a href="community.html#' + qr.id + '" data-go-my-community style="color:inherit;text-decoration:underline;text-underline-offset:3px">' + qr.name + ' circle →</a>';
+      if (btn) {
+        btn.textContent = 'My Style Circle →';
+        btn.href = 'community.html#' + qr.id;
+        btn.style.display = 'block';
+      }
+    } else {
+      if (cEl) cEl.innerHTML = '<a href="quiz.html" style="color:inherit;text-decoration:underline;text-underline-offset:3px">Take the quiz first →</a>';
+      if (btn) {
+        btn.textContent = 'Take the Style Quiz →';
+        btn.href = 'quiz.html';
+        btn.style.display = 'block';
+      }
+    }
+  }).catch(function () { /* network blip — leave existing values */ });
+}
+
+try {
+  var _settingsQuizCh = new BroadcastChannel('aura_quiz');
+  _settingsQuizCh.onmessage = function (e) {
+    if (!e || !e.data || e.data.type !== 'quiz-changed') return;
+    var u = firebase.auth().currentUser;
+    if (!u || (e.data.uid && e.data.uid !== u.uid)) return;
+    _settingsRefreshQuizFields();
+  };
+} catch (e) { /* BroadcastChannel unsupported — fall back to per-page reload */ }
 </script>
 
 </body>

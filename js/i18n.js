@@ -167,21 +167,29 @@
         no_quiz_yet: 'Not taken yet'
       },
       onboarding: {
-        welcome_headline: 'Welcome to Aura.',
-        welcome_body: 'A quick look at where to start.',
-        quiz_headline: 'Start with the quiz.',
-        quiz_body: 'Find your style in 10 questions.',
-        community_headline: 'Join your circle.',
-        community_body: 'Meet people who share your taste.',
-        moodboard_headline: 'Save looks you love.',
-        moodboard_body: 'Build your inspiration.',
-        aesthetics_headline: 'Find your style.',
-        aesthetics_body: 'Browse curated aesthetics.',
-        lang_headline: 'Aura speaks your language.',
-        lang_body: 'Switch languages anytime here.',
-        next_show: 'Show me around →',
-        next_final: 'Start exploring ✦',
-        eyebrow: 'Aura Guide'
+        /* Hero welcome (centered full-screen card) */
+        welcome_headline: 'Welcome to Aura Glossy',
+        welcome_body:     'A short tour. Three quick stops, then you\'re off.',
+        next_show:        'Let\'s go →',
+
+        /* Step 1 — Style Quiz */
+        quiz_headline:    'I suggest starting with the quiz.',
+        quiz_body:        'It helps Aura discover your style.',
+
+        /* Step 2 — Community */
+        community_headline: 'This is your community.',
+        community_body:     'Based on your quiz answers.',
+
+        /* Step 3 — Aesthetics */
+        aesthetics_headline: 'Explore every aesthetic.',
+        aesthetics_body:     'You can browse them all here — it\'s really interesting.',
+
+        /* Final hero card */
+        final_headline:   "You're ready to start.",
+        final_body:       'Have fun exploring.',
+        next_final:       'Start Now',
+
+        eyebrow:          'Aura Guide'
       },
       lang_switcher: {
         label: 'Language',
@@ -306,21 +314,24 @@
         no_quiz_yet: 'Aún no realizado'
       },
       onboarding: {
-        welcome_headline: 'Bienvenido a Aura.',
-        welcome_body: 'Un vistazo rápido para empezar.',
-        quiz_headline: 'Empieza con el quiz.',
-        quiz_body: 'Encuentra tu estilo en 10 preguntas.',
-        community_headline: 'Únete a tu círculo.',
-        community_body: 'Conoce a quienes comparten tu gusto.',
-        moodboard_headline: 'Guarda lo que ames.',
-        moodboard_body: 'Crea tu inspiración.',
-        aesthetics_headline: 'Encuentra tu estilo.',
-        aesthetics_body: 'Explora estéticas curadas.',
-        lang_headline: 'Aura habla tu idioma.',
-        lang_body: 'Cambia el idioma aquí cuando quieras.',
-        next_show: 'Muéstrame →',
-        next_final: 'Empezar a explorar ✦',
-        eyebrow: 'Guía de Aura'
+        welcome_headline:   'Bienvenido a Aura Glossy',
+        welcome_body:       'Un tour rápido. Tres paradas y listo.',
+        next_show:          'Empezar →',
+
+        quiz_headline:      'Te sugiero empezar por el quiz.',
+        quiz_body:          'Ayuda a Aura a descubrir tu estilo.',
+
+        community_headline: 'Esta es tu comunidad.',
+        community_body:     'Basada en tus respuestas del quiz.',
+
+        aesthetics_headline:'Explora todas las estéticas.',
+        aesthetics_body:    'Aquí puedes verlas todas — es realmente interesante.',
+
+        final_headline:     'Estás listo para empezar.',
+        final_body:         'Disfruta explorando.',
+        next_final:         'Empezar ahora',
+
+        eyebrow:            'Guía de Aura'
       },
       lang_switcher: {
         label: 'Idioma',
@@ -445,21 +456,24 @@
         no_quiz_yet: 'لم تأخذه بعد'
       },
       onboarding: {
-        welcome_headline: 'أهلاً بك في Aura.',
-        welcome_body: 'نظرة سريعة على نقطة البداية.',
-        quiz_headline: 'ابدأ بالاختبار.',
-        quiz_body: 'اكتشف ستايلك في 10 أسئلة.',
-        community_headline: 'انضم إلى دائرتك.',
-        community_body: 'تعرّف على من يشاركونك ذوقك.',
-        moodboard_headline: 'احفظ ما تحبه.',
-        moodboard_body: 'ابنِ مصادر إلهامك.',
-        aesthetics_headline: 'اكتشف ستايلك.',
-        aesthetics_body: 'تصفّح جماليات منسّقة.',
-        lang_headline: 'Aura يتحدّث لغتك.',
-        lang_body: 'بدّل اللغة من هنا في أي وقت.',
-        next_show: 'أرني ←',
-        next_final: 'ابدأ الاستكشاف ✦',
-        eyebrow: 'دليل Aura'
+        welcome_headline:   'أهلاً بك في Aura Glossy',
+        welcome_body:       'جولة سريعة، ثلاث خطوات وستكون جاهزاً.',
+        next_show:          'هيا بنا ←',
+
+        quiz_headline:      'أنصحك بالبدء بالاختبار.',
+        quiz_body:          'يساعد Aura على اكتشاف ستايلك.',
+
+        community_headline: 'هذا هو مجتمعك.',
+        community_body:     'بناءً على إجاباتك في الاختبار.',
+
+        aesthetics_headline:'استكشف كل الجماليات.',
+        aesthetics_body:    'يمكنك تصفّحها جميعاً هنا — مثيرة للاهتمام حقاً.',
+
+        final_headline:     'أنت جاهز للبدء.',
+        final_body:         'استمتع بالاستكشاف.',
+        next_final:         'ابدأ الآن',
+
+        eyebrow:            'دليل Aura'
       },
       lang_switcher: {
         label: 'اللغة',
@@ -584,21 +598,24 @@
         no_quiz_yet: 'עוד לא בוצע'
       },
       onboarding: {
-        welcome_headline: 'ברוכה הבאה ל-Aura.',
-        welcome_body: 'מבט מהיר על איפה להתחיל.',
-        quiz_headline: 'התחילי בחידון.',
-        quiz_body: 'גלי את הסגנון שלך ב-10 שאלות.',
-        community_headline: 'הצטרפי למעגל שלך.',
-        community_body: 'הכירי אנשים שחולקים את הטעם שלך.',
-        moodboard_headline: 'שמרי לוקים שאת אוהבת.',
-        moodboard_body: 'בני את ההשראה שלך.',
-        aesthetics_headline: 'גלי את הסגנון שלך.',
-        aesthetics_body: 'עיון באסתטיקות מאוצרות.',
-        lang_headline: 'Aura מדברת בשפה שלך.',
-        lang_body: 'אפשר להחליף שפה מכאן בכל זמן.',
-        next_show: 'הראי לי ←',
-        next_final: 'להתחיל לחקור ✦',
-        eyebrow: 'מדריך Aura'
+        welcome_headline:   'ברוכה הבאה ל-Aura Glossy',
+        welcome_body:       'סיור קצר. שלוש תחנות ואת מוכנה.',
+        next_show:          'יוצאים לדרך ←',
+
+        quiz_headline:      'אני מציעה להתחיל בחידון.',
+        quiz_body:          'הוא עוזר ל-Aura לגלות את הסגנון שלך.',
+
+        community_headline: 'זו הקהילה שלך.',
+        community_body:     'מבוססת על התשובות שלך בחידון.',
+
+        aesthetics_headline:'גלי את כל האסתטיקות.',
+        aesthetics_body:    'אפשר לעיין בכולן כאן — באמת מעניין.',
+
+        final_headline:     'את מוכנה להתחיל.',
+        final_body:         'תיהני מהחקירה.',
+        next_final:         'מתחילים עכשיו',
+
+        eyebrow:            'מדריך Aura'
       },
       lang_switcher: {
         label: 'שפה',
