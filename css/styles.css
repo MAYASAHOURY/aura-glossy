@@ -10945,8 +10945,9 @@ a, button, [role="button"], input, textarea, select,
 }
 @keyframes onboardFade { from { opacity: 0; } to { opacity: 1; } }
 
-/* On mobile the spotlight is hidden, so the overlay carries the dim */
-@media (max-width: 680px) {
+/* On mobile / tablet (≤ 768px = same breakpoint as the nav burger) the
+   spotlight is hidden, so the overlay carries the dim itself. */
+@media (max-width: 768px) {
   .onboard-overlay { background: rgba(8, 6, 4, 0.82); }
 }
 
@@ -11165,12 +11166,14 @@ a, button, [role="button"], input, textarea, select,
 }
 .onboard-skip:hover { opacity: 1; }
 
-/* ---- Mobile: real spotlight + adaptive card position ----
-   On mobile the card width is dynamic (left/right pinned), and the
-   card's top/bottom is set by JS (`_placeMobile`) based on where the
-   spotlight target actually sits on screen. Beak/arrow is hidden
-   since the spotlight glow itself is the visual anchor. */
-@media (max-width: 680px) {
+/* ---- Mobile + tablet: real spotlight + adaptive card position ----
+   ≤ 768px is where the nav burger replaces the inline links, so it's
+   where _isMobile() in onboarding.js kicks in. The card width is
+   dynamic (left/right pinned by JS via `_placeMobile`), and the
+   card's top/bottom flips depending on where the spotlight target
+   actually sits. Beak/arrow is hidden — the spotlight glow itself
+   is the visual anchor. */
+@media (max-width: 768px) {
   /* Overlay carries the dim AND we keep the spotlight visible so the
      user sees exactly which button the guide is pointing to. */
   .onboard-overlay { background: rgba(12, 9, 7, 0.78); }
@@ -11349,16 +11352,19 @@ a, button, [role="button"], input, textarea, select,
 }
 .onboard-tooltip--hero .onboard-x:hover { opacity: 1; }
 
-/* Mobile: hero card uses near-full width but stays comfortably tall */
-@media (max-width: 680px) {
+/* Mobile / tablet: hero card uses near-full width but stays comfortably
+   tall. ≤ 768 matches the JS _isMobile() breakpoint so tablet hero
+   steps render with the same proportions as phone. */
+@media (max-width: 768px) {
   .onboard-tooltip--hero {
-    width: calc(100vw - 28px) !important;
+    /* Cap at 460px so tablets don't stretch the card edge-to-edge */
+    width: min(460px, calc(100vw - 28px)) !important;
     padding: 44px 26px 28px !important;
     /* Leave safe-area room for the iPhone home-indicator */
     padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px)) !important;
   }
   .onboard-tooltip--hero .onboard-headline {
-    font-size: clamp(26px, 8vw, 34px);
+    font-size: clamp(26px, 6vw, 36px);
   }
   .onboard-tooltip--hero .onboard-body {
     font-size: 14px;
@@ -11737,7 +11743,7 @@ html[dir="rtl"] .onboard-x {
   right: auto;
   left: 11px;
 }
-@media (max-width: 680px) {
+@media (max-width: 768px) {
   html[dir="rtl"] .onboard-x { left: 8px; right: auto; }
 }
 

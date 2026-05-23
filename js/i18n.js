@@ -872,22 +872,29 @@
 
   var _current = _detect();
 
-  /* ── Lookup ──────────────────────────────────────────────── */
+  /* ── Lookup ──────────────────────────────────────────────────
+     Returns the RAW value at a dotted path — string, array, object,
+     or null. Used by both t() (which expects strings) and raw()
+     (which needs arrays for things like quiz.questions[]). Previously
+     this stripped non-strings, which broke every raw() call against
+     a translated object/array (quiz questions, etc.). */
   function _get(dict, path) {
     if (!dict) return null;
     var parts = path.split('.');
     var v = dict;
     for (var i = 0; i < parts.length; i++) {
-      if (v == null || typeof v !== 'object') return null;
+      if (v == null) return null;
+      if (typeof v !== 'object') return null;  /* can't traverse a string */
       v = v[parts[i]];
     }
-    return (typeof v === 'string') ? v : null;
+    return (v == null) ? null : v;
   }
 
   function t(key, vars) {
-    var str = _get(T[_current], key);
-    if (str == null) str = _get(T[DEFAULT_LANG], key);
-    if (str == null) return key;
+    var v = _get(T[_current], key);
+    if (typeof v !== 'string') v = _get(T[DEFAULT_LANG], key);
+    if (typeof v !== 'string') return key;
+    var str = v;
     if (vars) {
       Object.keys(vars).forEach(function (k) {
         str = str.split('{' + k + '}').join(vars[k]);
