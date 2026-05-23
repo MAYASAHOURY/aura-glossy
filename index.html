@@ -19,8 +19,50 @@
 <link rel="preload" as="image" href="images/home/hero-1.jpg" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=24">
+<link rel="stylesheet" href="css/styles.css?v=26">
+<script>
+/* ─────────────────────────────────────────────────────────────────
+   AURA — CRITICAL FIRST-PAINT GUARD (runs BEFORE everything else)
+
+   Purpose: guarantee homepage paints within ~1 second on every
+   device + browser, including TikTok/Instagram/Facebook in-app
+   WebViews where Firebase IndexedDB is slow or blocked.
+
+   Strategy:
+     1. Detect environment (in-app browser / slow network / saveData)
+        and pre-set the "skip intro" flag for these contexts.
+     2. Schedule a HARD safety timer that forces the veil out after
+        1.2s no matter what. Auth can resolve later in the background;
+        the user sees content immediately.
+     3. Stay tiny + synchronous + zero deps so it can't fail.
+   ───────────────────────────────────────────────────────────────── */
+(function(){
+  try {
+    var ua = navigator.userAgent || '';
+    var isInApp =
+      /TikTok|musical_ly|Instagram|FBAN|FBAV|FB_IAB|FBIOS|Twitter|Snapchat|Pinterest|Line\/|MicroMessenger|WeChat/i.test(ua);
+
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    var isSlow = !!(conn && (conn.saveData || /(^|-)2g$/i.test(conn.effectiveType || '')));
+
+    /* In-app browsers + slow networks: skip the cinematic intro entirely.
+       They get straight to homepage content — same as a returning user. */
+    if (isInApp || isSlow) {
+      try { sessionStorage.setItem('aura_skip_intro', '1'); } catch(e) {}
+      try { localStorage.setItem('aura_intro_seen', '1'); } catch(e) {}
+      document.documentElement.setAttribute('data-inapp', '1');
+    }
+  } catch(e) {}
+
+  /* HARD SAFETY: regardless of auth state, the page veil fades out
+     after 1200ms. If Firebase resolves earlier the auth script will
+     fade it sooner — this is the floor, not the ceiling. */
+  window.__auraVeilSafetyMs = 1200;
+})();
+</script>
 </head>
 <body>
 
@@ -166,181 +208,125 @@
   </div>
 </footer>
 
-<script src="js/intro.js?v=9"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="js/data.js?v=6"></script>
-<script src="js/main.js?v=4"></script>
-<script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=7"></script>
-<script src="js/animations.js?v=14"></script>
-<script src="js/onboarding.js?v=2"></script>
+<script src="js/intro.js?v=10" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js" defer></script>
+<script src="js/data.js?v=6" defer></script>
+<script src="js/main.js?v=4" defer></script>
+<script src="js/monitor.js?v=2" defer></script>
+<script src="js/firebase.js?v=8" defer></script>
+<script src="js/animations.js?v=15" defer></script>
+<script src="js/onboarding.js?v=4" defer></script>
 <script>
-/* ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦
-   AURA — Auth gate + cinematic transition pipeline
-   ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦
+/* ─────────────────────────────────────────────────────────────────
+   AURA — Homepage auth gate (PUBLIC-BY-DEFAULT, NON-BLOCKING)
 
-   HOW THE VEIL WORKS
-   ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦
-   #aura-veil sits at z-index 9997 — above all page content
-   and nav (100), but just below the cinematic intro (9998).
-   It starts FULLY OPAQUE so content never flashes before auth
-   resolves. The intro plays on top of it. Once we know the
-   user's state we either fade the veil out (show homepage)
-   or navigate to login while it's still covering everything
-   (zero visible flash in either direction).
-   ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+   ── How this works ──────────────────────────────────────────────
+   The homepage is publicly browsable. The veil exists only as a
+   tasteful first-paint cover that fades out quickly. Auth resolves
+   in the background and updates the nav button — it NEVER blocks
+   content or redirects away.
 
-function navAuthClick() { window.location.href = 'settings.html'; }
+   Three things guarantee the page is always usable:
 
-/* ✦✦ Veil helpers ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+     1. _hardReveal() runs after __auraVeilSafetyMs (1200ms set by
+        the head-script). The veil fades out unconditionally — no
+        Firebase dependency. This is the floor.
+
+     2. _earlyReveal() runs as soon as Firebase auth fires, with
+        EITHER a user or null. If auth resolves in 200ms we fade
+        in 200ms — faster than the safety floor.
+
+     3. _onIntroEnd() lifts the veil when the cinematic intro
+        finishes, in case the intro outlasts both timers.
+
+   The previous flow redirected anonymous visitors to login.html
+   after 7-20 seconds. That destroyed conversion from TikTok /
+   Instagram in-app browsers where Firebase IndexedDB is slow.
+   Homepage no longer redirects ANYONE. Quiz / Moodboard /
+   Settings / Community keep their own auth guards.
+   ───────────────────────────────────────────────────────────────── */
+
+function navAuthClick() {
+  /* If signed in → Account page. If not → Sign-in page. */
+  try {
+    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length && firebase.auth().currentUser) {
+      window.location.href = 'settings.html'; return;
+    }
+  } catch(e) {}
+  window.location.href = 'login.html';
+}
+
+/* ── Veil helpers ───────────────────────────────────────────────── */
+var _veilRevealed = false;
 function _revealPage() {
-  /* Fade the veil out — homepage slides in */
+  if (_veilRevealed) return;
+  _veilRevealed = true;
   var v = document.getElementById('aura-veil');
   if (v) {
-    /* Tiny tick so the browser has painted first */
     requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        v.classList.add('veil-out');
-      });
+      requestAnimationFrame(function() { v.classList.add('veil-out'); });
     });
+    /* Remove from DOM after the CSS transition so it never blocks taps */
+    setTimeout(function() {
+      if (v && v.parentNode) v.parentNode.removeChild(v);
+    }, 1200);
   }
 }
 
-function _goToLogin() {
-  /* Veil is still opaque — navigate instantly, zero flash */
-  window.location.replace('login.html');
-}
+/* ── HARD SAFETY: fade the veil after a fixed time, no matter what ── */
+setTimeout(_revealPage, window.__auraVeilSafetyMs || 1200);
 
-/* ✦✦ Intro awareness ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
-function _introIsPlaying() {
-  var el = document.getElementById('intro');
-  if (!el) return false;
+/* ── If the cinematic intro is running, lift the veil when it ends ── */
+window.addEventListener('aura:homepage-reveal', _revealPage, { once: true });
+
+/* ── Auth state listener — updates nav, never blocks or redirects ── */
+function _initAuthListener() {
+  if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return false;
   try {
-    if (localStorage.getItem('aura_intro_seen'))   return false;
-    if (sessionStorage.getItem('aura_skip_intro')) return false;
-    return true;
-  } catch(e) {
-    return false; // storage blocked (iOS private mode) — skip intro safely
-  }
-}
-
-/* ✦✦ Main auth listener ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
-var _authPending = 'loading'; /* 'loading' | 'authed' | 'anon' */
-var _introHooked = false;
-var _loginTimer  = null;
-var _bfRestored  = false; /* true between bfcache restore and next Firebase confirm */
-
-function _onIntroEnd() {
-  if (firebase.auth().currentUser) { _revealPage(); return; }
-  if (_authPending === 'authed')                 { _revealPage(); return; }
-  if (_authPending !== 'anon') {
-    /* Auth still loading when intro ended — give Firebase time to resolve.
-       3s was too short on slow iOS Safari (Firebase takes 4-8s). Use 10s. */
-    _loginTimer = setTimeout(function() {
-      if (firebase.auth().currentUser) _revealPage();
-      else _goToLogin();
-    }, 10000);
-    return;
-  }
-  _goToLogin();
-}
-
-firebase.auth().onAuthStateChanged(function(user) {
-  clearTimeout(_loginTimer);
-  var btn = document.getElementById('nav-auth-btn');
-  if (btn) btn.textContent = 'Account';
-
-  if (user) {
-    _authPending = 'authed';
-    _bfRestored  = false; /* Firebase confirmed — reset flag */
-    try { localStorage.setItem('aura_intro_seen', '1'); } catch(e) {}
-    try { sessionStorage.setItem('aura_skip_intro', '1'); } catch(e) {}
-
-    if (_introIsPlaying()) {
-      if (!_introHooked) {
-        _introHooked = true;
-        window.addEventListener('aura:homepage-reveal', _onIntroEnd, { once: true });
-      }
-    } else {
+    firebase.auth().onAuthStateChanged(function(user) {
+      var btn = document.getElementById('nav-auth-btn');
+      if (btn) btn.textContent = user ? 'Account' : 'Sign in';
+      /* As soon as Firebase tells us anything, we can fade the veil
+         out a bit faster than the safety floor — but we never wait
+         on it. */
       _revealPage();
-    }
+    });
+    return true;
+  } catch(e) { return false; }
+}
 
-  } else {
-    /* Firebase fired null. Could be:
-       (A) fresh load — reading IndexedDB, user fires in ~2s        → normal
-       (B) bfcache restore re-init — transient, user fires shortly  → do NOT redirect
-       (C) genuine sign-out                                          → redirect
+/* Firebase scripts are deferred — try to attach as soon as they're ready.
+   Multiple attempts (no fixed delay) so we attach the moment firebase
+   is defined, instead of guessing at a setTimeout duration. */
+(function _waitForFirebase() {
+  if (_initAuthListener()) return;
+  var attempts = 0;
+  var iv = setInterval(function() {
+    attempts++;
+    if (_initAuthListener() || attempts > 40 /* ~4s max */) clearInterval(iv);
+  }, 100);
+})();
 
-       If we were already confirmed authed AND this is a bfcache restore,
-       treat null as transient. Do not overwrite _authPending, do not
-       start the normal 7s redirect timer. Use a long safety-only timer. */
-    if (_authPending === 'authed' && _bfRestored) {
-      _loginTimer = setTimeout(function() {
-        if (!firebase.auth().currentUser) _goToLogin();
-      }, 10000); /* safety net only — Firebase will fire user well before this */
-      return;   /* ← key: _authPending stays 'authed', no false redirect */
-    }
-
-    _authPending = 'anon';
-
-    /* Check if user just authenticated on login.html and was sent here.
-       Firebase is still writing the session to IndexedDB — do NOT start
-       a short redirect timer. Wait silently; onAuthStateChanged(user)
-       will fire once the write completes. */
-    var _justAuthed = false;
-    try {
-      _justAuthed = !!sessionStorage.getItem('aura_just_authed');
-      if (_justAuthed) sessionStorage.removeItem('aura_just_authed');
-    } catch(e) {}
-
-    if (_introIsPlaying()) {
-      if (!_introHooked) {
-        _introHooked = true;
-        window.addEventListener('aura:homepage-reveal', _onIntroEnd, { once: true });
-        setTimeout(function() {
-          if (window.location.pathname.indexOf('login') === -1
-              && _authPending === 'anon'
-              && !firebase.auth().currentUser
-              ) {
-            _goToLogin();
-          }
-        }, 14000);
-      }
-    } else if (_justAuthed) {
-      /* Came straight from login — Firebase is still persisting the session.
-         Use a long safety timer only; user will be confirmed well before this. */
-      _loginTimer = setTimeout(function() {
-        if (!firebase.auth().currentUser) _goToLogin();
-      }, 20000);
-    } else {
-      _loginTimer = setTimeout(function() {
-        if (!firebase.auth().currentUser) _goToLogin();
-      }, 7000);
-    }
-  }
-});
-
-/* bfcache guard — set _bfRestored flag then rely on onAuthStateChanged
-   to re-fire and confirm state. No redirect timers started here. */
+/* ── bfcache restore: page came back from cache — show immediately ── */
 window.addEventListener('pageshow', function(e) {
   if (!e.persisted) return;
-  _bfRestored = true;
-  clearTimeout(_loginTimer);
-  if (_authPending === 'authed') {
-    _revealPage(); /* page was already authenticated — show it immediately */
-  }
-  /* If _authPending is not 'authed': onAuthStateChanged will fire and handle it */
+  _revealPage();
 });
 </script>
 <script>
+/* Styles grid render — depends on STYLES from data.js (deferred), so it
+   must wait until DOMContentLoaded which fires AFTER all defer scripts. */
 const STYLE_ORDER = ['classic','casual','streetwear','minimalist','elegant','korean','y2k','vintage','softgirl'];
-(function() {
+function _renderStylesGrid() {
+  if (typeof STYLES === 'undefined') return false;
   const grid = document.getElementById('styles-grid');
+  if (!grid || grid.children.length) return true;
   let html = '';
   STYLE_ORDER.forEach((id, i) => {
     const s = STYLES[id];
+    if (!s) return;
     const num = String(i + 1).padStart(2, '0');
     html += '<a href="style.html#' + s.id + '" class="style-card">';
     html += '<img class="style-card-img" src="' + s.heroImg + '" alt="' + s.name + '" loading="lazy">';
@@ -350,7 +336,20 @@ const STYLE_ORDER = ['classic','casual','streetwear','minimalist','elegant','kor
     html += '<span class="style-card-link">Explore &rarr;</span></div></a>';
   });
   grid.innerHTML = html;
-})();
+  return true;
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _renderStylesGrid);
+} else {
+  /* DOM already parsed — try immediately; retry briefly if data.js still loading */
+  if (!_renderStylesGrid()) {
+    var _gridTries = 0;
+    var _gridIv = setInterval(function() {
+      _gridTries++;
+      if (_renderStylesGrid() || _gridTries > 40) clearInterval(_gridIv);
+    }, 100);
+  }
+}
 </script>
 
 </body>

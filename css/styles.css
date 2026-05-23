@@ -8554,10 +8554,20 @@ body.cursor-clicking .cursor-ring { width: 22px; height: 22px; }
 }
 
 /* ============================================================
-   PAGE VEIL — auth-transition overlay
-   Sits below intro-cinema (z 9998) but above everything else.
-   Starts opaque; fades out once auth resolves to logged-in.
-   Prevents any homepage content flash before auth is known.
+   PAGE VEIL — first-paint cover (NON-BLOCKING)
+
+   Briefly covers the homepage so there's no flash of unstyled
+   content while CSS finishes parsing and the cinematic intro
+   takes over the top layer.
+
+   Three independent things can lift this veil — whichever wins:
+     1. JS adds .veil-out (auth resolved or safety timer fired)
+     2. The CSS keyframe below auto-fades it (ULTIMATE FALLBACK
+        — fires even if every script breaks)
+     3. The intro fires aura:homepage-reveal on completion
+
+   pointer-events stays "none" the whole time so taps always go
+   through to content underneath.
    ============================================================ */
 #aura-veil {
   position: fixed;
@@ -8566,11 +8576,24 @@ body.cursor-clicking .cursor-ring { width: 22px; height: 22px; }
   background: var(--bg, #fbf8f4);
   opacity: 1;
   pointer-events: none;   /* never blocks clicks */
-  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity;
+  /* CSS-only safety fade — guarantees the veil disappears even if
+     every script on the page fails. Starts ~1.5s in, completes by 3s. */
+  animation: aura-veil-css-safety 3s linear 1.5s forwards;
+}
+@keyframes aura-veil-css-safety {
+  to { opacity: 0; visibility: hidden; }
 }
 #aura-veil.veil-out {
+  animation: none;
   opacity: 0;
+  visibility: hidden;
+}
+/* In-app browsers and slow networks: skip the veil cover entirely.
+   These users can NOT afford even a 1s blank cover. */
+html[data-inapp] #aura-veil {
+  display: none;
 }
 
 /* ── Aesthetic like / save button (style page overview) ────── */
@@ -10885,280 +10908,263 @@ a, button, [role="button"], input, textarea, select,
 }
 
 /* ================================================================
-   Onboarding guide
+   Onboarding guide  (paired with onboarding.js v3)
+   A short anchored mini-tour: spotlight + arrow + compact card.
    ================================================================ */
 
-/* Freeze scroll while guide is active */
+/* Freeze the page while the guide is open */
 body.onboard-active { overflow: hidden; }
 
-/* ── Backdrop (click-blocker; on mobile also provides the dim) ── */
+/* ---- Backdrop: transparent click-blocker (spotlight does the dimming) ---- */
 .onboard-overlay {
   position: fixed;
   inset: 0;
   z-index: 9990;
-  pointer-events: all;
   cursor: default;
-  animation: onboardFadeIn .44s var(--ease) both;
+  animation: onboardFade .4s var(--ease) both;
 }
+@keyframes onboardFade { from { opacity: 0; } to { opacity: 1; } }
 
-@keyframes onboardFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* Mobile dim (spotlight hidden on mobile, so overlay provides it) */
+/* On mobile the spotlight is hidden, so the overlay carries the dim */
 @media (max-width: 680px) {
-  .onboard-overlay { background: rgba(10, 7, 5, 0.72); }
+  .onboard-overlay { background: rgba(12, 9, 7, 0.74); }
 }
 
-/* ── Spotlight cutout ────────────────────────────────────────── */
-/* Transparent element whose huge box-shadow dims everything outside it */
+/* ---- Spotlight: transparent box whose huge shadow dims everything else ---- */
 .onboard-spotlight {
   position: fixed;
   z-index: 9991;
   pointer-events: none;
   background: transparent;
-  border-radius: 14px;
+  border-radius: 11px;
   box-shadow:
-    0 0 0 100vmax rgba(10, 7, 5, 0.72),
-    0 0 0 2px rgba(196, 168, 130, 0.45),
-    0 0 28px rgba(196, 168, 130, 0.20);
+    0 0 0 100vmax rgba(12, 9, 7, 0.74),
+    0 0 0 2px rgba(201, 162, 117, 0.55),
+    0 0 22px 4px rgba(201, 162, 117, 0.22);
   transition:
-    left   .55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    top    .55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    width  .55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    height .55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    opacity .32s ease;
-  animation: onboardSpotPulse 3s ease-in-out infinite;
+    left   .5s cubic-bezier(.4, .1, .2, 1),
+    top    .5s cubic-bezier(.4, .1, .2, 1),
+    width  .5s cubic-bezier(.4, .1, .2, 1),
+    height .5s cubic-bezier(.4, .1, .2, 1),
+    opacity .3s ease;
+  animation: onboardPulse 2.6s ease-in-out infinite;
 }
-
-@keyframes onboardSpotPulse {
+@keyframes onboardPulse {
   0%, 100% {
     box-shadow:
-      0 0 0 100vmax rgba(10, 7, 5, 0.72),
-      0 0 0 2px   rgba(196, 168, 130, 0.35),
-      0 0 24px    rgba(196, 168, 130, 0.10);
+      0 0 0 100vmax rgba(12, 9, 7, 0.74),
+      0 0 0 2px rgba(201, 162, 117, 0.42),
+      0 0 16px 2px rgba(201, 162, 117, 0.12);
   }
   50% {
     box-shadow:
-      0 0 0 100vmax rgba(10, 7, 5, 0.72),
-      0 0 0 3px   rgba(196, 168, 130, 0.62),
-      0 0 36px    rgba(196, 168, 130, 0.28);
+      0 0 0 100vmax rgba(12, 9, 7, 0.74),
+      0 0 0 3px rgba(201, 162, 117, 0.72),
+      0 0 30px 6px rgba(201, 162, 117, 0.34);
   }
 }
 
-/* ── Tooltip card ────────────────────────────────────────────── */
+/* ---- Card ---- */
 .onboard-tooltip {
   position: fixed;
   z-index: 9992;
-  pointer-events: all;
-  padding: 30px 28px 22px;
-  max-width: 380px;
-
-  /* Glass-cream surface */
-  background: rgba(251, 248, 244, 0.97);
-  backdrop-filter: blur(28px) saturate(1.5);
-  -webkit-backdrop-filter: blur(28px) saturate(1.5);
-  border: 1px solid rgba(210, 190, 165, 0.28);
-  border-radius: 22px;
+  width: 340px;
+  padding: 24px 24px 16px;
+  background: #fbf8f4;
+  border: 1px solid rgba(201, 162, 117, 0.32);
+  border-radius: 18px;
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.75),
-    0 4px 24px  rgba(60, 45, 35, 0.13),
-    0 20px 64px rgba(60, 45, 35, 0.18),
-    0 0 80px    rgba(196, 168, 130, 0.07);
-
-  /* Entrance animation */
+    0 2px 10px  rgba(58, 44, 34, 0.10),
+    0 18px 50px rgba(58, 44, 34, 0.22);
   opacity: 0;
-  transform: translateY(14px) scale(0.97);
+  transform: translateY(10px) scale(.98);
   transition:
-    opacity   .42s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    transform .42s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    left .55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    top  .55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity   .36s var(--ease),
+    transform .36s var(--ease),
+    left .44s cubic-bezier(.4, .1, .2, 1),
+    top  .44s cubic-bezier(.4, .1, .2, 1);
 }
+.onboard-tooltip--in { opacity: 1; transform: translateY(0) scale(1); }
 
-.onboard-tooltip--in {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-/* ── Close × button ──────────────────────────────────────────── */
-.onboard-close-btn {
+/* ---- Arrow / beak: points the card straight at the spotlighted element ---- */
+.onboard-beak {
   position: absolute;
-  top: 12px;
-  right: 14px;
+  width: 15px;
+  height: 15px;
+  margin-left: -7.5px;
+  background: #fbf8f4;
+  border: 1px solid rgba(201, 162, 117, 0.32);
+  transform: rotate(45deg);
+  display: none;
+}
+.onboard-tooltip--below .onboard-beak,
+.onboard-tooltip--above .onboard-beak { display: block; }
+.onboard-tooltip--below .onboard-beak {
+  top: -8px;
+  border-right: 0;
+  border-bottom: 0;
+}
+.onboard-tooltip--above .onboard-beak {
+  bottom: -8px;
+  border-left: 0;
+  border-top: 0;
+}
+
+/* ---- Close button ---- */
+.onboard-x {
+  position: absolute;
+  top: 9px;
+  right: 11px;
   width: 26px;
   height: 26px;
-  border-radius: 50%;
-  background: transparent;
-  border: none;
-  font-size: 1.05rem;
-  line-height: 1;
-  color: var(--gray);
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--gray);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
   transition: background .18s, color .18s;
 }
-.onboard-close-btn:hover { background: var(--bg-soft); color: var(--ink); }
+.onboard-x:hover { background: rgba(0, 0, 0, .05); color: var(--ink); }
 
-/* ── Step symbol ─────────────────────────────────────────────── */
-.onboard-step-symbol {
-  font-size: 1.75rem;
+/* ---- Welcome-step flourish ---- */
+.onboard-eyebrow {
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
   color: var(--beige-dark);
   margin-bottom: 12px;
+}
+.onboard-mark {
+  font-size: 1.5rem;
   line-height: 1;
-  animation: onboardSymbolPop .48s var(--ease) both;
-}
-
-@keyframes onboardSymbolPop {
-  from { opacity: 0; transform: scale(0.6) rotate(-18deg); }
-  to   { opacity: 1; transform: scale(1)   rotate(0deg);   }
-}
-
-/* ── Content ─────────────────────────────────────────────────── */
-.onboard-headline {
-  font-family: var(--font-display);
-  font-size: clamp(1.22rem, 3vw, 1.5rem);
-  font-weight: 400;
-  font-style: italic;
-  color: var(--ink);
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  margin-bottom: 11px;
-}
-
-.onboard-body {
-  font-size: 0.9rem;
-  color: var(--ink-soft);
-  line-height: 1.68;
+  color: var(--beige-dark);
   margin-bottom: 10px;
 }
 
-.onboard-tip {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.07em;
-  color: var(--gray);
-  background: var(--bg-soft);
-  border-radius: var(--radius-sm);
-  padding: 7px 10px;
-  margin-top: 4px;
+/* ---- Copy ---- */
+.onboard-headline {
+  font-family: var(--font-display);
+  font-size: 1.34rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin: 0 0 6px;
+}
+.onboard-body {
+  font-size: .87rem;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0;
 }
 
-/* ── Actions row ─────────────────────────────────────────────── */
+/* ---- Actions ---- */
 .onboard-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 22px;
   gap: 10px;
+  margin-top: 18px;
 }
-
-.onboard-back-btn {
-  font-size: 0.8rem;
+.onboard-back {
+  font-size: .8rem;
   color: var(--ink-soft);
   background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 40px;
-  padding: 9px 18px;
+  border: none;
+  padding: 8px 6px;
   cursor: pointer;
-  transition: border-color .2s, color .2s;
-  flex-shrink: 0;
+  transition: color .18s;
 }
-.onboard-back-btn:hover { border-color: var(--beige-dark); color: var(--ink); }
-
-.onboard-next-btn {
-  font-size: 0.82rem;
+.onboard-back:hover { color: var(--ink); }
+.onboard-next {
+  font-size: .82rem;
   font-weight: 500;
-  letter-spacing: 0.05em;
-  color: var(--white);
+  letter-spacing: .02em;
+  color: #fff;
   background: var(--ink);
   border: none;
   border-radius: 40px;
-  padding: 10px 24px;
+  padding: 10px 22px;
   cursor: pointer;
-  transition: background .22s, transform .18s, box-shadow .22s;
   white-space: nowrap;
+  transition: background .2s, transform .16s, box-shadow .2s;
 }
-.onboard-next-btn:hover {
+.onboard-next:hover {
   background: var(--rose);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(201, 139, 134, 0.38);
+  box-shadow: 0 6px 18px rgba(201, 139, 134, 0.34);
 }
-
 .onboard-next--final {
-  background: linear-gradient(135deg, var(--accent), var(--rose));
-  letter-spacing: 0.07em;
+  background: linear-gradient(135deg, var(--beige-dark), var(--rose));
 }
 .onboard-next--final:hover {
-  background: linear-gradient(135deg, var(--rose), var(--accent));
-  box-shadow: 0 8px 28px rgba(122, 92, 78, 0.32);
+  background: linear-gradient(135deg, var(--rose), var(--beige-dark));
 }
 
-/* ── Footer: dots + skip ─────────────────────────────────────── */
-.onboard-footer-row {
+/* ---- Footer: progress dots + skip ---- */
+.onboard-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, .07);
 }
-
-.onboard-dots {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
+.onboard-dots { display: flex; align-items: center; gap: 5px; }
 .onboard-dot {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--border);
-  transition: background .3s, transform .3s, width .28s;
+  background: rgba(0, 0, 0, .15);
+  transition: width .28s, background .28s;
 }
-
 .onboard-dot--on {
-  background: var(--beige-dark);
-  transform: scale(1.2);
-  width: 14px;
+  width: 16px;
   border-radius: 3px;
+  background: var(--beige-dark);
 }
-
-.onboard-skip-btn {
+.onboard-skip {
   font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.12em;
+  font-size: .62rem;
+  letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--gray);
   background: none;
   border: none;
   cursor: pointer;
-  opacity: 0.5;
-  padding: 4px 0;
-  transition: opacity .2s;
+  opacity: .55;
+  transition: opacity .18s;
 }
-.onboard-skip-btn:hover { opacity: 1; }
+.onboard-skip:hover { opacity: 1; }
 
-/* ── Mobile: pin tooltip to bottom of screen ─────────────────── */
+/* ---- Mobile: card becomes a bottom sheet, no spotlight / arrow ---- */
 @media (max-width: 680px) {
   .onboard-tooltip {
-    position: fixed !important;
     left: 14px !important;
     right: 14px !important;
-    bottom: 28px !important;
+    bottom: 18px !important;
     top: auto !important;
     width: auto !important;
-    max-width: none !important;
-    /* Override JS-applied transform */
-    transform: translateY(18px) scale(0.98) !important;
-    border-radius: 20px;
-    padding: 26px 22px 18px;
+    transform: translateY(16px) scale(.98);
   }
-  .onboard-tooltip--in {
-    transform: translateY(0) scale(1) !important;
+  .onboard-tooltip--in { transform: translateY(0) scale(1); }
+  .onboard-beak { display: none !important; }
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .onboard-spotlight { animation: none; }
+  .onboard-overlay   { animation: none; }
+  .onboard-tooltip {
+    transition: opacity .2s ease;
+    transform: none;
   }
+  .onboard-tooltip--in { transform: none; }
 }
