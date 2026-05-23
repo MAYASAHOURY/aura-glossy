@@ -295,15 +295,18 @@
     document.body.appendChild(_el.tooltip);
     document.body.classList.add('onboard-active');
 
-    /* Stop clicks inside the tooltip from bubbling to document.
-       The site has a global click listener (in main.js / initNavBurger)
-       that closes the burger menu whenever a click lands outside .nav —
-       without this stop, tapping our Next button would close the
-       menu we just opened on the "Community" / "Moodboard" steps. */
+    /* Stop clicks inside the tooltip / spotlight from bubbling to
+       document. The site has a global click listener (main.js's
+       initNavBurger) that closes the burger menu whenever a click
+       lands outside .nav — without this stop, tapping our Next
+       button would close the menu we just opened on the Community
+       step. The OVERLAY itself does NOT stop propagation; instead
+       any tap on the dim backdrop closes the tour. This is the
+       primary panic-escape — even if every other path fails, the
+       user can always tap the dim to recover. */
     _el.tooltip.addEventListener('click', function (e) { e.stopPropagation(); });
-    /* Same protection for the dim backdrop and spotlight ring. */
-    _el.overlay.addEventListener('click',   function (e) { e.stopPropagation(); });
     _el.spotlight.addEventListener('click', function (e) { e.stopPropagation(); });
+    _el.overlay.addEventListener('click', function () { closeOnboarding(); });
 
     window.addEventListener('resize',          _onResize);
     window.addEventListener('orientationchange', _onResize);
@@ -881,10 +884,56 @@
     }
   }
   window.addEventListener('pageshow', function (e) {
-    /* Run only when the page is restored from bfcache. A normal load
-       has no stale onboarding DOM (the page is brand-new). */
+    /* bfcache restore — clean up any stale onboarding DOM that came
+       along with the cached page. */
     if (e.persisted) _safetyCleanup();
   });
+
+  /* ── DOMContentLoaded sweep ────────────────────────────────────
+     If a previous tour crashed mid-DOM (extension injection,
+     CSS conflict, JS error) the body could carry an orphaned
+     onboard-* element OR an `onboard-active` class. Sweep before
+     our own boot runs — we'll recreate fresh DOM if a tour is
+     actually needed. */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _safetyCleanup);
+  } else {
+    _safetyCleanup();
+  }
+
+  /* ── Global Escape — emergency exit ───────────────────────────
+     Even if onboarding's own keydown listener has been lost (e.g.
+     after a partial close that left DOM behind), pressing Escape
+     ANYWHERE will run _safetyCleanup() and restore the page.
+     Always-on, doesn't interfere with normal page use because it
+     only acts when onboard DOM is actually present. */
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (document.getElementById('onboard-overlay') ||
+        document.getElementById('onboard-spotlight')) {
+      closeOnboarding();
+      /* Belt and suspenders — if closeOnboarding short-circuits
+         (already _closing), run safety directly. */
+      setTimeout(_safetyCleanup, 50);
+    }
+  });
+
+  /* ── Max-duration watchdog ────────────────────────────────────
+     If onboarding DOM has been on the page for more than 5 minutes,
+     something is definitely wrong. Force-clean so the page is never
+     trapped. 5 min is well above any reasonable reading time for a
+     5-step tour. Checked every 15s; cheap. */
+  var _onboardOpenedAt = 0;
+  setInterval(function () {
+    var overlay = document.getElementById('onboard-overlay');
+    if (!overlay) { _onboardOpenedAt = 0; return; }
+    if (!_onboardOpenedAt) { _onboardOpenedAt = Date.now(); return; }
+    if (Date.now() - _onboardOpenedAt > 5 * 60 * 1000) {
+      _onboardOpenedAt = 0;
+      try { _markDone(); } catch (e) {}
+      _safetyCleanup();
+    }
+  }, 15 * 1000);
 
   /* Record completion to BOTH stores so it never auto-shows again. */
   function _markDone() {
