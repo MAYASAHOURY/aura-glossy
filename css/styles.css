@@ -10912,8 +10912,11 @@ a, button, [role="button"], input, textarea, select,
    A short anchored mini-tour: spotlight + arrow + compact card.
    ================================================================ */
 
-/* Freeze the page while the guide is open */
-body.onboard-active { overflow: hidden; }
+/* During the guide we DON'T freeze scrolling — the user requested
+   "no blocked scrolling" and several steps must auto-scroll the
+   target into view. The overlay still blocks taps; if the user
+   scrolls, a scroll listener (onboarding.js) repositions the
+   spotlight so it keeps tracking the target. */
 
 /* ---- Backdrop: transparent click-blocker (spotlight does the dimming) ---- */
 .onboard-overlay {
@@ -10930,7 +10933,12 @@ body.onboard-active { overflow: hidden; }
   .onboard-overlay { background: rgba(12, 9, 7, 0.74); }
 }
 
-/* ---- Spotlight: transparent box whose huge shadow dims everything else ---- */
+/* ---- Spotlight: transparent box whose huge shadow dims everything else ----
+   POSITION CHANGES ARE INSTANT (no transition on left/top/width/height).
+   The position must always match the actual target rect immediately;
+   any easing on layout properties caused stuck-at-(-9999,-9999) bugs on
+   browsers that struggle to transition auto → px or compose with the
+   running keyframe animation. Only opacity is smoothly faded. */
 .onboard-spotlight {
   position: fixed;
   z-index: 9991;
@@ -10941,12 +10949,7 @@ body.onboard-active { overflow: hidden; }
     0 0 0 100vmax rgba(12, 9, 7, 0.74),
     0 0 0 2px rgba(201, 162, 117, 0.55),
     0 0 22px 4px rgba(201, 162, 117, 0.22);
-  transition:
-    left   .5s cubic-bezier(.4, .1, .2, 1),
-    top    .5s cubic-bezier(.4, .1, .2, 1),
-    width  .5s cubic-bezier(.4, .1, .2, 1),
-    height .5s cubic-bezier(.4, .1, .2, 1),
-    opacity .3s ease;
+  transition: opacity .3s ease;
   animation: onboardPulse 2.6s ease-in-out infinite;
 }
 @keyframes onboardPulse {
@@ -11144,18 +11147,69 @@ body.onboard-active { overflow: hidden; }
 }
 .onboard-skip:hover { opacity: 1; }
 
-/* ---- Mobile: card becomes a bottom sheet, no spotlight / arrow ---- */
+/* ---- Mobile: real spotlight + adaptive card position ----
+   On mobile the card width is dynamic (left/right pinned), and the
+   card's top/bottom is set by JS (`_placeMobile`) based on where the
+   spotlight target actually sits on screen. Beak/arrow is hidden
+   since the spotlight glow itself is the visual anchor. */
 @media (max-width: 680px) {
+  /* Overlay carries the dim AND we keep the spotlight visible so the
+     user sees exactly which button the guide is pointing to. */
+  .onboard-overlay { background: rgba(12, 9, 7, 0.78); }
+
+  /* Slightly thicker, brighter ring on mobile so it reads against
+     small UI without being garish. */
+  .onboard-spotlight {
+    border-radius: 14px;
+    box-shadow:
+      0 0 0 100vmax rgba(12, 9, 7, 0.78),
+      0 0 0 2.5px rgba(255, 255, 255, 0.85),
+      0 0 22px 4px rgba(201, 162, 117, 0.42);
+  }
+  @keyframes onboardPulse {
+    0%, 100% {
+      box-shadow:
+        0 0 0 100vmax rgba(12, 9, 7, 0.78),
+        0 0 0 2.5px rgba(255, 255, 255, 0.7),
+        0 0 18px 3px rgba(201, 162, 117, 0.30);
+    }
+    50% {
+      box-shadow:
+        0 0 0 100vmax rgba(12, 9, 7, 0.78),
+        0 0 0 3.5px rgba(255, 255, 255, 0.95),
+        0 0 34px 7px rgba(201, 162, 117, 0.55);
+    }
+  }
+
+  /* Card: width is fluid, top OR bottom is set by JS each step.
+     Honour safe-area-inset so notch / nav-bar UI doesn't clip it. */
   .onboard-tooltip {
-    left: 14px !important;
-    right: 14px !important;
-    bottom: 18px !important;
-    top: auto !important;
     width: auto !important;
-    transform: translateY(16px) scale(.98);
+    padding: 18px 18px 14px;
+    border-radius: 16px;
+    transform: translateY(14px) scale(.985);
+    transition: opacity .28s var(--ease), transform .28s var(--ease);
+    /* JS sets left/right/top/bottom inline; ensure safe-area is honoured */
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   }
   .onboard-tooltip--in { transform: translateY(0) scale(1); }
+
+  /* Hide the beak on mobile — too small to read clearly, spotlight
+     glow does the visual anchoring instead. */
   .onboard-beak { display: none !important; }
+
+  /* Tighter copy on mobile so each step fits without scroll. */
+  .onboard-headline { font-size: 1.18rem; line-height: 1.28; }
+  .onboard-body     { font-size: .82rem; line-height: 1.5; }
+  .onboard-actions  { margin-top: 14px; }
+  .onboard-next     { font-size: .78rem; padding: 10px 18px; }
+  .onboard-back     { font-size: .78rem; }
+  .onboard-footer   { margin-top: 10px; padding-top: 10px; }
+  .onboard-x        { top: 6px; right: 8px; width: 30px; height: 30px; font-size: 1.25rem; }
+  /* On the welcome step, the eyebrow + mark eat vertical space.
+     Trim them so the card stays compact on small screens. */
+  .onboard-eyebrow  { font-size: .58rem; margin-bottom: 8px; }
+  .onboard-mark     { font-size: 1.25rem; margin-bottom: 6px; }
 }
 
 /* ---- Reduced motion ---- */
