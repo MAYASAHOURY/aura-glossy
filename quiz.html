@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=34">
+<link rel="stylesheet" href="css/styles.css?v=36">
 </head>
 <body>
 
@@ -308,10 +308,14 @@
               '0 0 180px '  + auraColor + '22' +
           '"></div>' +
         '</div>' +
-        /* name */
+        /* name — dir="ltr" + unicode-bidi:isolate keeps "Minimalist"
+           rendering left-to-right even when the page is in Arabic or
+           Hebrew (RTL). Each letter is its own span for the staggered
+           reveal animation, which is exactly what triggered the bidi
+           reversal bug ("tsilaminiM"). */
         '<div class="qr-name-wrap">' +
           '<span class="qr-eyebrow" style="color:' + auraColor + 'bb;letter-spacing:0.22em">Your aesthetic is</span>' +
-          '<div class="qr-name" style="color:#1a1209">' + letters + '</div>' +
+          '<div class="qr-name aura-name-ltr" dir="ltr" style="color:#1a1209">' + letters + '</div>' +
           '<p class="qr-mantra" style="color:#7a6a60">&ldquo;' + mantra + '&rdquo;</p>' +
         '</div>' +
         /* aura color chip */
@@ -326,7 +330,7 @@
         '<div class="qr-breakdown">' +
           top3.map((s, i) =>
             '<div class="qr-bar-row" style="animation-delay:' + (0.6 + i * 0.18) + 's">' +
-              '<span class="qr-bar-label" style="color:#3a3028">' + s.name + '</span>' +
+              '<span class="qr-bar-label aura-name-ltr" dir="ltr" style="color:#3a3028">' + s.name + '</span>' +
               '<div class="qr-bar-track" style="background:rgba(0,0,0,0.08)">' +
                 '<div class="qr-bar-fill" style="--pct:' + s.pct + '%;background:' + (s.primary ? auraColor : 'rgba(0,0,0,0.14)') + '"></div>' +
               '</div>' +

@@ -10165,7 +10165,10 @@ a, button, input, select, textarea,
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 18px 20px 10px;
+  /* Bottom padding bumped from 10px → 14px so the textarea below
+     has visible breathing room. Previously the placeholder felt
+     squished right up against the avatar / label on mobile. */
+  padding: 18px 20px 14px;
 }
 
 .composer-label {
@@ -10217,7 +10220,11 @@ a, button, input, select, textarea,
 .composer-text {
   display: block;
   width: 100%;
-  padding: 14px 20px 10px;
+  /* Top padding was 14px → bumped to 18px so the placeholder /
+     first line breathes below the header. Bottom 14px keeps a
+     comfortable gap before the optional image-URL row. */
+  padding: 18px 20px 14px;
+  min-height: 96px;          /* keeps a stable height even when empty */
   font-family: var(--font-sans);
   font-size: 0.95rem;
   line-height: 1.65;
@@ -10952,37 +10959,49 @@ a, button, [role="button"], input, textarea, select,
 }
 
 /* ---- Spotlight ----
-   Brighter on the new design — feedback was the previous version felt
-   too subtle. Stronger ambient dim, a white-cream ring around the
-   target, and a noticeable pulse to draw the eye. POSITION CHANGES
-   ARE INSTANT (no transition on left/top/width/height) — easing on
-   layout properties caused stuck-at-(-9999,-9999) bugs in some
-   browsers. Only opacity is smoothly faded. */
+   The TARGET stays fully readable (it's the literal page element behind
+   a transparent rect); EVERYTHING around it is dimmed by the box-shadow
+   that extends 100vmax outside the rect. A thick cream ring + a warm
+   secondary outline + a soft golden glow draw the eye unmistakably to
+   "this is the thing to click."
+
+   Layering of the box-shadow (outer → inner):
+     1. 100vmax dim   — the dark backdrop that covers everything else
+     2. 4px cream ring — the crisp "spotlight box" the user sees
+     3. 2px warm sub-ring — adds depth so the ring doesn't look flat
+     4. soft gold glow — bleeds into the surrounding dim for warmth
+
+   POSITION CHANGES ARE INSTANT (no transition on left/top/width/height)
+   — easing on layout properties caused stuck-at-(-9999,-9999) bugs in
+   some browsers. Only opacity is smoothly faded. */
 .onboard-spotlight {
   position: fixed;
   z-index: 9991;
   pointer-events: none;
   background: transparent;
-  border-radius: 14px;
+  border-radius: 12px;
   box-shadow:
-    0 0 0 100vmax rgba(8, 6, 4, 0.82),
-    0 0 0 3px   rgba(255, 252, 247, 0.92),
-    0 0 28px 6px rgba(201, 162, 117, 0.55);
+    0 0 0 100vmax rgba(8, 6, 4, 0.88),
+    0 0 0 4px     rgba(255, 252, 247, 1),
+    0 0 0 6px     rgba(255, 220, 180, 0.4),
+    0 0 36px 10px rgba(201, 162, 117, 0.6);
   transition: opacity .3s ease;
   animation: onboardPulse 2.2s ease-in-out infinite;
 }
 @keyframes onboardPulse {
   0%, 100% {
     box-shadow:
-      0 0 0 100vmax rgba(8, 6, 4, 0.82),
-      0 0 0 3px    rgba(255, 252, 247, 0.8),
-      0 0 22px 4px rgba(201, 162, 117, 0.35);
+      0 0 0 100vmax rgba(8, 6, 4, 0.88),
+      0 0 0 4px     rgba(255, 252, 247, 0.95),
+      0 0 0 6px     rgba(255, 220, 180, 0.30),
+      0 0 24px 6px  rgba(201, 162, 117, 0.45);
   }
   50% {
     box-shadow:
-      0 0 0 100vmax rgba(8, 6, 4, 0.82),
-      0 0 0 4px    rgba(255, 252, 247, 1),
-      0 0 42px 10px rgba(201, 162, 117, 0.70);
+      0 0 0 100vmax rgba(8, 6, 4, 0.88),
+      0 0 0 5px     rgba(255, 252, 247, 1),
+      0 0 0 7px     rgba(255, 220, 180, 0.55),
+      0 0 48px 12px rgba(201, 162, 117, 0.75);
   }
 }
 
@@ -11178,27 +11197,33 @@ a, button, [role="button"], input, textarea, select,
      user sees exactly which button the guide is pointing to. */
   .onboard-overlay { background: rgba(12, 9, 7, 0.78); }
 
-  /* Slightly thicker, brighter ring on mobile so it reads against
-     small UI without being garish. */
+  /* Mobile / tablet spotlight: same layered ring approach as desktop
+     but tuned for smaller touch targets. The ring is slightly thinner
+     than desktop (small target + thick ring would dominate the screen)
+     but the dim is just as strong so the target reads as the only
+     interactive element on screen. */
   .onboard-spotlight {
-    border-radius: 14px;
+    border-radius: 12px;
     box-shadow:
-      0 0 0 100vmax rgba(12, 9, 7, 0.78),
-      0 0 0 2.5px rgba(255, 255, 255, 0.85),
-      0 0 22px 4px rgba(201, 162, 117, 0.42);
+      0 0 0 100vmax rgba(8, 6, 4, 0.86),
+      0 0 0 3px    rgba(255, 252, 247, 1),
+      0 0 0 5px    rgba(255, 220, 180, 0.38),
+      0 0 28px 7px rgba(201, 162, 117, 0.55);
   }
   @keyframes onboardPulse {
     0%, 100% {
       box-shadow:
-        0 0 0 100vmax rgba(12, 9, 7, 0.78),
-        0 0 0 2.5px rgba(255, 255, 255, 0.7),
-        0 0 18px 3px rgba(201, 162, 117, 0.30);
+        0 0 0 100vmax rgba(8, 6, 4, 0.86),
+        0 0 0 3px    rgba(255, 252, 247, 0.92),
+        0 0 0 5px    rgba(255, 220, 180, 0.28),
+        0 0 22px 5px rgba(201, 162, 117, 0.40);
     }
     50% {
       box-shadow:
-        0 0 0 100vmax rgba(12, 9, 7, 0.78),
-        0 0 0 3.5px rgba(255, 255, 255, 0.95),
-        0 0 34px 7px rgba(201, 162, 117, 0.55);
+        0 0 0 100vmax rgba(8, 6, 4, 0.86),
+        0 0 0 4px    rgba(255, 252, 247, 1),
+        0 0 0 6px    rgba(255, 220, 180, 0.52),
+        0 0 40px 10px rgba(201, 162, 117, 0.70);
     }
   }
 
@@ -11776,4 +11801,81 @@ html[dir="rtl"] .s-row { flex-direction: row-reverse; }
   html[dir="rtl"] .nav.nav-open .nav-links {
     text-align: right;
   }
+}
+
+/* ================================================================
+   RTL-safe English aesthetic names
+   ────────────────────────────────────────────────────────────────
+   When the page is in Arabic or Hebrew (dir="rtl") the quiz result
+   name was rendering reversed (Minimalist → "tsilaminiM") because
+   it's built as per-letter spans for the staggered reveal — RTL
+   visually reorders inline-level boxes. `unicode-bidi: isolate`
+   tells the browser to treat the element's contents as its own
+   bidi run and ignore the parent's direction.
+
+   Defensive: apply to every place an English aesthetic name shows
+   up so future RTL renders never inherit the bug.
+   ================================================================ */
+.aura-name-ltr,
+[dir="rtl"] .qr-name,
+[dir="rtl"] .qr-bar-label,
+[dir="rtl"] .style-card-name,
+[dir="rtl"] .style-hero-title,
+[dir="rtl"] .ssec-overview-title,
+[dir="rtl"] [data-aesthetic-name],
+[dir="rtl"] .s-row-value[data-aesthetic],
+[dir="rtl"] .group-name,
+[dir="rtl"] .cib-name {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+/* RTL: keep these names visually on the start side (right edge) */
+[dir="rtl"] .aura-name-ltr { text-align: right; }
+[dir="rtl"] .qr-name        { text-align: center; }
+[dir="rtl"] .qr-bar-label   { text-align: right; }
+
+/* ================================================================
+   Community composer — mobile spacing pass
+   ────────────────────────────────────────────────────────────────
+   The placeholder was sitting too close to the "Share with your
+   circle" header on small screens, and the post-type tabs were
+   crowding the textarea on narrow phones (380px and below). This
+   gives the textarea more breathing room and lets the footer
+   stack cleanly when it can't fit on one line.
+   ================================================================ */
+@media (max-width: 640px) {
+  .post-composer { border-radius: 22px; }
+  .composer-header {
+    padding: 16px 16px 14px;
+    gap: 10px;
+  }
+  .composer-avatar { width: 32px; height: 32px; font-size: 0.78rem; }
+  .composer-label  { font-size: 0.82rem; line-height: 1.3; }
+  .composer-text {
+    padding: 16px 18px 16px;
+    min-height: 104px;            /* taller default tap area on phones */
+    font-size: 16px;              /* prevent iOS auto-zoom on focus */
+    line-height: 1.55;
+  }
+  .composer-footer {
+    /* Allow the tabs row + Post button to stack vertically on very
+       narrow screens instead of squeezing into one cramped row. */
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 16px 14px;
+  }
+  .composer-tabs {
+    flex: 1 1 100%;               /* take the full first line on wrap */
+    justify-content: flex-start;
+  }
+  .composer-post-btn {
+    flex: 0 0 auto;
+    padding: 10px 22px;
+    font-size: 0.74rem;
+  }
+}
+
+/* Wider phones (640-720px): keep one-line footer but tighter type */
+@media (max-width: 720px) and (min-width: 641px) {
+  .composer-text { padding: 16px 20px 14px; }
 }
