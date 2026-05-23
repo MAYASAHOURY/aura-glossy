@@ -243,10 +243,30 @@
      START / DOM
      ================================================================ */
   function _start(force) {
-    if (document.getElementById('onboard-overlay')) return;   /* already open */
+    /* Defensive: sweep any orphan onboarding DOM from a previous run
+       before starting fresh. Without this, calling .show() right after
+       .close() (e.g. Replay → close → Replay again) would early-return
+       on "already open" because the close animation hadn't finished
+       removing nodes yet. */
+    var existing = document.getElementById('onboard-overlay');
+    if (existing) {
+      /* If a tour is actively rendering (tooltip is in-state), respect
+         that. Otherwise it's a stale ghost — clean it now. */
+      var tt = document.getElementById('onboard-tooltip');
+      if (tt && tt.classList.contains('onboard-tooltip--in')) return;
+      ['onboard-overlay', 'onboard-spotlight', 'onboard-tooltip'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+      });
+    }
+
     if (!force) {
       try { if (localStorage.getItem(STORAGE_KEY)) return; } catch (e) {}
     }
+
+    /* Reset the close guard so a new tour can run after a previous close. */
+    _closing = false;
+
     _step = 0;
     _build();
     _markDone();        /* appearing once IS "seen" - record it now    */
@@ -728,31 +748,143 @@
 
   /* ================================================================
      CLOSE  -  fires on finish, Skip, x, or Escape
-     ================================================================ */
-  function closeOnboarding() {
-    _markDone();   /* idempotent - safe to call again */
+     ────────────────────────────────────────────────────────────────
+     Bulletproof teardown. The dim background the user sees is the
+     spotlight's massive box-shadow (0 0 0 100vmax). If JS exits
+     halfway through, that box-shadow keeps the whole page dimmed
+     AND the overlay (z 9990) keeps the page non-interactive.
 
-    var parts = [_el.overlay, _el.spotlight, _el.tooltip];
-    parts.forEach(function (el) {
-      if (!el) return;
-      el.style.transition = 'opacity .34s ease';
-      el.style.opacity    = '0';
+     This function therefore:
+       1. Marks completion FIRST (Firestore + localStorage) so the
+          tour can't re-show, even if everything below crashes.
+       2. Restores body/document state synchronously — page is
+          interactive within the same frame the user clicks
+          "Let's Go" or X, regardless of what's still animating.
+       3. Removes all event listeners + cancels pending timers /
+          rAF jobs to prevent leaks and stale callbacks.
+       4. Hides the spotlight box-shadow instantly (the dim killer)
+          and fades overlay + tooltip over 260ms.
+       5. Hard-removes every onboard DOM node at 280ms (primary)
+          AND 1500ms (backup, in case setTimeout was throttled in
+          a backgrounded tab — common on iOS Safari + IG WebView).
+       6. ID-based lookup as a safety net for the removal pass —
+          stale `_el` references can't strand orphan nodes.
+     ================================================================ */
+  var _closing = false;
+  function closeOnboarding() {
+    if (_closing) return;
+    _closing = true;
+
+    /* 1. Mark done. Always safe to call; ignores its own errors. */
+    try { _markDone(); } catch (e) {}
+
+    /* 2. Restore body / document state IMMEDIATELY. The page must
+       become interactive in the same tick the user clicks the
+       close action, even if downstream animation hangs. */
+    try {
+      document.body.classList.remove('onboard-active');
+      document.body.style.overflow            = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.pointerEvents       = '';
+      document.documentElement.style.pointerEvents = '';
+    } catch (e) {}
+
+    /* Close the burger menu if a previous step opened it. */
+    try { _setMenuOpen(false); } catch (e) {}
+
+    /* 3. Tear down listeners + cancel timers right away. */
+    try {
+      window.removeEventListener('resize',           _onResize);
+      window.removeEventListener('orientationchange', _onResize);
+      window.removeEventListener('scroll',           _onScroll);
+      document.removeEventListener('keydown',        _onKey);
+      clearTimeout(_rt);
+      if (_scrollRaf && window.cancelAnimationFrame) cancelAnimationFrame(_scrollRaf);
+      _rt = null;
+      _scrollRaf = 0;
+    } catch (e) {}
+
+    /* 4. Kill the spotlight's dim box-shadow INSTANTLY. The 100vmax
+       shadow is what darkens the entire viewport — setting display:
+       none drops it in one frame, no gradual fade artifact. */
+    var sp = _el.spotlight || document.getElementById('onboard-spotlight');
+    if (sp && sp.style) {
+      try {
+        sp.style.animation     = 'none';
+        sp.style.boxShadow     = 'none';
+        sp.style.opacity       = '0';
+        sp.style.visibility    = 'hidden';
+        sp.style.pointerEvents = 'none';
+        sp.style.display       = 'none';
+      } catch (e) {}
+    }
+
+    /* Fade overlay + tooltip — quick visual confirmation that the
+       tour is closing. Visibility goes hidden after the transition. */
+    [_el.overlay, _el.tooltip].forEach(function (el) {
+      var node = el || null;
+      if (!node) return;
+      try {
+        node.style.transition    = 'opacity .26s ease';
+        node.style.opacity       = '0';
+        node.style.pointerEvents = 'none';
+      } catch (e) {}
     });
 
-    setTimeout(function () {
-      parts.forEach(function (el) { if (el) el.remove(); });
+    /* 5. Hard removal — primary timer + backup timer. Both call
+       hardRemove(); the second call is a no-op once the first fires. */
+    var hardRemoved = false;
+    function hardRemove() {
+      if (hardRemoved) return;
+      hardRemoved = true;
+
+      /* ID-based sweep — covers cases where _el refs went stale
+         (re-init mid-tour, race with another closer, etc.). */
+      ['onboard-overlay', 'onboard-spotlight', 'onboard-tooltip'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el && el.parentNode) {
+          try { el.parentNode.removeChild(el); } catch (e) {}
+        }
+      });
+
       _el = {};
-      document.body.classList.remove('onboard-active');
-      /* Close the burger menu if a previous step opened it. Without this,
-         the menu stays open after the guide ends and the user has to
-         tap the burger twice to dismiss it. */
-      _setMenuOpen(false);
-      window.removeEventListener('resize',     _onResize);
-      window.removeEventListener('orientationchange', _onResize);
-      window.removeEventListener('scroll',     _onScroll);
-      document.removeEventListener('keydown',  _onKey);
-    }, 380);
+    }
+    setTimeout(hardRemove, 280);    /* after fade */
+    setTimeout(hardRemove, 1500);   /* backup if first was throttled */
   }
+
+  /* ================================================================
+     SAFETY NET — clean up stale onboarding DOM on bfcache restore
+     ────────────────────────────────────────────────────────────────
+     If the user navigates away mid-tour and the browser caches the
+     page, returning via Back can show stale overlay/spotlight DOM
+     that's no longer wired up to anything. This sweeps those out
+     and restores body state. Idempotent + safe to call any time. */
+  function _safetyCleanup() {
+    var ids = ['onboard-overlay', 'onboard-spotlight', 'onboard-tooltip'];
+    var any = false;
+    for (var i = 0; i < ids.length; i++) {
+      var el = document.getElementById(ids[i]);
+      if (el && el.parentNode) {
+        try { el.parentNode.removeChild(el); any = true; } catch (e) {}
+      }
+    }
+    if (any || document.body.classList.contains('onboard-active')) {
+      try {
+        document.body.classList.remove('onboard-active');
+        document.body.style.overflow            = '';
+        document.documentElement.style.overflow = '';
+        document.body.style.pointerEvents       = '';
+        document.documentElement.style.pointerEvents = '';
+        _setMenuOpen(false);
+      } catch (e) {}
+    }
+  }
+  window.addEventListener('pageshow', function (e) {
+    /* Run only when the page is restored from bfcache. A normal load
+       has no stale onboarding DOM (the page is brand-new). */
+    if (e.persisted) _safetyCleanup();
+  });
 
   /* Record completion to BOTH stores so it never auto-shows again. */
   function _markDone() {
