@@ -97,6 +97,23 @@
         creating: 'Creating account…',
         signing_in: 'Signing in…',
         redirecting: 'Redirecting…',
+        /* Password visibility toggle */
+        show_password: 'Show password',
+        hide_password: 'Hide password',
+        /* Forgot password / reset flow */
+        forgot_password: 'Forgot password?',
+        reset_title: 'Reset your password',
+        reset_body: "Enter your email and we'll send you a reset link.",
+        reset_email_placeholder: 'Email address',
+        reset_send: 'Send reset link',
+        reset_sending: 'Sending…',
+        reset_success: 'Check your email for the reset link.',
+        reset_close: 'Close',
+        err_reset_invalid: 'Please enter a valid email address.',
+        err_reset_no_user: 'No account found with this email.',
+        err_reset_network: 'No internet connection. Please check your network.',
+        err_reset_generic: "Couldn't send reset email. Please try again.",
+        /* Standard errors */
         err_email: 'Please enter a valid email address.',
         err_password: 'Please enter your password.',
         err_password_short: 'Password must be at least 6 characters.',
@@ -123,7 +140,50 @@
         result_eyebrow: 'Your aesthetic',
         save_result: 'Save to moodboard',
         share_result: 'Share my result',
-        retake: 'Retake the quiz'
+        retake: 'Retake the quiz',
+        /* Per-question translations. Order matches QUIZ in js/data.js
+           (do NOT reorder — quiz.html maps by array index). For each
+           question we provide q (the question), hint (under-title
+           guidance), helpText (text inside the "Help me" modal), and
+           parallel arrays for the four option labels and their moods
+           — same order as the four `options` in data.js. */
+        questions: [
+          {
+            q:        'What kind of outfits make you feel most like yourself?',
+            hint:     "Think about what you'd actually wear on a free day — not what's trending, just what feels right.",
+            helpText: "There's no wrong answer here. Just picture opening your wardrobe on a relaxed morning — which energy are you most drawn to?",
+            options:  ['Polished and put together', 'Easy and comfortable', 'Bold and unapologetic', 'Quiet and minimal'],
+            moods:    ['blazers, structure, clean lines', 'soft fabrics, relaxed fits, casual ease', 'statement pieces, loud energy', 'neutral tones, simple cuts, nothing extra']
+          },
+          {
+            q:        'Which color world feels most like home?',
+            hint:     "Which of these palettes feels most calming, exciting, or simply most \"you\"?",
+            helpText: "Colors reflect personality more than we think. Just pick the palette you'd most likely fill your wardrobe — or your bedroom — with.",
+            options:  ['Cream, oat, ivory', 'Blush, pearl, soft rose', 'Pastel pink and lace', 'Pink chrome and bubblegum'],
+            moods:    ['soft, serene, barely-there', 'delicate, feminine, warm', 'sweet, dreamy, romantic', 'playful, glossy, nostalgic']
+          },
+          {
+            q:        'Your ideal Saturday looks like…',
+            hint:     'Just pick the scene that instantly makes you feel happy and at home.',
+            helpText: "The environments we love tend to mirror the aesthetics we dress in. Whether it's a cosy café or a bustling city street — it all connects.",
+            options:  ['A pastel café with a book', 'A quiet wine bar at dinner', 'City streets with friends', 'Hunting through a vintage market'],
+            moods:    ['soft lighting, matcha, a pretty corner', 'candlelight, elegance, slow evenings', 'music, energy, exploring everywhere', 'old treasures, Sunday morning, finds']
+          },
+          {
+            q:        'If you could only wear one pair of shoes forever…',
+            hint:     'Forget practicality — which one just feels most like you?',
+            helpText: "Shoes are one of the most honest parts of an outfit. Your instinctive pick says a lot about your real style personality.",
+            options:  ['White sneakers', 'Leather loafers', 'Heels or satin mules', 'Mary Janes or ballet flats'],
+            moods:    ['clean, versatile, effortless', 'polished, quiet, timeless', 'elevated, feminine, intentional', 'soft, sweet, effortlessly pretty']
+          },
+          {
+            q:        "Whose style makes you think \"I wish that was mine\"?",
+            hint:     "Go with your gut — whichever vibe feels most exciting, not most realistic.",
+            helpText: "We're not asking who you are — we're asking who you'd love to dress like for a week. That instinctive pull tells us the aesthetic you're most drawn to.",
+            options:  ['Audrey Hepburn — timeless', 'A K-pop idol with an iced americano', 'Paris Hilton circa 2003', 'A 70s flower child'],
+            moods:    ['pearls, trench coats, quiet perfection', 'cute layers, effortless cool, Seoul style', 'pink everything, mini skirts, born iconic', 'suede boots, flared jeans, vintage charm']
+          }
+        ]
       },
       community: {
         page_eyebrow: 'Your style circle',
@@ -244,6 +304,23 @@
         creating: 'Creando cuenta…',
         signing_in: 'Iniciando sesión…',
         redirecting: 'Redirigiendo…',
+        /* Password visibility toggle */
+        show_password: 'Mostrar contraseña',
+        hide_password: 'Ocultar contraseña',
+        /* Forgot password / reset flow */
+        forgot_password: '¿Olvidaste tu contraseña?',
+        reset_title: 'Recuperar tu contraseña',
+        reset_body: 'Introduce tu correo y te enviaremos un enlace para restablecerla.',
+        reset_email_placeholder: 'Correo electrónico',
+        reset_send: 'Enviar enlace',
+        reset_sending: 'Enviando…',
+        reset_success: 'Revisa tu correo para encontrar el enlace.',
+        reset_close: 'Cerrar',
+        err_reset_invalid: 'Introduce un correo electrónico válido.',
+        err_reset_no_user: 'No existe una cuenta con este correo.',
+        err_reset_network: 'Sin conexión a internet. Revisa tu red.',
+        err_reset_generic: 'No se pudo enviar el correo. Inténtalo de nuevo.',
+        /* Standard errors */
         err_email: 'Introduce un correo electrónico válido.',
         err_password: 'Introduce tu contraseña.',
         err_password_short: 'La contraseña debe tener al menos 6 caracteres.',
@@ -270,7 +347,44 @@
         result_eyebrow: 'Tu estética',
         save_result: 'Guardar en moodboard',
         share_result: 'Compartir mi resultado',
-        retake: 'Volver a hacer el quiz'
+        retake: 'Volver a hacer el quiz',
+        questions: [
+          {
+            q:        '¿Qué tipo de outfits te hacen sentir más tú misma?',
+            hint:     "Piensa en lo que realmente te pondrías un día libre — no lo que está de moda, solo lo que se siente bien.",
+            helpText: "Aquí no hay respuestas equivocadas. Imagina abrir tu armario en una mañana tranquila — ¿a qué energía te sientes más atraída?",
+            options:  ['Pulido y elegante', 'Cómodo y relajado', 'Atrevido y sin disculpas', 'Silencioso y minimalista'],
+            moods:    ['blazers, estructura, líneas limpias', 'tejidos suaves, cortes relajados, comodidad casual', 'piezas con statement, energía intensa', 'tonos neutros, cortes simples, nada de más']
+          },
+          {
+            q:        '¿Qué mundo de color te siente más como en casa?',
+            hint:     "¿Cuál de estas paletas te resulta más calmante, emocionante, o simplemente más \"tú\"?",
+            helpText: "Los colores reflejan personalidad más de lo que creemos. Elige la paleta con la que llenarías tu armario — o tu habitación.",
+            options:  ['Crema, avena, marfil', 'Rubor, perla, rosa suave', 'Rosa pastel y encaje', 'Rosa cromado y chicle'],
+            moods:    ['suave, sereno, apenas presente', 'delicado, femenino, cálido', 'dulce, soñador, romántico', 'juguetón, brillante, nostálgico']
+          },
+          {
+            q:        'Tu sábado ideal se ve como…',
+            hint:     'Elige la escena que te hace sentir feliz y en casa al instante.',
+            helpText: "Los entornos que amamos suelen reflejar las estéticas que vestimos. Sea un café acogedor o una calle bulliciosa — todo está conectado.",
+            options:  ['Un café pastel con un libro', 'Un wine bar tranquilo a la hora de cenar', 'Calles de la ciudad con amigos', 'Buscando en un mercado vintage'],
+            moods:    ['luz suave, matcha, un rincón bonito', 'luz de velas, elegancia, noches lentas', 'música, energía, explorando por todas partes', 'tesoros antiguos, domingo por la mañana, hallazgos']
+          },
+          {
+            q:        'Si solo pudieras llevar un par de zapatos para siempre…',
+            hint:     'Olvida la practicidad — ¿cuál se siente más como tú?',
+            helpText: "Los zapatos son una de las partes más honestas de un outfit. Tu elección instintiva dice mucho de tu verdadera personalidad de estilo.",
+            options:  ['Zapatillas blancas', 'Mocasines de cuero', 'Tacones o mules de satén', 'Mary Janes o bailarinas'],
+            moods:    ['limpias, versátiles, sin esfuerzo', 'pulidos, silenciosos, atemporales', 'elevado, femenino, intencional', 'suave, dulce, bonito sin esfuerzo']
+          },
+          {
+            q:        "¿De quién es el estilo que te hace pensar \"ojalá fuera el mío\"?",
+            hint:     "Sigue tu instinto — el vibe que más te emocione, no el más realista.",
+            helpText: "No te preguntamos quién eres — te preguntamos como quién te encantaría vestir durante una semana. Esa atracción instintiva nos dice qué estética te llama más.",
+            options:  ['Audrey Hepburn — atemporal', 'Un ídolo K-pop con un americano helado', 'Paris Hilton hacia 2003', 'Una hija de las flores de los 70'],
+            moods:    ['perlas, trench coats, perfección silenciosa', 'capas adorables, cool sin esfuerzo, estilo Seúl', 'todo rosa, mini faldas, ícono de nacimiento', 'botas de ante, jeans acampanados, encanto vintage']
+          }
+        ]
       },
       community: {
         page_eyebrow: 'Tu círculo de estilo',
@@ -386,6 +500,23 @@
         creating: 'جارٍ إنشاء الحساب…',
         signing_in: 'جارٍ تسجيل الدخول…',
         redirecting: 'جارٍ التحويل…',
+        /* Password visibility toggle */
+        show_password: 'إظهار كلمة المرور',
+        hide_password: 'إخفاء كلمة المرور',
+        /* Forgot password / reset flow */
+        forgot_password: 'نسيت كلمة المرور؟',
+        reset_title: 'إعادة تعيين كلمة المرور',
+        reset_body: 'أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين.',
+        reset_email_placeholder: 'البريد الإلكتروني',
+        reset_send: 'إرسال الرابط',
+        reset_sending: 'جارٍ الإرسال…',
+        reset_success: 'تحقق من بريدك الإلكتروني للحصول على الرابط.',
+        reset_close: 'إغلاق',
+        err_reset_invalid: 'يرجى إدخال بريد إلكتروني صحيح.',
+        err_reset_no_user: 'لا يوجد حساب بهذا البريد الإلكتروني.',
+        err_reset_network: 'لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.',
+        err_reset_generic: 'تعذّر إرسال البريد. يرجى المحاولة مرة أخرى.',
+        /* Standard errors */
         err_email: 'يرجى إدخال بريد إلكتروني صحيح.',
         err_password: 'يرجى إدخال كلمة المرور.',
         err_password_short: 'يجب أن تتكوّن كلمة المرور من 6 أحرف على الأقل.',
@@ -412,7 +543,44 @@
         result_eyebrow: 'جماليّتك',
         save_result: 'حفظ في لوحة الإلهام',
         share_result: 'مشاركة نتيجتي',
-        retake: 'إعادة الاختبار'
+        retake: 'إعادة الاختبار',
+        questions: [
+          {
+            q:        'ما نوع الملابس التي تجعلك تشعرين بأنك أنتِ نفسك؟',
+            hint:     'فكّري فيما قد ترتدينه فعلاً في يوم حر — ليس ما هو رائج، فقط ما يبدو صحيحاً لك.',
+            helpText: 'لا توجد إجابة خاطئة هنا. تخيّلي أنك تفتحين خزانتك في صباح هادئ — أي طاقة تجذبك أكثر؟',
+            options:  ['أنيق ومُتقَن', 'سهل ومريح', 'جريء وبلا اعتذار', 'هادئ وبسيط'],
+            moods:    ['بليزرات، بنية، خطوط نظيفة', 'أقمشة ناعمة، قصّات مريحة، هدوء يومي', 'قطع لافتة، طاقة قوية', 'ألوان محايدة، قصّات بسيطة، بلا زوائد']
+          },
+          {
+            q:        'أي عالم من الألوان يشبه شعور البيت أكثر؟',
+            hint:     'أي من هذه اللوحات يبعث على الهدوء، أو الإثارة، أو ببساطة يعبّر عنكِ أكثر؟',
+            helpText: 'الألوان تعكس الشخصية أكثر مما نظن. اختاري اللوحة التي قد تملئين بها خزانتك — أو غرفتك.',
+            options:  ['كريمي، شوفاني، عاجي', 'وردي خدودي، لؤلؤي، وردي ناعم', 'وردي باستيل ودانتيل', 'وردي معدني ولبان'],
+            moods:    ['ناعم، هادئ، خافت', 'رقيق، أنثوي، دافئ', 'حلو، حالم، رومانسي', 'مرح، لامع، حنيني']
+          },
+          {
+            q:        'يوم السبت المثالي بالنسبة لك يبدو هكذا…',
+            hint:     'اختاري المشهد الذي يجعلك تشعرين بالسعادة والراحة فوراً.',
+            helpText: 'الأماكن التي نحبها تعكس عادةً الجماليات التي نرتديها. سواء كان مقهى دافئاً أو شارعاً نابضاً بالحياة — كل شيء مترابط.',
+            options:  ['مقهى باستيل مع كتاب', 'بار نبيذ هادئ على العشاء', 'شوارع المدينة مع الأصدقاء', 'البحث في سوق فينتاج'],
+            moods:    ['إضاءة هادئة، ماتشا، زاوية جميلة', 'ضوء الشموع، أناقة، أمسيات بطيئة', 'موسيقى، طاقة، استكشاف في كل مكان', 'كنوز قديمة، صباح الأحد، اكتشافات']
+          },
+          {
+            q:        'لو كان عليكِ ارتداء زوج حذاء واحد إلى الأبد…',
+            hint:     'انسي الجانب العملي — أيها يبدو الأقرب إليكِ؟',
+            helpText: 'الأحذية من أصدق أجزاء الإطلالة. اختياركِ التلقائي يكشف الكثير عن شخصيتك الستايلية الحقيقية.',
+            options:  ['أحذية رياضية بيضاء', 'لوفر جلدي', 'كعب عالٍ أو ميول ساتان', 'ماري جين أو باليرينا'],
+            moods:    ['نظيفة، متعدّدة الاستخدامات، بلا مجهود', 'أنيق، هادئ، خالد', 'راقٍ، أنثوي، مقصود', 'ناعم، حلو، جميل بطبيعته']
+          },
+          {
+            q:        "أسلوب من يجعلك تفكرين \"أتمنى لو كان لي\"؟",
+            hint:     'اتبعي حدسك — أي طاقة تثيرك أكثر، وليس الأكثر واقعية.',
+            helpText: 'لسنا نسألك عمن أنتِ — بل عمن تودين ارتداء أسلوبه لأسبوع. هذا الانجذاب التلقائي يكشف الجمالية التي تجذبك أكثر.',
+            options:  ['أودري هيبورن — كلاسيكية خالدة', 'نجم كي-بوب يحمل أمريكانو مثلج', 'باريس هيلتون عام 2003', 'فتاة الزهور في السبعينيات'],
+            moods:    ['لؤلؤ، معاطف ترنش، كمال هادئ', 'طبقات لطيفة، شياكة عفوية، ستايل سيول', 'كل شيء وردي، تنانير قصيرة، أيقونة بالفطرة', 'حذاء سويدي، جينز واسع، سحر فينتاج']
+          }
+        ]
       },
       community: {
         page_eyebrow: 'دائرة أسلوبك',
@@ -528,6 +696,22 @@
         creating: 'יוצר חשבון…',
         signing_in: 'מתחבר…',
         redirecting: 'מעביר…',
+        /* Password visibility toggle */
+        show_password: 'הצגת סיסמה',
+        hide_password: 'הסתרת סיסמה',
+        /* Forgot password / reset flow */
+        forgot_password: 'שכחת סיסמה?',
+        reset_title: 'איפוס סיסמה',
+        reset_body: 'הזיני את האימייל שלך ונשלח לך קישור לאיפוס.',
+        reset_email_placeholder: 'כתובת אימייל',
+        reset_send: 'שליחת קישור',
+        reset_sending: 'שולח…',
+        reset_success: 'בדקי את האימייל שלך כדי לקבל את הקישור.',
+        reset_close: 'סגירה',
+        err_reset_invalid: 'נא להזין כתובת אימייל תקינה.',
+        err_reset_no_user: 'לא נמצא חשבון עם אימייל זה.',
+        err_reset_network: 'אין חיבור לאינטרנט. בדקי את הרשת.',
+        err_reset_generic: 'לא ניתן היה לשלוח את האימייל. נסי שוב.',
         err_email: 'נא להזין כתובת אימייל תקינה.',
         err_password: 'נא להזין סיסמה.',
         err_password_short: 'הסיסמה חייבת לכלול לפחות 6 תווים.',
@@ -554,7 +738,44 @@
         result_eyebrow: 'האסתטיקה שלך',
         save_result: 'שמירה ללוח ההשראה',
         share_result: 'שיתוף התוצאה',
-        retake: 'חידון מחדש'
+        retake: 'חידון מחדש',
+        questions: [
+          {
+            q:        'איזה סגנון בגדים גורם לך להרגיש הכי "את עצמך"?',
+            hint:     'חשבי על מה היית באמת לובשת ביום פנוי — לא מה שטרנדי, רק מה שמרגיש נכון.',
+            helpText: "אין כאן תשובה לא נכונה. דמייני שאת פותחת את הארון בבוקר רגוע — לאיזו אנרגיה את הכי נמשכת?",
+            options:  ['מטופח ומאורגן', 'נוח וקל', 'נועז ובלי התנצלויות', 'שקט ומינימליסטי'],
+            moods:    ['בלייזרים, מבנה, קווים נקיים', 'בדים רכים, גזרות רפויות, נינוחות יומיומית', 'פריטי סטייטמנט, אנרגיה עוצמתית', 'גוונים נייטרליים, גזרות פשוטות, בלי תוספות']
+          },
+          {
+            q:        "איזה עולם צבעים מרגיש לך הכי 'בית'?",
+            hint:     "איזו פלטה מהאלה הכי מרגיעה, מרגשת, או פשוט הכי 'את'?",
+            helpText: "צבעים משקפים אישיות יותר ממה שנדמה. בחרי את הפלטה שהיית ממלאת איתה את הארון — או את החדר.",
+            options:  ['קרם, שיבולת שועל, שנהב', 'ורד עדין, פנינה, ורוד רך', 'ורוד פסטל ותחרה', 'ורוד מטאלי ובאבל-גאם'],
+            moods:    ['רך, שלו, כמעט בלתי-נראה', 'עדין, נשי, חם', 'מתוק, חולמני, רומנטי', 'שובב, מבריק, נוסטלגי']
+          },
+          {
+            q:        'השבת האידיאלית שלך נראית כך…',
+            hint:     'בחרי את הסצנה שגורמת לך להרגיש שמחה ובבית באופן מיידי.',
+            helpText: "הסביבות שאנחנו אוהבים נוטות לשקף את האסתטיקות שאנחנו לובשות. בין אם זה בית קפה נעים או רחוב סואן — הכול מתחבר.",
+            options:  ['בית קפה פסטל עם ספר', 'בר יין שקט בארוחת ערב', 'רחובות העיר עם חברים', "חיפוש בשוק וינטג'"],
+            moods:    ["תאורה רכה, מאצ'ה, פינה יפה", 'אור נרות, אלגנטיות, ערבים איטיים', 'מוזיקה, אנרגיה, חקירה בכל מקום', "אוצרות ישנים, בוקר יום ראשון, מציאות"]
+          },
+          {
+            q:        'אם היית יכולה ללבוש רק זוג נעליים אחד לנצח…',
+            hint:     'תשכחי מפרקטיות — איזה זוג הכי מרגיש כמוך?',
+            helpText: "נעליים הן אחד החלקים הכי כנים בלוק. הבחירה האינסטינקטיבית שלך מספרת הרבה על אישיות הסטייל האמיתית שלך.",
+            options:  ['סניקרס לבנים', 'לופרים מעור', 'עקבים או נעלי סאטן', "מארי ג'יין או נעלי בלט"],
+            moods:    ['נקי, מגוון, ללא מאמץ', 'מטופח, שקט, על-זמני', 'מורם, נשי, מכוון', 'רך, מתוק, יפה ללא מאמץ']
+          },
+          {
+            q:        "של מי הסטייל גורם לך לחשוב 'הלוואי שזה היה שלי'?",
+            hint:     "לכי עם תחושת הבטן — איזה ויב הכי מרגש, לא הכי ריאליסטי.",
+            helpText: "אנחנו לא שואלים מי את — אלא כמו מי היית רוצה להתלבש לשבוע. המשיכה האינסטינקטיבית מספרת איזו אסתטיקה הכי מושכת אותך.",
+            options:  ['אודרי הפבורן — על-זמנית', 'אליל K-pop עם אמריקנו קר', 'פריס הילטון בערך 2003', 'ילדת פרחים משנות ה-70'],
+            moods:    ["פנינים, מעילי טרנץ', שלמות שקטה", 'שכבות חמודות, קולנס ללא מאמץ, סטייל סיאול', 'הכול ורוד, חצאיות מיני, איקונית מלידה', "מגפי זמש, ג'ינס מתרחב, קסם וינטג'"]
+          }
+        ]
       },
       community: {
         page_eyebrow: 'מעגל הסגנון שלך',
@@ -696,6 +917,19 @@
     }
   }
 
+  /* ── Flag emojis for the dropdown rows ────────────────────────
+     Using Unicode regional-indicator sequences. On platforms whose
+     system font lacks color flag glyphs (some Windows builds) these
+     gracefully degrade to two uppercase letters (e.g. "US"), which
+     still reads correctly. The full native language name + code pill
+     beside the flag is the primary identifier; the flag is decorative. */
+  var FLAG = {
+    en: '🇺🇸', /* 🇺🇸 */
+    es: '🇪🇸', /* 🇪🇸 */
+    ar: '🇸🇦', /* 🇸🇦 */
+    he: '🇮🇱'  /* 🇮🇱 */
+  };
+
   /* ── Set language ────────────────────────────────────────── */
   function setLang(code) {
     if (SUPPORTED.indexOf(code) < 0) code = DEFAULT_LANG;
@@ -704,10 +938,31 @@
     document.documentElement.lang = code;
     document.documentElement.dir  = (RTL_LANGS.indexOf(code) >= 0) ? 'rtl' : 'ltr';
     apply();
-    /* Sync .is-active on every pill across all switcher instances */
-    var pills = document.querySelectorAll('.aura-lang-pill');
-    for (var i = 0; i < pills.length; i++) {
-      pills[i].classList.toggle('is-active', pills[i].getAttribute('data-lang') === code);
+    /* Sync `is-active` across every switcher instance — both the
+       legacy pill design and the new dropdown design. */
+    var i, els;
+    els = document.querySelectorAll('.aura-lang-pill');
+    for (i = 0; i < els.length; i++) {
+      els[i].classList.toggle('is-active', els[i].getAttribute('data-lang') === code);
+    }
+    els = document.querySelectorAll('.aura-lang-option');
+    for (i = 0; i < els.length; i++) {
+      var opt    = els[i];
+      var active = opt.getAttribute('data-lang') === code;
+      opt.classList.toggle('is-active', active);
+      opt.setAttribute('aria-selected', active ? 'true' : 'false');
+    }
+    /* Update every dropdown trigger to show the new native name */
+    var triggers = document.querySelectorAll('.aura-lang-trigger');
+    for (i = 0; i < triggers.length; i++) {
+      var nameEl = triggers[i].querySelector('.aura-lang-trigger-name');
+      if (nameEl) {
+        nameEl.textContent = DISPLAY[code] || code;
+        nameEl.setAttribute('lang', code);
+      }
+      var ddRoot = triggers[i].closest('.aura-lang-dropdown');
+      if (ddRoot) ddRoot.classList.remove('is-open');
+      triggers[i].setAttribute('aria-expanded', 'false');
     }
     try {
       window.dispatchEvent(new CustomEvent('aura:langchange', { detail: { lang: code } }));
@@ -719,42 +974,160 @@
     }
   }
 
-  /* ── Build the in-page language switcher UI ──────────────── */
+  /* ── Build the in-page language switcher UI ──────────────────
+     New design (matches the spec): a single trigger button showing
+       [globe icon] [current language native name] [chevron]
+     opens a popover listing every supported language as
+       [flag] [native name] [uppercase code]
+     The currently-selected language is highlighted.
+
+     Closes on outside click, on Escape, or after a selection.
+     Keyboard: ↑/↓ navigate options, Enter / Space select, Esc close.
+  ─────────────────────────────────────────────────────────────── */
   function buildSwitcher(container, opts) {
     opts = opts || {};
-    var compact = !!opts.compact;
-    container.classList.add('aura-lang');
-    if (compact) container.classList.add('aura-lang--compact');
-
+    container.classList.add('aura-lang-dropdown');
     container.innerHTML = '';
-    var label = document.createElement('span');
-    label.className = 'aura-lang-label';
-    label.textContent = t('lang_switcher.label');
-    label.setAttribute('data-i18n', 'lang_switcher.label');
-    container.appendChild(label);
 
-    var pills = document.createElement('div');
-    pills.className = 'aura-lang-pills';
-    container.appendChild(pills);
+    /* ── Trigger button ────────────────────────────────────── */
+    var trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'aura-lang-trigger';
+    trigger.setAttribute('aria-haspopup', 'listbox');
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.setAttribute('aria-label', t('lang_switcher.label'));
+
+    /* Globe icon — inline SVG so it renders identically everywhere */
+    var globeSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    globeSvg.setAttribute('class', 'aura-lang-trigger-globe');
+    globeSvg.setAttribute('viewBox', '0 0 24 24');
+    globeSvg.setAttribute('fill', 'none');
+    globeSvg.setAttribute('stroke', 'currentColor');
+    globeSvg.setAttribute('stroke-width', '1.6');
+    globeSvg.setAttribute('stroke-linecap', 'round');
+    globeSvg.setAttribute('aria-hidden', 'true');
+    globeSvg.innerHTML =
+      '<circle cx="12" cy="12" r="9.2"/>' +
+      '<ellipse cx="12" cy="12" rx="4.2" ry="9.2"/>' +
+      '<path d="M2.8 12h18.4"/>';
+    trigger.appendChild(globeSvg);
+
+    var nameEl = document.createElement('span');
+    nameEl.className = 'aura-lang-trigger-name';
+    nameEl.setAttribute('lang', _current);
+    nameEl.textContent = DISPLAY[_current] || _current;
+    trigger.appendChild(nameEl);
+
+    var chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    chevron.setAttribute('class', 'aura-lang-trigger-chevron');
+    chevron.setAttribute('viewBox', '0 0 12 12');
+    chevron.setAttribute('fill', 'none');
+    chevron.setAttribute('stroke', 'currentColor');
+    chevron.setAttribute('stroke-width', '1.6');
+    chevron.setAttribute('stroke-linecap', 'round');
+    chevron.setAttribute('stroke-linejoin', 'round');
+    chevron.setAttribute('aria-hidden', 'true');
+    chevron.innerHTML = '<polyline points="3 4.5 6 7.5 9 4.5"/>';
+    trigger.appendChild(chevron);
+
+    container.appendChild(trigger);
+
+    /* ── Menu (popover) ────────────────────────────────────── */
+    var menu = document.createElement('div');
+    menu.className = 'aura-lang-menu';
+    menu.setAttribute('role', 'listbox');
+    menu.setAttribute('aria-label', t('lang_switcher.label'));
 
     SUPPORTED.forEach(function (code) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'aura-lang-pill';
-      btn.setAttribute('data-lang', code);
-      btn.setAttribute('lang', code);
-      btn.textContent = DISPLAY[code];
-      if (code === _current) btn.classList.add('is-active');
-      btn.addEventListener('click', function (e) {
+      var opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'aura-lang-option' + (code === _current ? ' is-active' : '');
+      opt.setAttribute('role', 'option');
+      opt.setAttribute('aria-selected', code === _current ? 'true' : 'false');
+      opt.setAttribute('data-lang', code);
+      opt.setAttribute('lang', code);
+
+      var flag = document.createElement('span');
+      flag.className = 'aura-lang-option-flag';
+      flag.setAttribute('aria-hidden', 'true');
+      flag.textContent = FLAG[code] || '';
+      opt.appendChild(flag);
+
+      var nm = document.createElement('span');
+      nm.className = 'aura-lang-option-name';
+      nm.textContent = DISPLAY[code] || code;
+      opt.appendChild(nm);
+
+      var cd = document.createElement('span');
+      cd.className = 'aura-lang-option-code';
+      cd.textContent = code.toUpperCase();
+      opt.appendChild(cd);
+
+      opt.addEventListener('click', function (e) {
         e.stopPropagation();
-        if (code === _current) return;
         setLang(code);
-        /* update active state on all pills (across instances) */
-        document.querySelectorAll('.aura-lang-pill').forEach(function (b) {
-          b.classList.toggle('is-active', b.getAttribute('data-lang') === code);
-        });
+        _closeAll();
       });
-      pills.appendChild(btn);
+      menu.appendChild(opt);
+    });
+
+    container.appendChild(menu);
+
+    /* ── Open / close behavior ─────────────────────────────── */
+    trigger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var isOpen = container.classList.contains('is-open');
+      _closeAll();
+      if (!isOpen) {
+        container.classList.add('is-open');
+        trigger.setAttribute('aria-expanded', 'true');
+        /* Focus the currently-active option for keyboard users */
+        var active = menu.querySelector('.aura-lang-option.is-active');
+        if (active && active.focus) {
+          /* Use a microtask so the popover transition has started */
+          setTimeout(function () { try { active.focus({ preventScroll: true }); } catch (_) { active.focus(); } }, 0);
+        }
+      }
+    });
+
+    /* Keyboard nav inside the menu */
+    container.addEventListener('keydown', function (e) {
+      if (!container.classList.contains('is-open')) {
+        if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+          if (document.activeElement === trigger) { e.preventDefault(); trigger.click(); }
+        }
+        return;
+      }
+      var opts = Array.prototype.slice.call(menu.querySelectorAll('.aura-lang-option'));
+      var idx  = opts.indexOf(document.activeElement);
+      if (e.key === 'Escape') { e.preventDefault(); _closeAll(); trigger.focus(); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); (opts[Math.min(opts.length - 1, idx + 1)] || opts[0]).focus(); }
+      else if (e.key === 'ArrowUp')   { e.preventDefault(); (opts[Math.max(0, idx - 1)] || opts[opts.length - 1]).focus(); }
+      else if (e.key === 'Home')      { e.preventDefault(); opts[0].focus(); }
+      else if (e.key === 'End')       { e.preventDefault(); opts[opts.length - 1].focus(); }
+    });
+  }
+
+  /* Close every open dropdown on the page */
+  function _closeAll() {
+    var open = document.querySelectorAll('.aura-lang-dropdown.is-open');
+    for (var i = 0; i < open.length; i++) {
+      open[i].classList.remove('is-open');
+      var t = open[i].querySelector('.aura-lang-trigger');
+      if (t) t.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  /* Document-level dismissal: any click outside a dropdown closes it.
+     Registered once globally so multiple switcher instances all share it. */
+  if (!window.__auraLangGlobal) {
+    window.__auraLangGlobal = true;
+    document.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('.aura-lang-dropdown')) return;
+      _closeAll();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') _closeAll();
     });
   }
 
@@ -788,11 +1161,20 @@
   window.Aura = window.Aura || {};
   window.Aura.i18n = {
     t:            t,
+    /* Return the raw value at a dotted path (string, array, or object).
+       Used by quiz.html to pull translated question objects with options
+       and moods, since t() only returns strings. Falls back to English. */
+    raw: function (path) {
+      var v = _get(T[_current], path);
+      if (v == null) v = _get(T[DEFAULT_LANG], path);
+      return v;
+    },
     setLang:      setLang,
     getLang:      function () { return _current; },
     supported:    SUPPORTED.slice(),
     rtl:          function () { return RTL_LANGS.indexOf(_current) >= 0; },
     displayName:  function (code) { return DISPLAY[code] || code; },
+    flag:         function (code) { return FLAG[code] || ''; },
     apply:        apply,
     buildSwitcher: buildSwitcher
   };

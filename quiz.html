@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=31">
+<link rel="stylesheet" href="css/styles.css?v=32">
 </head>
 <body>
 
@@ -54,6 +54,10 @@
   </div>
 </footer>
 
+<!-- i18n.js loaded FIRST so the quiz IIFE below can read Aura.i18n
+     synchronously at first render (otherwise we'd flash English even
+     when the user has chosen another language). -->
+<script src="js/i18n.js?v=5"></script>
 <script src="js/data.js?v=7"></script>
 <script src="js/main.js?v=4"></script>
 <script src="js/animations.js?v=15"></script>
@@ -64,15 +68,50 @@
   let answers = [];
   let autoTimer = null;
 
-  function showHelpModal(step) {
+  /* ── i18n helpers ──────────────────────────────────────────────
+     `_tr(key, fallback)` returns the translated string for `key`,
+     or `fallback` if i18n hasn't loaded yet or the key is missing.
+     `_trQ(idx)` returns the translated question object (q, hint,
+     helpText, options[], moods[]) for question index `idx`, falling
+     back per-field to the English QUIZ[idx] in data.js. */
+  function _tr(key, fallback) {
+    if (window.Aura && window.Aura.i18n) {
+      var v = window.Aura.i18n.t(key);
+      if (v && v !== key) return v;
+    }
+    return fallback;
+  }
+  function _trQ(idx) {
+    var base = QUIZ[idx] || {};
+    var arr  = (window.Aura && window.Aura.i18n && typeof window.Aura.i18n.raw === 'function')
+                 ? window.Aura.i18n.raw('quiz.questions') : null;
+    var tr   = (arr && Array.isArray(arr)) ? arr[idx] : null;
+    return {
+      q:        (tr && tr.q)        || base.q,
+      hint:     (tr && tr.hint)     || base.hint,
+      helpText: (tr && tr.helpText) || base.helpText,
+      /* option text + mood are per-index — fall back per-slot */
+      optionText: function (i) {
+        if (tr && tr.options && tr.options[i]) return tr.options[i];
+        return (base.options && base.options[i] && base.options[i].text) || '';
+      },
+      moodText: function (i) {
+        if (tr && tr.moods && tr.moods[i]) return tr.moods[i];
+        return (base.options && base.options[i] && base.options[i].mood) || '';
+      }
+    };
+  }
+
+  function showHelpModal(step, idx) {
+    const tQ = _trQ(idx);
     const overlay = document.createElement('div');
     overlay.className = 'quiz-modal-overlay';
     overlay.innerHTML =
       '<div class="quiz-modal-card">' +
         '<div class="quiz-modal-icon">✦</div>' +
-        '<p class="quiz-modal-title">No wrong answers.</p>' +
-        '<p class="quiz-modal-body">' + (step.helpText || 'Just pick the option that feels most natural — your instinct is always right.') + '</p>' +
-        '<button class="quiz-modal-close" id="modal-close-btn">Got it ✦</button>' +
+        '<p class="quiz-modal-title">' + _tr('quiz.modal_title', 'No wrong answers.') + '</p>' +
+        '<p class="quiz-modal-body">' + (tQ.helpText || _tr('quiz.modal_body', 'Just pick the option that feels most natural — your instinct is always right.')) + '</p>' +
+        '<button class="quiz-modal-close" id="modal-close-btn">' + _tr('common.got_it', 'Got it ✦') + '</button>' +
       '</div>';
     document.body.appendChild(overlay);
 
@@ -99,7 +138,13 @@
     clearTimeout(autoTimer);
     if (stepIndex >= QUIZ.length) { renderResult(); return; }
     const step = QUIZ[stepIndex];
+    const tQ   = _trQ(stepIndex);                     /* live translation */
     const progress = (stepIndex / QUIZ.length) * 100;
+
+    /* "Question N" label uses {n} interpolation from quiz.question */
+    const qLabel = (window.Aura && window.Aura.i18n)
+                     ? window.Aura.i18n.t('quiz.question', { n: stepIndex + 1 })
+                     : ('Question ' + (stepIndex + 1));
 
     let html = '<div class="quiz-progress">';
     html += '<div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:' + progress + '%"></div></div>';
@@ -107,35 +152,42 @@
     html += '</div>';
 
     html += '<div class="quiz-step" id="quiz-step">';
-    html += '<p class="quiz-question-num">Question ' + (stepIndex + 1) + '</p>';
+    html += '<p class="quiz-question-num">' + qLabel + '</p>';
 
     html += '<div class="quiz-top-row">';
-    html += '<h2 class="quiz-question">' + step.q + '</h2>';
-    html += '<button class="quiz-help-btn" id="quiz-help-btn" type="button" aria-label="Help with this question">';
+    html += '<h2 class="quiz-question">' + tQ.q + '</h2>';
+    html += '<button class="quiz-help-btn" id="quiz-help-btn" type="button" aria-label="' + _tr('quiz.help_btn', 'Help me') + '">';
     html += '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-linecap="round"/></svg>';
-    html += ' Help me</button>';
+    html += ' ' + _tr('quiz.help_btn', 'Help me') + '</button>';
     html += '</div>';
 
-    if (step.hint) {
-      html += '<p class="quiz-hint">' + step.hint + '</p>';
+    if (tQ.hint) {
+      html += '<p class="quiz-hint">' + tQ.hint + '</p>';
     }
 
     html += '<div class="quiz-options quiz-options-clean">';
     step.options.forEach((opt, i) => {
       const sel = answers[stepIndex] === opt.tag ? ' selected' : '';
+      const optText = tQ.optionText(i);
+      const moodText = tQ.moodText(i);
       html += '<button class="quiz-option' + sel + '" data-tag="' + opt.tag + '" data-idx="' + i + '">';
       html += '<span class="quiz-option-icon">' + opt.icon + '</span>';
       html += '<span class="quiz-option-label">';
-      html += '<span class="quiz-option-text">' + opt.text + '</span>';
-      if (opt.mood) { html += '<span class="quiz-option-mood">' + opt.mood + '</span>'; }
+      html += '<span class="quiz-option-text">' + optText + '</span>';
+      if (moodText) { html += '<span class="quiz-option-mood">' + moodText + '</span>'; }
       html += '</span>';
       html += '</button>';
     });
     html += '</div>';
 
+    const nextLabel = (stepIndex === QUIZ.length - 1)
+      ? _tr('quiz.see_result', 'See result →')
+      : _tr('common.next', 'Next →');
+    const backLabel = _tr('common.back', 'Back');
+
     html += '<div class="quiz-nav">';
-    html += '<button id="prev-btn"' + (stepIndex === 0 ? ' disabled' : '') + '>← Back</button>';
-    html += '<button id="next-btn"' + (!answers[stepIndex] ? ' disabled' : '') + '>' + (stepIndex === QUIZ.length - 1 ? 'See result →' : 'Next →') + '</button>';
+    html += '<button id="prev-btn"' + (stepIndex === 0 ? ' disabled' : '') + '>← ' + backLabel + '</button>';
+    html += '<button id="next-btn"' + (!answers[stepIndex] ? ' disabled' : '') + '>' + nextLabel + '</button>';
     html += '</div>';
     html += '</div>';
 
@@ -157,7 +209,7 @@
     });
 
     document.getElementById('quiz-help-btn').addEventListener('click', () => {
-      showHelpModal(step);
+      showHelpModal(step, stepIndex);
     });
 
     document.getElementById('prev-btn').addEventListener('click', () => {
@@ -323,13 +375,22 @@
   }
 
   render();
+
+  /* If the user switches language mid-quiz (or before answering),
+     re-render the current question so the new translations show. */
+  window.addEventListener('aura:langchange', function () {
+    /* If we're on the result page (stepIndex >= QUIZ.length) don't
+       re-run — re-rendering would reset the result animation. The
+       static result strings will be picked up on the next visit. */
+    if (stepIndex < QUIZ.length) render();
+  });
 })();
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="js/i18n.js?v=3"></script>
+<!-- i18n.js is already loaded above the quiz IIFE; no duplicate needed. -->
 <script src="js/monitor.js?v=2"></script>
 <script src="js/firebase.js?v=10"></script>
 <script>

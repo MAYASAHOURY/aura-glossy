@@ -165,6 +165,217 @@ body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; hei
 }
 .auth-field input::placeholder { color: rgba(255,255,255,0.3); }
 
+/* ✦✦ Password visibility eye toggle ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦
+   Auto-injected by JS into every .auth-field that contains a
+   password input. Positioned at the trailing edge (right in LTR,
+   left in RTL) and reserves padding inside the input so text never
+   slides under the icon — no layout shift on toggle. */
+.auth-field--password input { padding-right: 40px; }
+.auth-eye {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  transition: color 0.18s ease, background-color 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.auth-eye:hover, .auth-eye:focus-visible {
+  color: rgba(255, 255, 255, 0.85);
+  background-color: rgba(255, 255, 255, 0.05);
+  outline: none;
+}
+.auth-eye svg {
+  width: 18px;
+  height: 18px;
+  /* Crisp on all devices */
+  stroke-width: 1.8;
+}
+/* RTL: eye on the left, padding flips */
+html[dir="rtl"] .auth-eye  { right: auto; left: 0; }
+html[dir="rtl"] .auth-field--password input { padding-right: 0; padding-left: 40px; }
+
+/* ✦✦ Forgot-password link ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+.auth-forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+html[dir="rtl"] .auth-forgot-row { justify-content: flex-start; }
+.auth-forgot {
+  background: none;
+  border: 0;
+  padding: 2px 0;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: color 0.18s ease;
+  text-underline-offset: 3px;
+}
+.auth-forgot:hover, .auth-forgot:focus-visible {
+  color: var(--rose);
+  text-decoration: underline;
+  outline: none;
+}
+
+/* ✦✦ Reset-password modal ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+.reset-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.reset-modal.is-open { display: flex; }
+.reset-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.74);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+.reset-modal.is-open .reset-modal-overlay { opacity: 1; }
+.reset-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 36px 32px 28px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  color: #fff;
+  text-align: center;
+  transform: translateY(10px) scale(0.97);
+  opacity: 0;
+  transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reset-modal.is-open .reset-modal-card {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+.reset-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: color 0.18s ease, background-color 0.18s ease;
+}
+.reset-close:hover, .reset-close:focus-visible {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.06);
+  outline: none;
+}
+html[dir="rtl"] .reset-close { right: auto; left: 12px; }
+.reset-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 8px;
+}
+.reset-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.reset-body {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 22px;
+}
+.reset-field {
+  position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  transition: border-color 0.2s;
+  text-align: left;
+}
+html[dir="rtl"] .reset-field { text-align: right; }
+.reset-field:focus-within { border-color: rgba(255, 255, 255, 0.55); }
+.reset-field input {
+  width: 100%;
+  background: none;
+  border: 0;
+  outline: 0;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  padding: 14px 0;
+  caret-color: var(--rose);
+}
+.reset-field input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.reset-message {
+  font-size: 12px;
+  min-height: 18px;
+  margin: 12px 0 0;
+  line-height: 1.5;
+  text-align: left;
+}
+html[dir="rtl"] .reset-message { text-align: right; }
+.reset-message.is-error   { color: #f87171; }
+.reset-message.is-success { color: #86efac; }
+.reset-send {
+  margin-top: 22px;
+  width: 100%;
+  padding: 14px 24px;
+  background: #fff;
+  color: #0a0a0a;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: 0;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 0.2s, transform 0.15s, opacity 0.2s;
+}
+.reset-send:hover:not(:disabled) {
+  background: #f0ece6;
+  transform: translateY(-1px);
+}
+.reset-send:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Reduced motion — drop the entrance scale */
+@media (prefers-reduced-motion: reduce) {
+  .reset-modal-overlay,
+  .reset-modal-card { transition: opacity 0.18s ease; transform: none; }
+  .reset-modal.is-open .reset-modal-card { transform: none; }
+}
+
 /* ✦✦ Buttons ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
 .auth-cta {
   margin-top: 32px;
@@ -283,6 +494,9 @@ body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; hei
           <div class="auth-field"><input type="password" id="si-pass" placeholder="Password" autocomplete="current-password" data-i18n-attr="placeholder:login.password_placeholder"></div>
         </div>
         <p class="auth-error" id="si-error"></p>
+        <div class="auth-forgot-row">
+          <button type="button" class="auth-forgot" id="forgot-btn" data-i18n="login.forgot_password">Forgot password?</button>
+        </div>
         <button class="auth-cta" id="si-btn" data-i18n="login.signin_btn">Sign in →</button>
       </div>
 
@@ -312,7 +526,7 @@ body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; hei
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="js/i18n.js?v=3"></script>
+<script src="js/i18n.js?v=5"></script>
 <script src="js/monitor.js?v=2"></script>
 <script src="js/firebase.js?v=10"></script>
 <script src="js/animations.js?v=15"></script>
@@ -519,6 +733,215 @@ body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; hei
     return k ? _T(k, _T('login.err_generic', 'Something went wrong. Please try again.'))
              : _T('login.err_generic', 'Something went wrong. Please try again.');
   }
+})();
+</script>
+
+<!-- ===================================================================
+     RESET-PASSWORD MODAL
+     A small dark card centered over the auth screen. Email-only field
+     that calls firebase.auth().sendPasswordResetEmail. Opened by the
+     "Forgot password?" link below the sign-in form. Closes on overlay
+     click, X button, or Escape key. Re-uses Aura's dark palette.
+     =================================================================== -->
+<div id="reset-modal" class="reset-modal" aria-hidden="true">
+  <div class="reset-modal-overlay" id="reset-modal-overlay"></div>
+  <div class="reset-modal-card" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title">
+    <button type="button" class="reset-close" id="reset-modal-close" aria-label="Close" data-i18n-attr="aria-label:login.reset_close">×</button>
+    <p class="reset-eyebrow" data-i18n="login.forgot_password">Forgot password?</p>
+    <h3 class="reset-title" id="reset-modal-title" data-i18n="login.reset_title">Reset your password</h3>
+    <p class="reset-body" data-i18n="login.reset_body">Enter your email and we'll send you a reset link.</p>
+    <div class="reset-field">
+      <input
+        type="email"
+        id="reset-email"
+        autocomplete="email"
+        placeholder="Email address"
+        data-i18n-attr="placeholder:login.reset_email_placeholder">
+    </div>
+    <p class="reset-message" id="reset-message" aria-live="polite"></p>
+    <button type="button" class="reset-send" id="reset-send" data-i18n="login.reset_send">Send reset link</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   PASSWORD VISIBILITY EYE TOGGLE
+   Auto-attaches to every .auth-field whose input is type=password.
+   Click toggles type, swaps icon, updates aria-label.
+
+   Designed so it's safe to call multiple times (idempotent) and so
+   new password fields added later (e.g. a "Confirm password" field)
+   pick up the toggle automatically — just wrap them in .auth-field.
+   ============================================================ */
+(function () {
+  var SVG_SHOW =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>' +
+      '<circle cx="12" cy="12" r="3"/>' +
+    '</svg>';
+  var SVG_HIDE =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>' +
+      '<path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>' +
+      '<path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>' +
+      '<line x1="1" y1="1" x2="23" y2="23"/>' +
+    '</svg>';
+
+  function _T(k, f) { return (window.Aura && window.Aura.i18n) ? (window.Aura.i18n.t(k) || f) : f; }
+
+  function attachToggle(input) {
+    if (input._eyeWired) return;
+    input._eyeWired = true;
+
+    var field = input.closest('.auth-field') || input.parentElement;
+    if (!field) return;
+    field.classList.add('auth-field--password');
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'auth-eye';
+    btn.setAttribute('aria-label', _T('login.show_password', 'Show password'));
+    btn.setAttribute('tabindex', '0');
+    btn.innerHTML = SVG_SHOW;
+
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      var hidden = input.type === 'password';
+      input.type = hidden ? 'text' : 'password';
+      btn.innerHTML = hidden ? SVG_HIDE : SVG_SHOW;
+      btn.setAttribute('aria-label',
+        hidden ? _T('login.hide_password', 'Hide password')
+               : _T('login.show_password', 'Show password'));
+    });
+
+    /* Keep the input focused after toggling for keyboard users */
+    btn.addEventListener('mousedown', function (e) { e.preventDefault(); });
+
+    field.appendChild(btn);
+  }
+
+  function attachAll() {
+    var inputs = document.querySelectorAll('.auth-field input[type="password"]');
+    for (var i = 0; i < inputs.length; i++) attachToggle(inputs[i]);
+  }
+
+  /* Initial pass + re-apply on language change so aria-labels translate */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachAll);
+  } else {
+    attachAll();
+  }
+  window.addEventListener('aura:langchange', function () {
+    /* Re-set the current aria-label in the new language */
+    var btns = document.querySelectorAll('.auth-eye');
+    for (var i = 0; i < btns.length; i++) {
+      var input = btns[i].parentElement && btns[i].parentElement.querySelector('input');
+      if (!input) continue;
+      btns[i].setAttribute('aria-label',
+        input.type === 'password'
+          ? _T('login.show_password', 'Show password')
+          : _T('login.hide_password', 'Hide password'));
+    }
+  });
+})();
+
+/* ============================================================
+   FORGOT-PASSWORD MODAL — open / send / close
+   ============================================================ */
+(function () {
+  var modal   = document.getElementById('reset-modal');
+  var card    = modal && modal.querySelector('.reset-modal-card');
+  var overlay = document.getElementById('reset-modal-overlay');
+  var closeBt = document.getElementById('reset-modal-close');
+  var sendBt  = document.getElementById('reset-send');
+  var emailIn = document.getElementById('reset-email');
+  var msgEl   = document.getElementById('reset-message');
+  var openBt  = document.getElementById('forgot-btn');
+  var siEmail = document.getElementById('si-email');
+  var _busy = false;
+
+  if (!modal || !openBt) return;
+
+  function _T(k, f, vars) { return (window.Aura && window.Aura.i18n) ? (window.Aura.i18n.t(k, vars) || f) : f; }
+
+  function show(msg, kind) {
+    msgEl.textContent = msg || '';
+    msgEl.classList.remove('is-error', 'is-success');
+    if (kind) msgEl.classList.add('is-' + kind);
+  }
+
+  function open() {
+    /* Pre-fill from the sign-in email field if the user typed one */
+    if (siEmail && siEmail.value) emailIn.value = siEmail.value;
+    show('', null);
+    sendBt.disabled = false;
+    sendBt.textContent = _T('login.reset_send', 'Send reset link');
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    /* Focus the email field next frame so the open transition starts first */
+    requestAnimationFrame(function () { setTimeout(function () { emailIn.focus(); }, 60); });
+    document.addEventListener('keydown', onKey);
+  }
+  function close() {
+    if (_busy) return;        /* don't close mid-request */
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.removeEventListener('keydown', onKey);
+    openBt.focus();           /* return focus to the trigger */
+  }
+  function onKey(e) {
+    if (e.key === 'Escape') close();
+  }
+
+  function validEmail(s) { return /^\S+@\S+\.\S+$/.test((s || '').trim()); }
+
+  async function send() {
+    if (_busy) return;
+    var email = (emailIn.value || '').trim();
+    if (!validEmail(email)) {
+      show(_T('login.err_reset_invalid', 'Please enter a valid email address.'), 'error');
+      emailIn.focus();
+      return;
+    }
+    _busy = true;
+    sendBt.disabled = true;
+    sendBt.textContent = _T('login.reset_sending', 'Sending…');
+    show('', null);
+
+    try {
+      await firebase.auth().sendPasswordResetEmail(email);
+      show(_T('login.reset_success', 'Check your email for the reset link.'), 'success');
+      sendBt.textContent = _T('login.reset_send', 'Send reset link');
+      /* Auto-close shortly after success so the user doesn't have to */
+      setTimeout(function () { _busy = false; close(); }, 2200);
+      return;
+    } catch (e) {
+      var code = (e && e.code) || '';
+      var key  = 'login.err_reset_generic';
+      if      (code === 'auth/invalid-email')          key = 'login.err_reset_invalid';
+      else if (code === 'auth/user-not-found')         key = 'login.err_reset_no_user';
+      else if (code === 'auth/network-request-failed') key = 'login.err_reset_network';
+      else if (code === 'auth/too-many-requests')      key = 'login.err_too_many';
+      show(_T(key, "Couldn't send reset email. Please try again."), 'error');
+    } finally {
+      if (_busy) {
+        _busy = false;
+        sendBt.disabled = false;
+        sendBt.textContent = _T('login.reset_send', 'Send reset link');
+      }
+    }
+  }
+
+  /* Wire events */
+  openBt.addEventListener('click', open);
+  closeBt.addEventListener('click', close);
+  overlay.addEventListener('click', close);
+  sendBt.addEventListener('click', send);
+  emailIn.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); send(); }
+  });
+  /* Stop clicks inside the card from bubbling to the overlay */
+  card.addEventListener('click', function (e) { e.stopPropagation(); });
 })();
 </script>
 
