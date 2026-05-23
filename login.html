@@ -361,23 +361,42 @@ body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; hei
     document.getElementById('switch-btn').addEventListener('click', () => setMode(mode === 'join' ? 'signin' : 'join'));
   }
 
+  /* ✦✦ ONBOARDING TRIGGER — first-time account creation ONLY ✦✦
+     The `aura_onboard_trigger` flag tells onboarding.js to auto-show
+     the Aura Guide on the next page load. We deliberately set it
+     ONLY at real account-creation points (never on plain sign-in),
+     because the user explicitly does NOT want the guide to replay
+     on every login or refresh.
+
+     Set it in:
+       • the join-btn click handler, AFTER createUserWithEmailAndPassword
+       • any Google sign-in handler, when additionalUserInfo.isNewUser === true
+
+     DO NOT set it in:
+       • onAuthStateChanged   (fires on EVERY sign-in, including returners)
+       • pageshow bfcache     (a cache restore is not a new account)
+       • signInWithEmailAndPassword (always returning user)
+  ────────────────────────────────────────────────────────────── */
+
   /* ✦✦ bfcache guard — when browser restores this page from cache
-     and the user is now signed in, skip straight to homepage.
-     Use 800ms delay + aura_just_authed flag consistent with main flow. */
+     and the user is now signed in, skip straight to homepage. */
   window.addEventListener('pageshow', function(e) {
     if (e.persisted && auth.currentUser) {
       if (_navigating) return;
       _navigating = true;
       sessionStorage.setItem('aura_skip_intro', '1');
       sessionStorage.setItem('aura_just_authed', '1');
-      sessionStorage.setItem('aura_onboard_trigger', '1'); /* first-run guide: a genuine sign-in/sign-up just happened */
+      /* NO aura_onboard_trigger here — a bfcache restore is not a new account */
       setTimeout(function() {
         window.location.replace('index.html');
       }, 800);
     }
   });
 
-  /* ✦✦ Auth state ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
+  /* ✦✦ Auth state ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦
+     This handles BOTH sign-in and sign-up navigation. We don't set
+     the onboard trigger here — only the specific create-account
+     handler below sets it, so returning users never see the guide. */
   var _navigating = false; /* prevent double-redirect */
   auth.onAuthStateChanged(user => {
     if (user) {
@@ -385,7 +404,7 @@ body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; hei
       _navigating = true;
       sessionStorage.setItem('aura_skip_intro', '1');
       sessionStorage.setItem('aura_just_authed', '1'); /* tells index.html: use long timer */
-      sessionStorage.setItem('aura_onboard_trigger', '1'); /* first-run guide: a genuine sign-in/sign-up just happened */
+      /* NO aura_onboard_trigger here — only set in the create-account success path */
       /* 800 ms delay — lets Firebase finish writing auth session to IndexedDB
          before we navigate away, preventing the session-loss loop on iOS Safari */
       setTimeout(function() {
@@ -420,6 +439,13 @@ body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; hei
     try {
       const cred = await auth.createUserWithEmailAndPassword(email, pass);
       if (name) await cred.user.updateProfile({ displayName: name });
+      /* THIS is the only place the onboard trigger is set for email/password.
+         createUserWithEmailAndPassword by definition only resolves when a
+         brand-new account was created — Firebase rejects with
+         auth/email-already-in-use otherwise. So reaching this line
+         guarantees we have a first-time user. The flag is read+deleted
+         once in onboarding.js, so the guide can only fire one time. */
+      try { sessionStorage.setItem('aura_onboard_trigger', '1'); } catch(e) {}
       localStorage.removeItem('aura_uid');
       rlReset();
       addToBrevo(email, name);
@@ -431,6 +457,23 @@ body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; hei
       btn.disabled = false; btn.textContent = _T('login.create_account', 'Create account →');
     }
   });
+
+  /* ✦✦ Google sign-in (placeholder — UI not currently wired) ✦✦✦
+     When a Google sign-in button is added, use this pattern to
+     correctly distinguish a brand-new Google account from a
+     returning user. Only the brand-new case sets the trigger:
+
+       async function signInWithGoogle() {
+         var provider = new firebase.auth.GoogleAuthProvider();
+         var cred = await auth.signInWithPopup(provider);
+         // additionalUserInfo.isNewUser is true ONLY for first-ever
+         // sign-in with this Google account against THIS Firebase project.
+         if (cred.additionalUserInfo && cred.additionalUserInfo.isNewUser) {
+           try { sessionStorage.setItem('aura_onboard_trigger', '1'); } catch(e) {}
+         }
+         // onAuthStateChanged then handles the navigation.
+       }
+  ────────────────────────────────────────────────────────────── */
 
   /* ✦✦ Sign in ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
   document.getElementById('si-btn').addEventListener('click', async () => {
