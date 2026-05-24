@@ -568,10 +568,13 @@ function _startPostsListener(group) {
 }
 
 function _emptyFeedHTML(group) {
+  var i18n = (window.Aura && window.Aura.i18n) ? window.Aura.i18n : null;
+  var title = i18n ? i18n.t('community.empty_title') : 'Your circle is quiet.';
+  var body  = i18n ? i18n.t('community.empty_body')  : 'Be the first to share a look.';
   return '<div class="feed-empty">' +
     '<span class="feed-empty-symbol" style="color:' + group.color + '">' + group.symbol + '</span>' +
-    '<h3>Be the first to share</h3>' +
-    '<p>Start the conversation in the ' + _esc(group.name) + ' circle.</p>' +
+    '<h3>' + _esc(title) + '</h3>' +
+    '<p>' + _esc(body) + '</p>' +
     '</div>';
 }
 
@@ -700,7 +703,12 @@ function _loadComments(postId, group) {
     .limit(50)
     .get()
     .then(function (snap) {
-      if (snap.empty) { list.innerHTML = '<p class="no-comments">No comments yet. Be first.</p>'; return; }
+      if (snap.empty) {
+        var i18n = (window.Aura && window.Aura.i18n) ? window.Aura.i18n : null;
+        var msg = i18n ? i18n.t('community.no_comments') : 'No comments yet. Be the first.';
+        list.innerHTML = '<p class="no-comments">' + _esc(msg) + '</p>';
+        return;
+      }
       list.innerHTML = snap.docs.map(function (d) {
         return _commentHTML(d.id, d.data(), group, postId);
       }).join('');
