@@ -1,0 +1,93 @@
+﻿{
+  "_meta": { "last_updated": "2026-05-24", "owner": "Maya Sahoury" },
+  "identity": { "name": "Maya Sahoury", "location": "Jerusalem, IL" },
+  "active_priorities": {
+    "top_3_right_now": [
+      "Submit Deep Learning Object Detection project - due 30/05/2026",
+      "Submit SIS Engineering forum response - due 28/05/2026",
+      "Grow Aura Glossy and build stable AI income"
+    ],
+    "this_week": [
+      "Forum response (SIS Engineering) - 28/05",
+      "Deep Learning project submission - 30/05",
+      "Post content on TikTok/Instagram 4-5x",
+      "Check iMerit and Mercor for new AI tasks",
+      "Fix Aura Glossy mobile responsiveness"
+    ]
+  },
+  "tasks": {
+    "today": [
+      "Write SIS Engineering forum response",
+      "Work on Deep Learning Object Detection project",
+      "Post 1 piece of content"
+    ],
+    "blocked": [
+      { "task": "Consistent content posting", "reason": "University deadlines this week" },
+      { "task": "ZioScan AI development", "reason": "Bandwidth - university + Aura priority" }
+    ],
+    "waiting_on": [
+      "iMerit - waiting for new assignments",
+      "TELUS Digital - application in review",
+      "TransPerfect - applied, no update"
+    ],
+    "done_this_week": []
+  },
+  "studies": {
+    "institution": "Kinneret College",
+    "degree": "Software Engineering",
+    "year": 3,
+    "moodle": {
+      "url": "https://moodle.kinneret.ac.il/my/",
+      "upcoming_submissions": [
+        { "course": "Software-Intensive Systems Engineering", "task": "Forum response submission", "due": "2026-05-28", "status": "pending" },
+        { "course": "Deep Learning", "task": "Project 1 - Object Detection", "due": "2026-05-30", "status": "in-progress" }
+      ],
+      "upcoming_exams": [
+        { "course": "Algorithms", "date": "2026-06-29", "type": "exam" },
+        { "course": "Internet of Things", "date": "2026-07-01", "type": "exam" },
+        { "course": "Engineering Economics", "date": "2026-07-29", "type": "exam" }
+      ]
+    }
+  },
+  "projects": {
+    "aura_glossy": {
+      "url": "https://auraglossy.com/",
+      "repo": "https://github.com/MAYASAHOURY/aura-glossy",
+      "last_deploy": "2026-05",
+      "open_bugs": [
+        "Mobile responsiveness edge cases",
+        "Auth/session issues in TikTok/Instagram in-app browsers",
+        "Cache/versioning problems on Netlify",
+        "Browser compatibility issues"
+      ],
+      "production_risks": [
+        "Firebase Auth breaks in TikTok/Instagram in-app browsers",
+        "Netlify drag-and-drop deployment causes cache bugs"
+      ],
+      "monitoring": { "last_health_check": null, "issues_found": [] }
+    }
+  },
+  "career": {
+    "job_applications": [
+      { "company": "iMerit", "role": "AI/Data work", "status": "waiting-for-assignments", "next_action": "Check platform for new tasks" },
+      { "company": "TELUS Digital", "role": "AI/Data Annotation", "status": "in-review", "next_action": "Follow up by 31/05" },
+      { "company": "TransPerfect", "role": "AI/Data roles", "status": "applied", "next_action": "Follow up by 31/05" },
+      { "company": "Mercor", "role": "Linguistic/AI projects", "status": "active", "next_action": "Check for new projects" }
+    ]
+  },
+  "content": {
+    "ideas": [
+      { "title": "Aura Glossy cinematic fashion ad", "platform": "TikTok/Instagram", "status": "draft" },
+      { "title": "AI-powered outfit styling videos", "platform": "TikTok/Instagram", "status": "idea" },
+      { "title": "Behind the scenes - building Aura Glossy", "platform": "TikTok/Instagram", "status": "idea" }
+    ],
+    "published": []
+  },
+  "reminders": {
+    "urgent": [
+      "Forum response due Wednesday 28/05 - SIS Engineering",
+      "Deep Learning Object Detection project due Friday 30/05 at 23:59",
+      "Follow up TELUS Digital and TransPerfect by 31/05"
+    ]
+  }
+}

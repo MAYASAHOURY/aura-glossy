@@ -1,0 +1,70 @@
+﻿name: Life OS Notifier
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+    - cron: "0 6 * * *"
+    - cron: "0 10 * * *"
+    - cron: "0 8 * * 3,5"
+    - cron: "0 5 * * 0"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Notification mode"
+        required: true
+        default: "morning"
+        type: choice
+        options:
+          - morning
+          - deadline
+          - aura
+          - stalled
+          - weekly
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Resolve notification mode
+        id: resolve_mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ github.event.inputs.mode }}" >> "$GITHUB_OUTPUT"
+          else
+            HOUR=$(date -u +%H)
+            DAY=$(date -u +%u)
+            if   [ "$HOUR" = "04" ]; then MODE="morning"
+            elif [ "$HOUR" = "06" ]; then MODE="deadline"
+            elif [ "$HOUR" = "10" ]; then MODE="aura"
+            elif [ "$HOUR" = "08" ]; then MODE="stalled"
+            elif [ "$DAY"  = "7"  ] && [ "$HOUR" = "05" ]; then MODE="weekly"
+            else MODE="morning"
+            fi
+            echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check memory file
+        run: |
+          if   [ -f ".mcp/memory.json" ]; then echo "Found .mcp/memory.json"
+          elif [ -f "memory.json"      ]; then echo "Found memory.json"
+          else echo "ERROR: memory.json not found" && exit 1
+          fi
+
+      - name: Send notification
+        env:
+          NOTIFY_MODE:        ${{ steps.resolve_mode.outputs.mode }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python notifier.py
