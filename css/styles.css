@@ -8976,7 +8976,7 @@ html[data-inapp] #aura-veil {
 /* ── Mobile ─────────────────────────────────────────────── */
 @media (max-width: 680px) {
   .hs-grid { grid-template-columns: repeat(2, 1fr); gap: 2px; }
-  .hs-panel { width: 158px; }
+  .hs-panel { width: 158px; max-width: calc(100vw - 32px); }
   .hs-dot-ring { width: 20px; height: 20px; }
   .hs-dot-core { width: 8px; height: 8px; }
 }

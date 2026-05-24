@@ -191,10 +191,8 @@ const img = (q, w = 600, h = 800) => {
 const STORE_URLS = {
   'Zara':            q => `https://www.zara.com/us/en/search?searchTerm=${encodeURIComponent(q)}`,
   'H&M':             q => `https://www2.hm.com/en_us/search-results.html?q=${encodeURIComponent(q)}`,
-  'Mango':           q => `https://shop.mango.com/us/search?kw=${encodeURIComponent(q)}`,
   'ASOS':            q => `https://www.asos.com/search/?q=${encodeURIComponent(q)}`,
   'Bershka':         q => `https://www.bershka.com/us/search?searchTerm=${encodeURIComponent(q)}`,
-  'Pull&Bear':       q => `https://www.pullandbear.com/us/search?term=${encodeURIComponent(q)}`,
   'SHEIN':           q => `https://us.shein.com/pdsearch/${encodeURIComponent(q)}/`,
   'Uniqlo':          q => `https://www.uniqlo.com/us/en/search?q=${encodeURIComponent(q)}`,
   'Nike':            q => `https://www.nike.com/w?q=${encodeURIComponent(q)}`,
@@ -202,7 +200,6 @@ const STORE_URLS = {
   'Sephora':         q => `https://www.sephora.com/search?keyword=${encodeURIComponent(q)}`,
   'COS':             q => `https://www.cos.com/en_usd/search.html?q=${encodeURIComponent(q)}`,
   'Massimo Dutti':   q => `https://www.massimodutti.com/us/search?term=${encodeURIComponent(q)}`,
-  'Stradivarius':    q => `https://www.stradivarius.com/us/search?term=${encodeURIComponent(q)}`,
   'Urban Outfitters':q => `https://www.urbanoutfitters.com/search?q=${encodeURIComponent(q)}`,
   'Etsy':            q => `https://www.etsy.com/search?q=${encodeURIComponent(q)}`,
   'Depop':           q => `https://www.depop.com/search/?q=${encodeURIComponent(q)}`,
@@ -233,8 +230,7 @@ const STORE_URLS = {
   'Sézane':          q => `https://www.sezane.com/us/search?q=${encodeURIComponent(q)}`,
   'Tiffany & Co.':   q => `https://www.tiffany.com/en-us/search/?q=${encodeURIComponent(q)}`,
   'Toteme':          q => `https://toteme.com/search?q=${encodeURIComponent(q)}`,
-  'Veja':            q => `https://www.asos.com/search/?q=${encodeURIComponent(q)}`,
-  'YesStyle':        q => `https://www.asos.com/search/?q=${encodeURIComponent(q)}`
+  'Veja':            q => `https://www.asos.com/search/?q=${encodeURIComponent(q)}`
 };
 
 const shopUrl = (store, q) => {
@@ -300,17 +296,17 @@ classic: {
     ],
     shoes: [
       P('aff', 'H&M', 'Loafers', '$39', 'loafers women', 'loafers brown product'),
-      P('mid', 'Mango', 'Leather Loafers', '$99', 'leather loafers women', 'leather loafers product'),
+      P('mid', 'COS', 'Leather Loafers', '$99', 'leather loafers women', 'leather loafers product'),
       P('lux', 'COS', 'Square-Toe Loafers', '$235', 'leather loafers', 'classic loafers brown product')
     ],
     bags: [
       P('aff', 'H&M', 'Faux-Leather Tote', '$29', 'leather tote bag', 'tan tote bag product'),
-      P('mid', 'Mango', 'Leather Shopper', '$129', 'leather shopper bag', 'leather tote bag product'),
+      P('mid', 'COS', 'Leather Shopper', '$129', 'leather shopper bag', 'leather tote bag product'),
       P('lux', 'COS', 'Soft Leather Tote', '$245', 'leather tote', 'tan leather tote product')
     ],
     accessories: [
       P('aff', 'SHEIN', 'Silk-Feel Scarf', '$12', 'silk scarf', 'silk scarf neutral product'),
-      P('mid', 'Mango', 'Printed Silk Scarf', '$45', 'silk scarf', 'silk scarf product'),
+      P('mid', 'COS', 'Printed Silk Scarf', '$45', 'silk scarf', 'silk scarf product'),
       P('lux', 'COS', 'Pure Silk Scarf', '$85', 'silk scarf', 'silk scarf elegant product')
     ],
     beauty: [
@@ -320,7 +316,7 @@ classic: {
     ],
     jewelry: [
       P('aff', 'H&M', 'Pearl Stud Earrings', '$15', 'pearl earrings', 'pearl earrings product'),
-      P('mid', 'Mango', 'Gold Watch', '$79', 'gold watch women', 'gold watch product'),
+      P('mid', 'COS', 'Gold Watch', '$79', 'gold watch women', 'gold watch product'),
       P('lux', 'Mejuri', 'Pearl Studs', '$98', 'pearl studs', 'pearl earrings gold product')
     ]
   }
@@ -371,13 +367,13 @@ casual: {
     ],
     bags: [
       P('aff', 'SHEIN', 'Cotton Tote', '$12', 'cotton tote bag', 'canvas tote bag product'),
-      P('mid', 'Mango', 'Crossbody Bag', '$59', 'crossbody bag', 'crossbody bag tan product'),
+      P('mid', 'COS', 'Crossbody Bag', '$59', 'crossbody bag', 'crossbody bag tan product'),
       P('lux', 'COS', 'Mini Leather Bag', '$185', 'mini leather bag', 'mini leather bag product')
     ],
     accessories: [
       P('aff', 'ASOS', 'Baseball Cap', '$15', 'baseball cap', 'baseball cap product'),
       P('mid', 'Nike', 'Heritage Cap', '$30', 'heritage cap', 'baseball cap white product'),
-      P('lux', 'Mango', 'Wool Beanie', '$39', 'wool beanie', 'wool beanie cream product')
+      P('lux', 'COS', 'Wool Beanie', '$39', 'wool beanie', 'wool beanie cream product')
     ],
     beauty: [
       P('aff', 'Sephora', 'e.l.f. Lip Balm', '$5', 'elf lip balm', 'lip balm product'),
@@ -386,7 +382,7 @@ casual: {
     ],
     jewelry: [
       P('aff', 'H&M', 'Gold Hoops', '$9', 'gold hoops', 'gold hoop earrings product'),
-      P('mid', 'Mango', 'Gold-Plated Hoops', '$29', 'gold hoop earrings', 'gold hoops product'),
+      P('mid', 'COS', 'Gold-Plated Hoops', '$29', 'gold hoop earrings', 'gold hoops product'),
       P('lux', 'Mejuri', 'Small Hoops', '$98', 'small gold hoops', 'gold hoops jewelry product')
     ]
   }
@@ -427,7 +423,7 @@ streetwear: {
   shop: {
     clothing: [
       P('aff', 'SHEIN', 'Oversized Hoodie', '$19', 'oversized hoodie', 'oversized hoodie black product'),
-      P('mid', 'Pull&Bear', 'Cargo Pants', '$45', 'cargo pants', 'cargo pants product'),
+      P('mid', 'H&M', 'Cargo Pants', '$45', 'cargo pants', 'cargo pants product'),
       P('lux', 'Adidas', 'Track Jacket', '$130', 'track jacket', 'track jacket product')
     ],
     shoes: [
@@ -452,7 +448,7 @@ streetwear: {
     ],
     jewelry: [
       P('aff', 'SHEIN', 'Layered Chain Set', '$8', 'layered chain necklace', 'silver chain necklace product'),
-      P('mid', 'Mango', 'Chunky Chain', '$35', 'chunky chain necklace', 'chunky chain product'),
+      P('mid', 'COS', 'Chunky Chain', '$35', 'chunky chain necklace', 'chunky chain product'),
       P('lux', 'Mejuri', 'Bold Chain', '$148', 'bold chain necklace', 'gold chain necklace product')
     ]
   }
@@ -493,23 +489,23 @@ minimalist: {
   shop: {
     clothing: [
       P('aff', 'Uniqlo', 'Linen Shirt', '$40', 'linen shirt women', 'linen shirt cream product'),
-      P('mid', 'Mango', 'Linen Trousers', '$69', 'linen trousers', 'linen trousers product'),
+      P('mid', 'COS', 'Linen Trousers', '$69', 'linen trousers', 'linen trousers product'),
       P('lux', 'COS', 'Wool Coat', '$295', 'wool coat', 'beige wool coat product')
     ],
     shoes: [
       P('aff', 'H&M', 'Square-Toe Loafers', '$39', 'square toe loafers', 'minimalist loafers product'),
-      P('mid', 'Mango', 'Leather Mules', '$99', 'leather mules', 'leather mules product'),
+      P('mid', 'COS', 'Leather Mules', '$99', 'leather mules', 'leather mules product'),
       P('lux', 'COS', 'Leather Loafers', '$235', 'leather loafers minimalist','leather loafers black product')
     ],
     bags: [
       P('aff', 'H&M', 'Structured Tote', '$29', 'structured tote', 'minimal tote bag product'),
-      P('mid', 'Mango', 'Leather Sling', '$89', 'leather sling bag', 'leather sling bag product'),
+      P('mid', 'COS', 'Leather Sling', '$89', 'leather sling bag', 'leather sling bag product'),
       P('lux', 'COS', 'Leather Tote', '$245', 'leather tote', 'minimalist leather tote product')
     ],
     accessories: [
       P('aff', 'SHEIN', 'Linen Scarf', '$10', 'linen scarf', 'neutral scarf product'),
       P('mid', 'COS', 'Wool-Blend Scarf', '$69', 'wool scarf', 'wool scarf beige product'),
-      P('lux', 'Mango', 'Leather Belt', '$59', 'leather belt women', 'leather belt product')
+      P('lux', 'COS', 'Leather Belt', '$59', 'leather belt women', 'leather belt product')
     ],
     beauty: [
       P('aff', 'Sephora', 'e.l.f. Lip Stain', '$7', 'elf lip stain', 'berry lip stain product'),
@@ -518,7 +514,7 @@ minimalist: {
     ],
     jewelry: [
       P('aff', 'H&M', 'Thin Gold Chain', '$15', 'thin gold chain necklace', 'gold chain necklace product'),
-      P('mid', 'Mango', 'Geometric Earrings', '$29', 'geometric earrings gold', 'gold earrings product'),
+      P('mid', 'COS', 'Geometric Earrings', '$29', 'geometric earrings gold', 'gold earrings product'),
       P('lux', 'Mejuri', 'Croissant Chain', '$148', 'croissant chain', 'gold chain necklace minimal product')
     ]
   }
@@ -559,22 +555,22 @@ elegant: {
   shop: {
     clothing: [
       P('aff', 'H&M', 'Satin Blouse', '$35', 'satin blouse', 'satin blouse blush product'),
-      P('mid', 'Mango', 'Lace-Trim Slip', '$89', 'lace slip dress', 'slip dress satin product'),
+      P('mid', 'COS', 'Lace-Trim Slip', '$89', 'lace slip dress', 'slip dress satin product'),
       P('lux', 'Reformation', 'Silk Slip Dress', '$248', 'silk slip dress', 'silk slip dress product')
     ],
     shoes: [
       P('aff', 'SHEIN', 'Kitten Heel Slingbacks', '$25', 'kitten heels', 'kitten heels product'),
       P('mid', 'Zara', 'Slingback Pumps', '$79', 'slingback pumps', 'slingback heels product'),
-      P('lux', 'Mango', 'Leather Kitten Heels', '$139', 'leather kitten heels', 'leather kitten heels product')
+      P('lux', 'COS', 'Leather Kitten Heels', '$139', 'leather kitten heels', 'leather kitten heels product')
     ],
     bags: [
       P('aff', 'ASOS', 'Top-Handle Bag', '$35', 'top handle bag', 'top handle bag pink product'),
-      P('mid', 'Mango', 'Mini Top-Handle', '$89', 'mini top handle bag', 'mini top handle bag product'),
+      P('mid', 'COS', 'Mini Top-Handle', '$89', 'mini top handle bag', 'mini top handle bag product'),
       P('lux', 'COS', 'Leather Top-Handle', '$245', 'top handle leather bag', 'top handle leather bag product')
     ],
     accessories: [
       P('aff', 'SHEIN', 'Pearl Hair Clip', '$5', 'pearl hair clip', 'pearl hair clip product'),
-      P('mid', 'Mango', 'Silk Hair Scarf', '$25', 'silk hair scarf', 'silk scarf hair product'),
+      P('mid', 'COS', 'Silk Hair Scarf', '$25', 'silk hair scarf', 'silk scarf hair product'),
       P('lux', 'COS', 'Silk Twill Scarf', '$85', 'silk twill scarf', 'silk twill scarf product')
     ],
     beauty: [
@@ -584,7 +580,7 @@ elegant: {
     ],
     jewelry: [
       P('aff', 'H&M', 'Pearl Studs', '$9', 'pearl studs', 'pearl studs product'),
-      P('mid', 'Mango', 'Pearl Drop Earrings', '$29', 'pearl drop earrings', 'pearl drop earrings product'),
+      P('mid', 'COS', 'Pearl Drop Earrings', '$29', 'pearl drop earrings', 'pearl drop earrings product'),
       P('lux', 'Mejuri', 'Pearl Pendant', '$128', 'pearl pendant', 'pearl pendant necklace product')
     ]
   }
@@ -632,18 +628,18 @@ korean: {
   shop: {
     clothing: [
       P('aff', 'SHEIN', 'Oversized Cardigan', '$18', 'oversized cardigan pastel', 'pastel cardigan product'),
-      P('mid', 'Stradivarius', 'Pleated Mini Skirt', '$39', 'pleated mini skirt', 'pleated skirt product'),
-      P('lux', 'Mango', 'Knit Polo Sweater', '$99', 'knit polo sweater', 'knit polo product korean')
+      P('mid', 'Zara', 'Pleated Mini Skirt', '$39', 'pleated mini skirt', 'pleated skirt product'),
+      P('lux', 'COS', 'Knit Polo Sweater', '$99', 'knit polo sweater', 'knit polo product korean')
     ],
     shoes: [
       P('aff', 'H&M', 'Mary Jane Flats', '$35', 'mary jane flats', 'mary janes product'),
       P('mid', 'Bershka', 'Platform Loafers', '$50', 'platform loafers', 'platform loafers product'),
-      P('lux', 'Mango', 'Leather Mary Janes', '$99', 'leather mary janes', 'leather mary janes product')
+      P('lux', 'COS', 'Leather Mary Janes', '$99', 'leather mary janes', 'leather mary janes product')
     ],
     bags: [
       P('aff', 'SHEIN', 'Mini Shoulder Bag', '$14', 'mini shoulder bag korean', 'mini shoulder bag product'),
-      P('mid', 'Stradivarius', 'Quilted Mini Bag', '$39', 'quilted mini bag', 'quilted mini bag product'),
-      P('lux', 'Mango', 'Leather Mini', '$99', 'leather mini bag', 'mini leather bag pink product')
+      P('mid', 'Zara', 'Quilted Mini Bag', '$39', 'quilted mini bag', 'quilted mini bag product'),
+      P('lux', 'COS', 'Leather Mini', '$99', 'leather mini bag', 'mini leather bag pink product')
     ],
     accessories: [
       P('aff', 'SHEIN', 'Pearl Hair Clips Set', '$5', 'pearl hair clips', 'pearl hair clips product'),
@@ -699,11 +695,11 @@ y2k: {
     clothing: [
       P('aff', 'SHEIN', 'Low-Rise Jeans', '$22', 'low rise jeans', 'low rise jeans product'),
       P('mid', 'Bershka', 'Cropped Baby Tee', '$15', 'baby tee crop', 'baby tee product pink'),
-      P('lux', 'Pull&Bear', 'Low-Rise Cargo', '$50', 'low rise cargo', 'cargo pants y2k product')
+      P('lux', 'H&M', 'Low-Rise Cargo', '$50', 'low rise cargo', 'cargo pants y2k product')
     ],
     shoes: [
       P('aff', 'SHEIN', 'Chunky Platforms', '$32', 'chunky platform sneakers', 'platform sneakers product'),
-      P('mid', 'Pull&Bear', 'Platform Mary Janes', '$50', 'platform mary janes', 'platform mary janes product'),
+      P('mid', 'H&M', 'Platform Mary Janes', '$50', 'platform mary janes', 'platform mary janes product'),
       P('lux', 'Adidas', 'Samba', '$100', 'samba', 'samba sneakers product')
     ],
     bags: [
@@ -723,7 +719,7 @@ y2k: {
     ],
     jewelry: [
       P('aff', 'SHEIN', 'Layered Chokers', '$8', 'choker layered set', 'choker necklace product'),
-      P('mid', 'Pull&Bear', 'Charm Necklace', '$25', 'charm necklace', 'charm necklace product'),
+      P('mid', 'H&M', 'Charm Necklace', '$25', 'charm necklace', 'charm necklace product'),
       P('lux', 'Mejuri', 'Heart Locket', '$148', 'heart locket', 'heart locket gold product')
     ]
   }
@@ -769,7 +765,7 @@ vintage: {
     ],
     shoes: [
       P('aff', 'H&M', 'Mary Jane Flats', '$40', 'mary jane flats', 'mary janes product'),
-      P('mid', 'Mango', 'Leather Mary Janes', '$99', 'leather mary janes vintage', 'leather mary janes product'),
+      P('mid', 'COS', 'Leather Mary Janes', '$99', 'leather mary janes vintage', 'leather mary janes product'),
       P('lux', 'Dr. Martens', '1461 Oxford', '$160', '1461 oxford', 'dr martens oxford product')
     ],
     bags: [
@@ -835,8 +831,8 @@ softgirl: {
     ],
     shoes: [
       P('aff', 'H&M', 'Ballet Flats', '$30', 'ballet flats', 'pink ballet flats product'),
-      P('mid', 'Stradivarius', 'Mary Janes', '$45', 'mary janes pink', 'pink mary janes product'),
-      P('lux', 'Mango', 'Satin Ballet Flats', '$99', 'satin ballet flats', 'satin ballet flats product')
+      P('mid', 'Zara', 'Mary Janes', '$45', 'mary janes pink', 'pink mary janes product'),
+      P('lux', 'COS', 'Satin Ballet Flats', '$99', 'satin ballet flats', 'satin ballet flats product')
     ],
     bags: [
       P('aff', 'SHEIN', 'Heart-Shaped Bag', '$14', 'heart shaped bag', 'heart bag pink product'),
@@ -936,7 +932,7 @@ const AI_RESPONSES = [
     productRefs: [
       ['aff', 'SHEIN', 'White Button-Down Shirt', '$15', 'white button down shirt women', 'white shirt product'],
       ['mid', 'Uniqlo', 'Cashmere Crew Knit', '$79', 'cashmere crew neck sweater women', 'cashmere sweater beige product'],
-      ['mid', 'Mango', 'Fluid Beige Trousers', '$69', 'beige wide leg trousers women', 'beige trousers product'],
+      ['mid', 'COS', 'Fluid Beige Trousers', '$69', 'beige wide leg trousers women', 'beige trousers product'],
       ['lux', 'COS', 'Tailored Camel Trousers', '$135', 'tailored camel trousers women', 'camel trousers product']
     ]
   },
@@ -969,7 +965,7 @@ const AI_RESPONSES = [
     response: "Pick something you feel like *yourself* in — but elevated:\n\n• Satin slip dress + delicate gold chain + kitten heels.\n• High-waisted black trousers + soft silk blouse + statement earrings.\n• Midi dress in a rich tone + tailored blazer + ankle boots.\n• Wrap dress + barely-there sandals + a small leather bag.",
     productRefs: [
       ['aff', 'SHEIN', 'Satin Slip Dress', '$25', 'satin slip dress women elegant', 'satin slip dress product'],
-      ['mid', 'Mango', 'Lace-Trim Slip Dress', '$89', 'lace slip dress women date night', 'slip dress black product'],
+      ['mid', 'COS', 'Lace-Trim Slip Dress', '$89', 'lace slip dress women date night', 'slip dress black product'],
       ['lux', 'Reformation', 'Silk Slip Dress', '$248', 'silk slip dress women', 'silk slip dress product']
     ]
   },
@@ -980,7 +976,7 @@ const AI_RESPONSES = [
     response: "Structure and confidence — here's how:\n\n• Tailored trousers + silk blouse + low pumps + leather tote.\n• Wrap dress in a solid color + gold studs — effortlessly polished.\n• Blazer over a tucked turtleneck + straight-leg pants.\n• Midi skirt + simple knit + pointed flats — understated authority.",
     productRefs: [
       ['aff', 'H&M', 'Tailored Wide-Leg Trousers', '$39', 'tailored trousers women office', 'tailored trousers product'],
-      ['mid', 'Mango', 'Wool-Blend Blazer', '$129', 'wool blazer women office work', 'wool blazer product'],
+      ['mid', 'COS', 'Wool-Blend Blazer', '$129', 'wool blazer women office work', 'wool blazer product'],
       ['lux', 'Massimo Dutti', 'Pure Wool Blazer', '$295', 'pure wool tailored blazer women', 'wool blazer woman product']
     ]
   },
@@ -991,7 +987,7 @@ const AI_RESPONSES = [
     response: "Layers that look intentional, not bulky:\n\n• Long wool coat + chunky knit + straight-leg jeans + leather boots.\n• Puffer over hoodie + cargos + chunky sneakers — streetwear winter.\n• Teddy coat + turtleneck + midi skirt + tights — cozy chic.\n• Double-breasted coat + scarf + loafers — old money winter.",
     productRefs: [
       ['aff', 'H&M', 'Teddy Bear Coat', '$70', 'teddy bear coat women winter', 'teddy coat product'],
-      ['mid', 'Mango', 'Wool-Blend Overcoat', '$179', 'wool overcoat women winter camel', 'wool coat product'],
+      ['mid', 'COS', 'Wool-Blend Overcoat', '$179', 'wool overcoat women winter camel', 'wool coat product'],
       ['lux', 'COS', 'Long Structured Coat', '$295', 'long structured wool coat women', 'long coat wool product']
     ]
   },
@@ -1002,7 +998,7 @@ const AI_RESPONSES = [
     response: "Breathable fabrics — linen, cotton, silk:\n\n• Linen midi + leather sandals + straw tote — Mediterranean chic.\n• High-waisted shorts + fitted crop tee + white sneakers.\n• Slip dress + denim jacket for cooler evenings.\n• Flowy sundress + flat sandals + minimal gold jewelry.",
     productRefs: [
       ['aff', 'SHEIN', 'Linen-Blend Midi Dress', '$22', 'linen midi dress women summer', 'linen dress white product'],
-      ['mid', 'Mango', 'Linen Midi Dress', '$79', 'linen midi dress women summer', 'linen midi product'],
+      ['mid', 'COS', 'Linen Midi Dress', '$79', 'linen midi dress women summer', 'linen midi product'],
       ['lux', 'Reformation', 'Linen Sundress', '$198', 'linen sundress women summer', 'linen sundress product']
     ]
   },
@@ -1030,7 +1026,7 @@ const AI_RESPONSES = [
     response: "Commit to one bold piece and let everything else support it:\n\n• Statement sneakers + relaxed cargos + fitted tee + sling bag.\n• Oversized graphic hoodie + bike shorts + chunky sneakers.\n• Graphic tee under an open button-down + wide-leg jeans + Air Force 1s.\n• Tracksuit + clean sneakers + gold chain — effortless cool.",
     productRefs: [
       ['aff', 'SHEIN', 'Oversized Graphic Hoodie', '$19', 'oversized graphic hoodie women streetwear', 'oversized hoodie product'],
-      ['mid', 'Pull&Bear', 'Cargo Wide-Leg Pants', '$45', 'cargo wide leg pants women', 'cargo pants product'],
+      ['mid', 'H&M', 'Cargo Wide-Leg Pants', '$45', 'cargo wide leg pants women', 'cargo pants product'],
       ['mid', 'Nike', 'Air Force 1 Low White', '$110', 'air force 1 low white women', 'air force 1 product'],
       ['lux', 'Acne Studios', 'Oversized Logo Sweatshirt', '$280', 'acne studios oversized sweatshirt', 'acne studios product']
     ]
@@ -1081,7 +1077,7 @@ const AI_RESPONSES = [
     response: "Quiet luxury is about restraint and quality:\n\n• Monochrome tonal outfits in cream, camel, or grey.\n• Investment pieces: cashmere knit, leather loafers, tailored trousers.\n• Let fabric do the talking — no logos, no loud prints.\n• Silk blouse + wide-leg trousers + simple gold jewelry.\n• A single great coat over anything = instant polish.",
     productRefs: [
       ['aff', 'H&M', 'Satin Slip Blouse', '$35', 'satin blouse women elegant', 'satin blouse product'],
-      ['mid', 'Mango', 'Pleated Wide-Leg Trousers', '$99', 'pleated wide leg trousers women elegant', 'wide leg trousers product'],
+      ['mid', 'COS', 'Pleated Wide-Leg Trousers', '$99', 'pleated wide leg trousers women elegant', 'wide leg trousers product'],
       ['lux', 'Toteme', 'Cashmere Turtleneck', '$395', 'toteme cashmere turtleneck women', 'cashmere turtleneck product']
     ]
   },
@@ -1136,7 +1132,7 @@ const AI_RESPONSES = [
     response: "Boots change the entire energy of a look:\n\n• Elegant black ankle boots + midi skirt + cashmere knit — refined.\n• Combat boots + mini dress — unexpected contrast.\n• Knee-high boots + straight-leg jeans + long coat — editorial.\n• Square-toe boots + tailored trousers — modern minimalist.",
     productRefs: [
       ['aff', 'SHEIN', 'Black Ankle Boots Pointed', '$45', 'black ankle boots pointed toe women elegant', 'black boots product'],
-      ['mid', 'Mango', 'Leather Ankle Boots', '$119', 'leather ankle boots women elegant black', 'leather ankle boots product'],
+      ['mid', 'COS', 'Leather Ankle Boots', '$119', 'leather ankle boots women elegant black', 'leather ankle boots product'],
       ['lux', 'Acne Studios', 'Leather Square-Toe Boots', '$650', 'acne studios leather boots women', 'acne studios boots product']
     ]
   },
@@ -1147,7 +1143,7 @@ const AI_RESPONSES = [
     response: "The midi length is endlessly wearable:\n\n• Floral midi + denim jacket + white sneakers — casual.\n• Satin midi + gold jewelry + heels — evening.\n• Knit midi + ankle boots + structured bag — autumn.\n• Linen midi + flat sandals + straw bag — summer.",
     productRefs: [
       ['aff', 'SHEIN', 'Satin Midi Dress', '$28', 'satin midi dress women elegant', 'satin midi dress product'],
-      ['mid', 'Mango', 'Knit Midi Dress', '$89', 'knit midi dress women autumn', 'knit midi dress product'],
+      ['mid', 'COS', 'Knit Midi Dress', '$89', 'knit midi dress women autumn', 'knit midi dress product'],
       ['lux', 'Reformation', 'Floral Midi Dress', '$228', 'floral midi dress women elegant', 'floral midi dress product']
     ]
   },
@@ -1158,7 +1154,7 @@ const AI_RESPONSES = [
     response: "Wide-leg trousers are the most versatile silhouette right now:\n\n• High-waisted wide-leg + fitted turtleneck + loafers — classic.\n• Linen wide-leg + crop tank + flat sandals — summer ease.\n• Wide-leg cargos + fitted tee + chunky sneakers — street.\n• Belted wide-leg + silk blouse + kitten heels — elegant.",
     productRefs: [
       ['aff', 'SHEIN', 'High-Waist Wide-Leg Trousers', '$25', 'high waist wide leg trousers women', 'wide leg trousers product'],
-      ['mid', 'Mango', 'Pleated Wide-Leg Trousers', '$89', 'pleated wide leg trousers women', 'wide leg pants product'],
+      ['mid', 'COS', 'Pleated Wide-Leg Trousers', '$89', 'pleated wide leg trousers women', 'wide leg pants product'],
       ['lux', 'COS', 'Wide-Leg Tailored Trousers', '$145', 'wide leg tailored trousers women cos', 'wide leg trousers cos product']
     ]
   },
@@ -1180,7 +1176,7 @@ const AI_RESPONSES = [
     response: "The blazer is the ultimate transformer:\n\n• Oversized blazer + cycling shorts + white tee + sneakers — street.\n• Fitted blazer + silk cami + straight jeans + heeled mules — chic.\n• Boxy blazer + midi dress underneath — layering genius.\n• Monochrome blazer set (jacket + matching trousers) — power dressing.",
     productRefs: [
       ['aff', 'H&M', 'Single-Breasted Blazer', '$49', 'single breasted blazer women', 'blazer product'],
-      ['mid', 'Mango', 'Structured Linen Blazer', '$119', 'structured linen blazer women', 'linen blazer product'],
+      ['mid', 'COS', 'Structured Linen Blazer', '$119', 'structured linen blazer women', 'linen blazer product'],
       ['lux', 'Massimo Dutti', 'Pure Wool Blazer', '$295', 'pure wool blazer women tailored', 'wool blazer product']
     ]
   },
@@ -1202,7 +1198,7 @@ const AI_RESPONSES = [
     response: "Wedding guest dressing has one rule: don't upstage, but don't underwhelm:\n\n• Floral midi dress + strappy heels + small clutch — timeless.\n• Linen suit (blazer + trousers) + simple cami + kitten heels.\n• Wrap dress in a jewel tone + gold jewelry + nude heels.\n• Pleated maxi dress + low block heels — modern and floaty.",
     productRefs: [
       ['aff', 'SHEIN', 'Floral Wrap Midi Dress', '$35', 'floral wrap midi dress women wedding guest', 'floral midi dress product'],
-      ['mid', 'Mango', 'Chiffon Midi Dress', '$99', 'chiffon midi dress women wedding guest', 'chiffon dress product'],
+      ['mid', 'COS', 'Chiffon Midi Dress', '$99', 'chiffon midi dress women wedding guest', 'chiffon dress product'],
       ['lux', 'Reformation', 'Floral Midi Wedding Guest', '$248', 'floral midi dress wedding guest elegant', 'reformation wedding dress product']
     ]
   },
@@ -1224,7 +1220,7 @@ const AI_RESPONSES = [
     response: "Brunch is effortlessly chic with the right pieces:\n\n• Linen trousers + stripe tee + loafers + tote bag.\n• Floral midi dress + denim jacket + sneakers.\n• High-waist jeans + knit top + mules + sunglasses.\n• Linen shorts + a nice blouse + flat sandals.",
     productRefs: [
       ['aff', 'H&M', 'Linen-Blend Trousers', '$35', 'linen blend trousers women casual', 'linen trousers product'],
-      ['mid', 'Mango', 'Knit Stripe Top', '$49', 'knit stripe top women casual', 'stripe top product'],
+      ['mid', 'COS', 'Knit Stripe Top', '$49', 'knit stripe top women casual', 'stripe top product'],
       ['mid', 'Zara', 'Leather Mule Sandals', '$69', 'leather mule sandals women', 'mule sandals product']
     ]
   },
@@ -1257,7 +1253,7 @@ const AI_RESPONSES = [
     response: "Green is one of the most wearable non-neutral shades:\n\n• Olive cargos + cream knit + white sneakers — casual.\n• Forest green midi dress + gold jewelry + nude heels — evening.\n• Sage linen trousers + white tee + loafers — minimal summer.\n• Hunter green coat + camel scarf + brown boots — winter.",
     productRefs: [
       ['aff', 'H&M', 'Olive Cargo Trousers', '$39', 'olive cargo trousers women', 'olive cargo pants product'],
-      ['mid', 'Mango', 'Forest Green Midi Dress', '$79', 'forest green midi dress women', 'green dress product'],
+      ['mid', 'COS', 'Forest Green Midi Dress', '$79', 'forest green midi dress women', 'green dress product'],
       ['mid', 'Zara', 'Sage Linen Trousers', '$59', 'sage linen trousers women', 'sage trousers product']
     ]
   },
@@ -1268,7 +1264,7 @@ const AI_RESPONSES = [
     response: "Red is a statement — let it be the hero:\n\n• Red midi dress + nude heels + minimal gold jewelry.\n• Red trousers + white shirt + black loafers — bold but clean.\n• Red coat + all-black under it — the classic contrast.\n• Deep red blouse + straight-leg jeans + ankle boots.",
     productRefs: [
       ['aff', 'SHEIN', 'Red Satin Midi Dress', '$28', 'red satin midi dress women', 'red dress product'],
-      ['mid', 'Mango', 'Red Tailored Trousers', '$79', 'red tailored trousers women', 'red trousers product'],
+      ['mid', 'COS', 'Red Tailored Trousers', '$79', 'red tailored trousers women', 'red trousers product'],
       ['mid', 'Zara', 'Red Wool Coat', '$129', 'red wool coat women', 'red coat product']
     ]
   },
@@ -1301,7 +1297,7 @@ const AI_RESPONSES = [
     response: "Loafers are the most versatile shoe in 2025:\n\n• With a pleated midi skirt + knit — elegant day.\n• With straight-leg jeans + oversized blazer — Parisian cool.\n• With shorts + a crisp shirt — summer prep.\n• Platform loafers + mini skirt + fitted top — Korean chic.",
     productRefs: [
       ['aff', 'SHEIN', 'Platform Loafer Shoes', '$35', 'platform loafer shoes women', 'loafer shoes product'],
-      ['mid', 'Mango', 'Leather Loafer Shoes', '$89', 'leather loafer shoes women', 'leather loafer product'],
+      ['mid', 'COS', 'Leather Loafer Shoes', '$89', 'leather loafer shoes women', 'leather loafer product'],
       ['lux', 'COS', 'Chunky Sole Loafers', '$185', 'chunky sole leather loafers women', 'chunky loafers product']
     ]
   },
@@ -1324,7 +1320,7 @@ const AI_RESPONSES = [
     productRefs: [
       ['aff', 'SHEIN', 'Pleated Midi Skirt', '$18', 'pleated midi skirt women', 'pleated midi skirt product'],
       ['mid', 'Zara', 'Satin Midi Skirt', '$59', 'satin midi skirt women elegant', 'satin midi skirt product'],
-      ['mid', 'Mango', 'Faux Leather Mini Skirt', '$49', 'faux leather mini skirt women', 'leather mini skirt product']
+      ['mid', 'COS', 'Faux Leather Mini Skirt', '$49', 'faux leather mini skirt women', 'leather mini skirt product']
     ]
   },
 
@@ -1334,7 +1330,7 @@ const AI_RESPONSES = [
     response: "Transitional dressing = mastered layering:\n\n• Linen trousers + long-sleeve tee + light trench coat + loafers.\n• Midi dress + ribbed cardigan + ankle boots.\n• Straight-leg jeans + tucked knit + leather jacket.\n• Light blazer + simple tee + wide-leg trousers + mules.",
     productRefs: [
       ['aff', 'H&M', 'Ribbed Cardigan', '$35', 'ribbed cardigan women transitional', 'cardigan product'],
-      ['mid', 'Mango', 'Fitted Leather Jacket', '$149', 'fitted leather jacket women', 'leather jacket product'],
+      ['mid', 'COS', 'Fitted Leather Jacket', '$149', 'fitted leather jacket women', 'leather jacket product'],
       ['mid', 'Zara', 'Light Trench Coat', '$119', 'light trench coat women spring', 'trench coat product']
     ]
   },

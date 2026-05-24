@@ -190,10 +190,8 @@ function initNavBurger() {
 // ============================================================
 const EXTRA_STORE_URLS = {
   'AliExpress':       q => 'https://www.aliexpress.com/wholesale?SearchText=' + encodeURIComponent(q),
-  'YesStyle':         q => 'https://www.yesstyle.com/en/search/' + encodeURIComponent(q) + '.html',
   'Cider':            q => 'https://www.shopcider.com/search?keyword=' + encodeURIComponent(q),
-  'Princess Polly':   q => 'https://www.princesspolly.com/search?q=' + encodeURIComponent(q),
-  'Stradivarius':     q => 'https://www.stradivarius.com/us/search?q=' + encodeURIComponent(q),
+  'Princess Polly':   q => 'https://us.princesspolly.com/search?q=' + encodeURIComponent(q),
   'Urban Outfitters': q => 'https://www.urbanoutfitters.com/search?q=' + encodeURIComponent(q),
   'Free People':      q => 'https://www.freepeople.com/search?q=' + encodeURIComponent(q),
   'Reformation':      q => 'https://www.thereformation.com/search?q=' + encodeURIComponent(q),
@@ -233,32 +231,32 @@ function expandedShopUrl(store, q) {
 // Stores per category × tier — generates a much wider catalog per style
 const EXPANDED_STORES = {
   clothing: {
-    aff: ['SHEIN', 'AliExpress', 'YesStyle', 'Cider', 'Princess Polly', 'H&M', 'Bershka', 'Pull&Bear', 'Stradivarius'],
-    mid: ['Zara', 'Mango', 'ASOS', 'COS', 'Uniqlo', '& Other Stories', 'Urban Outfitters', 'Aritzia', 'Free People'],
+    aff: ['SHEIN', 'AliExpress', 'COS', 'Cider', 'Princess Polly', 'H&M', 'Bershka', 'H&M', 'Zara'],
+    mid: ['Zara', 'COS', 'ASOS', 'COS', 'Uniqlo', '& Other Stories', 'Urban Outfitters', 'Aritzia', 'Free People'],
     lux: ['Massimo Dutti', 'Reformation', 'Toteme', 'A.P.C.', 'Acne Studios', 'Jacquemus']
   },
   shoes: {
-    aff: ['SHEIN', 'AliExpress', 'YesStyle', 'Cider', 'Princess Polly', 'H&M', 'Bershka', 'Stradivarius'],
-    mid: ['Adidas', 'Nike', 'Converse', 'Zara', 'ASOS', 'Mango', 'Charles & Keith'],
+    aff: ['SHEIN', 'AliExpress', 'COS', 'Cider', 'Princess Polly', 'H&M', 'Bershka', 'Zara'],
+    mid: ['Adidas', 'Nike', 'Converse', 'Zara', 'ASOS', 'COS', 'Charles & Keith'],
     lux: ['Dr. Martens', 'Acne Studios', 'Jacquemus', 'Reformation']
   },
   bags: {
-    aff: ['SHEIN', 'AliExpress', 'YesStyle', 'Cider', 'Princess Polly', 'H&M', 'Bershka', 'Stradivarius'],
-    mid: ['Charles & Keith', 'JW PEI', 'Zara', 'Mango', 'ASOS', '& Other Stories', 'Aritzia'],
+    aff: ['SHEIN', 'AliExpress', 'COS', 'Cider', 'Princess Polly', 'H&M', 'Bershka', 'Zara'],
+    mid: ['Charles & Keith', 'JW PEI', 'Zara', 'COS', 'ASOS', '& Other Stories', 'Aritzia'],
     lux: ['Polène', 'Jacquemus', 'COS', 'Toteme']
   },
   accessories: {
-    aff: ['SHEIN', 'AliExpress', 'YesStyle', 'Cider', 'Princess Polly', 'H&M', 'Bershka', 'Stradivarius'],
-    mid: ['Urban Outfitters', 'Mango', 'COS', 'Zara', 'ASOS', '& Other Stories'],
+    aff: ['SHEIN', 'AliExpress', 'COS', 'Cider', 'Princess Polly', 'H&M', 'Bershka', 'Zara'],
+    mid: ['Urban Outfitters', 'COS', 'COS', 'Zara', 'ASOS', '& Other Stories'],
     lux: ['Acne Studios', 'Polène', 'Jacquemus']
   },
   beauty: {
     aff: ['SHEIN', 'e.l.f.', 'Kiko Milano', 'NYX'],
-    mid: ['Sephora', 'Rare Beauty', 'Glossier', 'Mango'],
+    mid: ['Sephora', 'Rare Beauty', 'Glossier', 'COS'],
     lux: ['Dior Beauty', 'Chanel', 'Tom Ford']
   },
   jewelry: {
-    aff: ['SHEIN', 'AliExpress', 'YesStyle', 'Cider', 'H&M', 'Pandora'],
+    aff: ['SHEIN', 'AliExpress', 'COS', 'Cider', 'H&M', 'Pandora'],
     mid: ['Mejuri', 'Pandora', '& Other Stories', 'Urban Outfitters', 'Etsy'],
     lux: ['Mejuri', 'Tiffany & Co.']
   }
@@ -267,23 +265,23 @@ const EXPANDED_STORES = {
 // Aesthetic-specific store lists — each style gets brands that actually fit its identity
 const AESTHETIC_EXPANDED_STORES = {
   classic: {
-    clothing:    { aff: ['H&M','Bershka','Pull&Bear','ASOS'], mid: ['Zara','Mango','COS','Massimo Dutti','Uniqlo','& Other Stories'], lux: ['Toteme','A.P.C.','Reformation','Jacquemus','Acne Studios'] },
-    shoes:       { aff: ['H&M','ASOS','Bershka'], mid: ['Mango','Zara','Charles & Keith','COS'], lux: ['A.P.C.','Dr. Martens','Toteme'] },
-    bags:        { aff: ['H&M','ASOS'], mid: ['Mango','Charles & Keith','Zara','COS'], lux: ['Polène','A.P.C.','Toteme','Jacquemus'] },
-    accessories: { aff: ['H&M','ASOS'], mid: ['Mango','COS','& Other Stories','Zara'], lux: ['A.P.C.','Toteme'] },
+    clothing:    { aff: ['H&M','Bershka','H&M','ASOS'], mid: ['Zara','COS','COS','Massimo Dutti','Uniqlo','& Other Stories'], lux: ['Toteme','A.P.C.','Reformation','Jacquemus','Acne Studios'] },
+    shoes:       { aff: ['H&M','ASOS','Bershka'], mid: ['COS','Zara','Charles & Keith','COS'], lux: ['A.P.C.','Dr. Martens','Toteme'] },
+    bags:        { aff: ['H&M','ASOS'], mid: ['COS','Charles & Keith','Zara','COS'], lux: ['Polène','A.P.C.','Toteme','Jacquemus'] },
+    accessories: { aff: ['H&M','ASOS'], mid: ['COS','COS','& Other Stories','Zara'], lux: ['A.P.C.','Toteme'] },
     beauty:      { aff: ['e.l.f.','NYX','Kiko Milano'], mid: ['Sephora','Rare Beauty','Glossier'], lux: ['Chanel','Dior Beauty','Tom Ford'] },
     jewelry:     { aff: ['H&M','Pandora'], mid: ['Mejuri','& Other Stories','Pandora'], lux: ['Mejuri','Tiffany & Co.'] }
   },
   casual: {
-    clothing:    { aff: ['H&M','Uniqlo','Bershka','Pull&Bear'], mid: ['Zara','Mango','Levis','Aritzia','Free People','Urban Outfitters'], lux: ['Everlane','COS','A.P.C.','Toteme'] },
-    shoes:       { aff: ['H&M','ASOS','Converse'], mid: ['Nike','Adidas','Converse','Mango','Zara'], lux: ['Nike','A.P.C.','Acne Studios'] },
-    bags:        { aff: ['H&M','ASOS'], mid: ['Mango','Charles & Keith','Urban Outfitters','Zara'], lux: ['A.P.C.','Toteme','Polène'] },
-    accessories: { aff: ['H&M','ASOS','Cider'], mid: ['Urban Outfitters','Mango','Zara','Nike'], lux: ['A.P.C.','Acne Studios'] },
+    clothing:    { aff: ['H&M','Uniqlo','Bershka','H&M'], mid: ['Zara','COS','Levis','Aritzia','Free People','Urban Outfitters'], lux: ['Everlane','COS','A.P.C.','Toteme'] },
+    shoes:       { aff: ['H&M','ASOS','Converse'], mid: ['Nike','Adidas','Converse','COS','Zara'], lux: ['Nike','A.P.C.','Acne Studios'] },
+    bags:        { aff: ['H&M','ASOS'], mid: ['COS','Charles & Keith','Urban Outfitters','Zara'], lux: ['A.P.C.','Toteme','Polène'] },
+    accessories: { aff: ['H&M','ASOS','Cider'], mid: ['Urban Outfitters','COS','Zara','Nike'], lux: ['A.P.C.','Acne Studios'] },
     beauty:      { aff: ['e.l.f.','NYX','Glossier'], mid: ['Glossier','Rare Beauty','Sephora'], lux: ['Chanel','Dior Beauty'] },
     jewelry:     { aff: ['H&M','Pandora'], mid: ['Pandora','Mejuri','& Other Stories'], lux: ['Mejuri','Tiffany & Co.'] }
   },
   streetwear: {
-    clothing:    { aff: ['SHEIN','H&M','Cider','AliExpress','Pull&Bear','Bershka'], mid: ['Nike','Adidas','Urban Outfitters','ASOS','Zara'], lux: ['Acne Studios','Jacquemus','A.P.C.'] },
+    clothing:    { aff: ['SHEIN','H&M','Cider','AliExpress','H&M','Bershka'], mid: ['Nike','Adidas','Urban Outfitters','ASOS','Zara'], lux: ['Acne Studios','Jacquemus','A.P.C.'] },
     shoes:       { aff: ['SHEIN','H&M','AliExpress','Cider'], mid: ['Nike','Adidas','Converse','ASOS'], lux: ['Nike','Adidas','Acne Studios'] },
     bags:        { aff: ['SHEIN','H&M','AliExpress'], mid: ['Nike','Adidas','Urban Outfitters','ASOS'], lux: ['A.P.C.','Acne Studios','Jacquemus'] },
     accessories: { aff: ['SHEIN','H&M','AliExpress','Cider'], mid: ['Nike','Urban Outfitters','ASOS','Adidas'], lux: ['Acne Studios','A.P.C.'] },
@@ -291,31 +289,31 @@ const AESTHETIC_EXPANDED_STORES = {
     jewelry:     { aff: ['SHEIN','H&M','AliExpress'], mid: ['Urban Outfitters','Pandora','Mejuri'], lux: ['Mejuri','Acne Studios'] }
   },
   minimalist: {
-    clothing:    { aff: ['Uniqlo','H&M','SHEIN'], mid: ['COS','Mango','& Other Stories','Aritzia','Zara'], lux: ['Toteme','A.P.C.','Acne Studios','Jacquemus'] },
-    shoes:       { aff: ['H&M','Uniqlo','SHEIN'], mid: ['COS','Mango','Zara','& Other Stories'], lux: ['Toteme','A.P.C.','Acne Studios'] },
-    bags:        { aff: ['H&M','Uniqlo'], mid: ['COS','Mango','& Other Stories','Charles & Keith'], lux: ['Polène','A.P.C.','Toteme'] },
-    accessories: { aff: ['Uniqlo','H&M'], mid: ['COS','& Other Stories','Mango'], lux: ['Mejuri','A.P.C.','Toteme'] },
+    clothing:    { aff: ['Uniqlo','H&M','SHEIN'], mid: ['COS','COS','& Other Stories','Aritzia','Zara'], lux: ['Toteme','A.P.C.','Acne Studios','Jacquemus'] },
+    shoes:       { aff: ['H&M','Uniqlo','SHEIN'], mid: ['COS','COS','Zara','& Other Stories'], lux: ['Toteme','A.P.C.','Acne Studios'] },
+    bags:        { aff: ['H&M','Uniqlo'], mid: ['COS','COS','& Other Stories','Charles & Keith'], lux: ['Polène','A.P.C.','Toteme'] },
+    accessories: { aff: ['Uniqlo','H&M'], mid: ['COS','& Other Stories','COS'], lux: ['Mejuri','A.P.C.','Toteme'] },
     beauty:      { aff: ['e.l.f.','NYX','Kiko Milano'], mid: ['Glossier','Rare Beauty','Sephora'], lux: ['Chanel','Dior Beauty','Tom Ford'] },
     jewelry:     { aff: ['H&M','Pandora'], mid: ['Mejuri','& Other Stories','COS'], lux: ['Mejuri','Tiffany & Co.'] }
   },
   elegant: {
-    clothing:    { aff: ['SHEIN','H&M','ASOS','Stradivarius'], mid: ['Mango','Zara','& Other Stories','Reformation','Charles & Keith'], lux: ['Reformation','Jacquemus','Toteme'] },
-    shoes:       { aff: ['SHEIN','H&M','ASOS'], mid: ['Mango','Charles & Keith','Zara','& Other Stories'], lux: ['Jacquemus','Reformation','A.P.C.'] },
-    bags:        { aff: ['SHEIN','H&M','ASOS'], mid: ['Charles & Keith','Mango','JW PEI','Zara'], lux: ['Polène','Jacquemus','A.P.C.','Toteme'] },
-    accessories: { aff: ['SHEIN','H&M','ASOS'], mid: ['Mango','& Other Stories','Zara','COS'], lux: ['Mejuri','Tiffany & Co.','Jacquemus'] },
+    clothing:    { aff: ['SHEIN','H&M','ASOS','Zara'], mid: ['COS','Zara','& Other Stories','Reformation','Charles & Keith'], lux: ['Reformation','Jacquemus','Toteme'] },
+    shoes:       { aff: ['SHEIN','H&M','ASOS'], mid: ['COS','Charles & Keith','Zara','& Other Stories'], lux: ['Jacquemus','Reformation','A.P.C.'] },
+    bags:        { aff: ['SHEIN','H&M','ASOS'], mid: ['Charles & Keith','COS','JW PEI','Zara'], lux: ['Polène','Jacquemus','A.P.C.','Toteme'] },
+    accessories: { aff: ['SHEIN','H&M','ASOS'], mid: ['COS','& Other Stories','Zara','COS'], lux: ['Mejuri','Tiffany & Co.','Jacquemus'] },
     beauty:      { aff: ['e.l.f.','NYX','Kiko Milano'], mid: ['Sephora','Rare Beauty','Glossier'], lux: ['Chanel','Dior Beauty','Tom Ford'] },
     jewelry:     { aff: ['H&M','Pandora'], mid: ['Mejuri','Pandora','& Other Stories'], lux: ['Mejuri','Tiffany & Co.'] }
   },
   korean: {
-    clothing:    { aff: ['YesStyle','SHEIN','Cider','AliExpress','Bershka'], mid: ['Uniqlo','Mango','ASOS','& Other Stories','Stradivarius'], lux: ['Acne Studios','A.P.C.','Toteme','Jacquemus'] },
-    shoes:       { aff: ['YesStyle','SHEIN','Cider','AliExpress'], mid: ['Charles & Keith','Mango','Zara','ASOS'], lux: ['A.P.C.','Acne Studios','Jacquemus'] },
-    bags:        { aff: ['YesStyle','SHEIN','Cider','AliExpress'], mid: ['Charles & Keith','Mango','JW PEI'], lux: ['Polène','Jacquemus','A.P.C.'] },
-    accessories: { aff: ['YesStyle','SHEIN','Cider','AliExpress'], mid: ['& Other Stories','Mango','Urban Outfitters'], lux: ['Mejuri','Acne Studios'] },
-    beauty:      { aff: ['e.l.f.','NYX','YesStyle'], mid: ['Sephora','Rare Beauty','Glossier'], lux: ['Chanel','Dior Beauty'] },
-    jewelry:     { aff: ['YesStyle','SHEIN','Cider'], mid: ['Pandora','Mejuri','& Other Stories'], lux: ['Mejuri','Tiffany & Co.'] }
+    clothing:    { aff: ['COS','SHEIN','Cider','AliExpress','Bershka'], mid: ['Uniqlo','COS','ASOS','& Other Stories','Zara'], lux: ['Acne Studios','A.P.C.','Toteme','Jacquemus'] },
+    shoes:       { aff: ['COS','SHEIN','Cider','AliExpress'], mid: ['Charles & Keith','COS','Zara','ASOS'], lux: ['A.P.C.','Acne Studios','Jacquemus'] },
+    bags:        { aff: ['COS','SHEIN','Cider','AliExpress'], mid: ['Charles & Keith','COS','JW PEI'], lux: ['Polène','Jacquemus','A.P.C.'] },
+    accessories: { aff: ['COS','SHEIN','Cider','AliExpress'], mid: ['& Other Stories','COS','Urban Outfitters'], lux: ['Mejuri','Acne Studios'] },
+    beauty:      { aff: ['e.l.f.','NYX','COS'], mid: ['Sephora','Rare Beauty','Glossier'], lux: ['Chanel','Dior Beauty'] },
+    jewelry:     { aff: ['COS','SHEIN','Cider'], mid: ['Pandora','Mejuri','& Other Stories'], lux: ['Mejuri','Tiffany & Co.'] }
   },
   y2k: {
-    clothing:    { aff: ['SHEIN','Cider','AliExpress','Bershka','Princess Polly','Pull&Bear'], mid: ['ASOS','Urban Outfitters','Zara','Stradivarius','Princess Polly'], lux: ['Jacquemus','Acne Studios'] },
+    clothing:    { aff: ['SHEIN','Cider','AliExpress','Bershka','Princess Polly','H&M'], mid: ['ASOS','Urban Outfitters','Zara','Zara','Princess Polly'], lux: ['Jacquemus','Acne Studios'] },
     shoes:       { aff: ['SHEIN','Cider','AliExpress','Bershka'], mid: ['ASOS','Urban Outfitters','Zara','Adidas'], lux: ['Jacquemus','Acne Studios'] },
     bags:        { aff: ['SHEIN','Cider','AliExpress'], mid: ['ASOS','Urban Outfitters','Princess Polly'], lux: ['Jacquemus','Polène'] },
     accessories: { aff: ['SHEIN','Cider','AliExpress','Princess Polly'], mid: ['Urban Outfitters','ASOS','Zara'], lux: ['Acne Studios','Jacquemus'] },
@@ -323,18 +321,18 @@ const AESTHETIC_EXPANDED_STORES = {
     jewelry:     { aff: ['SHEIN','Cider','AliExpress'], mid: ['Urban Outfitters','Pandora','Princess Polly'], lux: ['Mejuri','Tiffany & Co.'] }
   },
   vintage: {
-    clothing:    { aff: ['Depop','Etsy','SHEIN','H&M','ASOS'], mid: ['Beyond Retro','Urban Outfitters','Free People','Mango','Etsy'], lux: ['Reformation','A.P.C.','Toteme'] },
-    shoes:       { aff: ['Depop','Etsy','SHEIN','H&M'], mid: ['Mango','Dr. Martens','Urban Outfitters','ASOS'], lux: ['Dr. Martens','A.P.C.','Reformation'] },
-    bags:        { aff: ['Depop','Etsy','SHEIN'], mid: ['Etsy','Urban Outfitters','Mango','Beyond Retro'], lux: ['A.P.C.','Reformation','Polène'] },
-    accessories: { aff: ['Depop','Etsy','SHEIN','H&M'], mid: ['Urban Outfitters','Etsy','Mango','ASOS'], lux: ['Mejuri','A.P.C.'] },
+    clothing:    { aff: ['Depop','Etsy','SHEIN','H&M','ASOS'], mid: ['Beyond Retro','Urban Outfitters','Free People','COS','Etsy'], lux: ['Reformation','A.P.C.','Toteme'] },
+    shoes:       { aff: ['Depop','Etsy','SHEIN','H&M'], mid: ['COS','Dr. Martens','Urban Outfitters','ASOS'], lux: ['Dr. Martens','A.P.C.','Reformation'] },
+    bags:        { aff: ['Depop','Etsy','SHEIN'], mid: ['Etsy','Urban Outfitters','COS','Beyond Retro'], lux: ['A.P.C.','Reformation','Polène'] },
+    accessories: { aff: ['Depop','Etsy','SHEIN','H&M'], mid: ['Urban Outfitters','Etsy','COS','ASOS'], lux: ['Mejuri','A.P.C.'] },
     beauty:      { aff: ['NYX','e.l.f.','Kiko Milano'], mid: ['Sephora','Rare Beauty','Glossier'], lux: ['Chanel','Dior Beauty','Tom Ford'] },
     jewelry:     { aff: ['Depop','Etsy','SHEIN','H&M'], mid: ['Etsy','Mejuri','Urban Outfitters'], lux: ['Mejuri','Tiffany & Co.'] }
   },
   softgirl: {
-    clothing:    { aff: ['SHEIN','Cider','Princess Polly','AliExpress','H&M'], mid: ['Brandy Melville','Mango','ASOS','Urban Outfitters','& Other Stories'], lux: ['Reformation','Jacquemus','Polène'] },
-    shoes:       { aff: ['SHEIN','Cider','AliExpress','H&M'], mid: ['Mango','Zara','Charles & Keith','ASOS'], lux: ['Jacquemus','Reformation','A.P.C.'] },
-    bags:        { aff: ['SHEIN','Cider','AliExpress'], mid: ['Charles & Keith','Mango','Princess Polly'], lux: ['Polène','Jacquemus','A.P.C.'] },
-    accessories: { aff: ['SHEIN','Cider','AliExpress','H&M'], mid: ['Urban Outfitters','Mango','& Other Stories'], lux: ['Mejuri','Tiffany & Co.'] },
+    clothing:    { aff: ['SHEIN','Cider','Princess Polly','AliExpress','H&M'], mid: ['Brandy Melville','COS','ASOS','Urban Outfitters','& Other Stories'], lux: ['Reformation','Jacquemus','Polène'] },
+    shoes:       { aff: ['SHEIN','Cider','AliExpress','H&M'], mid: ['COS','Zara','Charles & Keith','ASOS'], lux: ['Jacquemus','Reformation','A.P.C.'] },
+    bags:        { aff: ['SHEIN','Cider','AliExpress'], mid: ['Charles & Keith','COS','Princess Polly'], lux: ['Polène','Jacquemus','A.P.C.'] },
+    accessories: { aff: ['SHEIN','Cider','AliExpress','H&M'], mid: ['Urban Outfitters','COS','& Other Stories'], lux: ['Mejuri','Tiffany & Co.'] },
     beauty:      { aff: ['e.l.f.','NYX','Kiko Milano'], mid: ['Rare Beauty','Glossier','Sephora'], lux: ['Chanel','Dior Beauty'] },
     jewelry:     { aff: ['SHEIN','Cider','H&M','Pandora'], mid: ['Pandora','Mejuri','& Other Stories'], lux: ['Mejuri','Tiffany & Co.'] }
   }
