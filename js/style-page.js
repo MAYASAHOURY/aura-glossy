@@ -1688,7 +1688,7 @@
     html01 += '<div class="hs-outfit-wrap">';
     html01 += '<img src="' + outfit.img + '" alt="' + outfit.label + '" loading="' + (oi < 3 ? 'eager' : 'lazy') + '">';
     html01 += '<div class="hs-outfit-overlay"></div>';
-    outfit.pieces.forEach(function(piece, pi) {
+    (outfit.pieces || []).forEach(function(piece, pi) {
       var override = OUTFIT_HOTSPOTS[s.id] && OUTFIT_HOTSPOTS[s.id][oi] && OUTFIT_HOTSPOTS[s.id][oi][piece.category];
       var pos = override || HOTSPOT_POS[piece.category] || {x:50,y:50};
       // Don't apply the index-based jitter offset when override is present —
