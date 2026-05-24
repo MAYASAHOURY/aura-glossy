@@ -26,7 +26,8 @@
     korean:     'Soft, modern, and effortlessly cool. Pleated skirts, cropped knits, white sneakers. Made for cafés, photo dates, and study sessions.',
     y2k:        'Glossy, playful, and unapologetically nostalgic. Low-rise jeans, baby tees, butterfly clips. Made for parties, weekend nights, and feeling young.',
     vintage:    'Borrowed from another decade — 70s flares, prairie blouses, suede boots. Wear it to flea markets, brunches, and slow city wanderings.',
-    softgirl:   'Sweet, romantic, and pastel-soft. Lace tops, mini skirts, ribbon hair clips. Perfect for picnics, first dates, and spring afternoons.'
+    softgirl:   'Sweet, romantic, and pastel-soft. Lace tops, mini skirts, ribbon hair clips. Perfect for picnics, first dates, and spring afternoons.',
+    hijabicore: 'Modest fashion as quiet luxury. Long-line coats, layered satin hijabs, oversized blazers, and intentional draping. Editorial, composed, and unmistakably modern — for the everyday and everywhere.'
   };
 
   const BREAKDOWNS = {
@@ -83,6 +84,12 @@
       bottom: 'A pleated mini skirt or floral midi — soft fabrics, gentle silhouettes.',
       shoes: 'Ballet flats with ribbon ties or low-heel mary janes.',
       accessories: 'Pearl hair clips, a heart pendant, and a small quilted bag.'
+    },
+    hijabicore: {
+      top: 'An oversized knit, fluid silk blouse, or long-line blazer — generous coverage, intentional drape.',
+      bottom: 'A satin midi skirt, fluid wide-leg trousers, or a tailored maxi. Movement without bulk.',
+      shoes: 'Pointed flats, leather loafers, or sleek ankle boots — quiet, well-made, and never loud.',
+      accessories: 'A satin or chiffon hijab in a warm neutral, a structured leather tote, and gold layered chains.'
     }
   };
 
@@ -98,7 +105,8 @@
     korean:     { acc: '#d88aaa', bg: '#fdf5f8', brd: '#f0d0dc', text: '#2a0a14' },
     y2k:        { acc: '#9050d0', bg: '#f8f0ff', brd: '#d8c0f0', text: '#1a0a28' },
     vintage:    { acc: '#9a6430', bg: '#f8f0e4', brd: '#e0ccaa', text: '#2a1500' },
-    softgirl:   { acc: '#e060a0', bg: '#fff0f8', brd: '#f8c8e0', text: '#2a0018' }
+    softgirl:   { acc: '#e060a0', bg: '#fff0f8', brd: '#f8c8e0', text: '#2a0018' },
+    hijabicore: { acc: '#8a6048', bg: '#faf5ed', brd: '#e0d0c0', text: '#2a1f0f' }
   };
   const theme = STYLE_THEME[s.id] || STYLE_THEME.classic;
 
@@ -349,6 +357,34 @@
         { category: 'Layer',     name: 'Cream Oversized Chunky Knit Cardigan', store: '& Other Stories', price: '$119', q: 'cream oversized chunky knit cardigan women autumn' },
         { category: 'Shoes',     name: 'Brown Suede Ankle Boots',         store: 'H&M',             price: '$79',  q: 'brown suede ankle boots women soft girl autumnal' },
         { category: 'Bag',       name: 'Small Cream Shoulder Bag',        store: 'Charles & Keith', price: '$65',  q: 'small cream leather shoulder bag women minimal' }
+      ]}
+    ],
+
+    // HIJABI CORE — heroIdx:0=brown leather coat+pinstripe maxi · heroIdx:1=all-black tailored · heroIdx:2=gray knit+plaid scarf+pleated maxi
+    hijabicore: [
+      { name: 'The Daily Layer', tier: 'aff', tag: 'Brown editorial · leather coat and pinstripe skirt', heroIdx: 0, pieces: [
+        { category: 'Coat',      name: 'Brown Faux-Leather Oversized Belted Coat',     store: 'H&M',             price: '$79',  q: 'brown faux leather oversized belted coat women modest' },
+        { category: 'Top',       name: 'Brown Ribbed Turtleneck Sweater',              store: 'Uniqlo',          price: '$39',  q: 'brown ribbed turtleneck sweater women modest' },
+        { category: 'Skirt',     name: 'Brown Pinstripe Wool-Blend Maxi Skirt',        store: 'Zara',            price: '$59',  q: 'brown pinstripe wool blend maxi skirt women modest long' },
+        { category: 'Bag',       name: 'Brown Suede Structured Tote',                  store: 'COS',             price: '$245', q: 'brown suede structured leather tote bag women' },
+        { category: 'Scarf',     name: 'Brown Satin Modal Hijab',                      store: 'Modanisa',        price: '$18',  q: 'brown satin modal hijab women premium' },
+        { category: 'Accessory', name: 'Black Aviator Sunglasses',                     store: 'ASOS',            price: '$22',  q: 'black aviator sunglasses women minimal' }
+      ]},
+      { name: 'The Tailored Edit', tier: 'mid', tag: 'All-black power · long coat and waistcoat', heroIdx: 1, pieces: [
+        { category: 'Coat',      name: 'Black Long Oversized Wool Coat',               store: 'COS',             price: '$295', q: 'black long oversized wool coat women modest tailored' },
+        { category: 'Blazer',    name: 'Black Fitted Tailored Waistcoat',              store: 'Zara',            price: '$59',  q: 'black fitted tailored waistcoat women' },
+        { category: 'Top',       name: 'Crisp White Oversized Button-Down Shirt',      store: 'Uniqlo',          price: '$45',  q: 'crisp white oversized button down shirt women modest' },
+        { category: 'Bottom',    name: 'Black Wide-Leg Tailored Trousers',             store: 'COS',             price: '$135', q: 'black wide leg tailored trousers women modest' },
+        { category: 'Bag',       name: 'Brown Leather Mini Top-Handle Bag',            store: 'Charles & Keith', price: '$89',  q: 'brown leather mini top handle bag women' },
+        { category: 'Scarf',     name: 'Black Premium Satin Hijab',                    store: 'Modanisa',        price: '$18',  q: 'black satin premium hijab women modest' }
+      ]},
+      { name: 'The Cozy Polish', tier: 'aff', tag: 'Gray layered · oversized knit and pleated maxi', heroIdx: 2, pieces: [
+        { category: 'Top',       name: 'Gray Oversized Chunky Knit Sweater',           store: 'H&M',             price: '$45',  q: 'gray oversized chunky knit sweater women cozy modest' },
+        { category: 'Scarf',     name: 'Plaid Wool Oversized Blanket Scarf',           store: 'Zara',            price: '$45',  q: 'plaid wool oversized blanket scarf women neutral' },
+        { category: 'Skirt',     name: 'Charcoal Pleated Maxi Skirt',                  store: 'COS',             price: '$135', q: 'charcoal pleated maxi skirt women modest long' },
+        { category: 'Shoes',     name: 'White Leather Sneakers',                       store: 'Adidas',          price: '$85',  q: 'white leather sneakers women clean adidas stan smith' },
+        { category: 'Bag',       name: 'Black Woven Shoulder Bag',                     store: 'Zara',            price: '$49',  q: 'black woven shoulder bag women crochet' },
+        { category: 'Scarf',     name: 'Dark Gray Premium Hijab',                      store: 'Modanisa',        price: '$15',  q: 'dark gray premium hijab women modest' }
       ]}
     ]
   };
@@ -646,6 +682,32 @@
         { category: 'Jewelry',   name: 'Gold Chain Bracelet',                          store: 'H&M',           price: '$18',  q: 'gold chain bracelet women soft girl delicate' },
         { category: 'Jewelry',   name: 'Pearl Stud Earrings',                          store: 'H&M',           price: '$12',  q: 'pearl stud earrings women soft girl elegant classic' }
       ]}
+    ],
+
+    // HIJABI CORE — heroIdx:3=cream knit+beige satin · heroIdx:4=sage linen+white maxi · heroIdx:5=navy military+dark denim
+    hijabicore: [
+      { name: 'The Quiet Luxury', tier: 'mid', tag: 'Cream knit and beige satin midi', heroIdx: 3, pieces: [
+        { category: 'Top',       name: 'Cream Oversized Fluffy Knit Sweater',          store: 'COS',             price: '$135', q: 'cream oversized fluffy knit sweater women cozy modest' },
+        { category: 'Skirt',     name: 'Beige Satin Bias-Cut Maxi Skirt',              store: 'Zara',            price: '$59',  q: 'beige satin bias cut maxi skirt women modest long' },
+        { category: 'Bag',       name: 'Cream Soft Leather Hobo Shoulder Bag',         store: 'COS',             price: '$195', q: 'cream soft leather hobo shoulder bag women' },
+        { category: 'Jewelry',   name: 'Gold Layered Pendant Necklace Set',            store: 'Mejuri',          price: '$98',  q: 'gold layered pendant necklace set women delicate' },
+        { category: 'Scarf',     name: 'Mauve Modal Satin Hijab',                      store: 'Modanisa',        price: '$22',  q: 'mauve modal satin hijab premium women' },
+        { category: 'Jewelry',   name: 'Gold Stacking Rings',                          store: 'H&M',             price: '$18',  q: 'gold stacking rings set women minimal' }
+      ]},
+      { name: 'The Summer Editorial', tier: 'aff', tag: 'Sage linen and white maxi', heroIdx: 4, pieces: [
+        { category: 'Jacket',    name: 'Sage Green Linen Tie-Front Cropped Jacket',    store: 'Zara',            price: '$59',  q: 'sage green linen tie front cropped jacket women modest' },
+        { category: 'Skirt',     name: 'White Linen Tiered Maxi Skirt',                store: 'H&M',             price: '$45',  q: 'white linen tiered maxi skirt women modest long' },
+        { category: 'Top',       name: 'White Lightweight Cotton Long-Sleeve Tee',     store: 'Uniqlo',          price: '$25',  q: 'white lightweight cotton long sleeve tee women modest' },
+        { category: 'Scarf',     name: 'White Premium Cotton Hijab',                   store: 'Modanisa',        price: '$15',  q: 'white premium cotton hijab women modest' },
+        { category: 'Shoes',     name: 'Nude Pointed-Toe Flats',                       store: 'H&M',             price: '$32',  q: 'nude pointed toe flats women minimal modest' }
+      ]},
+      { name: 'The Polished Travel', tier: 'mid', tag: 'Navy military and dark denim', heroIdx: 5, pieces: [
+        { category: 'Jacket',    name: 'Navy Military Tailored Jacket',                store: 'Zara',            price: '$89',  q: 'navy military tailored jacket women structured modest' },
+        { category: 'Bottom',    name: 'Dark Indigo High-Waist Wide-Leg Jeans',        store: 'Uniqlo',          price: '$49',  q: 'dark indigo high waist wide leg jeans women modest' },
+        { category: 'Bag',       name: 'Brown Monogram Mini Top-Handle Bag',           store: 'Charles & Keith', price: '$95',  q: 'brown monogram mini top handle bag women' },
+        { category: 'Shoes',     name: 'Brown Pointed Leather Pumps',                  store: 'COS',             price: '$165', q: 'brown pointed toe leather pumps women' },
+        { category: 'Scarf',     name: 'Chocolate Brown Modal Hijab',                  store: 'Modanisa',        price: '$18',  q: 'chocolate brown modal hijab women premium modest' }
+      ]}
     ]
   };
 
@@ -703,6 +765,12 @@
       { tip: 'Accessorize with your hair.', detail: 'Bow clips, pearl pins, and ribbon headbands are part of the outfit. Your hair styling is a deliberate choice, not an afterthought.' },
       { tip: 'Shape matters as much as color.', detail: 'Puff sleeves, flared skirts, ruffle hems — the silhouette is as important as the color palette. Feminine shapes define this aesthetic.' },
       { tip: 'Apply blush like you mean it.', detail: 'On cheeks, on the nose bridge, blended lightly onto the lids — the soft girl look is rooted in a generous, flushed glow.' }
+    ],
+    hijabicore: [
+      { tip: 'The hijab is part of the outfit.', detail: 'Match its tone to one piece in the look — coat, bag, or shoes. The right colour bridge instantly makes a layered fit read as styled, not stacked.' },
+      { tip: 'Length is the silhouette.', detail: 'Build around one long line — a maxi coat, a fluid maxi skirt, a column-length abaya. The eye reads modesty as elegance the moment the proportion is right.' },
+      { tip: 'Two textures, never three.', detail: 'Satin hijab with wool coat. Cotton hijab with linen jacket. Mixing more than two fabric weights at once breaks the calm of the look.' },
+      { tip: 'Quality over coverage performance.', detail: 'A real silk hijab, a structured leather bag, a well-cut wool coat — pick the three pieces that touch the body the most and invest in them.' }
     ]
   };
 
@@ -751,6 +819,11 @@
       aff: { stores: 'SHEIN · Cider · Princess Polly · AliExpress · H&M', note: 'SHEIN and Cider carry the complete soft girl range — floral dresses, lace tops, bow accessories, and pastel knits at every price.' },
       mid: { stores: 'Brandy Melville · ASOS · Urban Outfitters', note: 'Brandy Melville built its brand almost entirely on the soft girl aesthetic — their pieces are the most authentic single-brand reference.' },
       lux: { stores: 'Reformation · Jacquemus · Polène', note: 'Reformation\'s lace-trim dresses and floral midis are the elevated version of this aesthetic. Polène for the bag that completes every look.' }
+    },
+    hijabicore: {
+      aff: { stores: 'SHEIN · H&M · Uniqlo · Modanisa', note: 'SHEIN and H&M cover long-sleeve maxi dresses, abaya-cut coats, and modest tops at the friendliest prices. Modanisa carries premium hijabs at affordable tier.' },
+      mid: { stores: 'COS · Zara · Uniqlo · Modanisa · Charles & Keith', note: 'COS is the modest dresser\'s best friend — clean lines, generous cuts, and quality fabrics designed for layering. Zara for tailored coats, Modanisa for the right hijab fabrics.' },
+      lux: { stores: 'Toteme · COS · Acne Studios · Modanisa Premium', note: 'Toteme and Acne Studios both excel at long lines and soft drape — a natural fit. Modanisa\'s premium tier carries silk hijabs and tailored abayas at investment quality.' }
     }
   };
 
@@ -1402,6 +1475,68 @@
         mid: [D('Daisy by Marc Jacobs','Sephora','$95','marc jacobs daisy eau de toilette women'), D('Chloe Rose De Chloe','Sephora','$125','chloe rose de chloe perfume women'), D('YSL Mon Paris','Sephora','$135','ysl mon paris eau de parfum women')],
         lux: [D('Chanel Chance Tender','Sephora','$185','chanel chance eau tendre perfume women'), D('Miss Dior Blooming','Sephora','$165','miss dior blooming bouquet perfume women'), D('Guerlain Mon Guerlain','Sephora','$145','mon guerlain eau de parfum women')]
       }
+    },
+    hijabicore: {
+      tops: {
+        aff: [D('Long-Sleeve Modest Top','SHEIN','$15','long sleeve modest top women neutral'), D('Loose Cotton Long-Sleeve Tee','Uniqlo','$25','loose cotton long sleeve tee women modest'), D('Oversized Cotton Shirt','H&M','$30','oversized cotton button down shirt women modest')],
+        mid: [D('Brown Ribbed Turtleneck','Uniqlo','$39','brown ribbed turtleneck sweater women modest'), D('Oversized Knit Sweater','COS','$135','cream oversized fluffy knit sweater women'), D('Silk Long-Sleeve Blouse','Zara','$69','silk long sleeve blouse women modest neutral')],
+        lux: [D('Cashmere Crewneck','COS','$245','cashmere crewneck sweater women neutral'), D('Silk Tunic Top','Toteme','$395','silk tunic top women long sleeve'), D('Wool Knit Pullover','Acne Studios','$495','wool knit pullover women oversized')]
+      },
+      pants: {
+        aff: [D('Modest Wide-Leg Trousers','H&M','$35','modest wide leg trousers women neutral'), D('Loose-Fit Linen Pants','Uniqlo','$45','loose fit linen pants women modest'), D('Dark Indigo Wide-Leg Jeans','Uniqlo','$49','dark indigo high waist wide leg jeans women modest')],
+        mid: [D('Tailored Wide-Leg Trousers','COS','$135','tailored wide leg trousers women modest'), D('Pleated Fluid Trousers','Zara','$69','pleated fluid wide leg trousers women modest'), D('Wool Tapered Trousers','COS','$165','wool tapered trousers women modest')],
+        lux: [D('Wool Wide-Leg','Toteme','$395','wool wide leg trousers women neutral'), D('Tailored Trousers','Acne Studios','$495','tailored wool trousers women'), D('Silk Trousers','Jacquemus','$595','silk wide leg trousers women')]
+      },
+      skirts: {
+        aff: [D('Long Pleated Maxi Skirt','H&M','$45','long pleated maxi skirt women modest'), D('Linen Tiered Maxi','SHEIN','$28','white linen tiered maxi skirt women modest'), D('Satin Bias-Cut Maxi','Zara','$59','satin bias cut maxi skirt women modest beige')],
+        mid: [D('Charcoal Pleated Maxi','COS','$135','charcoal pleated maxi skirt women modest'), D('Wool Maxi Skirt','Zara','$89','wool maxi skirt women modest neutral'), D('Brown Pinstripe Maxi','Zara','$59','brown pinstripe wool blend maxi skirt women modest')],
+        lux: [D('Silk Maxi Skirt','Toteme','$495','silk maxi skirt women neutral modest'), D('Pleated Maxi','Acne Studios','$595','pleated maxi skirt women modest long'), D('Linen Maxi Skirt','Jacquemus','$395','linen maxi skirt women modest')]
+      },
+      dresses: {
+        aff: [D('Long-Sleeve Modest Maxi','SHEIN','$24','long sleeve modest maxi dress women neutral'), D('Linen Long-Sleeve Maxi','H&M','$59','linen long sleeve maxi dress women modest'), D('Belted Modest Dress','Uniqlo','$59','belted long sleeve modest dress women neutral')],
+        mid: [D('Long-Sleeve Wrap Dress','COS','$165','long sleeve wrap maxi dress women modest'), D('Modest Shirt Dress','Zara','$89','modest shirt dress women long sleeve'), D('Long-Sleeve Knit Dress','COS','$185','long sleeve knit maxi dress women modest neutral')],
+        lux: [D('Long-Sleeve Silk Maxi','Toteme','$695','long sleeve silk maxi dress women modest'), D('Wool Maxi Dress','Acne Studios','$895','wool maxi dress women long sleeve modest'), D('Premium Abaya','Modanisa','$189','premium cashmere abaya women modest')]
+      },
+      jackets: {
+        aff: [D('Long-Line Trench Coat','H&M','$79','long line trench coat women modest'), D('Faux-Leather Belted Coat','H&M','$79','brown faux leather oversized belted coat women modest'), D('Wool Overcoat','Uniqlo','$129','wool overcoat women modest neutral')],
+        mid: [D('Oversized Wool Coat','COS','$295','oversized wool coat camel women modest'), D('Long Belted Coat','Zara','$129','long belted wool coat women modest'), D('Sage Linen Jacket','Zara','$59','sage green linen tie front cropped jacket women')],
+        lux: [D('Heritage Wool Coat','Toteme','$995','heritage wool overcoat camel women modest'), D('Wool Coat','Acne Studios','$1495','wool coat oversized women modest'), D('Wool Tailored Coat','COS','$495','wool tailored long coat women modest')]
+      },
+      shoes: {
+        aff: [D('Pointed Flats Nude','H&M','$32','pointed flats women nude modest'), D('White Leather Sneakers','H&M','$45','white leather sneakers women clean'), D('Pointed Mules','Zara','$49','pointed mules women modest neutral')],
+        mid: [D('Leather Ballet Flats','Zara','$79','leather ballet flats women brown modest'), D('Leather Loafers','COS','$185','leather loafers women modest'), D('Adidas Stan Smith','Adidas','$85','white leather sneakers women adidas stan smith')],
+        lux: [D('Leather Pumps','COS','$245','leather pumps brown women modest'), D('Mules','Toteme','$595','leather mules women neutral'), D('Pointed Loafers','Acne Studios','$595','pointed loafers women leather')]
+      },
+      boots: {
+        aff: [D('Pointed Ankle Boots','H&M','$59','pointed ankle boots women neutral modest'), D('Suede Boots','SHEIN','$45','suede boots women neutral modest'), D('Brown Western Boots','H&M','$69','brown western boots women modest')],
+        mid: [D('Leather Ankle Boots','COS','$195','leather ankle boots women modest'), D('Knee-High Boots','Zara','$129','knee high leather boots women modest'), D('Heeled Ankle Boots','Charles & Keith','$109','heeled ankle boots women modest brown')],
+        lux: [D('Knee-High Boots','Toteme','$895','knee high leather boots women modest'), D('Ankle Boots','Acne Studios','$695','leather ankle boots women modest'), D('Pointed Boots','Jacquemus','$695','pointed leather boots women modest')]
+      },
+      bags: {
+        aff: [D('Suede Tote Bag','H&M','$45','suede tote bag women brown modest'), D('Structured Shoulder Bag','SHEIN','$25','structured shoulder bag women neutral'), D('Woven Tote','Zara','$59','woven tote bag women neutral')],
+        mid: [D('Brown Suede Tote','COS','$245','brown suede structured leather tote bag women'), D('Cream Hobo Bag','COS','$195','cream soft leather hobo shoulder bag women'), D('Structured Shopper','Zara','$89','structured leather shopper bag women')],
+        lux: [D('Heritage Leather Tote','Toteme','$895','heritage leather tote bag women neutral'), D('Soft Leather Bag','Polène','$595','soft leather shoulder bag women neutral'), D('Structured Tote','Acne Studios','$1295','structured leather tote bag women')]
+      },
+      jewelry: {
+        aff: [D('Gold Layered Necklace Set','H&M','$18','gold layered pendant necklace set women delicate'), D('Gold Stacking Rings','H&M','$18','gold stacking rings set women minimal'), D('Gold Pendant','SHEIN','$10','gold pendant necklace women delicate')],
+        mid: [D('Layered Pendant Set','Mejuri','$98','gold layered pendant necklace set women delicate'), D('Pearl Hoop Earrings','Mejuri','$78','bold pearl hoop earrings gold'), D('Gold Bangle Stack','Pandora','$120','gold bangle stack women minimal')],
+        lux: [D('Diamond Layered Set','Mejuri','$495','diamond layered necklace set women'), D('Pearl Drop Earrings','Tiffany & Co.','$395','pearl drop earrings tiffany women'), D('Gold Chain Necklace','Mejuri','$245','gold thick chain necklace women')]
+      },
+      accessories: {
+        aff: [D('Premium Satin Hijab','Modanisa','$15','premium satin hijab women modest'), D('Cotton Hijab Set','Modanisa','$22','cotton hijab set women modest neutral'), D('Modal Hijab Multipack','Modanisa','$28','modal hijab multipack women neutral')],
+        mid: [D('Chiffon Hijab Set','Modanisa','$35','chiffon hijab set women premium'), D('Silk Modal Hijab','Modanisa','$45','silk modal hijab women premium'), D('Premium Wool Scarf','COS','$95','premium wool scarf women neutral')],
+        lux: [D('Pure Silk Scarf','COS','$95','pure silk scarf women neutral modest'), D('Cashmere Hijab','Modanisa','$95','cashmere hijab premium women'), D('Silk Twill Scarf','Toteme','$395','silk twill scarf women neutral')]
+      },
+      makeup: {
+        aff: [D('NYX Soft Matte Lip','Sephora','$8','NYX soft matte lip cream rose'), D('e.l.f. Bronzer','Sephora','$10','elf bronzer pressed powder warm'), D('Glow Setting Spray','Sephora','$14','e.l.f. dewy glow setting spray')],
+        mid: [D('Rare Beauty Blush','Sephora','$23','rare beauty soft pinch liquid blush rose'), D('Charlotte Tilbury Lip','Sephora','$36','charlotte tilbury pillow talk lip liner'), D('Glossier Cloud Paint','Sephora','$22','glossier cloud paint blush rose')],
+        lux: [D('Dior Lip Glow','Sephora','$45','dior addict lip glow oil rose'), D('Chanel Les Beiges','Sephora','$68','chanel les beiges blush rose'), D('YSL Touche Eclat','Sephora','$45','ysl touche eclat highlighter')]
+      },
+      fragrances: {
+        aff: [D('Body Mist Warm','Sephora','$18','body mist warm vanilla sandalwood women'), D('Sol de Janeiro Mist','Sephora','$26','sol de janeiro brazilian crush body mist'), D('Le Couvent Maison','Sephora','$32','le couvent maison cologne women')],
+        mid: [D('Le Labo Santal 33','Sephora','$185','le labo santal 33 eau de parfum'), D('Maison Margiela Replica','Sephora','$155','maison margiela replica beach walk'), D('Diptyque Tam Dao','Sephora','$195','diptyque tam dao eau de parfum')],
+        lux: [D('Tom Ford Oud Wood','Sephora','$295','tom ford oud wood eau de parfum'), D('Frederic Malle','Sephora','$345','frederic malle musc ravageur'), D('Maison Francis Oud','Sephora','$395','maison francis kurkdjian oud satin mood')]
+      }
     }
   };
 
@@ -1501,6 +1636,20 @@
       3: { Top:{x:50,y:50}, Dress:{x:50,y:60}, Hair:{x:58,y:28}, Jewelry:{x:38,y:38} },
       4: { Top:{x:45,y:35}, Layer:{x:50,y:18}, Bottom:{x:50,y:75}, Belt:{x:50,y:55}, Jewelry:{x:50,y:22}, Bag:{x:80,y:50} },
       5: { Top:{x:50,y:45}, Layer:{x:50,y:35}, Bottom:{x:50,y:75}, Belt:{x:50,y:58}, Bag:{x:62,y:50} }
+    },
+    hijabicore: {
+      // outfit-1: brown hijab + brown leather coat + turtleneck + pinstripe maxi + brown tote
+      0: { Scarf:{x:38,y:25}, Coat:{x:42,y:50}, Outer:{x:42,y:50}, Top:{x:42,y:40}, Skirt:{x:38,y:78}, Bag:{x:55,y:68}, Accessory:{x:40,y:22} },
+      // outfit-2: black hijab + white shirt + tie + black waistcoat + long black coat + brown bag
+      1: { Scarf:{x:42,y:30}, Coat:{x:32,y:65}, Outer:{x:32,y:65}, Top:{x:42,y:55}, Blazer:{x:45,y:60}, Bottom:{x:42,y:85}, Bag:{x:62,y:65}, Accessory:{x:38,y:33} },
+      // outfit-3: gray hijab + gray knit + plaid blanket scarf + gray pleated maxi + black bag + white sneakers
+      2: { Scarf:{x:42,y:22}, Top:{x:42,y:45}, Skirt:{x:42,y:75}, Bag:{x:62,y:60}, Shoes:{x:50,y:95}, Layer:{x:58,y:50} },
+      // outfit-4: mauve hijab + cream oversized knit + beige satin maxi + cream bag + gold chains
+      3: { Scarf:{x:38,y:15}, Top:{x:50,y:45}, Skirt:{x:52,y:78}, Bag:{x:22,y:75}, Jewelry:{x:50,y:18} },
+      // outfit-5: white hijab + sage linen jacket + white maxi
+      4: { Scarf:{x:45,y:18}, Jacket:{x:45,y:40}, Outer:{x:45,y:40}, Top:{x:45,y:50}, Skirt:{x:50,y:75} },
+      // outfit-6: brown hijab + navy military jacket + dark jeans + brown pumps + LV bag
+      5: { Scarf:{x:50,y:22}, Jacket:{x:45,y:45}, Outer:{x:45,y:45}, Top:{x:45,y:42}, Bottom:{x:45,y:70}, Bag:{x:25,y:70}, Shoes:{x:38,y:95} }
     }
   };
 
@@ -1693,6 +1842,19 @@
       jewelry:     ['vintage gold drop earrings', 'retro layered chain necklace', 'vintage statement ring women'],
       makeup:      ['retro red lip classic matte', 'vintage pin up makeup kit', 'cat eye liner liquid'],
       fragrances:  ['vintage musk perfume women', 'retro patchouli fragrance women', 'earthy vintage perfume']
+    },
+    hijabicore: {
+      tops:        ['long sleeve modest top women neutral', 'oversized knit sweater women modest', 'silk long sleeve blouse women modest'],
+      bottoms:     ['modest wide leg trousers women neutral', 'high waist wide leg jeans women modest', 'tailored wool trousers women modest'],
+      dresses:     ['long sleeve modest maxi dress women', 'modest wrap dress women long sleeve', 'long sleeve abaya dress modest women'],
+      jackets:     ['long line oversized wool coat women modest', 'tailored long blazer women modest', 'belted trench coat women modest'],
+      shoes:       ['pointed flats women nude modest', 'leather loafers women modest brown', 'white leather sneakers women clean'],
+      boots:       ['leather ankle boots women modest', 'knee high leather boots women modest', 'heeled ankle boots women modest brown'],
+      bags:        ['brown suede tote bag women', 'structured leather shoulder bag women neutral', 'cream soft leather hobo bag women'],
+      accessories: ['premium satin hijab women modest', 'chiffon hijab set women modest', 'silk modal hijab women premium'],
+      jewelry:     ['gold layered pendant necklace women delicate', 'pearl hoop earrings gold women', 'gold stacking rings set women minimal'],
+      makeup:      ['rose tinted lip balm warm women', 'bronzed cheek blush warm women', 'soft brown eyeshadow palette women'],
+      fragrances:  ['le labo santal 33 women', 'maison margiela replica beach walk', 'diptyque tam dao eau de parfum']
     }
   };
 

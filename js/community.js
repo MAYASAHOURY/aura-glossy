@@ -40,6 +40,7 @@ var COMM_GROUPS = [
   { id: 'vintage',      name: 'Vintage',          color: '#c8966a', tagline: 'Retro soul',            symbol: '◉' },
   { id: 'softgirl',     name: 'Soft Girl',        color: '#ffacc7', tagline: 'Romantic & dreamy',     symbol: '✿' },
   { id: 'darkacademia', name: 'Dark Academia',    color: '#6b5a3e', tagline: 'Scholarly & moody',     symbol: '◼' },
+  { id: 'hijabicore',   name: 'Hijabi Core',      color: '#8a6048', tagline: 'Modest. Modern. Magnetic.', symbol: '☾' },
 ];
 
 var _currentUser   = null;   // Firebase user object

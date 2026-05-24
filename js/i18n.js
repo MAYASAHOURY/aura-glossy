@@ -201,6 +201,13 @@
             helpText: "We're not asking who you are — we're asking who you'd love to dress like for a week. That instinctive pull tells us the aesthetic you're most drawn to.",
             options:  ['Audrey Hepburn — timeless', 'A K-pop idol with an iced americano', 'Paris Hilton circa 2003', 'A 70s flower child'],
             moods:    ['pearls, trench coats, quiet perfection', 'cute layers, effortless cool, Seoul style', 'pink everything, mini skirts, born iconic', 'suede boots, flared jeans, vintage charm']
+          },
+          {
+            q:        'When you dress in the morning, you reach for…',
+            hint:     "Just the most natural picture of you getting dressed — coverage, comfort, layering, mood.",
+            helpText: "How we layer says a lot about identity. There's no right answer — pick what feels honest to you on a typical morning.",
+            options:  ['Soft layered coverage, head to toe', 'Refined modesty with elegant lines', 'A statement dress and minimal layers', 'Effortless and breezy'],
+            moods:    ['flowing pieces, abaya, intentional draping', 'tailored coverage, quiet confidence, polish', 'one piece does the work, less is more', 'light fabrics, easy movement, no fuss']
           }
         ]
       },
@@ -420,6 +427,13 @@
             helpText: "No te preguntamos quién eres — te preguntamos como quién te encantaría vestir durante una semana. Esa atracción instintiva nos dice qué estética te llama más.",
             options:  ['Audrey Hepburn — atemporal', 'Un ídolo K-pop con un americano helado', 'Paris Hilton hacia 2003', 'Una hija de las flores de los 70'],
             moods:    ['perlas, trench coats, perfección silenciosa', 'capas adorables, cool sin esfuerzo, estilo Seúl', 'todo rosa, mini faldas, ícono de nacimiento', 'botas de ante, jeans acampanados, encanto vintage']
+          },
+          {
+            q:        '¿Qué es lo primero que eliges al vestirte por la mañana?',
+            hint:     'La imagen más natural de ti vistiéndote — cobertura, comodidad, capas, ánimo.',
+            helpText: 'Cómo nos vestimos en capas dice mucho sobre la identidad. No hay respuesta incorrecta — elige lo que te resulta más honesto.',
+            options:  ['Cobertura suave en capas, de pies a cabeza', 'Modestia refinada con líneas elegantes', 'Un vestido statement con mínimas capas', 'Ligero y con flow'],
+            moods:    ['piezas fluidas, abaya, drapeados intencionales', 'cobertura sartorial, confianza silenciosa, pulido', 'una pieza lo dice todo, menos es más', 'tejidos ligeros, movimiento fácil, sin esfuerzo']
           }
         ]
       },
@@ -634,6 +648,13 @@
             helpText: 'لسنا نسألك عمن أنتِ — بل عمن تودين ارتداء أسلوبه لأسبوع. هذا الانجذاب التلقائي يكشف الجمالية التي تجذبك أكثر.',
             options:  ['أودري هيبورن — كلاسيكية خالدة', 'نجم كي-بوب يحمل أمريكانو مثلج', 'باريس هيلتون عام 2003', 'فتاة الزهور في السبعينيات'],
             moods:    ['لؤلؤ، معاطف ترنش، كمال هادئ', 'طبقات لطيفة، شياكة عفوية، ستايل سيول', 'كل شيء وردي، تنانير قصيرة، أيقونة بالفطرة', 'حذاء سويدي، جينز واسع، سحر فينتاج']
+          },
+          {
+            q:        'صباحًا، ما الذي تختارينه أولاً؟',
+            hint:     'الصورة الأكثر طبيعية لكِ وأنتِ تستعدّين — تغطية، راحة، تنسيق، مزاج.',
+            helpText: 'الطريقة التي نُكوِّن بها طبقاتنا تقول الكثير عن هويّتنا. لا توجد إجابة خاطئة — اختاري ما يبدو الأصدق إليكِ.',
+            options:  ['طبقات ناعمة وكاملة من الرأس للقدمين', 'احتشام مصقول بخطوط أنيقة', 'فستان مميّز مع طبقات قليلة', 'انسيابي وخفيف'],
+            moods:    ['قطع منسابة، عباية، طيّات مقصودة', 'تغطية مُفصّلة، ثقة هادئة، لمسة راقية', 'قطعة واحدة تقول كل شيء', 'أقمشة خفيفة، حركة سهلة، بلا تكلّف']
           }
         ]
       },
@@ -847,6 +868,13 @@
             helpText: "אנחנו לא שואלים מי את — אלא כמו מי היית רוצה להתלבש לשבוע. המשיכה האינסטינקטיבית מספרת איזו אסתטיקה הכי מושכת אותך.",
             options:  ['אודרי הפבורן — על-זמנית', 'אליל K-pop עם אמריקנו קר', 'פריס הילטון בערך 2003', 'ילדת פרחים משנות ה-70'],
             moods:    ["פנינים, מעילי טרנץ', שלמות שקטה", 'שכבות חמודות, קולנס ללא מאמץ, סטייל סיאול', 'הכול ורוד, חצאיות מיני, איקונית מלידה', "מגפי זמש, ג'ינס מתרחב, קסם וינטג'"]
+          },
+          {
+            q:        "בבוקר, מה את לוקחת קודם?",
+            hint:     "הציור הכי טבעי שלך מתלבשת — כיסוי, נוחות, שכבות, מצב רוח.",
+            helpText: "האופן שבו אנחנו לובשות בשכבות מספר הרבה על הזהות שלנו. אין תשובה נכונה — בחרי את מה שמרגיש לך הכי כן.",
+            options:  ['כיסוי שכבתי רך, מהראש ועד הרגליים', 'צניעות מעודנת עם קווים אלגנטיים', 'שמלת סטייטמנט ושכבות מינימליות', 'קליל ואוורירי'],
+            moods:    ['פריטים זורמים, עבאיה, דרייפ מכוון', 'כיסוי תפור, ביטחון שקט, גימור', 'פריט אחד עושה את העבודה', 'בדים קלים, תנועה קלה, ללא מאמץ']
           }
         ]
       },

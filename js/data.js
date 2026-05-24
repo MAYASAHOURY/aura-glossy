@@ -11,7 +11,7 @@ const LOCAL_IMG_BASE = 'images';
 
 // Which aesthetics have a complete local image pack installed.
 // If a style is in here, the platform uses its local files instead of Unsplash.
-const LOCAL_PACKED = ['classic', 'casual', 'streetwear', 'elegant', 'minimalist', 'korean', 'y2k', 'softgirl', 'vintage'];
+const LOCAL_PACKED = ['classic', 'casual', 'streetwear', 'elegant', 'minimalist', 'korean', 'y2k', 'softgirl', 'vintage', 'hijabicore'];
 
 // Slot → relative filename inside images/{aesthetic}/
 const SLOT_FILES = {
@@ -230,7 +230,8 @@ const STORE_URLS = {
   'Sézane':          q => `https://www.sezane.com/us/search?q=${encodeURIComponent(q)}`,
   'Tiffany & Co.':   q => `https://www.tiffany.com/en-us/search/?q=${encodeURIComponent(q)}`,
   'Toteme':          q => `https://toteme.com/search?q=${encodeURIComponent(q)}`,
-  'Veja':            q => `https://www.asos.com/search/?q=${encodeURIComponent(q)}`
+  'Veja':            q => `https://www.asos.com/search/?q=${encodeURIComponent(q)}`,
+  'Modanisa':        q => `https://www.modanisa.com/en/search?q=${encodeURIComponent(q)}`
 };
 
 const shopUrl = (store, q) => {
@@ -855,6 +856,72 @@ softgirl: {
       P('lux', 'Mejuri', 'Bold Pearl Pendant', '$128', 'bold pearl pendant', 'pearl pendant gold product')
     ]
   }
+},
+
+hijabicore: {
+  id: 'hijabicore', name: 'Hijabi Core', tagline: 'modest. modern. magnetic.', letter: 'H', mood: 'Composed',
+  short: 'Premium modest dressing — layered tailoring, soft neutrals, intentional grace.',
+  intro: 'Hijabi Core is modest fashion as quiet luxury. Long-line coats, fluid abayas, oversized blazers, and intentional layering — every piece chosen for movement, coverage, and a deliberate sense of self. The palette stays warm and neutral, the silhouettes stay generous, and the styling stays editorial — nothing rushed, nothing loud.',
+  metaMood: 'Composed', metaSeason: 'All year', metaPersonality: 'Intentional',
+  heroImg: slotImg('hijabicore', 'hero', 'modest fashion hijab outfit'),
+  accentImg: slotImg('hijabicore', 'accent', 'hijab style detail'),
+  outfits: [
+    { label: 'Daily wear',   img: slotImg('hijabicore', 'outfit1', 'brown leather coat pinstripe skirt hijab') },
+    { label: 'Tailored',     img: slotImg('hijabicore', 'outfit2', 'black coat blazer hijab modest') },
+    { label: 'Winter',       img: slotImg('hijabicore', 'outfit3', 'gray knit pleated skirt scarf hijab') },
+    { label: 'Quiet luxury', img: slotImg('hijabicore', 'outfit4', 'cream knit beige satin skirt hijab') },
+    { label: 'Summer',       img: slotImg('hijabicore', 'outfit5', 'sage linen jacket white maxi skirt hijab') },
+    { label: 'Polished',     img: slotImg('hijabicore', 'outfit6', 'navy jacket dark jeans hijab') },
+    { label: 'Sport luxe',   img: slotImg('hijabicore', 'outfit7', 'striped shirt pink scarf cap hijab') },
+    { label: 'Studio',       img: slotImg('hijabicore', 'outfit8', 'brown blazer hijab modest') }
+  ],
+  notes: {
+    makeup: ['Warm rose lip', 'Bronzed cheek', 'Soft brown eye', 'Glowy skin finish', 'Defined feathered brow'],
+    hair:   ['Layered satin hijab drape', 'Sleek under-cap finish', 'Soft scarf neckline wrap', 'Peaked crown styling'],
+    scent:  ['Maison Margiela Replica Beach Walk', 'Le Labo Santal 33', 'Diptyque Tam Dao']
+  },
+  palette: [
+    { hex: '#6b4a32', name: 'Cocoa' },   { hex: '#d4b896', name: 'Camel' },
+    { hex: '#f0e8db', name: 'Linen' },   { hex: '#c4a3b2', name: 'Mauve' },
+    { hex: '#9bb091', name: 'Sage' },    { hex: '#2b3548', name: 'Midnight' }
+  ],
+  completeLook: {
+    title: 'The Layered Editorial',
+    desc: 'A long camel coat over fluid trousers, a fitted satin hijab, soft pointed flats, and one heritage leather tote.',
+    img: slotImg('hijabicore', 'completeLook', 'modest layered camel coat hijab editorial')
+  },
+  shop: {
+    clothing: [
+      P('aff', 'SHEIN', 'Long-Sleeve Modest Maxi Dress', '$24', 'long sleeve modest maxi dress women', 'modest maxi dress product'),
+      P('mid', 'COS', 'Oversized Wool Coat', '$295', 'oversized wool coat camel women', 'wool coat camel product'),
+      P('lux', 'Modanisa', 'Premium Cashmere Abaya', '$189', 'cashmere abaya modest premium women', 'cashmere abaya product')
+    ],
+    shoes: [
+      P('aff', 'H&M', 'Pointed Flats', '$32', 'pointed flats women nude', 'pointed flats nude product'),
+      P('mid', 'Zara', 'Leather Ballet Flats', '$79', 'leather ballet flats women brown', 'ballet flats brown product'),
+      P('lux', 'COS', 'Leather Loafers', '$185', 'leather loafers women modest', 'leather loafers product')
+    ],
+    bags: [
+      P('aff', 'H&M', 'Suede Tote Bag', '$45', 'suede tote bag women brown', 'suede tote bag product'),
+      P('mid', 'Zara', 'Structured Leather Shopper', '$89', 'structured leather shopper bag women', 'leather shopper product'),
+      P('lux', 'COS', 'Soft Leather Tote', '$245', 'soft leather tote bag camel', 'soft leather tote product')
+    ],
+    accessories: [
+      P('aff', 'Modanisa', 'Premium Satin Hijab', '$15', 'premium satin hijab women', 'satin hijab product'),
+      P('mid', 'Modanisa', 'Chiffon Hijab Set', '$35', 'chiffon hijab set women', 'chiffon hijab product'),
+      P('lux', 'COS', 'Pure Silk Scarf', '$95', 'pure silk scarf women neutral', 'silk scarf neutral product')
+    ],
+    beauty: [
+      P('aff', 'Sephora', 'NYX Soft Matte Lip', '$8', 'NYX soft matte lip cream rose', 'matte lip product'),
+      P('mid', 'Sephora', 'Rare Beauty Soft Pinch Blush', '$23', 'rare beauty soft pinch liquid blush', 'rare beauty blush product'),
+      P('lux', 'Sephora', 'Dior Lip Glow Rose', '$45', 'dior addict lip glow oil rose', 'dior lip glow product')
+    ],
+    jewelry: [
+      P('aff', 'H&M', 'Gold Layered Necklace Set', '$18', 'layered gold necklace set women', 'gold necklace layered product'),
+      P('mid', 'Mejuri', 'Bold Pearl Hoop Earrings', '$78', 'bold pearl hoop earrings gold', 'pearl hoop earrings product'),
+      P('lux', 'Mejuri', 'Diamond Layered Necklace', '$295', 'diamond layered necklace women', 'diamond necklace product')
+    ]
+  }
 }
 
 });
@@ -916,6 +983,17 @@ const QUIZ = [
       { icon: '🎤', text: 'A K-pop idol with an iced americano', mood: 'cute layers, effortless cool, Seoul style',  tag: 'korean' },
       { icon: '⭐', text: 'Paris Hilton circa 2003',              mood: 'pink everything, mini skirts, born iconic',  tag: 'y2k' },
       { icon: '🌻', text: 'A 70s flower child',                  mood: 'suede boots, flared jeans, vintage charm',   tag: 'vintage' }
+    ]
+  },
+  {
+    q: 'When you dress in the morning, you reach for…',
+    hint: 'Just the most natural picture of you getting dressed — coverage, comfort, layering, mood.',
+    helpText: 'How we layer says a lot about identity. There\'s no right answer — pick what feels honest to you on a typical morning.',
+    options: [
+      { icon: '✨', text: 'Soft layered coverage, head to toe',  mood: 'flowing pieces, abaya, intentional draping',  tag: 'hijabicore' },
+      { icon: '🤍', text: 'Refined modesty with elegant lines',  mood: 'tailored coverage, quiet confidence, polish', tag: 'hijabicore' },
+      { icon: '🌸', text: 'A statement dress and minimal layers',mood: 'one piece does the work, less is more',       tag: 'elegant' },
+      { icon: '🌿', text: 'Effortless and breezy',               mood: 'light fabrics, easy movement, no fuss',       tag: 'casual' }
     ]
   }
 ];
