@@ -1419,6 +1419,91 @@
     'Jewelry': {x:53,y:37}, 'Scarf': {x:38,y:22}, 'Hair': {x:52,y:8}
   };
 
+  /* ── Per-image hotspot overrides ──────────────────────────────
+     Keyed by aestheticId → outfitIdx (0..5) → category → {x,y}.
+     Coordinates are % of the rendered image (0 = top-left).
+     When present, replaces HOTSPOT_POS[category] for that specific
+     outfit photo so the dot sits on the visible garment instead of
+     the generic category default. Missing categories fall back to
+     HOTSPOT_POS, then to {50,50}.
+     Hand-tuned via visual inspection of each outfit-N.jpg
+     (~270 dots across 54 photos).
+     ────────────────────────────────────────────────────────────── */
+  var OUTFIT_HOTSPOTS = {
+    classic: {
+      0: { Top:{x:58,y:50}, Dress:{x:58,y:52}, Scarf:{x:58,y:42}, Jewelry:{x:58,y:46}, Accessory:{x:50,y:36}, Bag:{x:66,y:76}, Shoes:{x:55,y:93}, Boots:{x:55,y:93} },
+      1: { Top:{x:50,y:35}, Layer:{x:50,y:42}, Jacket:{x:35,y:38}, Blazer:{x:35,y:38}, Belt:{x:50,y:55}, Bottom:{x:50,y:78}, Bag:{x:14,y:88} },
+      2: { Coat:{x:50,y:40}, Outer:{x:50,y:40}, Jacket:{x:50,y:40}, Top:{x:50,y:35}, Dress:{x:50,y:42}, Bag:{x:45,y:62}, Tights:{x:52,y:80}, Shoes:{x:50,y:95}, Boots:{x:50,y:95} },
+      3: { Top:{x:50,y:30}, Belt:{x:48,y:50}, Bottom:{x:48,y:73}, Bag:{x:14,y:78}, Accessory:{x:48,y:14} },
+      4: { Top:{x:50,y:33}, Skirt:{x:50,y:65}, Shoes:{x:52,y:93}, Bag:{x:35,y:50} },
+      5: { Coat:{x:55,y:62}, Outer:{x:55,y:62}, Jacket:{x:55,y:62}, Top:{x:55,y:60}, Jewelry:{x:40,y:58}, Accessory:{x:40,y:58}, Tights:{x:55,y:90} }
+    },
+    casual: {
+      0: { Top:{x:45,y:50}, Belt:{x:40,y:78}, Bottom:{x:40,y:90}, Bag:{x:78,y:75}, Jewelry:{x:45,y:70}, Accessory:{x:33,y:35} },
+      1: { Top:{x:38,y:50}, Hat:{x:36,y:32}, Bottom:{x:55,y:80}, Bag:{x:14,y:88}, Jewelry:{x:38,y:45}, Accessory:{x:36,y:32} },
+      2: { Top:{x:50,y:45}, Blazer:{x:50,y:40}, Jacket:{x:50,y:40}, Bottom:{x:50,y:65}, Shoes:{x:50,y:90}, Bag:{x:65,y:90}, Accessory:{x:50,y:30} },
+      3: { Jacket:{x:40,y:45}, Outer:{x:40,y:45}, Top:{x:45,y:45}, Bottom:{x:50,y:70}, Shoes:{x:32,y:80}, Hat:{x:42,y:22} },
+      4: { Jacket:{x:38,y:33}, Outer:{x:38,y:33}, Top:{x:50,y:38}, Bottom:{x:50,y:73}, Boots:{x:45,y:95}, Shoes:{x:45,y:95} },
+      5: { Top:{x:50,y:35}, Bottom:{x:50,y:70}, Shoes:{x:50,y:95}, Bag:{x:22,y:78}, Accessory:{x:45,y:18} }
+    },
+    streetwear: {
+      0: { Hat:{x:50,y:8}, Top:{x:52,y:32}, Coat:{x:50,y:35}, Outer:{x:50,y:35}, Jacket:{x:50,y:35}, Bottom:{x:45,y:65}, Bag:{x:18,y:65}, Shoes:{x:28,y:95}, Accessory:{x:52,y:32} },
+      1: { Hat:{x:40,y:28}, Blazer:{x:38,y:50}, Jacket:{x:38,y:50}, Top:{x:38,y:50}, Bottom:{x:38,y:75}, Shoes:{x:33,y:95}, Bag:{x:45,y:60} },
+      2: { Hat:{x:48,y:12}, Top:{x:50,y:40}, Bottom:{x:50,y:70}, Shoes:{x:55,y:95} },
+      3: { Jacket:{x:50,y:55}, Outer:{x:50,y:55}, Top:{x:50,y:55}, Scarf:{x:35,y:55}, Bottom:{x:50,y:80}, Boots:{x:50,y:95}, Shoes:{x:50,y:95}, Bag:{x:35,y:53} },
+      4: { Top:{x:38,y:38}, Bottom:{x:38,y:70}, Shoes:{x:40,y:95}, Bag:{x:42,y:50} },
+      5: { Top:{x:40,y:45}, Bottom:{x:40,y:70}, Accessory:{x:40,y:32} }
+    },
+    minimalist: {
+      0: { Top:{x:50,y:30}, Skirt:{x:55,y:60}, Belt:{x:58,y:42}, Boots:{x:48,y:90}, Bag:{x:42,y:60}, Accessory:{x:50,y:18} },
+      1: { Top:{x:36,y:50}, Coat:{x:30,y:60}, Outer:{x:30,y:60}, Jacket:{x:30,y:60}, Bottom:{x:40,y:80}, Shoes:{x:42,y:92}, Bag:{x:62,y:50} },
+      2: { Top:{x:40,y:50}, Bottom:{x:35,y:85}, Bag:{x:62,y:75}, Accessory:{x:30,y:65} },
+      3: { Top:{x:50,y:50}, Dress:{x:50,y:60}, Belt:{x:38,y:65}, Bag:{x:22,y:78}, Accessory:{x:30,y:42} },
+      4: { Top:{x:50,y:35}, Bottom:{x:48,y:70}, Bag:{x:22,y:38}, Accessory:{x:40,y:18} },
+      5: { Top:{x:50,y:32}, Layer:{x:38,y:32}, Bottom:{x:50,y:60}, Bag:{x:52,y:38}, Shoes:{x:48,y:95} }
+    },
+    elegant: {
+      0: { Top:{x:40,y:55}, Skirt:{x:45,y:85}, Dress:{x:42,y:65}, Jewelry:{x:35,y:32}, Accessory:{x:62,y:60} },
+      1: { Top:{x:38,y:45}, Skirt:{x:38,y:70}, Dress:{x:38,y:55}, Bag:{x:30,y:88}, Jewelry:{x:38,y:33} },
+      2: { Coat:{x:40,y:50}, Outer:{x:40,y:50}, Jacket:{x:40,y:50}, Top:{x:42,y:40}, Boots:{x:50,y:80}, Shoes:{x:50,y:80}, Bag:{x:83,y:65}, Accessory:{x:42,y:22} },
+      3: { Top:{x:50,y:50}, Dress:{x:50,y:50}, Boots:{x:35,y:75}, Bag:{x:14,y:68}, Accessory:{x:50,y:38} },
+      4: { Top:{x:40,y:35}, Bottom:{x:38,y:65}, Shoes:{x:30,y:92}, Jewelry:{x:42,y:50} },
+      5: { Dress:{x:52,y:65}, Top:{x:52,y:50}, Bag:{x:55,y:70}, Jewelry:{x:62,y:38} }
+    },
+    korean: {
+      0: { Top:{x:50,y:45}, Skirt:{x:50,y:65}, Boots:{x:48,y:90}, Shoes:{x:48,y:90}, Bag:{x:62,y:50} },
+      1: { Hat:{x:45,y:25}, Scarf:{x:42,y:40}, Top:{x:45,y:65}, Jacket:{x:18,y:65}, Outer:{x:18,y:65}, Jewelry:{x:45,y:55} },
+      2: { Top:{x:50,y:45}, Layer:{x:35,y:45}, Jacket:{x:35,y:45}, Skirt:{x:50,y:65}, Boots:{x:50,y:95}, Jewelry:{x:52,y:45} },
+      3: { Hat:{x:50,y:18}, Top:{x:45,y:45}, Skirt:{x:50,y:60}, Shoes:{x:52,y:95}, Bag:{x:62,y:75}, Accessory:{x:50,y:30} },
+      4: { Hat:{x:40,y:22}, Top:{x:50,y:65}, Jacket:{x:50,y:60}, Layer:{x:50,y:60}, Skirt:{x:50,y:88}, Bag:{x:25,y:88}, Accessory:{x:38,y:38} },
+      5: { Top:{x:40,y:50}, Skirt:{x:40,y:75}, Bag:{x:60,y:55}, Jewelry:{x:40,y:32} }
+    },
+    y2k: {
+      0: { Hat:{x:45,y:12}, Top:{x:45,y:38}, Skirt:{x:42,y:58}, Boots:{x:50,y:92}, Bag:{x:22,y:50}, Belt:{x:42,y:55}, Accessory:{x:45,y:18} },
+      1: { Hat:{x:38,y:12}, Top:{x:42,y:35}, Skirt:{x:40,y:58}, Boots:{x:30,y:90}, Shoes:{x:30,y:90}, Bag:{x:62,y:55} },
+      2: { Top:{x:42,y:45}, Bottom:{x:45,y:80}, Bag:{x:62,y:70}, Belt:{x:42,y:60}, Jewelry:{x:42,y:35} },
+      3: { Top:{x:45,y:35}, Bottom:{x:45,y:70}, Bag:{x:52,y:55}, Accessory:{x:30,y:12} },
+      4: { Top:{x:50,y:45}, Bottom:{x:50,y:75}, Hat:{x:50,y:25}, Bag:{x:38,y:55} },
+      5: { Top:{x:38,y:45}, Bottom:{x:38,y:75}, Shoes:{x:38,y:95}, Bag:{x:18,y:50}, Jewelry:{x:38,y:30} }
+    },
+    vintage: {
+      0: { Top:{x:38,y:33}, Dress:{x:38,y:40}, Tights:{x:42,y:60}, Shoes:{x:70,y:60}, Accessory:{x:40,y:15}, Jewelry:{x:40,y:22} },
+      1: { Jacket:{x:50,y:40}, Outer:{x:50,y:40}, Top:{x:50,y:40}, Skirt:{x:50,y:65}, Tights:{x:50,y:88}, Jewelry:{x:52,y:22} },
+      2: { Jacket:{x:58,y:38}, Outer:{x:58,y:38}, Top:{x:52,y:32}, Bottom:{x:48,y:62}, Tights:{x:35,y:60}, Shoes:{x:30,y:80}, Bag:{x:62,y:75} },
+      3: { Coat:{x:50,y:50}, Outer:{x:50,y:50}, Dress:{x:50,y:55}, Top:{x:50,y:55}, Tights:{x:45,y:80}, Shoes:{x:62,y:92}, Boots:{x:62,y:92}, Bag:{x:14,y:50}, Accessory:{x:42,y:35} },
+      4: { Top:{x:42,y:55}, Dress:{x:42,y:55}, Skirt:{x:38,y:80}, Accessory:{x:50,y:22} },
+      5: { Top:{x:50,y:50}, Dress:{x:50,y:50}, Bag:{x:18,y:70}, Jewelry:{x:50,y:30} }
+    },
+    softgirl: {
+      0: { Top:{x:30,y:88}, Jewelry:{x:50,y:88}, Accessory:{x:50,y:35}, Hair:{x:80,y:30} },
+      1: { Top:{x:50,y:30}, Skirt:{x:50,y:70}, Dress:{x:50,y:55}, Bag:{x:25,y:50} },
+      2: { Top:{x:40,y:40}, Layer:{x:40,y:40}, Dress:{x:40,y:70}, Shoes:{x:38,y:95}, Bag:{x:30,y:70}, Jewelry:{x:40,y:38} },
+      3: { Top:{x:50,y:50}, Dress:{x:50,y:60}, Hair:{x:58,y:28}, Jewelry:{x:38,y:38} },
+      4: { Top:{x:45,y:35}, Layer:{x:50,y:18}, Bottom:{x:50,y:75}, Belt:{x:50,y:55}, Jewelry:{x:50,y:22}, Bag:{x:80,y:50} },
+      5: { Top:{x:50,y:45}, Layer:{x:50,y:35}, Bottom:{x:50,y:75}, Belt:{x:50,y:58}, Bag:{x:62,y:50} }
+    }
+  };
+
   function _getAutoHotspots() {
     var dir = FASHION_DIR[s.id];
     if (!dir) return [];
@@ -1455,8 +1540,12 @@
     html01 += '<img src="' + outfit.img + '" alt="' + outfit.label + '" loading="' + (oi < 3 ? 'eager' : 'lazy') + '">';
     html01 += '<div class="hs-outfit-overlay"></div>';
     outfit.pieces.forEach(function(piece, pi) {
-      var pos = HOTSPOT_POS[piece.category] || {x:50,y:50};
-      var xO = (pi===1?5:pi===2?-4:0), yO = (pi===1?-3:pi===2?5:0);
+      var override = OUTFIT_HOTSPOTS[s.id] && OUTFIT_HOTSPOTS[s.id][oi] && OUTFIT_HOTSPOTS[s.id][oi][piece.category];
+      var pos = override || HOTSPOT_POS[piece.category] || {x:50,y:50};
+      // Don't apply the index-based jitter offset when override is present —
+      // overrides are already pixel-final coordinates per piece.
+      var xO = override ? 0 : (pi===1?5:pi===2?-4:0);
+      var yO = override ? 0 : (pi===1?-3:pi===2?5:0);
       html01 += '<div class="hs-dot" style="left:' + Math.min(88,Math.max(12,pos.x+xO)) + '%;top:' + Math.min(90,Math.max(6,pos.y+yO)) + '%">';
       html01 += '<div class="hs-dot-ring"><div class="hs-dot-core"></div></div>';
       html01 += '<div class="hs-panel">';
