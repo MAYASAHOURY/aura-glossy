@@ -1,12 +1,32 @@
 /* ================================================================
-   AURA — Community Groups  (community.js v1)
+   AURA — Community Groups  (community.js)
    Private fashion circles gated by quiz result aesthetic.
 
-   Flow:
-     1. initAuthGuard() (firebase.js) reveals page once auth resolves
-     2. onAuthChange fires → load user's quiz result from Firestore
-     3. Read URL hash → route to hub or group view
-     4. Access checks run on the client AND are enforced by Firestore rules
+   ─────────────────────────────────────────────────────────────────
+   COMMUNITY-ACCESS INVARIANT
+   ─────────────────────────────────────────────────────────────────
+   A user belongs to ONE community at any moment: the community whose
+   id matches the user's CURRENT users/{uid}.quizResult.id. Retaking
+   the quiz immediately revokes access to the previous community.
+
+   This file enforces that invariant on the client:
+
+     • _userQuiz is hydrated and kept fresh by a Firestore snapshot
+       listener (`_attachUserQuizListener`). Whenever quizResult.id
+       changes — same tab, other tab, or a different device — every
+       open community page re-renders against the new value.
+
+     • If the user is currently inside a community feed when their
+       id changes (e.g. they retook the quiz in another tab), the
+       posts listener is torn down, the URL hash is cleared, and they
+       are moved back to the hub with a "your aesthetic changed"
+       notice. They can never keep reading/posting in the old group.
+
+     • A cross-tab BroadcastChannel ('aura_quiz') is used as a fast
+       path so other tabs invalidate caches the instant a retake is
+       saved, before the Firestore snapshot has propagated. Firestore
+       rules (server-side) are the final authority — the client is
+       belt-and-suspenders.
    ================================================================ */
 
 var COMM_GROUPS = [
@@ -22,10 +42,13 @@ var COMM_GROUPS = [
   { id: 'darkacademia', name: 'Dark Academia',    color: '#6b5a3e', tagline: 'Scholarly & moody',     symbol: '◼' },
 ];
 
-var _currentUser  = null;   // Firebase user object
-var _userQuiz     = null;   // { id, name, auraColor, … } from Firestore
-var _currentGroup = null;   // group object currently viewed
-var _postsUnsub   = null;   // onSnapshot unsubscribe handle
+var _currentUser   = null;   // Firebase user object
+var _userQuiz      = null;   // { id, name, auraColor, … } — LIVE from Firestore
+var _currentGroup  = null;   // group object currently viewed
+var _postsUnsub    = null;   // posts onSnapshot unsubscribe handle
+var _quizUnsub     = null;   // users/{uid} onSnapshot unsubscribe handle
+var _quizChannel   = null;   // cross-tab broadcast for fast invalidation
+var _quizHydrated  = false;  // first snapshot has arrived
 
 /* ── Bootstrap ──────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function () {
@@ -33,13 +56,33 @@ document.addEventListener('DOMContentLoaded', function () {
   _initBurger();
 
   onAuthChange(function (user) {
+    if (_quizUnsub) { _quizUnsub(); _quizUnsub = null; }
+    _quizHydrated = false;
+    _userQuiz     = null;
+
     _currentUser = user;
     if (!user) return; // initAuthGuard handles the redirect to login
 
-    _loadUserQuiz().then(function () {
+    _attachUserQuizListener().then(function () {
       _routeFromHash();
     });
   });
+
+  /* Cross-tab fast-path: another tab just saved a new quiz result.
+     The Firestore snapshot will fire too, but this lets us bust
+     local caches and short-circuit any in-flight UI immediately. */
+  try { _quizChannel = new BroadcastChannel('aura_quiz'); } catch (e) {}
+  if (_quizChannel) {
+    _quizChannel.onmessage = function (e) {
+      if (!e || !e.data || e.data.type !== 'quiz-changed') return;
+      if (!_currentUser || (e.data.uid && e.data.uid !== _currentUser.uid)) return;
+      /* The snapshot listener is our source of truth. We do not mutate
+         _userQuiz here — we just nudge any session caches and let the
+         snapshot drive the actual re-render. If the snapshot is slow
+         to fire (rare), the next route check will read fresh on demand. */
+      try { sessionStorage.removeItem('aura_liked_ae'); } catch (_) {}
+    };
+  }
 
   window.addEventListener('hashchange', function () {
     // Only re-route if we aren't already inside the matching group
@@ -50,39 +93,135 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-/* ── Load user's quiz result ─────────────────────────────────── */
-function _loadUserQuiz(isRetry) {
-  return _db
-    .collection('users').doc(_currentUser.uid).get()
-    .then(function (snap) {
-      var qr = snap.exists && snap.data() && snap.data().quizResult;
-      if (qr && qr.id) {
-        _userQuiz = qr;
-      } else if (!isRetry) {
-        /* Quiz result absent — could be a race condition (quiz save not yet
-           committed when we read). Retry once after 1.5 s before giving up. */
-        return new Promise(function (resolve) {
-          setTimeout(function () {
-            _loadUserQuiz(true).then(resolve);
-          }, 1500);
-        });
-      } else {
-        _userQuiz = null;
-      }
-    })
-    .catch(function (err) {
-      console.warn('[Community] Failed to load quiz result:',
-        (err && err.code) || '?', (err && err.message) || err);
-      if (!isRetry) {
-        /* Retry once on error (transient network / cold-start token issue) */
-        return new Promise(function (resolve) {
-          setTimeout(function () {
-            _loadUserQuiz(true).then(resolve);
-          }, 1500);
-        });
-      }
-      _userQuiz = null;
-    });
+/* ── Live user-quiz listener ──────────────────────────────────
+   onSnapshot on users/{uid} is the single source of truth for
+   _userQuiz. It hydrates the first time the snapshot arrives,
+   and on every subsequent change it diffs against the previous
+   id and reacts (see _onQuizChanged).
+
+   We return a Promise that resolves on the FIRST snapshot so
+   the bootstrap can route safely. Subsequent emits don't resolve
+   anything — they trigger _onQuizChanged.
+─────────────────────────────────────────────────────────────── */
+function _attachUserQuizListener() {
+  return new Promise(function (resolve) {
+    var firstFired = false;
+    var resolveOnce = function () {
+      if (firstFired) return;
+      firstFired = true;
+      _quizHydrated = true;
+      resolve();
+    };
+
+    /* Safety net: if Firestore is unreachable and the snapshot never
+       fires, don't block routing forever. After 4 s, resolve with
+       whatever we have (likely null) so the hub at least renders. */
+    var safety = setTimeout(resolveOnce, 4000);
+
+    _quizUnsub = _db
+      .collection('users').doc(_currentUser.uid)
+      .onSnapshot(
+        function (snap) {
+          clearTimeout(safety);
+          var prevId = _userQuiz && _userQuiz.id;
+          var qr     = snap.exists && snap.data() && snap.data().quizResult;
+          var newId  = qr && qr.id ? qr.id : null;
+
+          _userQuiz = (qr && newId) ? qr : null;
+
+          /* Keep the synchronous mirror in lockstep with the live value */
+          try {
+            if (newId) localStorage.setItem('aura_quiz_id', newId);
+            else       localStorage.removeItem('aura_quiz_id');
+          } catch (_) {}
+
+          if (!firstFired) {
+            resolveOnce();
+            return;
+          }
+
+          /* Subsequent update — id may have changed (retake, sign-out,
+             admin-cleared, etc). React only on actual id change. */
+          if (prevId !== newId) _onQuizChanged(prevId, newId);
+        },
+        function (err) {
+          console.warn('[Community] quiz listener error:',
+            (err && err.code) || '?', (err && err.message) || err);
+          clearTimeout(safety);
+          resolveOnce();
+        }
+      );
+  });
+}
+
+/* ── React to live quiz-id changes ────────────────────────────
+   Called when the snapshot listener observes that quizResult.id
+   has changed since the last value. If the user is currently
+   inside a feed that no longer matches, we hard-kick them out
+   (close the posts listener, clear the hash, show a notice).
+─────────────────────────────────────────────────────────────── */
+function _onQuizChanged(prevId, newId) {
+  /* Bust any session caches that depended on the previous result */
+  try { sessionStorage.removeItem('aura_liked_ae'); } catch (_) {}
+
+  var hubEl   = document.getElementById('comm-hub');
+  var groupEl = document.getElementById('comm-group');
+
+  /* If we're inside a community feed whose id no longer matches the
+     user's current aesthetic, kick them back to the hub. */
+  var insideGroup = groupEl && groupEl.style.display !== 'none';
+  var stillMatches = _currentGroup && newId && _currentGroup.id === newId;
+  if (insideGroup && !stillMatches) {
+    if (_postsUnsub) { _postsUnsub(); _postsUnsub = null; }
+    _currentGroup = null;
+    history.replaceState(null, '', location.pathname);
+    if (hubEl)   hubEl.style.display   = '';
+    if (groupEl) groupEl.style.display = 'none';
+    _renderHub();
+    _showQuizChangedNotice(prevId, newId);
+    return;
+  }
+
+  /* Otherwise just refresh the hub so badges/labels reflect the new id. */
+  if (hubEl && hubEl.style.display !== 'none') _renderHub();
+}
+
+function _showQuizChangedNotice(prevId, newId) {
+  var box = document.getElementById('access-modal-box');
+  if (!box) return;
+
+  if (!newId) {
+    box.innerHTML =
+      '<div class="access-icon">✦</div>' +
+      '<h3>Your style profile changed</h3>' +
+      '<p>Take the quiz again to unlock your community.</p>' +
+      '<div class="access-actions">' +
+        '<a href="quiz.html" class="btn access-primary-btn">Take the Style Quiz →</a>' +
+        '<button class="btn-ghost" onclick="closeAccessModal()">Close</button>' +
+      '</div>';
+  } else {
+    var grp      = COMM_GROUPS.find(function (g) { return g.id === newId; });
+    var grpName  = grp ? grp.name  : newId;
+    var grpColor = grp ? grp.color : '#c084a0';
+    box.innerHTML =
+      '<div class="access-icon" style="color:' + grpColor + '">✦</div>' +
+      '<h3>Your aesthetic just changed</h3>' +
+      '<p>You\'re now part of the <strong>' + _esc(grpName) + '</strong> circle.<br>' +
+      'Access to your previous circle has been closed.</p>' +
+      '<div class="access-actions">' +
+        '<button class="btn access-primary-btn" style="background:' + grpColor + ';border-color:' + grpColor + '"' +
+          ' onclick="enterGroup(\'' + newId + '\');closeAccessModal()">Enter ' + _esc(grpName) + ' →</button>' +
+        '<button class="btn-ghost" onclick="closeAccessModal()">Stay in the hub</button>' +
+      '</div>';
+  }
+  document.getElementById('access-modal').style.display = 'flex';
+}
+
+/* Kept for back-compat with the existing "Already took the quiz? Reload"
+   button. With the live snapshot listener attached this is rarely needed,
+   but it doesn't hurt to give the user a manual nudge. */
+function _loadUserQuiz() {
+  return Promise.resolve(_userQuiz);
 }
 
 /* ── URL hash router ─────────────────────────────────────────── */
@@ -190,7 +329,35 @@ function _retryLoadQuiz() {
       '<div class="auth-veil-dot"></div>' +
       '<div class="auth-veil-dot"></div>' +
     '</div></div>';
-  _loadUserQuiz(true).then(function () { _renderHub(); });
+
+  /* Force a fresh round-trip — bypasses any local Firestore cache and
+     covers the rare case where the live snapshot listener has dropped
+     (e.g. transient network error). If a new result has arrived since
+     last render, the snapshot listener has already updated _userQuiz;
+     this is just a manual "I just finished the quiz, show it now" nudge. */
+  if (!_currentUser) { _renderHub(); return; }
+  _db
+    .collection('users').doc(_currentUser.uid)
+    .get({ source: 'server' })
+    .then(function (snap) {
+      var qr    = snap.exists && snap.data() && snap.data().quizResult;
+      var newId = qr && qr.id ? qr.id : null;
+      var prevId = _userQuiz && _userQuiz.id;
+      _userQuiz = (qr && newId) ? qr : null;
+      try {
+        if (newId) localStorage.setItem('aura_quiz_id', newId);
+        else       localStorage.removeItem('aura_quiz_id');
+      } catch (_) {}
+      _renderHub();
+      /* If the listener missed the change, surface it now */
+      if (prevId !== newId && _quizHydrated) _onQuizChanged(prevId, newId);
+    })
+    .catch(function () { _renderHub(); });
+
+  /* Re-attach the live listener if it was lost */
+  if (!_quizUnsub) {
+    _attachUserQuizListener().catch(function () {});
+  }
 }
 
 function _groupCard(group, state) {
@@ -361,6 +528,40 @@ function _startPostsListener(group) {
       },
       function (err) {
         console.warn('Posts listener error:', err.message);
+        /* permission-denied = Firestore rules say this user no longer
+           matches this aesthetic. Treat it as a server-side revoke and
+           kick back to the hub, re-syncing _userQuiz from authoritative
+           server data so the UI matches what the rules will allow. */
+        if (err && err.code === 'permission-denied') {
+          if (_postsUnsub) { _postsUnsub(); _postsUnsub = null; }
+          _currentGroup = null;
+          history.replaceState(null, '', location.pathname);
+          var hubEl   = document.getElementById('comm-hub');
+          var groupEl = document.getElementById('comm-group');
+          if (hubEl)   hubEl.style.display   = '';
+          if (groupEl) groupEl.style.display = 'none';
+          /* Force-refresh from server to catch the latest id, then notify */
+          if (_currentUser) {
+            _db.collection('users').doc(_currentUser.uid)
+              .get({ source: 'server' })
+              .then(function (snap) {
+                var qr    = snap.exists && snap.data() && snap.data().quizResult;
+                var newId = qr && qr.id ? qr.id : null;
+                var prevId = _userQuiz && _userQuiz.id;
+                _userQuiz = (qr && newId) ? qr : null;
+                try {
+                  if (newId) localStorage.setItem('aura_quiz_id', newId);
+                  else       localStorage.removeItem('aura_quiz_id');
+                } catch (_) {}
+                _renderHub();
+                _showQuizChangedNotice(prevId, newId);
+              })
+              .catch(function () { _renderHub(); });
+          } else {
+            _renderHub();
+          }
+          return;
+        }
         feed.innerHTML = '<p class="feed-error">Could not load posts. ' + _esc(err.message) + '</p>';
       }
     );
@@ -671,20 +872,15 @@ function _submitPost() {
     });
 }
 
-/* ── Burger menu (no main.js on this page) ───────────────────── */
-function _initBurger() {
-  var burger = document.querySelector('.nav-burger');
-  var links  = document.querySelector('.nav-links');
-  if (!burger || !links) return;
-  burger.addEventListener('click', function () {
-    links.classList.toggle('open');
-  });
-  document.addEventListener('click', function (e) {
-    if (!burger.contains(e.target) && !links.contains(e.target)) {
-      links.classList.remove('open');
-    }
-  });
-}
+/* ── Burger menu ──────────────────────────────────────────────
+   The burger is wired by firebase.js (which IS loaded here) via
+   its own instant-response pointerup + click handler. We used to
+   wire it locally to .nav-links.open — that was the wrong class
+   (CSS expects .nav.nav-open) and the menu silently never opened.
+   The local handler is now removed; firebase.js handles everything
+   with the correct class and the iOS-WebView-friendly fast path.
+─────────────────────────────────────────────────────────────── */
+function _initBurger() { /* no-op — handled by firebase.js wireBurgerOnce */ }
 
 /* ── Utilities ───────────────────────────────────────────────── */
 function _relTime(date) {

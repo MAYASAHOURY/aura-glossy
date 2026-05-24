@@ -22,6 +22,98 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
 }).catch(function() {});
 
 /* ─────────────────────────────────────────────────────────────────
+   IN-APP BROWSER DETECTION  —  single source of truth
+   ────────────────────────────────────────────────────────────────
+   Pages should read `Aura.inApp.is` instead of running their own
+   regex. Centralising means a single update flips behavior across
+   the whole site. The regex matches the User-Agent strings used by
+   TikTok, Instagram, Facebook, Snapchat, Pinterest, Twitter, Line,
+   WeChat — i.e. the embedded WebViews where Google OAuth popups
+   either silently fail or trap users without a back button.
+
+   `Aura.inApp.openExternal(url?)` is the "Open in your browser"
+   helper. Most in-app browsers expose this via their "…" menu, so
+   the cleanest cross-platform fallback is: copy the URL, surface
+   the instruction. We attempt `window.open(_blank)` first, which
+   does work in a few of them (notably some Pinterest builds).
+   ─────────────────────────────────────────────────────────────── */
+(function () {
+  var ua = '';
+  try { ua = navigator.userAgent || ''; } catch (e) {}
+  var IA_RE = /TikTok|musical_ly|Instagram|FBAN|FBAV|FB_IAB|FBIOS|Twitter|TwitterAndroid|Snapchat|Pinterest|Line\/|MicroMessenger|WeChat|KAKAOTALK/i;
+  var is = IA_RE.test(ua);
+  /* Per-platform name for nicer error copy */
+  var name =
+    /TikTok|musical_ly/i.test(ua)            ? 'TikTok'    :
+    /Instagram/i.test(ua)                    ? 'Instagram' :
+    /FBAN|FBAV|FB_IAB|FBIOS/i.test(ua)       ? 'Facebook'  :
+    /Snapchat/i.test(ua)                     ? 'Snapchat'  :
+    /Pinterest/i.test(ua)                    ? 'Pinterest' :
+    /Line\//i.test(ua)                       ? 'LINE'      :
+    /MicroMessenger|WeChat/i.test(ua)        ? 'WeChat'    : null;
+
+  window.Aura = window.Aura || {};
+  window.Aura.inApp = {
+    is: is,
+    name: name,
+    /* Hint the head-gate logic uses to skip intro on slow WebViews */
+    isSlow: (function () {
+      try {
+        var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        return !!(c && (c.saveData || /(^|-)2g$/i.test(c.effectiveType || '')));
+      } catch (e) { return false; }
+    })(),
+    /* Try to open the URL outside the in-app browser. Returns true
+       if window.open succeeded (some in-app browsers honor it). */
+    openExternal: function (url) {
+      url = url || window.location.href;
+      try {
+        var w = window.open(url, '_blank', 'noopener');
+        if (w) return true;
+      } catch (e) {}
+      return false;
+    },
+    /* Best-effort copy of the current/given URL to the clipboard so
+       the user can paste it into their default browser. Returns a
+       Promise<boolean>. */
+    copyUrl: function (url) {
+      url = url || window.location.href;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(url).then(function () { return true; }, function () { return false; });
+        }
+      } catch (e) {}
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.position = 'fixed';
+        ta.style.opacity  = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = document.execCommand && document.execCommand('copy');
+        document.body.removeChild(ta);
+        return Promise.resolve(!!ok);
+      } catch (e) { return Promise.resolve(false); }
+    }
+  };
+})();
+
+/* Explicit pre-redirect session-flag setter — used by login.html
+   right after auth succeeds, so the synchronous head-gate on the
+   destination page (index.html) passes even if firebase.js's own
+   onAuthStateChanged listener hasn't fired yet (slow IndexedDB
+   write on TikTok / Instagram WebViews). */
+function setAuraSessionFlag() {
+  try { localStorage.setItem('aura_has_session', '1'); } catch (e) {}
+}
+function clearAuraSessionFlag() {
+  try { localStorage.removeItem('aura_has_session'); } catch (e) {}
+  try { localStorage.removeItem('aura_quiz_id'); } catch (e) {}
+  try { localStorage.removeItem('aura_onboarded'); } catch (e) {}
+  try { sessionStorage.removeItem('aura_onboard_trigger'); } catch (e) {}
+}
+
+/* ─────────────────────────────────────────────────────────────────
    SESSION FLAG — single source of truth for the synchronous head
    auth-gate that every protected page runs BEFORE Firebase loads.
 
@@ -372,6 +464,79 @@ if (_authChannel) {
     }
   };
 }
+
+/* ── Mobile burger menu — instant tap on iOS WebViews ──────────────
+   firebase.js runs on every page, so wiring the burger here means
+   every page gets the same instant-response handler — including
+   community.html and settings.html, which don't load main.js.
+
+   Why we use pointerup AND click:
+     • On iOS WKWebView (Safari + Instagram + TikTok in-app browsers)
+       the `click` event has ~50–100ms latency even with
+       touch-action:manipulation, because the browser still waits
+       briefly to detect double-tap-to-zoom.
+     • `pointerup` fires immediately on touch-lift, so the menu
+       opens the instant the finger leaves the screen.
+     • We keep `click` as a fallback for mouse, keyboard, and any
+       browser that doesn't dispatch pointer events.
+     • A 400ms debounce stops the synthetic click that follows a
+       pointerup from toggling the menu a second time.
+─────────────────────────────────────────────────────────────────── */
+(function wireBurgerOnce() {
+  function wire() {
+    var burger = document.querySelector('.nav-burger');
+    if (!burger || burger._wired) return;
+    var nav = burger.closest('.nav');
+    if (!nav) return;
+    burger._wired = true;
+
+    var lastFired = 0;
+    function fire(e) {
+      var now = Date.now();
+      if (now - lastFired < 400) return; /* debounce pointerup→click pair */
+      lastFired = now;
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      nav.classList.toggle('nav-open');
+    }
+
+    /* Fast path — touch / pen lifts. Fires before the synthetic click. */
+    if ('PointerEvent' in window) {
+      burger.addEventListener('pointerup', function (e) {
+        if (e.pointerType === 'touch' || e.pointerType === 'pen') fire(e);
+      });
+    }
+    /* Click — handles mouse, keyboard activation, and any non-pointer browser */
+    burger.addEventListener('click', fire);
+    /* Keyboard activation (Enter / Space) for accessibility */
+    burger.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fire(e); }
+    });
+
+    /* Close when a nav link is tapped (the user is navigating away) */
+    nav.querySelectorAll('.nav-links a').forEach(function (a) {
+      a.addEventListener('click', function () { nav.classList.remove('nav-open'); });
+    });
+
+    /* Close on outside tap. Listen for BOTH pointerup (fast) and click
+       (fallback) so the menu collapses the instant the user taps away. */
+    function closeOnOutside(e) {
+      if (!nav.contains(e.target)) nav.classList.remove('nav-open');
+    }
+    document.addEventListener('click', closeOnOutside);
+    if ('PointerEvent' in window) {
+      document.addEventListener('pointerup', function (e) {
+        if (e.pointerType === 'touch' || e.pointerType === 'pen') closeOnOutside(e);
+      });
+    }
+  }
+
+  /* firebase.js is loaded as a regular (non-deferred) end-of-body script
+     on most pages, so the body is parsed and the burger element exists
+     when we get here. For pages that DO defer, document.readyState may
+     still be "loading" — wait for DCL in that case. */
+  if (document.readyState !== 'loading') wire();
+  else document.addEventListener('DOMContentLoaded', wire);
+})();
 
 /*
  * initAuthGuard() — call once on every protected page.

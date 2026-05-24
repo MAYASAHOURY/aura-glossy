@@ -128,7 +128,17 @@
         err_too_many: 'Too many attempts. Please wait a moment and try again.',
         err_disabled: 'This account has been disabled.',
         err_generic: 'Something went wrong. Please try again.',
-        err_rate: 'Too many attempts. Please wait {secs} seconds.'
+        err_rate: 'Too many attempts. Please wait {secs} seconds.',
+        /* In-app browser banner */
+        iab_title: 'For the best sign-in experience, open Aura in your browser.',
+        iab_sub: "You're inside an in-app browser. Sign-in works here, but is faster and more reliable in Safari, Chrome, or your default browser.",
+        iab_open: 'Open in browser',
+        iab_copy: 'Copy link',
+        iab_copied: 'Link copied ✓',
+        iab_use_menu: 'Tap … menu → Open in browser',
+        /* Stall watchdog copy */
+        stall_inapp: "Sign-in is slow inside the in-app browser. If it doesn't finish, tap \"Open in browser\" above and try again.",
+        stall_generic: 'Sign-in is taking longer than expected. Check your connection, or try again.'
       },
       quiz: {
         page_eyebrow: 'Find your aesthetic',
@@ -339,7 +349,15 @@
         err_too_many: 'Demasiados intentos. Espera un momento e inténtalo de nuevo.',
         err_disabled: 'Esta cuenta ha sido deshabilitada.',
         err_generic: 'Algo salió mal. Inténtalo de nuevo.',
-        err_rate: 'Demasiados intentos. Espera {secs} segundos.'
+        err_rate: 'Demasiados intentos. Espera {secs} segundos.',
+        iab_title: 'Para una mejor experiencia de inicio de sesión, abre Aura en tu navegador.',
+        iab_sub: 'Estás dentro de un navegador integrado. El inicio de sesión funciona aquí, pero es más rápido y fiable en Safari, Chrome o tu navegador predeterminado.',
+        iab_open: 'Abrir en el navegador',
+        iab_copy: 'Copiar enlace',
+        iab_copied: 'Enlace copiado ✓',
+        iab_use_menu: 'Toca el menú … → Abrir en el navegador',
+        stall_inapp: 'El inicio de sesión es lento dentro del navegador integrado. Si no se completa, toca "Abrir en el navegador" arriba y vuelve a intentarlo.',
+        stall_generic: 'El inicio de sesión está tardando más de lo esperado. Revisa tu conexión o inténtalo de nuevo.'
       },
       quiz: {
         page_eyebrow: 'Encuentra tu estética',
@@ -539,7 +557,15 @@
         err_too_many: 'محاولات كثيرة. يرجى الانتظار قليلاً والمحاولة مجدداً.',
         err_disabled: 'تم تعطيل هذا الحساب.',
         err_generic: 'حدث خطأ ما. يرجى المحاولة مرة أخرى.',
-        err_rate: 'محاولات كثيرة. يرجى الانتظار {secs} ثانية.'
+        err_rate: 'محاولات كثيرة. يرجى الانتظار {secs} ثانية.',
+        iab_title: 'للحصول على أفضل تجربة تسجيل دخول، افتح أورا في متصفحك.',
+        iab_sub: 'أنت داخل متصفح مدمج. تسجيل الدخول يعمل هنا، ولكنه أسرع وأكثر موثوقية في سفاري أو كروم أو متصفحك الافتراضي.',
+        iab_open: 'فتح في المتصفح',
+        iab_copy: 'نسخ الرابط',
+        iab_copied: 'تم نسخ الرابط ✓',
+        iab_use_menu: 'اضغطي على قائمة … → فتح في المتصفح',
+        stall_inapp: 'تسجيل الدخول بطيء داخل المتصفح المدمج. إذا لم يكتمل، اضغطي على "فتح في المتصفح" أعلاه وحاولي مرة أخرى.',
+        stall_generic: 'تسجيل الدخول يستغرق وقتاً أطول من المعتاد. تحققي من اتصالك أو حاولي مرة أخرى.'
       },
       quiz: {
         page_eyebrow: 'اكتشف جماليّتك',
@@ -738,7 +764,15 @@
         err_too_many: 'יותר מדי ניסיונות. נסי שוב בעוד רגע.',
         err_disabled: 'חשבון זה הושבת.',
         err_generic: 'משהו השתבש. נסי שוב.',
-        err_rate: 'יותר מדי ניסיונות. המתיני {secs} שניות.'
+        err_rate: 'יותר מדי ניסיונות. המתיני {secs} שניות.',
+        iab_title: 'לחוויית התחברות מיטבית, פתחי את אורה בדפדפן שלך.',
+        iab_sub: 'את בתוך דפדפן מובנה. ההתחברות עובדת כאן, אך מהירה ואמינה יותר בספארי, כרום או בדפדפן ברירת המחדל שלך.',
+        iab_open: 'פתחי בדפדפן',
+        iab_copy: 'העתיקי קישור',
+        iab_copied: 'הקישור הועתק ✓',
+        iab_use_menu: 'הקישי על תפריט … → פתחי בדפדפן',
+        stall_inapp: 'ההתחברות איטית בתוך הדפדפן המובנה. אם זה לא מסתיים, הקישי על "פתחי בדפדפן" למעלה ונסי שוב.',
+        stall_generic: 'ההתחברות לוקחת יותר זמן מהצפוי. בדקי את החיבור או נסי שוב.'
       },
       quiz: {
         page_eyebrow: 'גלי את האסתטיקה שלך',

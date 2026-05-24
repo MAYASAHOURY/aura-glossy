@@ -14,9 +14,19 @@ service cloud.firestore {
     }
 
     // ── Community circles ────────────────────────────────────────
-    // Access is gated by the user's saved quiz result aesthetic ID.
-    // userAesthetic() reads users/{uid}.quizResult.id from Firestore.
-    // If the user has no quiz result the read throws → denies access.
+    // Access is gated by the user's CURRENT saved quiz result.
+    //
+    // INVARIANT: a user belongs to exactly one community at any moment
+    // — the community whose id matches users/{uid}.quizResult.id RIGHT
+    // NOW. Retaking the quiz overwrites quizResult.id, which immediately
+    // revokes access to every other community (including the previous
+    // one). This invariant is enforced server-side here, so client-side
+    // caches or stale UI cannot leak access to a previous group.
+    //
+    // userAesthetic() reads the live users/{uid}.quizResult.id on every
+    // rule evaluation. If the user has no quiz result the field read
+    // throws → denies access. Old aesthetic IDs are denied because they
+    // simply don't equal the current id any more.
     function userAesthetic() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid))
                .data.quizResult.id;
@@ -24,7 +34,7 @@ service cloud.firestore {
 
     match /communities/{aestheticId}/posts/{postId} {
 
-      // Read: authenticated + quiz result matches this circle
+      // Read: authenticated + quiz result is CURRENTLY this circle
       allow read: if request.auth != null
         && userAesthetic() == aestheticId;
 
@@ -39,7 +49,8 @@ service cloud.firestore {
         && request.resource.data.content.size() <= 1000;
 
       // Update: post owner edits content — OR — any circle member
-      // toggles a reaction (only the `reactions` map may change)
+      // toggles a reaction (only the `reactions` map may change).
+      // Both branches require the user STILL belongs to this circle.
       allow update: if request.auth != null
         && userAesthetic() == aestheticId
         && (
@@ -48,9 +59,13 @@ service cloud.firestore {
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions'])
         );
 
-      // Delete: only the post's author
+      // Delete: post's author AND still in this circle. A user who
+      // switched aesthetics can no longer touch their previous-circle
+      // posts — those become orphaned data, enforcing the strict
+      // "old communities must be blocked" invariant.
       allow delete: if request.auth != null
-        && resource.data.authorId == request.auth.uid;
+        && resource.data.authorId == request.auth.uid
+        && userAesthetic() == aestheticId;
 
       // ── Comments ──────────────────────────────────────────────
       match /comments/{commentId} {
@@ -65,8 +80,10 @@ service cloud.firestore {
           && request.resource.data.content.size() > 0
           && request.resource.data.content.size() <= 400;
 
+        // Delete: comment author AND still in this circle.
         allow delete: if request.auth != null
-          && resource.data.authorId == request.auth.uid;
+          && resource.data.authorId == request.auth.uid
+          && userAesthetic() == aestheticId;
       }
     }
 

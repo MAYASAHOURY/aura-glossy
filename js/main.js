@@ -154,31 +154,33 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ---- Mobile hamburger menu ----
-// Toggles .nav-open on the <nav> element; CSS does the rest.
-// Smooth-scroll for anchor links is handled by animations.js to avoid duplicate handlers.
+// Wiring is centralised in firebase.js (wireBurgerOnce) so EVERY page
+// — including community.html and settings.html which don't load main.js
+// — gets the same instant-response pointerup + click handler. We keep
+// this stub so the DOMContentLoaded sequence below still has a function
+// to call; it's a no-op when firebase.js has already wired the burger.
 function initNavBurger() {
-  document.querySelectorAll('.nav-burger').forEach(burger => {
-    if (burger._wired) return;
-    burger._wired = true;
-    const nav = burger.closest('.nav');
-    if (!nav) return;
-
-    function toggle(e) {
-      e.stopPropagation();
-      nav.classList.toggle('nav-open');
-    }
-    burger.addEventListener('click', toggle);
-    burger.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); } });
-
-    // Close when any nav link is clicked
-    nav.querySelectorAll('.nav-links a').forEach(a => {
-      a.addEventListener('click', () => nav.classList.remove('nav-open'));
-    });
-
-    // Close when clicking outside the nav
-    document.addEventListener('click', e => {
-      if (!nav.contains(e.target)) nav.classList.remove('nav-open');
-    });
+  var burger = document.querySelector('.nav-burger');
+  if (!burger || burger._wired) return;
+  /* Defensive fallback in the unlikely case firebase.js hasn't loaded
+     yet (e.g. blocked by a CSP / network failure). Mirrors the simple
+     toggle without the pointerup fast path. */
+  var nav = burger.closest('.nav');
+  if (!nav) return;
+  burger._wired = true;
+  function toggle(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    nav.classList.toggle('nav-open');
+  }
+  burger.addEventListener('click', toggle);
+  burger.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); }
+  });
+  nav.querySelectorAll('.nav-links a').forEach(function (a) {
+    a.addEventListener('click', function () { nav.classList.remove('nav-open'); });
+  });
+  document.addEventListener('click', function (e) {
+    if (!nav.contains(e.target)) nav.classList.remove('nav-open');
   });
 }
 

@@ -549,6 +549,81 @@ html[dir="rtl"] .reset-message { text-align: right; }
   margin-top: 12px; display: none;
 }
 
+/* ✦✦ In-app browser banner ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦
+   Shown only when window.Aura.inApp.is === true (TikTok, Instagram,
+   Facebook, Snapchat, etc.). Non-blocking — the email/password form
+   still works inside the WebView. The banner just gives a fast path
+   to a real browser, where Firebase IndexedDB writes are reliable.
+
+   Tappable area expands the dropdown-style instruction list. The
+   "Open in browser" button tries window.open(_blank); some in-app
+   browsers honor it, others ignore — we always fall back to the
+   visible instructions and a Copy URL action. */
+.iab-banner {
+  display: none;
+  margin: 0 0 22px;
+  padding: 14px 16px;
+  background: rgba(192, 132, 160, 0.10);
+  border: 1px solid rgba(192, 132, 160, 0.30);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.iab-banner.is-visible { display: block; }
+.iab-banner-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.iab-banner-icon {
+  flex-shrink: 0;
+  width: 18px; height: 18px;
+  margin-top: 1px;
+  color: var(--rose);
+}
+.iab-banner-body { flex: 1; min-width: 0; }
+.iab-banner-title {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  margin: 0 0 2px;
+}
+.iab-banner-sub {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+}
+.iab-banner-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.iab-banner-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.92);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 9px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.iab-banner-btn:hover, .iab-banner-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.32);
+  outline: none;
+}
+.iab-banner-btn.is-copied {
+  background: rgba(192, 132, 160, 0.20);
+  border-color: rgba(192, 132, 160, 0.45);
+}
+
 /* ✦✦ Mobile ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
 @media (max-width: 768px) {
   body { overflow: auto; }
@@ -582,6 +657,9 @@ html[dir="rtl"] .reset-message { text-align: right; }
     <!-- Not signed in -->
     <div id="auth-forms">
       <p class="auth-eyebrow" data-i18n="login.eyebrow">Begin your story</p>
+
+      <!-- IN-APP BROWSER NOTICE (filled in + shown by JS when detected) -->
+      <div id="iab-banner" class="iab-banner" aria-live="polite"></div>
 
       <!-- TABS -->
       <div class="auth-tabs">
@@ -639,9 +717,9 @@ html[dir="rtl"] .reset-message { text-align: right; }
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="js/i18n.js?v=8"></script>
+<script src="js/i18n.js?v=9"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=11"></script>
+<script src="js/firebase.js?v=12"></script>
 <script src="js/animations.js?v=15"></script>
 <script>
 (function() {
@@ -705,6 +783,73 @@ html[dir="rtl"] .reset-message { text-align: right; }
        • signInWithEmailAndPassword (always returning user)
   ────────────────────────────────────────────────────────────── */
 
+  /* ✦✦ In-app browser awareness ✦✦
+     IndexedDB writes are slow inside TikTok / Instagram / FB WebViews
+     (4-12s). We extend the post-auth delay there so the auth session
+     is fully persisted before we navigate away — otherwise the
+     destination page's head gate can race ahead of the write and
+     bounce back to login, creating a redirect loop. */
+  var _inApp     = !!(window.Aura && window.Aura.inApp && window.Aura.inApp.is);
+  var _inAppName = (window.Aura && window.Aura.inApp && window.Aura.inApp.name) || '';
+  var POST_AUTH_DELAY_MS = _inApp ? 1400 : 800;
+
+  /* Render the in-app browser banner. The form below STILL works
+     (email/password auth doesn't need popup support) — the banner
+     just lets users self-rescue to a real browser if they want a
+     faster, more reliable experience. */
+  function _renderInAppBanner() {
+    if (!_inApp) return;
+    var el = document.getElementById('iab-banner');
+    if (!el) return;
+    var title   = _T('login.iab_title', 'For the best sign-in experience, open Aura in your browser.');
+    var sub     = _T('login.iab_sub',   "You're inside an in-app browser. Sign-in works here, but is faster and more reliable in Safari, Chrome, or your default browser.");
+    var openLbl = _T('login.iab_open',  'Open in browser');
+    var copyLbl = _T('login.iab_copy',  'Copy link');
+    el.innerHTML =
+      '<div class="iab-banner-row">' +
+        '<svg class="iab-banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+          '<path d="M14 3h7v7"/>' +
+          '<path d="M10 14L21 3"/>' +
+          '<path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/>' +
+        '</svg>' +
+        '<div class="iab-banner-body">' +
+          '<p class="iab-banner-title">' + title + '</p>' +
+          '<p class="iab-banner-sub">' + sub + '</p>' +
+          '<div class="iab-banner-actions">' +
+            '<button type="button" class="iab-banner-btn" id="iab-open">' + openLbl + '</button>' +
+            '<button type="button" class="iab-banner-btn" id="iab-copy">' + copyLbl + '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    el.classList.add('is-visible');
+
+    var openBtn = document.getElementById('iab-open');
+    var copyBtn = document.getElementById('iab-copy');
+    if (openBtn) openBtn.addEventListener('click', function () {
+      var ok = window.Aura.inApp.openExternal(window.location.href);
+      if (!ok) {
+        /* window.open ignored. Nudge the user toward the in-app menu. */
+        openBtn.textContent = _T('login.iab_use_menu', 'Tap … menu → Open in browser');
+        openBtn.disabled = true;
+      }
+    });
+    if (copyBtn) copyBtn.addEventListener('click', function () {
+      window.Aura.inApp.copyUrl(window.location.href).then(function (ok) {
+        if (!ok) return;
+        var orig = copyBtn.textContent;
+        copyBtn.textContent = _T('login.iab_copied', 'Link copied ✓');
+        copyBtn.classList.add('is-copied');
+        setTimeout(function () {
+          copyBtn.textContent = orig;
+          copyBtn.classList.remove('is-copied');
+        }, 2400);
+      });
+    });
+  }
+  _renderInAppBanner();
+  /* Re-render when the user switches language so the copy translates */
+  window.addEventListener('aura:langchange', _renderInAppBanner);
+
   /* ✦✦ bfcache guard — when browser restores this page from cache
      and the user is now signed in, skip straight to homepage. */
   window.addEventListener('pageshow', function(e) {
@@ -714,9 +859,12 @@ html[dir="rtl"] .reset-message { text-align: right; }
       sessionStorage.setItem('aura_skip_intro', '1');
       sessionStorage.setItem('aura_just_authed', '1');
       /* NO aura_onboard_trigger here — a bfcache restore is not a new account */
+      /* Explicit flag set — belt-and-suspenders for the head gate on index.html
+         in case firebase.js's listener hasn't fired the localStorage write yet. */
+      if (typeof setAuraSessionFlag === 'function') setAuraSessionFlag();
       setTimeout(function() {
         window.location.replace('index.html');
-      }, 800);
+      }, POST_AUTH_DELAY_MS);
     }
   });
 
@@ -731,12 +879,19 @@ html[dir="rtl"] .reset-message { text-align: right; }
       _navigating = true;
       sessionStorage.setItem('aura_skip_intro', '1');
       sessionStorage.setItem('aura_just_authed', '1'); /* tells index.html: use long timer */
+      /* Explicit flag set BEFORE the redirect — the head gate on
+         index.html reads this synchronously. If we waited for
+         firebase.js's own listener to fire it, a slow IndexedDB
+         write inside an in-app browser could leave the flag unset
+         when index.html's head script runs, causing a bounce back
+         to login. Setting here closes that race. */
+      if (typeof setAuraSessionFlag === 'function') setAuraSessionFlag();
       /* NO aura_onboard_trigger here — only set in the create-account success path */
-      /* 800 ms delay — lets Firebase finish writing auth session to IndexedDB
-         before we navigate away, preventing the session-loss loop on iOS Safari */
+      /* 800 ms (1.4 s in-app) lets Firebase finish writing auth
+         session to IndexedDB before we navigate. */
       setTimeout(function() {
         window.location.replace('index.html');
-      }, 800);
+      }, POST_AUTH_DELAY_MS);
     } else {
       formsEl.style.display = 'block';
       userEl.style.display  = 'none';
@@ -752,6 +907,27 @@ html[dir="rtl"] .reset-message { text-align: right; }
     }).catch(e => console.warn('Brevo sync failed:', e));
   }
 
+  /* ✦✦ Stall watchdog ✦✦
+     If sign-in / sign-up hangs (slow network in an in-app browser, or
+     a bizarre Firebase outage), users currently see a forever-spinning
+     button with no feedback. After 14s with no resolution we surface a
+     human-readable hint instead of silently waiting.
+
+     Caller passes the button + error element to track. Returns a clear
+     function — call it on success or failure to cancel the watchdog. */
+  function _armStallWatchdog(btn, errEl, normalLabel) {
+    var fired = false;
+    var t = setTimeout(function () {
+      fired = true;
+      var msg = _inApp
+        ? _T('login.stall_inapp',   "Sign-in is slow inside the in-app browser. If it doesn't finish, tap \"Open in browser\" above and try again.")
+        : _T('login.stall_generic', 'Sign-in is taking longer than expected. Check your connection, or try again.');
+      showErr(errEl, msg);
+      if (btn) { btn.disabled = false; btn.textContent = normalLabel; }
+    }, 14000);
+    return function () { clearTimeout(t); return !fired; };
+  }
+
   /* ✦✦ Create account ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
   document.getElementById('join-btn').addEventListener('click', async () => {
     const name  = document.getElementById('join-name').value.trim();
@@ -763,9 +939,11 @@ html[dir="rtl"] .reset-message { text-align: right; }
     if (!rlCheck(errEl)) return;
     if (!email || !pass) { showErr(errEl, _T('login.err_fill', 'Please fill in all fields.')); return; }
     btn.disabled = true; btn.textContent = _T('login.creating', 'Creating account…');
+    var clearWatch = _armStallWatchdog(btn, errEl, _T('login.create_account', 'Create account →'));
     try {
       const cred = await auth.createUserWithEmailAndPassword(email, pass);
       if (name) await cred.user.updateProfile({ displayName: name });
+      clearWatch();
       /* THIS is the only place the onboard trigger is set for email/password.
          createUserWithEmailAndPassword by definition only resolves when a
          brand-new account was created — Firebase rejects with
@@ -779,6 +957,7 @@ html[dir="rtl"] .reset-message { text-align: right; }
       /* DO NOT navigate here — onAuthStateChanged (with 800ms delay) handles it. */
       btn.textContent = _T('login.redirecting', 'Redirecting…');
     } catch(e) {
+      clearWatch();
       rlFail();
       showErr(errEl, friendlyErr(e.code));
       btn.disabled = false; btn.textContent = _T('login.create_account', 'Create account →');
@@ -811,12 +990,15 @@ html[dir="rtl"] .reset-message { text-align: right; }
     errEl.style.display = 'none';
     if (!rlCheck(errEl)) return;
     btn.disabled = true; btn.textContent = _T('login.signing_in', 'Signing in…');
+    var clearWatch = _armStallWatchdog(btn, errEl, _T('login.signin_btn', 'Sign in →'));
     try {
       await auth.signInWithEmailAndPassword(email, pass);
+      clearWatch();
       localStorage.removeItem('aura_uid');
       rlReset();
       btn.textContent = _T('login.redirecting', 'Redirecting…');
     } catch(e) {
+      clearWatch();
       rlFail();
       showErr(errEl, friendlyErr(e.code));
       btn.disabled = false; btn.textContent = _T('login.signin_btn', 'Sign in →');
