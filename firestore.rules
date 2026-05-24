@@ -3,9 +3,27 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ── User profiles & quiz results ────────────────────────────
-    // Only the authenticated owner can read or write their own document.
+    // Only the authenticated owner can read/write their own document,
+    // and they can NEVER touch the `isAdmin` field from a client SDK.
+    // isAdmin is set/revoked exclusively via the Firebase Console (Admin
+    // SDK bypasses these rules), so self-promotion is impossible no
+    // matter what the client sends.
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // Create: owner only, and the new doc cannot ship with isAdmin set.
+      allow create: if request.auth != null
+        && request.auth.uid == userId
+        && !('isAdmin' in request.resource.data);
+
+      // Update: owner only, and isAdmin must not be among the affected keys.
+      // (Updating other fields when isAdmin is already true is fine — the
+      // value isn't in the diff because it didn't change.)
+      allow update: if request.auth != null
+        && request.auth.uid == userId
+        && !('isAdmin' in request.resource.data.diff(resource.data).affectedKeys());
+
+      allow delete: if request.auth != null && request.auth.uid == userId;
     }
 
     // ── Moodboard saved looks ────────────────────────────────────
@@ -32,58 +50,76 @@ service cloud.firestore {
                .data.quizResult.id;
     }
 
+    // True iff the signed-in user has been granted admin in Firestore.
+    // Reads `users/{uid}.isAdmin`. Missing field → null → != true → false.
+    // The field can only be set via the Firebase Console (Admin SDK), so
+    // this is server-trusted.
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid))
+               .data.isAdmin == true;
+    }
+
+    // Either an admin (full bypass) or a quiz-member of this specific circle.
+    // `||` short-circuits so admins without a quiz result don't crash on
+    // userAesthetic()'s nested field read.
+    function canAccessCommunity(aestheticId) {
+      return isAdmin() || userAesthetic() == aestheticId;
+    }
+
     match /communities/{aestheticId}/posts/{postId} {
 
-      // Read: authenticated + quiz result is CURRENTLY this circle
+      // Read: admin OR quiz-member of this circle
       allow read: if request.auth != null
-        && userAesthetic() == aestheticId;
+        && canAccessCommunity(aestheticId);
 
-      // Create: author must be self, must declare matching aestheticId,
-      // content must be a non-empty string ≤ 1 000 chars
+      // Create: author must be self, aestheticId must match the URL,
+      // content must be a non-empty string ≤ 1 000 chars.
+      // Admins can post in any circle; regular users still need a
+      // matching quiz result.
       allow create: if request.auth != null
-        && userAesthetic() == aestheticId
+        && canAccessCommunity(aestheticId)
         && request.resource.data.authorId   == request.auth.uid
         && request.resource.data.aestheticId == aestheticId
         && request.resource.data.content is string
         && request.resource.data.content.size() > 0
         && request.resource.data.content.size() <= 1000;
 
-      // Update: post owner edits content — OR — any circle member
-      // toggles a reaction (only the `reactions` map may change).
-      // Both branches require the user STILL belongs to this circle.
+      // Update: post owner edits content — OR — any community member
+      // (or admin) toggles a reaction (only the `reactions` map may
+      // change). Both branches require the user can still access this
+      // circle (quiz-match or admin).
       allow update: if request.auth != null
-        && userAesthetic() == aestheticId
+        && canAccessCommunity(aestheticId)
         && (
           resource.data.authorId == request.auth.uid
           ||
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions'])
         );
 
-      // Delete: post's author AND still in this circle. A user who
-      // switched aesthetics can no longer touch their previous-circle
-      // posts — those become orphaned data, enforcing the strict
-      // "old communities must be blocked" invariant.
+      // Delete: post author + still has access (quiz-match or admin).
+      // Admins can also delete posts they authored. Moderating other
+      // people's posts is intentionally NOT enabled — that would be a
+      // separate feature.
       allow delete: if request.auth != null
         && resource.data.authorId == request.auth.uid
-        && userAesthetic() == aestheticId;
+        && canAccessCommunity(aestheticId);
 
       // ── Comments ──────────────────────────────────────────────
       match /comments/{commentId} {
 
         allow read: if request.auth != null
-          && userAesthetic() == aestheticId;
+          && canAccessCommunity(aestheticId);
 
         allow create: if request.auth != null
-          && userAesthetic() == aestheticId
+          && canAccessCommunity(aestheticId)
           && request.resource.data.authorId == request.auth.uid
           && request.resource.data.content is string
           && request.resource.data.content.size() > 0
           && request.resource.data.content.size() <= 400;
 
-        // Delete: comment author AND still in this circle.
         allow delete: if request.auth != null
           && resource.data.authorId == request.auth.uid
-          && userAesthetic() == aestheticId;
+          && canAccessCommunity(aestheticId);
       }
     }
 

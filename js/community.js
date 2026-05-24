@@ -44,11 +44,15 @@ var COMM_GROUPS = [
 
 var _currentUser   = null;   // Firebase user object
 var _userQuiz      = null;   // { id, name, auraColor, … } — LIVE from Firestore
+var _isAdmin       = false;  // mirrors users/{uid}.isAdmin — full-access bypass
 var _currentGroup  = null;   // group object currently viewed
 var _postsUnsub    = null;   // posts onSnapshot unsubscribe handle
 var _quizUnsub     = null;   // users/{uid} onSnapshot unsubscribe handle
 var _quizChannel   = null;   // cross-tab broadcast for fast invalidation
 var _quizHydrated  = false;  // first snapshot has arrived
+
+/* Tiny accessor used by other modules (settings.html badge, debugging). */
+window.AuraIsAdmin = function () { return _isAdmin; };
 
 /* ── Bootstrap ──────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function () {
@@ -59,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (_quizUnsub) { _quizUnsub(); _quizUnsub = null; }
     _quizHydrated = false;
     _userQuiz     = null;
+    _isAdmin      = false;
 
     _currentUser = user;
     if (!user) return; // initAuthGuard handles the redirect to login
@@ -123,11 +128,14 @@ function _attachUserQuizListener() {
       .onSnapshot(
         function (snap) {
           clearTimeout(safety);
-          var prevId = _userQuiz && _userQuiz.id;
-          var qr     = snap.exists && snap.data() && snap.data().quizResult;
-          var newId  = qr && qr.id ? qr.id : null;
+          var prevId    = _userQuiz && _userQuiz.id;
+          var prevAdmin = _isAdmin;
+          var data      = snap.exists ? snap.data() : null;
+          var qr        = data && data.quizResult;
+          var newId     = qr && qr.id ? qr.id : null;
 
           _userQuiz = (qr && newId) ? qr : null;
+          _isAdmin  = !!(data && data.isAdmin === true);
 
           /* Keep the synchronous mirror in lockstep with the live value */
           try {
@@ -141,8 +149,9 @@ function _attachUserQuizListener() {
           }
 
           /* Subsequent update — id may have changed (retake, sign-out,
-             admin-cleared, etc). React only on actual id change. */
-          if (prevId !== newId) _onQuizChanged(prevId, newId);
+             admin-cleared, etc) OR admin status may have flipped.
+             React only on an actual change. */
+          if (prevId !== newId || prevAdmin !== _isAdmin) _onQuizChanged(prevId, newId);
         },
         function (err) {
           console.warn('[Community] quiz listener error:',
@@ -166,6 +175,14 @@ function _onQuizChanged(prevId, newId) {
 
   var hubEl   = document.getElementById('comm-hub');
   var groupEl = document.getElementById('comm-group');
+
+  /* Admin bypass: their access is independent of quiz id, so don't
+     kick them out of any community when their quiz result changes.
+     Just refresh the hub so it reflects the latest state. */
+  if (_isAdmin) {
+    if (hubEl && hubEl.style.display !== 'none') _renderHub();
+    return;
+  }
 
   /* If we're inside a community feed whose id no longer matches the
      user's current aesthetic, kick them back to the hub. */
@@ -253,6 +270,24 @@ function _renderHub() {
   var heroSub    = document.querySelector('.comm-hero-sub');
   var heroEyebrow = document.querySelector('.comm-hero .eyebrow');
   var heroH1     = document.querySelector('.comm-hero h1');
+
+  /* Admin bypass: every circle is unlocked, no quiz CTA, no kick-out
+     logic. The hero copy is intentionally subtle — not a giant
+     "ADMIN MODE" billboard, just a quiet "All circles open." */
+  if (_isAdmin) {
+    if (heroEyebrow) heroEyebrow.textContent = 'Admin Access';
+    if (heroH1)      heroH1.textContent      = 'All circles open.';
+    if (heroSub)     heroSub.textContent      = 'Every community is accessible.';
+    container.innerHTML = COMM_GROUPS.map(function (g) {
+      return _groupCard(g, 'admin');
+    }).join('');
+    container.querySelectorAll('.group-card').forEach(function (card) {
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') card.click();
+      });
+    });
+    return;
+  }
 
   if (!_userQuiz) {
     // No result yet — invite them to take the quiz
@@ -362,13 +397,16 @@ function _retryLoadQuiz() {
 
 function _groupCard(group, state) {
   var isMine   = state === 'mine';
+  var isAdminCard = state === 'admin';
   var isLocked = state === 'locked' || state === 'noquiz';
-  var onclick  = isMine
+  var canEnter = isMine || isAdminCard;
+  var onclick  = canEnter
     ? 'enterGroup(\'' + group.id + '\')'
     : 'blockGroupAccess(\'' + group.id + '\')';
 
   return '<div class="group-card' +
     (isMine ? ' group-card--mine' : '') +
+    (isAdminCard ? ' group-card--mine group-card--admin' : '') +
     (isLocked ? ' group-card--locked' : '') +
     '" style="--group-color:' + group.color + '"' +
     ' onclick="' + onclick + '"' +
@@ -381,7 +419,7 @@ function _groupCard(group, state) {
       (isMine ? '<span class="group-card-badge">Your Circle</span>' : '') +
     '</div>' +
     '<div class="group-card-cta">' +
-      (isMine
+      (canEnter
         ? '<span class="group-enter-btn">Enter Circle →</span>'
         : '<span class="group-lock-icon">⊘</span>') +
     '</div>' +
@@ -393,6 +431,12 @@ function _groupCard(group, state) {
 function enterGroup(groupId) {
   var group = COMM_GROUPS.find(function (g) { return g.id === groupId; });
   if (!group) return;
+
+  /* Admin: any circle, no checks. Server-side Firestore rules still
+     verify isAdmin == true on every read/write, so this client path
+     is just for UX — a non-admin who calls this from devtools would
+     still be denied at the rules level. */
+  if (_isAdmin) { _openGroup(group); return; }
 
   if (!_userQuiz) {
     _showNoQuizModal();
@@ -414,6 +458,8 @@ function blockGroupAccess(groupId) {
 }
 
 function _tryEnterGroup(group) {
+  if (_isAdmin) { _openGroup(group); return; }
+
   if (!_userQuiz) {
     /* No quiz result loaded — don't show a blocking modal here.
        The hub will render the appropriate no-quiz or retry state. */

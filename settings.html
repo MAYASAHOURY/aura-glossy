@@ -124,6 +124,24 @@
   margin-bottom: 24px;
 }
 
+/* ✦✦ Admin badge ✦✦
+   Surfaces only when users/{uid}.isAdmin === true. Quiet, monochrome,
+   monospace — purely so the account holder knows the flag is set.
+   Not a feature ad, just a status pill. */
+.s-admin-badge {
+  display: none;          /* JS flips to inline-block when admin */
+  margin: -16px 0 20px;   /* tucks just below the email line */
+  padding: 2px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #c084a0;
+  border: 1px solid rgba(192,132,160,0.42);
+  border-radius: 40px;
+  background: rgba(192,132,160,0.06);
+}
+
 /* ✦✦ Info rows ✦✦ */
 .s-rows {
   width: 100%;
@@ -232,6 +250,7 @@
 
       <p class="s-name" id="s-name">…</p>
       <p class="s-email" id="s-email">…</p>
+      <span class="s-admin-badge" id="s-admin-badge" aria-label="Admin account">Admin</span>
 
       <div class="s-rows">
         <div class="s-row">
@@ -348,6 +367,14 @@ firebase.auth().onAuthStateChanged(async function(user) {
     try {
       var profileDoc = await firebase.firestore().collection('users').doc(user.uid).get();
       var data = profileDoc.exists ? profileDoc.data() : {};
+
+      /* Admin badge — only renders for accounts flagged in Firestore.
+         The client check is purely cosmetic; Firestore rules are the
+         source of truth for what an admin can actually do. */
+      if (data.isAdmin === true) {
+        var badge = document.getElementById('s-admin-badge');
+        if (badge) badge.style.display = 'inline-block';
+      }
 
       var quizResult = data.quizResult;
       document.getElementById('r-aesthetic').textContent =
