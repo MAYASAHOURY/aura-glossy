@@ -668,7 +668,7 @@
       ]},
       { name: 'The Preppy Edit', tier: 'mid', tag: 'Soft preppy · navy V-neck over pinstripe shirt and tailored trousers', heroIdx: 4, pieces: [
         { category: 'Top',       name: 'Navy Cable-Knit Cropped V-Neck Sweater',       store: 'H&M',           price: '$39', q: 'navy cable knit cropped v neck sweater women soft girl preppy' },
-        { category: 'Shirt',     name: 'White/Blue Pinstripe Collared Shirt (Layered)', store: 'Uniqlo',       price: '$39', q: 'white blue pinstripe collared shirt women preppy layering underneath' },
+        { category: 'Top',       name: 'White/Blue Pinstripe Collared Shirt (Layered)', store: 'Uniqlo',       price: '$39', q: 'white blue pinstripe collared shirt women preppy layering underneath' },
         { category: 'Bottom',    name: 'Cream/Ivory Wide-Leg Tailored Trousers',       store: 'Zara',          price: '$69', q: 'cream ivory wide leg tailored trousers women soft girl preppy' },
         { category: 'Belt',      name: 'Brown Leather Belt',                           store: 'H&M',           price: '$20', q: 'brown leather belt women classic preppy' },
         { category: 'Jewelry',   name: 'Gold Logo Pendant Necklace',                   store: 'H&M',           price: '$18', q: 'gold logo pendant necklace women soft girl chanel style elegant' },
@@ -1546,12 +1546,16 @@
   _allCombos.forEach(function(c) { _comboByIdx[c.heroIdx] = c; });
 
   var HOTSPOT_POS = {
-    'Top': {x:42,y:28}, 'Dress': {x:45,y:43}, 'Jacket': {x:32,y:26}, 'Blazer': {x:30,y:26},
+    'Top': {x:42,y:28}, 'Shirt': {x:42,y:28}, 'Dress': {x:45,y:43}, 'Jacket': {x:32,y:26}, 'Blazer': {x:30,y:26},
     'Coat': {x:33,y:22}, 'Outer': {x:33,y:22}, 'Layer': {x:66,y:28},
     'Bottom': {x:50,y:63}, 'Skirt': {x:50,y:60}, 'Belt': {x:47,y:52},
     'Tights': {x:50,y:76}, 'Shoes': {x:50,y:89}, 'Boots': {x:50,y:85},
     'Bag': {x:74,y:63}, 'Accessory': {x:58,y:13}, 'Hat': {x:50,y:7},
-    'Jewelry': {x:53,y:37}, 'Scarf': {x:38,y:22}, 'Hair': {x:52,y:8}
+    'Jewelry': {x:53,y:37}, 'Scarf': {x:38,y:22}, 'Hair': {x:52,y:8},
+    // Beauty categories — face-feature defaults for portrait-style outfit images.
+    // Per-outfit overrides in OUTFIT_HOTSPOTS should refine these when face position differs.
+    'Blush':    {x:30,y:35}, 'Lip':      {x:46,y:55},
+    'Lashes':   {x:60,y:18}, 'Skincare': {x:45,y:25}
   };
 
   /* ── Per-image hotspot overrides ──────────────────────────────
@@ -1566,7 +1570,10 @@
      ────────────────────────────────────────────────────────────── */
   var OUTFIT_HOTSPOTS = {
     classic: {
-      0: { Top:{x:58,y:50}, Dress:{x:58,y:52}, Scarf:{x:58,y:42}, Jewelry:{x:58,y:46}, Accessory:{x:50,y:36}, Bag:{x:66,y:76}, Shoes:{x:55,y:93}, Boots:{x:55,y:93} },
+      // outfit-1: model in white mini dress, black knit draped over shoulders, holding black Kelly bag,
+      // cat-eye sunglasses on face, gold drop earrings, cuff bracelet on raised wrist, black ballet flats.
+      // Jewelry__1 = earrings, Jewelry__2 = cuff bracelet.
+      0: { Dress:{x:44,y:55}, Layer:{x:34,y:42}, Bag:{x:63,y:72}, Shoes:{x:48,y:90}, Accessory:{x:46,y:35}, Jewelry:{x:54,y:37}, Jewelry__2:{x:34,y:38} },
       1: { Top:{x:50,y:35}, Layer:{x:50,y:42}, Jacket:{x:35,y:38}, Blazer:{x:35,y:38}, Belt:{x:50,y:55}, Bottom:{x:50,y:78}, Bag:{x:14,y:88} },
       2: { Coat:{x:50,y:40}, Outer:{x:50,y:40}, Jacket:{x:50,y:40}, Top:{x:50,y:35}, Dress:{x:50,y:42}, Bag:{x:45,y:62}, Tights:{x:52,y:80}, Shoes:{x:50,y:95}, Boots:{x:50,y:95} },
       3: { Top:{x:50,y:30}, Belt:{x:48,y:50}, Bottom:{x:48,y:73}, Bag:{x:14,y:78}, Accessory:{x:48,y:14} },
@@ -1574,7 +1581,10 @@
       5: { Coat:{x:55,y:62}, Outer:{x:55,y:62}, Jacket:{x:55,y:62}, Top:{x:55,y:60}, Jewelry:{x:40,y:58}, Accessory:{x:40,y:58}, Tights:{x:55,y:90} }
     },
     casual: {
-      0: { Top:{x:45,y:50}, Belt:{x:40,y:78}, Bottom:{x:40,y:90}, Bag:{x:78,y:75}, Jewelry:{x:45,y:70}, Accessory:{x:33,y:35} },
+      // outfit-1: chest-up mirror selfie, black crop tee, brown patent belt at waist, charcoal trousers just visible at bottom,
+      // GG monogram hobo bag at right, gold hoop earrings on left ear, stacking rings/bangles across both hands.
+      // Jewelry__1 = earrings, Jewelry__2 = rings + bangles.
+      0: { Top:{x:45,y:50}, Belt:{x:35,y:88}, Bottom:{x:40,y:90}, Bag:{x:70,y:75}, Jewelry:{x:25,y:33}, Jewelry__2:{x:33,y:75} },
       1: { Top:{x:38,y:50}, Hat:{x:36,y:32}, Bottom:{x:55,y:80}, Bag:{x:14,y:88}, Jewelry:{x:38,y:45}, Accessory:{x:36,y:32} },
       2: { Top:{x:50,y:45}, Blazer:{x:50,y:40}, Jacket:{x:50,y:40}, Bottom:{x:50,y:65}, Shoes:{x:50,y:90}, Bag:{x:65,y:90}, Accessory:{x:50,y:30} },
       3: { Jacket:{x:40,y:45}, Outer:{x:40,y:45}, Top:{x:45,y:45}, Bottom:{x:50,y:70}, Shoes:{x:32,y:80}, Hat:{x:42,y:22} },
@@ -1582,7 +1592,11 @@
       5: { Top:{x:50,y:35}, Bottom:{x:50,y:70}, Shoes:{x:50,y:95}, Bag:{x:22,y:78}, Accessory:{x:45,y:18} }
     },
     streetwear: {
-      0: { Hat:{x:50,y:8}, Top:{x:52,y:32}, Coat:{x:50,y:35}, Outer:{x:50,y:35}, Jacket:{x:50,y:35}, Bottom:{x:45,y:65}, Bag:{x:18,y:65}, Shoes:{x:28,y:95}, Accessory:{x:52,y:32} },
+      // outfit-1: model outside flower shop, baker boy cap top, amber sunglasses on face, khaki trench draped on shoulders,
+      // white dress shirt visible at chest, patterned tie down center, black wide belt at waist, dark gray maxi skirt,
+      // brown crossbody at left hip, dark brown platform loafers on raised left foot.
+      // Accessory__1 = tie at chest, Accessory__2 = sunglasses on face.
+      0: { Hat:{x:38,y:8}, Coat:{x:38,y:35}, Outer:{x:38,y:35}, Jacket:{x:38,y:35}, Top:{x:43,y:30}, Accessory:{x:46,y:32}, Accessory__2:{x:40,y:17}, Belt:{x:40,y:48}, Bottom:{x:40,y:70}, Bag:{x:20,y:65}, Shoes:{x:28,y:90} },
       1: { Hat:{x:40,y:28}, Blazer:{x:38,y:50}, Jacket:{x:38,y:50}, Top:{x:38,y:50}, Bottom:{x:38,y:75}, Shoes:{x:33,y:95}, Bag:{x:45,y:60} },
       2: { Hat:{x:48,y:12}, Top:{x:50,y:40}, Bottom:{x:50,y:70}, Shoes:{x:55,y:95} },
       3: { Jacket:{x:50,y:55}, Outer:{x:50,y:55}, Top:{x:50,y:55}, Scarf:{x:35,y:55}, Bottom:{x:50,y:80}, Boots:{x:50,y:95}, Shoes:{x:50,y:95}, Bag:{x:35,y:53} },
@@ -1590,7 +1604,10 @@
       5: { Top:{x:40,y:45}, Bottom:{x:40,y:70}, Accessory:{x:40,y:32} }
     },
     minimalist: {
-      0: { Top:{x:50,y:30}, Skirt:{x:55,y:60}, Belt:{x:58,y:42}, Boots:{x:48,y:90}, Bag:{x:42,y:60}, Accessory:{x:50,y:18} },
+      // outfit-1: model at marble bar, chocolate turtleneck on upper torso, brown wide belt at waist,
+      // brown plaid wrap midi skirt with side slit, small grey/brown tote held at left, brown knee-high pointed boots.
+      // Pieces are Top/Bottom/Belt/Shoes/Bag (NOT Skirt/Boots) — match the actual category names.
+      0: { Top:{x:48,y:30}, Belt:{x:50,y:42}, Bottom:{x:50,y:60}, Bag:{x:40,y:58}, Shoes:{x:55,y:88} },
       1: { Top:{x:36,y:50}, Coat:{x:30,y:60}, Outer:{x:30,y:60}, Jacket:{x:30,y:60}, Bottom:{x:40,y:80}, Shoes:{x:42,y:92}, Bag:{x:62,y:50} },
       2: { Top:{x:40,y:50}, Bottom:{x:35,y:85}, Bag:{x:62,y:75}, Accessory:{x:30,y:65} },
       3: { Top:{x:50,y:50}, Dress:{x:50,y:60}, Belt:{x:38,y:65}, Bag:{x:22,y:78}, Accessory:{x:30,y:42} },
@@ -1598,7 +1615,11 @@
       5: { Top:{x:50,y:32}, Layer:{x:38,y:32}, Bottom:{x:50,y:60}, Bag:{x:52,y:38}, Shoes:{x:48,y:95} }
     },
     elegant: {
-      0: { Top:{x:40,y:55}, Skirt:{x:45,y:85}, Dress:{x:42,y:65}, Jewelry:{x:35,y:32}, Accessory:{x:62,y:60} },
+      // outfit-1: marble bathroom mirror selfie, dark brown sheer floral lace bodysuit on torso,
+      // chocolate satin gathered mini skirt at bottom (just visible), gold wide cuff bracelet on right wrist holding phone,
+      // gold chunky hoop earrings on left ear. Pieces use Bottom (not Skirt) and Shoes (not visible, place at edge).
+      // Jewelry__1 = cuff bracelet on raised wrist, Jewelry__2 = hoop earrings on ear.
+      0: { Top:{x:42,y:65}, Bottom:{x:42,y:90}, Jewelry:{x:55,y:35}, Jewelry__2:{x:33,y:35}, Shoes:{x:55,y:90} },
       1: { Top:{x:38,y:45}, Skirt:{x:38,y:70}, Dress:{x:38,y:55}, Bag:{x:30,y:88}, Jewelry:{x:38,y:33} },
       2: { Coat:{x:40,y:50}, Outer:{x:40,y:50}, Jacket:{x:40,y:50}, Top:{x:42,y:40}, Boots:{x:50,y:80}, Shoes:{x:50,y:80}, Bag:{x:83,y:65}, Accessory:{x:42,y:22} },
       3: { Top:{x:50,y:50}, Dress:{x:50,y:50}, Boots:{x:35,y:75}, Bag:{x:14,y:68}, Accessory:{x:50,y:38} },
@@ -1606,7 +1627,11 @@
       5: { Dress:{x:52,y:65}, Top:{x:52,y:50}, Bag:{x:55,y:70}, Jewelry:{x:62,y:38} }
     },
     korean: {
-      0: { Top:{x:50,y:45}, Skirt:{x:50,y:65}, Boots:{x:48,y:90}, Shoes:{x:48,y:90}, Bag:{x:62,y:50} },
+      // outfit-1: model in cafe, white zip-up cap-sleeve cropped top, brown plaid pleated mini skirt at hip,
+      // dark brown knee-high buckle-strap boots on legs, tan caramel shoulder bag at right hip,
+      // silver hoop earrings on ear, beaded bracelet on left wrist (resting on stool).
+      // Pieces are Top/Bottom/Shoes/Bag/Jewelry/Jewelry — match exact category names.
+      0: { Top:{x:45,y:42}, Bottom:{x:45,y:60}, Shoes:{x:42,y:90}, Bag:{x:55,y:60}, Jewelry:{x:45,y:33}, Jewelry__2:{x:30,y:50} },
       1: { Hat:{x:45,y:25}, Scarf:{x:42,y:40}, Top:{x:45,y:65}, Jacket:{x:18,y:65}, Outer:{x:18,y:65}, Jewelry:{x:45,y:55} },
       2: { Top:{x:50,y:45}, Layer:{x:35,y:45}, Jacket:{x:35,y:45}, Skirt:{x:50,y:65}, Boots:{x:50,y:95}, Jewelry:{x:52,y:45} },
       3: { Hat:{x:50,y:18}, Top:{x:45,y:45}, Skirt:{x:50,y:60}, Shoes:{x:52,y:95}, Bag:{x:62,y:75}, Accessory:{x:50,y:30} },
@@ -1614,7 +1639,12 @@
       5: { Top:{x:40,y:50}, Skirt:{x:40,y:75}, Bag:{x:60,y:55}, Jewelry:{x:40,y:32} }
     },
     y2k: {
-      0: { Hat:{x:45,y:12}, Top:{x:45,y:38}, Skirt:{x:42,y:58}, Boots:{x:50,y:92}, Bag:{x:22,y:50}, Belt:{x:42,y:55}, Accessory:{x:45,y:18} },
+      // outfit-1: night party shot, brown tweed baker boy cap on top, brown gradient aviator sunglasses on face,
+      // white fitted baby crop tee on torso, faux fur leopard mini at hip, cream knee-high pointed boots at feet,
+      // Fendi monogram baguette bag partly visible at left, gold layered chain necklaces on chest,
+      // gold bangle bracelets stack on left wrist resting on hip.
+      // Jewelry__1 = chains on chest, Jewelry__2 = bangles on wrist.
+      0: { Hat:{x:48,y:12}, Accessory:{x:48,y:19}, Top:{x:50,y:38}, Bottom:{x:48,y:58}, Shoes:{x:48,y:90}, Bag:{x:25,y:50}, Jewelry:{x:48,y:43}, Jewelry__2:{x:30,y:65} },
       1: { Hat:{x:38,y:12}, Top:{x:42,y:35}, Skirt:{x:40,y:58}, Boots:{x:30,y:90}, Shoes:{x:30,y:90}, Bag:{x:62,y:55} },
       2: { Top:{x:42,y:45}, Bottom:{x:45,y:80}, Bag:{x:62,y:70}, Belt:{x:42,y:60}, Jewelry:{x:42,y:35} },
       3: { Top:{x:45,y:35}, Bottom:{x:45,y:70}, Bag:{x:52,y:55}, Accessory:{x:30,y:12} },
@@ -1622,7 +1652,12 @@
       5: { Top:{x:38,y:45}, Bottom:{x:38,y:75}, Shoes:{x:38,y:95}, Bag:{x:18,y:50}, Jewelry:{x:38,y:30} }
     },
     vintage: {
-      0: { Top:{x:38,y:33}, Dress:{x:38,y:40}, Tights:{x:42,y:60}, Shoes:{x:70,y:60}, Accessory:{x:40,y:15}, Jewelry:{x:40,y:22} },
+      // outfit-1: 60s mod editorial, white satin headband on top, crystal chandelier drop earring on left ear,
+      // white bouclé tweed cropped jacket on upper torso (gold buttons), matching white tweed mini skirt,
+      // black opaque tights down legs, white crystal-embellished ankle-strap pumps on raised right foot,
+      // rhinestone bracelet on right wrist resting on dresser.
+      // Jewelry__1 = chandelier earrings, Jewelry__2 = rhinestone bracelet.
+      0: { Accessory:{x:40,y:15}, Jacket:{x:38,y:30}, Outer:{x:38,y:30}, Bottom:{x:38,y:45}, Tights:{x:40,y:65}, Shoes:{x:55,y:70}, Jewelry:{x:45,y:25}, Jewelry__2:{x:33,y:35} },
       1: { Jacket:{x:50,y:40}, Outer:{x:50,y:40}, Top:{x:50,y:40}, Skirt:{x:50,y:65}, Tights:{x:50,y:88}, Jewelry:{x:52,y:22} },
       2: { Jacket:{x:58,y:38}, Outer:{x:58,y:38}, Top:{x:52,y:32}, Bottom:{x:48,y:62}, Tights:{x:35,y:60}, Shoes:{x:30,y:80}, Bag:{x:62,y:75} },
       3: { Coat:{x:50,y:50}, Outer:{x:50,y:50}, Dress:{x:50,y:55}, Top:{x:50,y:55}, Tights:{x:45,y:80}, Shoes:{x:62,y:92}, Boots:{x:62,y:92}, Bag:{x:14,y:50}, Accessory:{x:42,y:35} },
@@ -1630,7 +1665,9 @@
       5: { Top:{x:50,y:50}, Dress:{x:50,y:50}, Bag:{x:18,y:70}, Jewelry:{x:50,y:30} }
     },
     softgirl: {
-      0: { Top:{x:30,y:88}, Jewelry:{x:50,y:88}, Accessory:{x:50,y:35}, Hair:{x:80,y:30} },
+      // outfit-1: close-up beauty portrait — face hotspots, not clothing
+      // Lashes on right eye, Skincare on forehead, Blush on left cheek, Lip on lower lip, Jewelry on faint necklace at very bottom
+      0: { Lashes:{x:62,y:13}, Skincare:{x:45,y:20}, Blush:{x:28,y:34}, Lip:{x:46,y:57}, Jewelry:{x:46,y:96} },
       1: { Top:{x:50,y:30}, Skirt:{x:50,y:70}, Dress:{x:50,y:55}, Bag:{x:25,y:50} },
       2: { Top:{x:40,y:40}, Layer:{x:40,y:40}, Dress:{x:40,y:70}, Shoes:{x:38,y:95}, Bag:{x:30,y:70}, Jewelry:{x:40,y:38} },
       3: { Top:{x:50,y:50}, Dress:{x:50,y:60}, Hair:{x:58,y:28}, Jewelry:{x:38,y:38} },
@@ -1638,18 +1675,26 @@
       5: { Top:{x:50,y:45}, Layer:{x:50,y:35}, Bottom:{x:50,y:75}, Belt:{x:50,y:58}, Bag:{x:62,y:50} }
     },
     hijabicore: {
-      // outfit-1: brown hijab + brown leather coat + turtleneck + pinstripe maxi + brown tote
-      0: { Scarf:{x:38,y:25}, Coat:{x:42,y:50}, Outer:{x:42,y:50}, Top:{x:42,y:40}, Skirt:{x:38,y:78}, Bag:{x:55,y:68}, Accessory:{x:40,y:22} },
-      // outfit-2: black hijab + white shirt + tie + black waistcoat + long black coat + brown bag
-      1: { Scarf:{x:42,y:30}, Coat:{x:32,y:65}, Outer:{x:32,y:65}, Top:{x:42,y:55}, Blazer:{x:45,y:60}, Bottom:{x:42,y:85}, Bag:{x:62,y:65}, Accessory:{x:38,y:33} },
-      // outfit-3: gray hijab + gray knit + plaid blanket scarf + gray pleated maxi + black bag + white sneakers
-      2: { Scarf:{x:42,y:22}, Top:{x:42,y:45}, Skirt:{x:42,y:75}, Bag:{x:62,y:60}, Shoes:{x:50,y:95}, Layer:{x:58,y:50} },
-      // outfit-4: mauve hijab + cream oversized knit + beige satin maxi + cream bag + gold chains
-      3: { Scarf:{x:38,y:15}, Top:{x:50,y:45}, Skirt:{x:52,y:78}, Bag:{x:22,y:75}, Jewelry:{x:50,y:18} },
-      // outfit-5: white hijab + sage linen jacket + white maxi
-      4: { Scarf:{x:45,y:18}, Jacket:{x:45,y:40}, Outer:{x:45,y:40}, Top:{x:45,y:50}, Skirt:{x:50,y:75} },
-      // outfit-6: brown hijab + navy military jacket + dark jeans + brown pumps + LV bag
-      5: { Scarf:{x:50,y:22}, Jacket:{x:45,y:45}, Outer:{x:45,y:45}, Top:{x:45,y:42}, Bottom:{x:45,y:70}, Bag:{x:25,y:70}, Shoes:{x:38,y:95} }
+      // outfit-1: seated portrait, brown hijab on head, sunglasses up on hijab, brown leather coat covers torso,
+      // turtleneck visible at neck, pinstripe maxi falls bottom-left, brown tote held in lap.
+      0: { Scarf:{x:40,y:14}, Accessory:{x:46,y:10}, Coat:{x:46,y:50}, Outer:{x:46,y:50}, Top:{x:40,y:35}, Skirt:{x:30,y:82}, Bag:{x:55,y:70} },
+      // outfit-2: top-down street shot, black hijab on head, long wool coat full body, waistcoat visible mid-chest,
+      // white shirt collar at top, tie down center, wide trousers visible at bottom, brown bag at right hip.
+      1: { Scarf:{x:46,y:22}, Coat:{x:38,y:55}, Outer:{x:38,y:55}, Blazer:{x:46,y:46}, Top:{x:46,y:32}, Bottom:{x:42,y:85}, Bag:{x:64,y:50} },
+      // outfit-3: standing full-body, dark hijab top of head, plaid blanket scarf draped across shoulders/right side,
+      // gray knit on torso, charcoal pleated maxi lower half, black woven bag at right hip, white sneakers at feet.
+      // Scarf appears twice: __1 = plaid blanket scarf, __2 = the hijab.
+      2: { Top:{x:43,y:38}, Scarf:{x:55,y:33}, Scarf__2:{x:45,y:17}, Skirt:{x:45,y:70}, Bag:{x:57,y:60}, Shoes:{x:45,y:95} },
+      // outfit-4: mirror selfie, mauve hijab draped over neck/shoulders, cream fluffy knit dominates upper torso,
+      // beige satin bias maxi lower half, cream hobo bag at bottom-left, gold pendant on chest, gold stacking rings on hand at top.
+      // Jewelry appears twice: __1 = pendant on chest, __2 = rings on hand at top.
+      3: { Scarf:{x:28,y:12}, Top:{x:50,y:45}, Skirt:{x:45,y:80}, Bag:{x:15,y:80}, Jewelry:{x:43,y:22}, Jewelry__2:{x:33,y:6} },
+      // outfit-5: mirror selfie, white hijab full wrap, sage linen tie-front cropped jacket on torso,
+      // white long-sleeve tee visible above jacket and on arms, white tiered maxi skirt lower 2/3, flats at bottom.
+      4: { Scarf:{x:45,y:13}, Jacket:{x:48,y:32}, Outer:{x:48,y:32}, Top:{x:48,y:23}, Skirt:{x:50,y:70}, Shoes:{x:50,y:96} },
+      // outfit-6: hotel hallway mirror selfie, brown hijab on head, structured dark jacket on torso,
+      // wide dark jeans lower half, brown LV monogram mini bag at left hip, brown pointed pumps at feet.
+      5: { Scarf:{x:45,y:23}, Jacket:{x:43,y:45}, Outer:{x:43,y:45}, Bottom:{x:40,y:78}, Bag:{x:25,y:70}, Shoes:{x:38,y:95} }
     }
   };
 
@@ -1688,11 +1733,21 @@
     html01 += '<div class="hs-outfit-wrap">';
     html01 += '<img src="' + outfit.img + '" alt="' + outfit.label + '" loading="' + (oi < 3 ? 'eager' : 'lazy') + '">';
     html01 += '<div class="hs-outfit-overlay"></div>';
+    // Track per-category instance count so duplicates (e.g. two Scarf pieces in one outfit)
+    // can look up Category__2, Category__3 overrides instead of stacking on the same dot.
+    var catCounts = {};
     (outfit.pieces || []).forEach(function(piece, pi) {
-      var override = OUTFIT_HOTSPOTS[s.id] && OUTFIT_HOTSPOTS[s.id][oi] && OUTFIT_HOTSPOTS[s.id][oi][piece.category];
+      catCounts[piece.category] = (catCounts[piece.category] || 0) + 1;
+      var instance = catCounts[piece.category];
+      var overrides = OUTFIT_HOTSPOTS[s.id] && OUTFIT_HOTSPOTS[s.id][oi];
+      var override = null;
+      if (overrides) {
+        if (instance > 1) override = overrides[piece.category + '__' + instance];
+        if (!override && instance === 1) override = overrides[piece.category];
+      }
       var pos = override || HOTSPOT_POS[piece.category] || {x:50,y:50};
-      // Don't apply the index-based jitter offset when override is present —
-      // overrides are already pixel-final coordinates per piece.
+      // Don't apply the index-based jitter offset when a final override is present —
+      // overrides are pixel-final per piece. Without override, jitter prevents stacking.
       var xO = override ? 0 : (pi===1?5:pi===2?-4:0);
       var yO = override ? 0 : (pi===1?-3:pi===2?5:0);
       html01 += '<div class="hs-dot" style="left:' + Math.min(88,Math.max(12,pos.x+xO)) + '%;top:' + Math.min(90,Math.max(6,pos.y+yO)) + '%">';
@@ -1702,6 +1757,9 @@
       html01 += '<div class="hs-panel-name">' + piece.name + '</div>';
       html01 += '<div class="hs-panel-meta"><span class="hs-panel-store">' + piece.store + '</span><span class="hs-panel-price">' + piece.price + '</span></div>';
       html01 += '<a href="' + piece.url + '" class="hs-panel-link" target="_blank" rel="noopener noreferrer">Shop now →</a>';
+      // Defensive fallback — Pinterest always returns visual results even if retailer search is empty
+      var fallbackQ = encodeURIComponent(piece.name + ' women');
+      html01 += '<a href="https://www.pinterest.com/search/pins/?q=' + fallbackQ + '" class="hs-panel-link-alt" target="_blank" rel="noopener noreferrer">Or search Pinterest →</a>';
       html01 += '</div></div>';
     });
     html01 += '<button class="hs-save-btn" data-save-id="' + outfit.saveId + '" data-save-img="' + outfit.img + '" data-save-label="' + outfit.label + '" data-save-style="' + s.name + '" aria-label="Save to moodboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>';

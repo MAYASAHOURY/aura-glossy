@@ -205,7 +205,7 @@ const STORE_URLS = {
   'Depop':           q => `https://www.depop.com/search/?q=${encodeURIComponent(q)}`,
   'Reformation':     q => `https://www.thereformation.com/search?q=${encodeURIComponent(q)}`,
   'Levis':           q => `https://www.levi.com/US/en_US/search/?q=${encodeURIComponent(q)}`,
-  'Brandy Melville': q => `https://www.brandymelville.com/search?q=${encodeURIComponent(q)}`,
+  'Brandy Melville': q => `https://us.brandymelville.com/search?q=${encodeURIComponent(q)}`,
   'Princess Polly':  q => `https://us.princesspolly.com/search?q=${encodeURIComponent(q)}`,
   'Mejuri':          q => `https://mejuri.com/search?q=${encodeURIComponent(q)}&type=product`,
   'Dr. Martens':     q => `https://www.drmartens.com/us/en_us/search?q=${encodeURIComponent(q)}`,
@@ -226,11 +226,10 @@ const STORE_URLS = {
   'JW PEI':          q => `https://www.jwpei.com/search?q=${encodeURIComponent(q)}`,
   'Le Specs':        q => `https://www.lespecs.com/search?q=${encodeURIComponent(q)}`,
   'Pandora':         q => `https://us.pandora.net/en/search?q=${encodeURIComponent(q)}`,
-  'Polène':          q => `https://www.asos.com/search/?q=${encodeURIComponent(q)}`,
+  'Polène':          q => `https://www.polene-paris.com/search?q=${encodeURIComponent(q)}`,
   'Sézane':          q => `https://www.sezane.com/us/search?q=${encodeURIComponent(q)}`,
   'Tiffany & Co.':   q => `https://www.tiffany.com/en-us/search/?q=${encodeURIComponent(q)}`,
   'Toteme':          q => `https://toteme.com/search?q=${encodeURIComponent(q)}`,
-  'Veja':            q => `https://www.asos.com/search/?q=${encodeURIComponent(q)}`,
   'Modanisa':        q => `https://www.modanisa.com/en/search?q=${encodeURIComponent(q)}`
 };
 
