@@ -1,4 +1,4 @@
-﻿name: Life OS Notifier
+name: Life OS Notifier
 
 on:
   schedule:

@@ -1,4 +1,4 @@
-﻿import json, os, sys, requests
+import json, os, sys, requests
 from datetime import datetime, date
 from pathlib import Path
 
