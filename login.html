@@ -4,48 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>(function(){try{var l=localStorage.getItem("aura_lang");if(!l){var nl=(navigator.language||"en").toLowerCase().slice(0,2);l=(["en","es","ar","he"].indexOf(nl)>=0)?nl:"en";}document.documentElement.lang=l;document.documentElement.dir=(l==="ar"||l==="he")?"rtl":"ltr";}catch(e){}})();</script>
-<script>
-/* ─────────────────────────────────────────────────────────────────
-   LOGIN PREROLL — first-impression brand moment
-
-   Plays a quick ~1.5s "AURA GLOSSY" black panel BEFORE the form so
-   users entering from TikTok / Instagram understand what they're
-   joining. Heavily guarded so it can NEVER trap the page:
-
-     • Skipped instantly on in-app browsers (TikTok, Instagram, FB,
-       Snapchat, Pinterest, LINE, WeChat) — those users get the form
-       immediately so they don't feel stuck.
-     • Skipped on prefers-reduced-motion.
-     • Skipped if already shown in THIS tab (sessionStorage flag).
-     • Hard 2.5s safety: even if every animation and timer fails,
-       the preroll is force-removed.
-     • Tap-to-skip for impatient users.
-     • Decision runs synchronously in <head> so the document.body
-       attribute is set BEFORE any CSS paints — no FOUC.
-   ───────────────────────────────────────────────────────────────── */
-(function () {
-  var skip = false;
-  try { if (sessionStorage.getItem('aura_login_preroll_seen')) skip = true; } catch (e) {}
-  try { if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) skip = true; } catch (e) {}
-  try {
-    var ua = navigator.userAgent || '';
-    if (/TikTok|musical_ly|Instagram|FBAN|FBAV|FB_IAB|FBIOS|Twitter|TwitterAndroid|Snapchat|Pinterest|Line\/|MicroMessenger|WeChat|KAKAOTALK/i.test(ua)) skip = true;
-  } catch (e) {}
-  /* Slow connection — don't waste a brand moment on a 2G hop */
-  try {
-    var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (c && (c.saveData || /(^|-)2g$/i.test(c.effectiveType || ''))) skip = true;
-  } catch (e) {}
-
-  /* Expose the decision on <html> so CSS can flag-skip without JS */
-  if (skip) {
-    document.documentElement.setAttribute('data-preroll', 'skip');
-  } else {
-    document.documentElement.setAttribute('data-preroll', 'show');
-    try { sessionStorage.setItem('aura_login_preroll_seen', '1'); } catch (e) {}
-  }
-})();
-</script>
+<!-- Login preroll removed: stability over cinematic intro. The form
+     shows instantly on first paint so users from TikTok / Instagram
+     never feel stuck before sign-up. The value-prop block inside the
+     form panel still answers "why sign up?" in three short lines. -->
 <meta name="robots" content="noindex, nofollow">
 <title>Join Aura Glossy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -66,79 +28,6 @@
 }
 
 body { font-family: var(--font-sans); background: #0a0a0a; overflow: hidden; height: 100vh; }
-
-/* ✦✦ Login preroll — first-impression black brand panel ✦✦✦✦✦✦✦
-   Decision flag is set in <head> as html[data-preroll="show|skip"].
-   When skip, the preroll node still exists (it's in the DOM) but is
-   instantly hidden via display:none — no animation cost, no flash. */
-.login-preroll {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  background: #0a0a0a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.45s ease, visibility 0s linear 0.45s;
-  /* Avoid blocking touch on the form once the fade has started */
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-html[data-preroll="skip"] .login-preroll { display: none !important; }
-.login-preroll.is-hiding {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-.login-preroll-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  opacity: 0;
-  transform: translateY(8px);
-  animation: lpFadeIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
-}
-.login-preroll-logo {
-  font-family: var(--font-display);
-  font-size: clamp(26px, 5.5vw, 40px);
-  letter-spacing: 0.22em;
-  color: #fff;
-  font-weight: 400;
-  line-height: 1;
-}
-.login-preroll-rule {
-  width: 52px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.32);
-  display: block;
-  transform-origin: center;
-  animation: lpRule 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
-}
-.login-preroll-sub {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-}
-@keyframes lpFadeIn {
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes lpRule {
-  from { transform: scaleX(0); opacity: 0; }
-  to   { transform: scaleX(1); opacity: 1; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .login-preroll, .login-preroll-inner, .login-preroll-rule {
-    animation: none !important;
-    transition: opacity 0.2s linear !important;
-  }
-  .login-preroll-inner { opacity: 1; transform: none; }
-  .login-preroll-rule  { transform: none; opacity: 1; }
-}
 
 /* ✦✦ Premium value proposition ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦
    Three benefit lines + a "Sign up — free" tag. Sits between the
@@ -812,15 +701,6 @@ html[dir="rtl"] .reset-message { text-align: right; }
 </head>
 <body>
 
-<!-- Login preroll — auto-fades; head script decides show vs skip via html[data-preroll] -->
-<div id="login-preroll" class="login-preroll" aria-hidden="true">
-  <div class="login-preroll-inner">
-    <span class="login-preroll-logo">AURA GLOSSY</span>
-    <span class="login-preroll-rule"></span>
-    <span class="login-preroll-sub" data-i18n="login.preroll_sub">discover your aesthetic</span>
-  </div>
-</div>
-
 <div class="auth-wrap">
 
   <!-- LEFT: photo -->
@@ -909,50 +789,10 @@ html[dir="rtl"] .reset-message { text-align: right; }
   </div>
 </div>
 
-<script>
-/* ─────────────────────────────────────────────────────────────────
-   Preroll dismissal — runs as soon as parse hits this script tag.
-   Hard 2.5s safety timer is independent of every other path so the
-   preroll CANNOT trap the page even if Firebase, fonts, or animations
-   never resolve. Tap-to-skip honours impatient users.
-   ───────────────────────────────────────────────────────────────── */
-(function () {
-  var el = document.getElementById('login-preroll');
-  if (!el) return;
-
-  /* If head script decided to skip, no animation work needed at all. */
-  if (document.documentElement.getAttribute('data-preroll') === 'skip') {
-    el.style.display = 'none';
-    return;
-  }
-
-  var removed = false;
-  function dismiss() {
-    if (removed) return;
-    removed = true;
-    el.classList.add('is-hiding');
-    /* Hard-remove after the 0.45s opacity transition completes */
-    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 520);
-  }
-
-  /* Normal path: dismiss at ~1.5s — long enough to read "AURA GLOSSY",
-     short enough that no one feels stuck. */
-  setTimeout(dismiss, 1500);
-
-  /* Hard safety: even if the above is throttled (backgrounded tab,
-     low-power mode), force-remove at 2.5s. */
-  setTimeout(function () {
-    if (removed) return;
-    /* Skip the transition — just rip it out */
-    try { el.style.display = 'none'; } catch (e) {}
-    if (el.parentNode) el.parentNode.removeChild(el);
-    removed = true;
-  }, 2500);
-
-  /* Tap / click anywhere on the preroll → dismiss immediately */
-  el.addEventListener('click', dismiss, { once: true });
-})();
-</script>
+<!-- Preroll dismissal script removed alongside the preroll itself.
+     If a stale preroll DOM ever slips back in (e.g. from a cached
+     pre-removal HTML), a defensive sweep in the IIFE below catches
+     it on DOMContentLoaded so the form is never blocked. -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -962,6 +802,19 @@ html[dir="rtl"] .reset-message { text-align: right; }
 <script src="js/animations.js?v=15"></script>
 <script>
 (function() {
+  /* DEFENSIVE PREROLL SWEEP — kept as a safety net even though the
+     preroll DOM has been removed. If a stale node ever slips back in
+     (cached HTML, third-party injection, future regression) we kill
+     it immediately so the form is never blocked. */
+  try {
+    var stalePreroll = document.getElementById('login-preroll');
+    if (stalePreroll && stalePreroll.parentNode) {
+      stalePreroll.parentNode.removeChild(stalePreroll);
+    }
+    /* Also remove any lingering data-preroll attribute on <html>. */
+    document.documentElement.removeAttribute('data-preroll');
+  } catch (e) {}
+
   const auth     = firebase.auth();
 
   /* ✦✦ Rate limiting: max 5 failed attempts — 30s lockout ✦✦✦ */

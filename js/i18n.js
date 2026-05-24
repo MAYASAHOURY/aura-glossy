@@ -216,6 +216,7 @@
         hide_comments: 'Hide comments',
         empty_title: 'Your circle is quiet.',
         empty_body: 'Be the first to share a look.',
+        no_comments: 'No comments yet. Be the first.',
         delete_post: 'Delete post',
         delete_confirm: 'Delete this post?',
         liked: 'Liked', like: 'Like'
@@ -434,6 +435,7 @@
         hide_comments: 'Ocultar comentarios',
         empty_title: 'Tu círculo está en silencio.',
         empty_body: 'Sé el primero en compartir un look.',
+        no_comments: 'Aún no hay comentarios. Sé el primero.',
         delete_post: 'Eliminar publicación',
         delete_confirm: '¿Eliminar esta publicación?',
         liked: 'Me gusta', like: 'Me gusta'
@@ -647,6 +649,7 @@
         hide_comments: 'إخفاء التعليقات',
         empty_title: 'دائرتك هادئة.',
         empty_body: 'كن أول من يشارك إطلالة.',
+        no_comments: 'لا توجد تعليقات بعد. كن الأول.',
         delete_post: 'حذف المنشور',
         delete_confirm: 'هل تريد حذف هذا المنشور؟',
         liked: 'أعجبني', like: 'إعجاب'
@@ -859,6 +862,7 @@
         hide_comments: 'הסתרת תגובות',
         empty_title: 'המעגל שלך שקט.',
         empty_body: 'היי הראשונה לשתף לוק.',
+        no_comments: 'אין עדיין תגובות. היי הראשונה.',
         delete_post: 'מחיקת פוסט',
         delete_confirm: 'למחוק את הפוסט?',
         liked: 'אהבתי', like: 'לייק'
