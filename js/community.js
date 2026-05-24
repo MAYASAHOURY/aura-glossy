@@ -450,6 +450,15 @@ function enterGroup(groupId) {
 }
 
 function blockGroupAccess(groupId) {
+  /* Admin should never reach this path — hub renders all cards as
+     enterable for admins — but if any future code path calls it on
+     an admin, fall through to entry rather than showing a misleading
+     "take the quiz first" modal. */
+  if (_isAdmin) {
+    var group = COMM_GROUPS.find(function (g) { return g.id === groupId; });
+    if (group) _openGroup(group);
+    return;
+  }
   if (!_userQuiz) {
     _showNoQuizModal();
   } else {

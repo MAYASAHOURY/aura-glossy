@@ -371,32 +371,14 @@ firebase.auth().onAuthStateChanged(async function(user) {
       /* Admin badge — only renders for accounts flagged in Firestore.
          The client check is purely cosmetic; Firestore rules are the
          source of truth for what an admin can actually do. */
-      if (data.isAdmin === true) {
+      var isAdminUser = (data.isAdmin === true);
+      if (isAdminUser) {
         var badge = document.getElementById('s-admin-badge');
         if (badge) badge.style.display = 'inline-block';
       }
 
       var quizResult = data.quizResult;
-      document.getElementById('r-aesthetic').textContent =
-        quizResult ? quizResult.name : 'Not taken yet';
-
-      var commEl = document.getElementById('r-community');
-      if (quizResult) {
-        commEl.innerHTML = '<a href="community.html#' + quizResult.id + '" data-go-my-community style="color:inherit;text-decoration:underline;text-underline-offset:3px">' + quizResult.name + ' circle →</a>';
-        var circleBtn = document.getElementById('s-circle-btn');
-        if (circleBtn) { circleBtn.href = 'community.html#' + quizResult.id; circleBtn.style.display = 'block'; }
-      } else {
-        /* No quiz yet — point both entry points at the quiz so the user
-           can take it. They will be granted the matching community right
-           after they finish. */
-        commEl.innerHTML = '<a href="quiz.html" style="color:inherit;text-decoration:underline;text-underline-offset:3px">Take the quiz first →</a>';
-        var circleBtnNoQuiz = document.getElementById('s-circle-btn');
-        if (circleBtnNoQuiz) {
-          circleBtnNoQuiz.textContent = 'Take the Style Quiz →';
-          circleBtnNoQuiz.href = 'quiz.html';
-          circleBtnNoQuiz.style.display = 'block';
-        }
-      }
+      _renderQuizFields({ data: data, quizResult: quizResult, isAdmin: isAdminUser });
 
       var liked  = data.likedAesthetics || [];
       var viewed = data.recentlyViewed  || [];
@@ -495,31 +477,80 @@ document.addEventListener('click', function (e) {
    three quiz-dependent rows (aesthetic, community, "My Style Circle"
    button) so settings always reflects the latest aesthetic.
 ─────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────
+   Render the three quiz-dependent fields (aesthetic row, community
+   row, big "My Style Circle" CTA) based on user state. Three modes:
+
+   1. Admin (regardless of quiz):
+        Aesthetic: their quiz name if they have one, else "Admin
+                   access enabled" (avoids a misleading "not taken").
+        Community: "All circles open →" linking to community.html.
+        Button:    "Enter Communities →" linking to community.html.
+        Firestore rules already grant admins access to every circle,
+        so these are honest UI labels, not fake claims.
+
+   2. Has quiz result (normal flow):
+        Aesthetic: quiz.name
+        Community: "<name> circle →" → community.html#<id>
+        Button:    "My Style Circle →" → community.html#<id>
+
+   3. No quiz, not admin:
+        Aesthetic: "Not taken yet"
+        Community: "Take the quiz first →" → quiz.html
+        Button:    "Take the Style Quiz →" → quiz.html
+   ───────────────────────────────────────────────────────────────── */
+function _renderQuizFields(opts) {
+  var qr      = opts.quizResult || null;
+  var admin   = !!opts.isAdmin;
+  var aEl     = document.getElementById('r-aesthetic');
+  var cEl     = document.getElementById('r-community');
+  var btn     = document.getElementById('s-circle-btn');
+
+  if (admin) {
+    if (aEl) aEl.textContent = qr ? qr.name : 'Admin access enabled';
+    if (cEl) cEl.innerHTML   = '<a href="community.html" style="color:inherit;text-decoration:underline;text-underline-offset:3px">All circles open →</a>';
+    if (btn) {
+      btn.textContent       = 'Enter Communities →';
+      btn.href              = 'community.html';
+      btn.style.display     = 'block';
+      btn.removeAttribute('data-go-my-community');
+    }
+    return;
+  }
+
+  if (qr && qr.id) {
+    if (aEl) aEl.textContent = qr.name;
+    if (cEl) cEl.innerHTML   = '<a href="community.html#' + qr.id + '" data-go-my-community style="color:inherit;text-decoration:underline;text-underline-offset:3px">' + qr.name + ' circle →</a>';
+    if (btn) {
+      btn.textContent       = 'My Style Circle →';
+      btn.href              = 'community.html#' + qr.id;
+      btn.style.display     = 'block';
+      btn.setAttribute('data-go-my-community', '');
+    }
+    return;
+  }
+
+  // No quiz, not admin
+  if (aEl) aEl.textContent = 'Not taken yet';
+  if (cEl) cEl.innerHTML   = '<a href="quiz.html" style="color:inherit;text-decoration:underline;text-underline-offset:3px">Take the quiz first →</a>';
+  if (btn) {
+    btn.textContent       = 'Take the Style Quiz →';
+    btn.href              = 'quiz.html';
+    btn.style.display     = 'block';
+    btn.removeAttribute('data-go-my-community');
+  }
+}
+
 function _settingsRefreshQuizFields() {
   var user = firebase.auth().currentUser;
   if (!user) return;
   firebase.firestore().collection('users').doc(user.uid).get().then(function (snap) {
     var data = snap.exists ? snap.data() : {};
-    var qr   = data.quizResult || null;
-    var aEl  = document.getElementById('r-aesthetic');
-    var cEl  = document.getElementById('r-community');
-    var btn  = document.getElementById('s-circle-btn');
-    if (aEl) aEl.textContent = qr ? qr.name : 'Not taken yet';
-    if (qr && qr.id) {
-      if (cEl) cEl.innerHTML = '<a href="community.html#' + qr.id + '" data-go-my-community style="color:inherit;text-decoration:underline;text-underline-offset:3px">' + qr.name + ' circle →</a>';
-      if (btn) {
-        btn.textContent = 'My Style Circle →';
-        btn.href = 'community.html#' + qr.id;
-        btn.style.display = 'block';
-      }
-    } else {
-      if (cEl) cEl.innerHTML = '<a href="quiz.html" style="color:inherit;text-decoration:underline;text-underline-offset:3px">Take the quiz first →</a>';
-      if (btn) {
-        btn.textContent = 'Take the Style Quiz →';
-        btn.href = 'quiz.html';
-        btn.style.display = 'block';
-      }
-    }
+    _renderQuizFields({
+      data: data,
+      quizResult: data.quizResult || null,
+      isAdmin: (data.isAdmin === true)
+    });
   }).catch(function () { /* network blip — leave existing values */ });
 }
 
