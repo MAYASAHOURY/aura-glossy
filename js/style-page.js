@@ -1574,22 +1574,51 @@
       // cat-eye sunglasses on face, gold drop earrings, cuff bracelet on raised wrist, black ballet flats.
       // Jewelry__1 = earrings, Jewelry__2 = cuff bracelet.
       0: { Dress:{x:44,y:55}, Layer:{x:34,y:42}, Bag:{x:63,y:72}, Shoes:{x:48,y:90}, Accessory:{x:46,y:35}, Jewelry:{x:54,y:37}, Jewelry__2:{x:34,y:38} },
-      1: { Top:{x:50,y:35}, Layer:{x:50,y:42}, Jacket:{x:35,y:38}, Blazer:{x:35,y:38}, Belt:{x:50,y:55}, Bottom:{x:50,y:78}, Bag:{x:14,y:88} },
-      2: { Coat:{x:50,y:40}, Outer:{x:50,y:40}, Jacket:{x:50,y:40}, Top:{x:50,y:35}, Dress:{x:50,y:42}, Bag:{x:45,y:62}, Tights:{x:52,y:80}, Shoes:{x:50,y:95}, Boots:{x:50,y:95} },
-      3: { Top:{x:50,y:30}, Belt:{x:48,y:50}, Bottom:{x:48,y:73}, Bag:{x:14,y:78}, Accessory:{x:48,y:14} },
-      4: { Top:{x:50,y:33}, Skirt:{x:50,y:65}, Shoes:{x:52,y:93}, Bag:{x:35,y:50} },
-      5: { Coat:{x:55,y:62}, Outer:{x:55,y:62}, Jacket:{x:55,y:62}, Top:{x:55,y:60}, Jewelry:{x:40,y:58}, Accessory:{x:40,y:58}, Tights:{x:55,y:90} }
+      // outfit-2 (Prep Edit): blue pinstripe oxford shirt + navy ribbed knit vest layered over,
+      // thin brown belt with gold buckle at waist, dark navy wide-leg jeans, tan structured top-handle bag held at bottom-left.
+      // Two Top pieces: __1 = oxford shirt (visible at chest/arms), __2 = vest (visible at torso center).
+      1: { Top:{x:55,y:35}, Top__2:{x:38,y:42}, Belt:{x:40,y:60}, Bottom:{x:40,y:85}, Bag:{x:12,y:88} },
+      // outfit-3 (Office Hour): cream oversized wool coat dominates torso, black ribbed turtleneck visible at neck,
+      // black leather gloves on hands holding black quilted top-handle bag, black opaque tights, pointed ankle boots at feet.
+      2: { Coat:{x:46,y:50}, Outer:{x:46,y:50}, Jacket:{x:46,y:50}, Top:{x:46,y:27}, Bag:{x:40,y:65}, Accessory:{x:46,y:60}, Tights:{x:45,y:75}, Shoes:{x:46,y:90}, Boots:{x:46,y:90} },
+      // outfit-4 (Elevated): black halter bodysuit on torso, black double-ring belt at waist,
+      // white high-waist wide-leg pleated trousers, small black top-handle bag held at left hip,
+      // black cat-eye sunglasses on face, gold hoops on visible left ear.
+      3: { Top:{x:40,y:35}, Belt:{x:35,y:50}, Bottom:{x:45,y:75}, Bag:{x:20,y:80}, Accessory:{x:33,y:15}, Jewelry:{x:28,y:20} },
+      // outfit-5 (Weekend Edit): cream relaxed crewneck knit on torso, cream satin bias-cut midi skirt below,
+      // black quilted chain crossbody at left side under arm, white pointed pumps at feet, sunglasses on face, drop earrings on ear.
+      4: { Top:{x:45,y:38}, Bottom:{x:45,y:70}, Bag:{x:33,y:45}, Shoes:{x:45,y:90}, Accessory:{x:48,y:17}, Jewelry:{x:53,y:18} },
+      // outfit-6 (Timeless Evening): seated Paris café side view — beige trench draped on back/shoulders,
+      // white chunky rib-knit sleeve cuff visible on raised arm, black opaque tights below, brown satchel partially visible.
+      // Jewelry__1 = gold stacking rings on holding hand, Jewelry__2 = gold chain bracelet on same wrist.
+      5: { Coat:{x:55,y:60}, Outer:{x:55,y:60}, Jacket:{x:55,y:60}, Top:{x:35,y:60}, Bag:{x:48,y:85}, Tights:{x:50,y:90}, Jewelry:{x:18,y:55}, Jewelry__2:{x:20,y:62} }
     },
     casual: {
       // outfit-1: chest-up mirror selfie, black crop tee, brown patent belt at waist, charcoal trousers just visible at bottom,
       // GG monogram hobo bag at right, gold hoop earrings on left ear, stacking rings/bangles across both hands.
       // Jewelry__1 = earrings, Jewelry__2 = rings + bangles.
       0: { Top:{x:45,y:50}, Belt:{x:35,y:88}, Bottom:{x:40,y:90}, Bag:{x:70,y:75}, Jewelry:{x:25,y:33}, Jewelry__2:{x:33,y:75} },
-      1: { Top:{x:38,y:50}, Hat:{x:36,y:32}, Bottom:{x:55,y:80}, Bag:{x:14,y:88}, Jewelry:{x:38,y:45}, Accessory:{x:36,y:32} },
-      2: { Top:{x:50,y:45}, Blazer:{x:50,y:40}, Jacket:{x:50,y:40}, Bottom:{x:50,y:65}, Shoes:{x:50,y:90}, Bag:{x:65,y:90}, Accessory:{x:50,y:30} },
-      3: { Jacket:{x:40,y:45}, Outer:{x:40,y:45}, Top:{x:45,y:45}, Bottom:{x:50,y:70}, Shoes:{x:32,y:80}, Hat:{x:42,y:22} },
-      4: { Jacket:{x:38,y:33}, Outer:{x:38,y:33}, Top:{x:50,y:38}, Bottom:{x:50,y:73}, Boots:{x:45,y:95}, Shoes:{x:45,y:95} },
-      5: { Top:{x:50,y:35}, Bottom:{x:50,y:70}, Shoes:{x:50,y:95}, Bag:{x:22,y:78}, Accessory:{x:45,y:18} }
+      // outfit-2 (Summer Casual): seated, navy polo cap on head, white spaghetti-strap cami on torso,
+      // light blue wide-leg jeans on legs, black woven quilted bucket tote sitting at bottom-left of couch,
+      // gold cross pendant on chest below neck, gold watch on right wrist holding cup.
+      // Jewelry__1 = cross pendant, Jewelry__2 = watch.
+      1: { Top:{x:45,y:60}, Hat:{x:35,y:32}, Bottom:{x:55,y:88}, Bag:{x:15,y:90}, Jewelry:{x:43,y:55}, Jewelry__2:{x:40,y:70} },
+      // outfit-3 (Smart Casual): squatting on steps, beige/tan houndstooth cropped blazer over white ribbed crop cami,
+      // dark blue wide-leg jeans, nude mesh pointed-toe pumps/mules at feet, cream box shoulder bag held bottom-right,
+      // black cat-eye sunglasses on face, tiny gold pendant necklace at neck.
+      2: { Jacket:{x:50,y:35}, Blazer:{x:50,y:35}, Top:{x:50,y:45}, Bottom:{x:50,y:70}, Shoes:{x:50,y:90}, Bag:{x:60,y:90}, Accessory:{x:48,y:22}, Jewelry:{x:50,y:33} },
+      // outfit-4 (Elevated, heroIdx 3): seated in café, stone beige oversized puffer bomber dominates torso,
+      // white ribbed crop barely visible underneath, light/white wide-leg sweatpants on legs,
+      // Adidas Samba sneakers (white with black stripes) at feet, cream embroidered baseball cap on head.
+      3: { Jacket:{x:35,y:45}, Outer:{x:35,y:45}, Top:{x:45,y:45}, Bottom:{x:45,y:70}, Shoes:{x:35,y:85}, Accessory:{x:35,y:22} },
+      // outfit-5 (Autumn Casual): standing outdoors with autumn trees, dark brown shearling aviator jacket on torso,
+      // cream ribbed turtleneck visible at neck above jacket, medium-wash straight/flared jeans on legs,
+      // pointed ankle booties at feet, brown structured leather top-handle bag swung out at right hand.
+      4: { Jacket:{x:40,y:38}, Outer:{x:40,y:38}, Top:{x:48,y:27}, Bottom:{x:48,y:75}, Shoes:{x:43,y:90}, Bag:{x:85,y:50} },
+      // outfit-6 (Effortless Brunch): standing in front of Parisian arches, black ribbed knit short-sleeve top,
+      // cream satin fluid wide-leg trousers, black patent top-handle bag held at left hip, black pointed pumps at feet,
+      // gold watch on right wrist, black cat-eye sunglasses on face.
+      5: { Top:{x:45,y:35}, Bottom:{x:45,y:65}, Bag:{x:28,y:65}, Shoes:{x:45,y:90}, Jewelry:{x:50,y:50}, Accessory:{x:45,y:25} }
     },
     streetwear: {
       // outfit-1: model outside flower shop, baker boy cap top, amber sunglasses on face, khaki trench draped on shoulders,
@@ -1597,22 +1626,57 @@
       // brown crossbody at left hip, dark brown platform loafers on raised left foot.
       // Accessory__1 = tie at chest, Accessory__2 = sunglasses on face.
       0: { Hat:{x:38,y:8}, Coat:{x:38,y:35}, Outer:{x:38,y:35}, Jacket:{x:38,y:35}, Top:{x:43,y:30}, Accessory:{x:46,y:32}, Accessory__2:{x:40,y:17}, Belt:{x:40,y:48}, Bottom:{x:40,y:70}, Bag:{x:20,y:65}, Shoes:{x:28,y:90} },
-      1: { Hat:{x:40,y:28}, Blazer:{x:38,y:50}, Jacket:{x:38,y:50}, Top:{x:38,y:50}, Bottom:{x:38,y:75}, Shoes:{x:33,y:95}, Bag:{x:45,y:60} },
-      2: { Hat:{x:48,y:12}, Top:{x:50,y:40}, Bottom:{x:50,y:70}, Shoes:{x:55,y:95} },
-      3: { Jacket:{x:50,y:55}, Outer:{x:50,y:55}, Top:{x:50,y:55}, Scarf:{x:35,y:55}, Bottom:{x:50,y:80}, Boots:{x:50,y:95}, Shoes:{x:50,y:95}, Bag:{x:35,y:53} },
-      4: { Top:{x:38,y:38}, Bottom:{x:38,y:70}, Shoes:{x:40,y:95}, Bag:{x:42,y:50} },
-      5: { Top:{x:40,y:45}, Bottom:{x:40,y:70}, Accessory:{x:40,y:32} }
+      // outfit-2 (Grey Edit): standing by light pole, grey windowpane plaid oversized blazer dominates torso,
+      // grey textured baggy wide-leg trousers, black pointed flats at feet, grey wool beret on head,
+      // black mini quilted crossbody tucked at right hip, layered gold chains in open neckline, stacking rings on hand on hip.
+      // Jewelry__1 = layered chains, Jewelry__2 = rings.
+      1: { Hat:{x:45,y:22}, Jacket:{x:50,y:50}, Blazer:{x:50,y:50}, Bottom:{x:50,y:88}, Shoes:{x:48,y:90}, Bag:{x:53,y:55}, Jewelry:{x:45,y:50}, Jewelry__2:{x:28,y:62} },
+      // outfit-3 (Sneaker Focus): standing in record store, electric blue beanie on head, grey oversized cropped sweatshirt,
+      // light wash baggy wide-leg jeans, white Converse high-tops at feet, silver layered chains at neckline.
+      2: { Hat:{x:48,y:13}, Top:{x:48,y:38}, Bottom:{x:48,y:65}, Shoes:{x:48,y:90}, Jewelry:{x:48,y:28} },
+      // outfit-4 (Elevated, heroIdx 3): hallway mirror selfie, dark brown faux leather bomber on torso,
+      // chunky green plaid scarf draped from neck down across chest, light grey/sage baggy jeans on legs,
+      // camel UGG-style platform mules at feet, neon lime-green mini crossbody at left hip,
+      // gold cross pendant on chest, silver hoop earring on visible ear.
+      // Jewelry__1 = cross pendant, Jewelry__2 = silver hoops.
+      3: { Jacket:{x:40,y:55}, Outer:{x:40,y:55}, Scarf:{x:30,y:60}, Bottom:{x:40,y:80}, Shoes:{x:40,y:90}, Boots:{x:40,y:90}, Bag:{x:25,y:55}, Jewelry:{x:40,y:50}, Jewelry__2:{x:50,y:32} },
+      // outfit-5 (Pinstripe Edit): standing in gallery, blue/white pinstripe shirt tied/cropped on torso,
+      // light grey distressed baggy wide-leg jeans, green suede platform lace-up mules at feet,
+      // small black backpack visible at side, thin clear/square sunglasses on face, silver hoops on ear.
+      4: { Top:{x:40,y:40}, Bottom:{x:40,y:75}, Shoes:{x:45,y:90}, Bag:{x:50,y:50}, Accessory:{x:38,y:32}, Jewelry:{x:28,y:30} },
+      // outfit-6 (Vintage Tee): walking NYC street, cream vintage graphic football crop tee with "Detroit" + blue sleeve,
+      // light blue wash relaxed straight jeans, small black cat-eye sunglasses on face, tiny gold hoops on ear.
+      5: { Top:{x:45,y:45}, Bottom:{x:45,y:78}, Accessory:{x:43,y:28}, Jewelry:{x:40,y:30} }
     },
     minimalist: {
       // outfit-1: model at marble bar, chocolate turtleneck on upper torso, brown wide belt at waist,
       // brown plaid wrap midi skirt with side slit, small grey/brown tote held at left, brown knee-high pointed boots.
       // Pieces are Top/Bottom/Belt/Shoes/Bag (NOT Skirt/Boots) — match the actual category names.
       0: { Top:{x:48,y:30}, Belt:{x:50,y:42}, Bottom:{x:50,y:60}, Bag:{x:40,y:58}, Shoes:{x:55,y:88} },
-      1: { Top:{x:36,y:50}, Coat:{x:30,y:60}, Outer:{x:30,y:60}, Jacket:{x:30,y:60}, Bottom:{x:40,y:80}, Shoes:{x:42,y:92}, Bag:{x:62,y:50} },
-      2: { Top:{x:40,y:50}, Bottom:{x:35,y:85}, Bag:{x:62,y:75}, Accessory:{x:30,y:65} },
-      3: { Top:{x:50,y:50}, Dress:{x:50,y:60}, Belt:{x:38,y:65}, Bag:{x:22,y:78}, Accessory:{x:30,y:42} },
-      4: { Top:{x:50,y:35}, Bottom:{x:48,y:70}, Bag:{x:22,y:38}, Accessory:{x:40,y:18} },
-      5: { Top:{x:50,y:32}, Layer:{x:38,y:32}, Bottom:{x:50,y:60}, Bag:{x:52,y:38}, Shoes:{x:48,y:95} }
+      // outfit-2 (Camel Edit): seated Paris café, camel ribbed turtleneck visible at chest,
+      // camel oversized wool coat draped on shoulders/back, camel wide-leg trousers on legs,
+      // Adidas Samba white sneakers at feet, cream triangle slouchy bag on cafe table to the right, gold hoop on ear.
+      1: { Top:{x:40,y:55}, Coat:{x:35,y:65}, Outer:{x:35,y:65}, Jacket:{x:35,y:65}, Bottom:{x:40,y:80}, Shoes:{x:40,y:90}, Bag:{x:65,y:50}, Jewelry:{x:40,y:38} },
+      // outfit-3 (Quiet Work Day): office mirror selfie, white poplin button-down on torso,
+      // black high-waist tailored trousers on legs, large black structured tote held at right side,
+      // silver watch on right wrist, thin gold chain at open collar, gold ring on hand holding phone.
+      // Jewelry__1 = silver watch, Jewelry__2 = gold chain, Jewelry__3 = gold ring.
+      2: { Top:{x:40,y:50}, Bottom:{x:40,y:85}, Bag:{x:60,y:70}, Jewelry:{x:50,y:45}, Jewelry__2:{x:35,y:50}, Jewelry__3:{x:40,y:35} },
+      // outfit-4 (Elevated, heroIdx 3): street profile, black mock-neck cap-sleeve top on chest,
+      // sculptural wavy black leather belt at waist (silver buckle visible), black satin asymmetric midi skirt below,
+      // black structured patent top-handle tote held at left hip, gold thick hoop earring on visible ear,
+      // gold cuff bracelet + gold ring on right wrist holding cup.
+      // Jewelry__1 = thick hoops, Jewelry__2 = cuff bracelet, Jewelry__3 = ring.
+      3: { Top:{x:48,y:45}, Bottom:{x:45,y:80}, Belt:{x:45,y:65}, Bag:{x:25,y:75}, Jewelry:{x:40,y:32}, Jewelry__2:{x:50,y:78}, Jewelry__3:{x:48,y:82} },
+      // outfit-5 (Relaxed Minimal): standing in park, white relaxed crewneck sweatshirt on torso,
+      // dark/medium blue wide-leg jeans on legs, thin black leather belt at waist, large black woven intrecciato tote at left side,
+      // black pointed ankle boots barely visible at feet, small black rectangular sunglasses on face, tiny gold hoops on ear.
+      4: { Top:{x:45,y:35}, Bottom:{x:45,y:70}, Belt:{x:48,y:50}, Bag:{x:20,y:50}, Shoes:{x:40,y:90}, Accessory:{x:45,y:18}, Jewelry:{x:43,y:22} },
+      // outfit-6 (Weekend Market): mirror selfie, black long-sleeve mock-neck fitted bodysuit on torso,
+      // black/white horizontal stripe oversized chunky cardigan draped on shoulders, black high-waist wide-leg trousers on legs,
+      // black structured mini top-handle bag held at front waist, white chunky platform sneakers at feet,
+      // small black rectangular sunglasses on face, small gold hoops on ear.
+      5: { Top:{x:45,y:30}, Layer:{x:25,y:25}, Bottom:{x:45,y:65}, Bag:{x:45,y:35}, Shoes:{x:45,y:90}, Accessory:{x:40,y:8}, Jewelry:{x:38,y:12} }
     },
     elegant: {
       // outfit-1: marble bathroom mirror selfie, dark brown sheer floral lace bodysuit on torso,
@@ -1620,11 +1684,29 @@
       // gold chunky hoop earrings on left ear. Pieces use Bottom (not Skirt) and Shoes (not visible, place at edge).
       // Jewelry__1 = cuff bracelet on raised wrist, Jewelry__2 = hoop earrings on ear.
       0: { Top:{x:42,y:65}, Bottom:{x:42,y:90}, Jewelry:{x:55,y:35}, Jewelry__2:{x:33,y:35}, Shoes:{x:55,y:90} },
-      1: { Top:{x:38,y:45}, Skirt:{x:38,y:70}, Dress:{x:38,y:55}, Bag:{x:30,y:88}, Jewelry:{x:38,y:33} },
-      2: { Coat:{x:40,y:50}, Outer:{x:40,y:50}, Jacket:{x:40,y:50}, Top:{x:42,y:40}, Boots:{x:50,y:80}, Shoes:{x:50,y:80}, Bag:{x:83,y:65}, Accessory:{x:42,y:22} },
-      3: { Top:{x:50,y:50}, Dress:{x:50,y:50}, Boots:{x:35,y:75}, Bag:{x:14,y:68}, Accessory:{x:50,y:38} },
-      4: { Top:{x:40,y:35}, Bottom:{x:38,y:65}, Shoes:{x:30,y:92}, Jewelry:{x:42,y:50} },
-      5: { Dress:{x:52,y:65}, Top:{x:52,y:50}, Bag:{x:55,y:70}, Jewelry:{x:62,y:38} }
+      // outfit-2 (Silk Edit): marble bathroom mirror selfie, dark brown v-neck satin top with lace trim hem visible at waist,
+      // ivory cream fitted satin midi skirt below, cream mini Kelly top-handle bag placed on bathroom counter,
+      // pearl strand choker necklace at neck.
+      1: { Top:{x:38,y:50}, Bottom:{x:45,y:75}, Bag:{x:35,y:90}, Jewelry:{x:45,y:38} },
+      // outfit-3 (Day Date): seated at Paris café reading Chanel book, burgundy faux leather long trench dominates,
+      // white shirt collar visible above coat, polka dot silk tie down center, white knee-high stiletto boots on crossed legs,
+      // white mini bag on table to right, white cat-eye sunglasses on face, pearl drop earrings on ear, gold rings on holding hand.
+      // Accessory__1 = polka dot tie, Accessory__2 = white sunglasses.
+      // Jewelry__1 = pearl drop earrings, Jewelry__2 = gold stacking rings.
+      2: { Coat:{x:35,y:55}, Outer:{x:35,y:55}, Jacket:{x:35,y:55}, Top:{x:42,y:38}, Accessory:{x:42,y:50}, Accessory__2:{x:40,y:22}, Shoes:{x:50,y:85}, Boots:{x:50,y:85}, Bag:{x:78,y:65}, Jewelry:{x:30,y:22}, Jewelry__2:{x:53,y:65} },
+      // outfit-4 (Elevated, heroIdx 3): seated on marble stairs, white oversized blazer worn as dress on torso,
+      // black knee-high stiletto leather boots on legs, black clean structured shoulder bag on step to left,
+      // gold hoop earring on visible ear, luxury compact powder mirror held in hands.
+      3: { Blazer:{x:50,y:55}, Top:{x:50,y:55}, Shoes:{x:38,y:80}, Boots:{x:38,y:80}, Bag:{x:15,y:75}, Jewelry:{x:53,y:35}, Accessory:{x:40,y:45} },
+      // outfit-5 (Co-ord Edit): seated on stone ledge, cream ribbed sleeveless mock-neck top + matching cream ribbed wide-leg trousers (co-ord),
+      // burgundy pointed-toe gold-buckle loafer heels visible at feet on raised crossed leg,
+      // gold watch + gold chain bracelet on right wrist resting on knee.
+      // Jewelry__1 = gold watch, Jewelry__2 = gold chain bracelet.
+      4: { Top:{x:38,y:38}, Bottom:{x:40,y:75}, Shoes:{x:40,y:90}, Jewelry:{x:35,y:50}, Jewelry__2:{x:38,y:48} },
+      // outfit-6 (Gallery Opening): twirling in front of Eiffel Tower, white polka dot corset boned midi ballgown billowing,
+      // black heart-shape chain mini bag held at waist, large pearl drop earrings on ear, gold stacking rings on raised hand.
+      // Jewelry__1 = pearl drop earrings, Jewelry__2 = stacking rings.
+      5: { Dress:{x:45,y:70}, Bag:{x:50,y:65}, Jewelry:{x:48,y:33}, Jewelry__2:{x:35,y:28} }
     },
     korean: {
       // outfit-1: model in cafe, white zip-up cap-sleeve cropped top, brown plaid pleated mini skirt at hip,
@@ -1632,11 +1714,26 @@
       // silver hoop earrings on ear, beaded bracelet on left wrist (resting on stool).
       // Pieces are Top/Bottom/Shoes/Bag/Jewelry/Jewelry — match exact category names.
       0: { Top:{x:45,y:42}, Bottom:{x:45,y:60}, Shoes:{x:42,y:90}, Bag:{x:55,y:60}, Jewelry:{x:45,y:33}, Jewelry__2:{x:30,y:50} },
-      1: { Hat:{x:45,y:25}, Scarf:{x:42,y:40}, Top:{x:45,y:65}, Jacket:{x:18,y:65}, Outer:{x:18,y:65}, Jewelry:{x:45,y:55} },
-      2: { Top:{x:50,y:45}, Layer:{x:35,y:45}, Jacket:{x:35,y:45}, Skirt:{x:50,y:65}, Boots:{x:50,y:95}, Jewelry:{x:52,y:45} },
-      3: { Hat:{x:50,y:18}, Top:{x:45,y:45}, Skirt:{x:50,y:60}, Shoes:{x:52,y:95}, Bag:{x:62,y:75}, Accessory:{x:50,y:30} },
-      4: { Hat:{x:40,y:22}, Top:{x:50,y:65}, Jacket:{x:50,y:60}, Layer:{x:50,y:60}, Skirt:{x:50,y:88}, Bag:{x:25,y:88}, Accessory:{x:38,y:38} },
-      5: { Top:{x:40,y:50}, Skirt:{x:40,y:75}, Bag:{x:60,y:55}, Jewelry:{x:40,y:32} }
+      // outfit-2 (Cozy Edit): seated in dim café, cream fluffy shearling teddy coat draped on shoulders,
+      // black sleeveless cami visible underneath, Hermès-style printed silk square scarf wrapping head, black baseball cap on top of scarf.
+      1: { Coat:{x:30,y:60}, Outer:{x:30,y:60}, Top:{x:50,y:55}, Accessory:{x:40,y:25}, Hat:{x:38,y:28} },
+      // outfit-3 (Study Date): walking down stairs, navy cable-knit cropped V-neck cardigan over white ribbed cami,
+      // cream pleated tennis mini skirt below, white knee-high heeled boots at feet, black mini top-handle bag strap visible at hip.
+      // Two Top pieces: __1 = navy cardigan, __2 = white tank underneath.
+      2: { Top:{x:40,y:40}, Top__2:{x:42,y:38}, Bottom:{x:38,y:55}, Shoes:{x:40,y:90}, Boots:{x:40,y:90}, Bag:{x:28,y:50} },
+      // outfit-4 (Elevated, heroIdx 3): walking on brick stairs, white wide-brim fedora on head,
+      // cream ruched corset puff-sleeve top on torso, silver/grey sparkly plaid micro mini at hip,
+      // cream long sheer duster cardigan draped behind on one side, dark brown suede tote swung out at right hand,
+      // black cat-eye sunglasses on face, white pointed mule heels at feet.
+      3: { Hat:{x:38,y:18}, Top:{x:40,y:40}, Bottom:{x:40,y:55}, Layer:{x:25,y:50}, Shoes:{x:40,y:90}, Bag:{x:60,y:70}, Accessory:{x:38,y:22} },
+      // outfit-5 (Tweed Edit): street mirror selfie, cream tweed chanel-style cropped jacket with gold buttons,
+      // white ribbed crop cami visible center under jacket, light blue denim mini skirt at hip,
+      // black/white quilted chain crossbody visible at left side, navy embroidered baseball cap on head,
+      // black cat-eye sunglasses on face, silver chain necklace and hoop earrings at neck/ear.
+      4: { Jacket:{x:45,y:50}, Top:{x:50,y:55}, Bottom:{x:45,y:80}, Bag:{x:28,y:80}, Hat:{x:45,y:22}, Accessory:{x:40,y:30}, Jewelry:{x:45,y:47} },
+      // outfit-6 (Night Market): walking, cream sheer floral lace button-down blouse on torso,
+      // cream lace/brocade matching mini skirt at hip, cream structured angular mini bag held at right side, pearl choker necklace at neck.
+      5: { Top:{x:40,y:45}, Bottom:{x:40,y:75}, Bag:{x:58,y:50}, Jewelry:{x:45,y:28} }
     },
     y2k: {
       // outfit-1: night party shot, brown tweed baker boy cap on top, brown gradient aviator sunglasses on face,
@@ -1645,11 +1742,29 @@
       // gold bangle bracelets stack on left wrist resting on hip.
       // Jewelry__1 = chains on chest, Jewelry__2 = bangles on wrist.
       0: { Hat:{x:48,y:12}, Accessory:{x:48,y:19}, Top:{x:50,y:38}, Bottom:{x:48,y:58}, Shoes:{x:48,y:90}, Bag:{x:25,y:50}, Jewelry:{x:48,y:43}, Jewelry__2:{x:30,y:65} },
-      1: { Hat:{x:38,y:12}, Top:{x:42,y:35}, Skirt:{x:40,y:58}, Boots:{x:30,y:90}, Shoes:{x:30,y:90}, Bag:{x:62,y:55} },
-      2: { Top:{x:42,y:45}, Bottom:{x:45,y:80}, Bag:{x:62,y:70}, Belt:{x:42,y:60}, Jewelry:{x:42,y:35} },
-      3: { Top:{x:45,y:35}, Bottom:{x:45,y:70}, Bag:{x:52,y:55}, Accessory:{x:30,y:12} },
-      4: { Top:{x:50,y:45}, Bottom:{x:50,y:75}, Hat:{x:50,y:25}, Bag:{x:38,y:55} },
-      5: { Top:{x:38,y:45}, Bottom:{x:38,y:75}, Shoes:{x:38,y:95}, Bag:{x:18,y:50}, Jewelry:{x:38,y:30} }
+      // outfit-2 (Feather Moment): walking night city, leopard baker boy cap on head, pink fluffy feather/marabou off-shoulder top,
+      // gold buckle belt at waist over leopard mini skirt, pink mini bag at right hip, pink fur knee-high boots at feet,
+      // rhinestone chain choker at neck.
+      1: { Hat:{x:40,y:12}, Top:{x:40,y:40}, Bottom:{x:40,y:60}, Belt:{x:40,y:58}, Shoes:{x:35,y:90}, Boots:{x:35,y:90}, Bag:{x:65,y:50}, Jewelry:{x:40,y:28} },
+      // outfit-3 (Festival Look): standing under lanterns, dark brown strapless boned corset with lace trim on torso,
+      // denim jacket tied around waist, khaki olive baggy balloon-leg pants on legs,
+      // silver hoop earring on ear, gold cross pendant + layered gold chains on chest.
+      // Jewelry__1 = silver hoops, Jewelry__2 = gold cross pendant, Jewelry__3 = layered chains.
+      2: { Top:{x:45,y:40}, Bottom:{x:45,y:80}, Layer:{x:40,y:70}, Jewelry:{x:50,y:30}, Jewelry__2:{x:45,y:50}, Jewelry__3:{x:48,y:38} },
+      // outfit-4 (Elevated, heroIdx 3): outside, sheer paisley print open kimono overshirt loose on torso,
+      // grey washed distressed wide-leg jeans on legs, light blue/grey structured mini top-handle bag at right hand,
+      // gold/amber bead bracelet on raised right wrist, layered gold chains at neck, tinted Y2K sunglasses on face.
+      // Jewelry__1 = bead bracelet, Jewelry__2 = layered chains.
+      3: { Top:{x:40,y:35}, Bottom:{x:40,y:75}, Bag:{x:50,y:60}, Jewelry:{x:40,y:25}, Jewelry__2:{x:45,y:35}, Accessory:{x:45,y:18} },
+      // outfit-5 (Going Out Fit): three models — middle one is pink velour matching set,
+      // pink velour zip-up crop hoodie on torso, pink velour wide-leg flare pants on legs,
+      // white satin headband on head, crystal rhinestone choker at neck, small pink fluffy bag held at left hip.
+      4: { Top:{x:38,y:45}, Bottom:{x:40,y:75}, Accessory:{x:40,y:15}, Jewelry:{x:40,y:30}, Bag:{x:30,y:60} },
+      // outfit-6 (Plaid Corset): standing on Seoul street, burgundy plaid corset tank with white lace ruffle hem on torso,
+      // grey wide-leg baggy jeans on legs, grey metallic chunky platform shoes at feet,
+      // black mini crossbody at left side, black star charm choker + layered beaded necklaces at neck.
+      // Jewelry__1 = black star choker, Jewelry__2 = layered beaded necklaces.
+      5: { Top:{x:45,y:40}, Bottom:{x:45,y:75}, Shoes:{x:45,y:90}, Bag:{x:20,y:45}, Jewelry:{x:45,y:25}, Jewelry__2:{x:48,y:28} }
     },
     vintage: {
       // outfit-1: 60s mod editorial, white satin headband on top, crystal chandelier drop earring on left ear,
@@ -1658,21 +1773,61 @@
       // rhinestone bracelet on right wrist resting on dresser.
       // Jewelry__1 = chandelier earrings, Jewelry__2 = rhinestone bracelet.
       0: { Accessory:{x:40,y:15}, Jacket:{x:38,y:30}, Outer:{x:38,y:30}, Bottom:{x:38,y:45}, Tights:{x:40,y:65}, Shoes:{x:55,y:70}, Jewelry:{x:45,y:25}, Jewelry__2:{x:33,y:35} },
-      1: { Jacket:{x:50,y:40}, Outer:{x:50,y:40}, Top:{x:50,y:40}, Skirt:{x:50,y:65}, Tights:{x:50,y:88}, Jewelry:{x:52,y:22} },
-      2: { Jacket:{x:58,y:38}, Outer:{x:58,y:38}, Top:{x:52,y:32}, Bottom:{x:48,y:62}, Tights:{x:35,y:60}, Shoes:{x:30,y:80}, Bag:{x:62,y:75} },
-      3: { Coat:{x:50,y:50}, Outer:{x:50,y:50}, Dress:{x:50,y:55}, Top:{x:50,y:55}, Tights:{x:45,y:80}, Shoes:{x:62,y:92}, Boots:{x:62,y:92}, Bag:{x:14,y:50}, Accessory:{x:42,y:35} },
-      4: { Top:{x:42,y:55}, Dress:{x:42,y:55}, Skirt:{x:38,y:80}, Accessory:{x:50,y:22} },
-      5: { Top:{x:50,y:50}, Dress:{x:50,y:50}, Bag:{x:18,y:70}, Jewelry:{x:50,y:30} }
+      // outfit-2 (Military Edit): standing in vintage drawing room, cream structured military-style long jacket with gold buttons on torso,
+      // cream ruffled tiered mini skirt visible below jacket, white floral lace tights on legs,
+      // multi-strand pearl collar at neck, gold stud earring on ear, gold ring on hand.
+      // Jewelry__1 = pearl collar, Jewelry__2 = gold studs, Jewelry__3 = gold ring.
+      1: { Jacket:{x:50,y:45}, Outer:{x:50,y:45}, Bottom:{x:48,y:75}, Tights:{x:48,y:88}, Jewelry:{x:48,y:22}, Jewelry__2:{x:55,y:18}, Jewelry__3:{x:45,y:60} },
+      // outfit-3 (Flea Market Find): seated on console table by ornate gold mirror, cream tweed bouclé blazer on torso,
+      // cream turtleneck visible at neck above jacket, white floral lace tights on legs,
+      // white kitten heel pumps on raised leg at top-left, cream quilted Chanel-style flap bag on chair seat below.
+      2: { Jacket:{x:45,y:40}, Outer:{x:45,y:40}, Top:{x:50,y:30}, Tights:{x:40,y:70}, Shoes:{x:30,y:60}, Bag:{x:60,y:70} },
+      // outfit-4 (Elevated, heroIdx 3): seated Paris café with Eiffel Tower, beige long open trench draped on shoulders,
+      // black sheer lace mini dress visible under coat, gold YSL-style belt at waist, black floral lace tights on legs,
+      // burgundy pointed stiletto heels at feet, small rectangular vintage sunglasses on face,
+      // gold watch on left wrist holding cup, gold stacking rings on same hand.
+      // Jewelry__1 = gold watch, Jewelry__2 = stacking rings.
+      3: { Coat:{x:35,y:50}, Outer:{x:35,y:50}, Dress:{x:35,y:60}, Belt:{x:40,y:65}, Tights:{x:45,y:85}, Shoes:{x:55,y:90}, Boots:{x:55,y:90}, Accessory:{x:35,y:22}, Jewelry:{x:50,y:50}, Jewelry__2:{x:48,y:55} },
+      // outfit-5 (Garden Party): back-view with pink-striped umbrella outside Gothic university building,
+      // ivory ruffle full-circle skirt halter mini dress billowing, white pearl-trim shoulder bag held at left side,
+      // shoes hidden by dress (placed at bottom), earrings not visible from behind (placed near where ear would be).
+      4: { Dress:{x:45,y:70}, Shoes:{x:45,y:90}, Bag:{x:20,y:75}, Jewelry:{x:40,y:35} },
+      // outfit-6 (70s Fantasy): lying in bed with retro phone, pink satin strapless bustier on chest,
+      // pink sequin fitted midi skirt below, white fluffy faux fur stole draped on right shoulder,
+      // crystal rhinestone embellished clutch on bed at left, crystal rhinestone choker at neck,
+      // crystal rhinestone tennis bracelet on left wrist.
+      // Jewelry__1 = crystal choker, Jewelry__2 = tennis bracelet.
+      5: { Top:{x:45,y:45}, Bottom:{x:55,y:70}, Layer:{x:60,y:30}, Bag:{x:15,y:60}, Jewelry:{x:40,y:35}, Jewelry__2:{x:20,y:50} }
     },
     softgirl: {
       // outfit-1: close-up beauty portrait — face hotspots, not clothing
       // Lashes on right eye, Skincare on forehead, Blush on left cheek, Lip on lower lip, Jewelry on faint necklace at very bottom
       0: { Lashes:{x:62,y:13}, Skincare:{x:45,y:20}, Blush:{x:28,y:34}, Lip:{x:46,y:57}, Jewelry:{x:46,y:96} },
-      1: { Top:{x:50,y:30}, Skirt:{x:50,y:70}, Dress:{x:50,y:55}, Bag:{x:25,y:50} },
-      2: { Top:{x:40,y:40}, Layer:{x:40,y:40}, Dress:{x:40,y:70}, Shoes:{x:38,y:95}, Bag:{x:30,y:70}, Jewelry:{x:40,y:38} },
-      3: { Top:{x:50,y:50}, Dress:{x:50,y:60}, Hair:{x:58,y:28}, Jewelry:{x:38,y:38} },
-      4: { Top:{x:45,y:35}, Layer:{x:50,y:18}, Bottom:{x:50,y:75}, Belt:{x:50,y:55}, Jewelry:{x:50,y:22}, Bag:{x:80,y:50} },
-      5: { Top:{x:50,y:45}, Layer:{x:50,y:35}, Bottom:{x:50,y:75}, Belt:{x:50,y:58}, Bag:{x:62,y:50} }
+      // outfit-2 (Everyday, heroIdx 1): standing by marble wall, pink chunky oversized knit sweater with bow cuff on torso,
+      // white tiered ribbon-trim maxi skirt below (visible pink bow ties), cream crescent shoulder bag at left shoulder,
+      // nude strappy flat sandals at feet (barely visible).
+      1: { Top:{x:40,y:35}, Bottom:{x:40,y:70}, Bag:{x:25,y:45}, Shoes:{x:40,y:90} },
+      // outfit-3 (Garden Party, heroIdx 2): mirror selfie, pink ribbed tie-front cropped cardigan on upper torso,
+      // pink/white floral spaghetti-strap midi dress visible below cardigan, cream structured mini top-handle bag held at left bottom,
+      // white platform strap sandals at feet.
+      2: { Top:{x:40,y:40}, Layer:{x:40,y:40}, Dress:{x:40,y:70}, Bag:{x:28,y:80}, Shoes:{x:35,y:90} },
+      // outfit-4 (Elevated, heroIdx 3): seated on grass picnic, pink gingham square-neck full-skirt midi dress filling lower half,
+      // pink silk lily flower hair clip in hair (top right of head), pearl drop gold earring visible on right ear,
+      // pink pendant chain necklace at chest, white flat shoe visible at top-right.
+      // Jewelry__1 = pearl drop earrings, Jewelry__2 = pink pendant necklace.
+      3: { Dress:{x:40,y:65}, Hair:{x:50,y:25}, Jewelry:{x:45,y:32}, Jewelry__2:{x:40,y:45}, Shoes:{x:70,y:60} },
+      // outfit-5 (Preppy Edit, heroIdx 4): seated on bench (cropped above face), navy cable-knit cropped V-neck sweater on torso,
+      // white/blue pinstripe collared shirt layered underneath (collar above sweater + cuffs at wrists),
+      // cream/ivory wide-leg tailored trousers on legs, brown leather belt at waist,
+      // gold logo pendant necklace at chest, small gold hoops near top edge.
+      // Two Top pieces: __1 = navy sweater, __2 = pinstripe shirt.
+      // Jewelry__1 = pendant, Jewelry__2 = small hoops.
+      4: { Top:{x:45,y:35}, Top__2:{x:45,y:18}, Bottom:{x:60,y:75}, Belt:{x:40,y:55}, Jewelry:{x:48,y:25}, Jewelry__2:{x:53,y:6} },
+      // outfit-6 (First Date, heroIdx 5): standing in art gallery, navy blue silk/satin button-down shirt on torso,
+      // white wide-leg tailored trousers on legs, white leather belt with gold buckle at waist,
+      // black quilted chain crossbody held at left side, gold chain bracelet on left wrist, pearl stud earrings on ear.
+      // Jewelry__1 = gold chain bracelet, Jewelry__2 = pearl studs.
+      5: { Top:{x:40,y:45}, Bottom:{x:40,y:80}, Belt:{x:40,y:65}, Bag:{x:25,y:60}, Jewelry:{x:35,y:60}, Jewelry__2:{x:48,y:30} }
     },
     hijabicore: {
       // outfit-1: seated portrait, brown hijab on head, sunglasses up on hijab, brown leather coat covers torso,
