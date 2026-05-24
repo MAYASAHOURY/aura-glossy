@@ -10741,11 +10741,56 @@ a, button, input, select, textarea,
     gap: 12px;
   }
   .group-card-name { font-size: 1.15rem; }
-  .group-topbar { padding: 14px 16px; top: 60px; }
-  .group-content { padding: 28px 16px 80px; }
+
+  /* Hub hero — tighter "luxury top card" feel on mobile.
+     Was 72/40 padding + heavy internal margins which made the
+     header feel like a floating empty container on iPhone / IG
+     in-app WebView. Pull the eyebrow, title and subtitle into
+     one compact, visually centered block. */
+  .comm-hero { padding: 28px 20px 20px; }
+  .comm-hero .eyebrow { margin-bottom: 6px; font-size: 10px; }
+  .comm-hero h1 {
+    font-size: clamp(1.9rem, 8.4vw, 2.6rem);
+    margin: 0 0 8px;
+    line-height: 1.1;
+  }
+  .comm-hero-sub { font-size: 0.88rem; line-height: 1.5; }
+
+  /* Hub no-quiz CTA — same compactness rules so the alternate
+     hub state doesn't reintroduce the empty-container feel. */
+  .hub-quiz-cta { padding: 24px 18px; }
+  .hub-quiz-cta h2 { margin: 8px 0 10px; }
+  .hub-quiz-cta p { margin-bottom: 18px; }
+
+  /* Group topbar — tighter sticky bar */
+  .group-topbar { padding: 10px 14px; top: 60px; gap: 12px; }
+  .group-back { font-size: 0.72rem; }
+  .group-identity { gap: 10px; }
+  .group-id-name { font-size: 1.05rem; }
+  .group-id-tagline { font-size: 0.68rem; margin-top: 1px; }
+
+  .group-content { padding: 24px 16px 80px; }
   .access-modal-box { padding: 40px 24px 32px; }
   .composer-tabs { gap: 2px; }
   .ctab { padding: 5px 9px; font-size: 0.67rem; }
+
+  /* Empty state — reduce the cavernous bottom padding that made
+     "Be the first to share" feel marooned in whitespace. */
+  .feed-empty { padding: 28px 20px 40px; }
+  .feed-empty-symbol { font-size: 2.2rem; margin-bottom: 14px; }
+  .feed-empty h3 { font-size: 1.3rem; margin-bottom: 6px; }
+  .feed-empty p { font-size: 0.84rem; }
+}
+
+/* Narrowest phones / Instagram in-app browser (≤480px, incl. 390px).
+   IG's WebView eats extra chrome height, so squeeze the top card a
+   touch further while keeping the premium typographic rhythm. */
+@media (max-width: 480px) {
+  .comm-hero { padding: 22px 18px 16px; }
+  .comm-hero h1 { font-size: clamp(1.75rem, 8.4vw, 2.3rem); margin: 0 0 6px; }
+  .comm-hero-sub { font-size: 0.84rem; }
+  .group-topbar { padding: 8px 14px; }
+  .feed-empty { padding: 24px 18px 32px; }
 }
 
 /* On touch devices delete buttons are always visible — no hover state */

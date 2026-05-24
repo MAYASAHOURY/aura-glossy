@@ -138,7 +138,16 @@
         iab_use_menu: 'Tap … menu → Open in browser',
         /* Stall watchdog copy */
         stall_inapp: "Sign-in is slow inside the in-app browser. If it doesn't finish, tap \"Open in browser\" above and try again.",
-        stall_generic: 'Sign-in is taking longer than expected. Check your connection, or try again.'
+        stall_generic: 'Sign-in is taking longer than expected. Check your connection, or try again.',
+        /* Brand-moment preroll (~1.5s) */
+        preroll_sub: 'discover your aesthetic',
+        /* Premium value proposition — three benefit lines + free-signup tag.
+           The <em> markup is preserved (data-i18n-html) and italicizes the
+           noun in each language. */
+        value_aesthetic: 'Discover your <em>aesthetic.</em>',
+        value_community: 'Join your style <em>community.</em>',
+        value_outfits:   'Save outfits you <em>love.</em>',
+        value_cta:       'Sign up — free. <span class="auth-value-spark">✦</span>'
       },
       quiz: {
         page_eyebrow: 'Find your aesthetic',
@@ -357,7 +366,12 @@
         iab_copied: 'Enlace copiado ✓',
         iab_use_menu: 'Toca el menú … → Abrir en el navegador',
         stall_inapp: 'El inicio de sesión es lento dentro del navegador integrado. Si no se completa, toca "Abrir en el navegador" arriba y vuelve a intentarlo.',
-        stall_generic: 'El inicio de sesión está tardando más de lo esperado. Revisa tu conexión o inténtalo de nuevo.'
+        stall_generic: 'El inicio de sesión está tardando más de lo esperado. Revisa tu conexión o inténtalo de nuevo.',
+        preroll_sub: 'descubre tu estética',
+        value_aesthetic: 'Descubre tu <em>estética.</em>',
+        value_community: 'Únete a tu <em>comunidad</em> de estilo.',
+        value_outfits:   'Guarda los looks que <em>amas.</em>',
+        value_cta:       'Regístrate gratis. <span class="auth-value-spark">✦</span>'
       },
       quiz: {
         page_eyebrow: 'Encuentra tu estética',
@@ -565,7 +579,12 @@
         iab_copied: 'تم نسخ الرابط ✓',
         iab_use_menu: 'اضغطي على قائمة … → فتح في المتصفح',
         stall_inapp: 'تسجيل الدخول بطيء داخل المتصفح المدمج. إذا لم يكتمل، اضغطي على "فتح في المتصفح" أعلاه وحاولي مرة أخرى.',
-        stall_generic: 'تسجيل الدخول يستغرق وقتاً أطول من المعتاد. تحققي من اتصالك أو حاولي مرة أخرى.'
+        stall_generic: 'تسجيل الدخول يستغرق وقتاً أطول من المعتاد. تحققي من اتصالك أو حاولي مرة أخرى.',
+        preroll_sub: 'اكتشفي جماليّتك',
+        value_aesthetic: 'اكتشفي <em>جماليّتك.</em>',
+        value_community: 'انضمّي إلى <em>مجتمع</em> أسلوبك.',
+        value_outfits:   'احفظي الإطلالات التي <em>تحبّينها.</em>',
+        value_cta:       'سجّلي مجاناً. <span class="auth-value-spark">✦</span>'
       },
       quiz: {
         page_eyebrow: 'اكتشف جماليّتك',
@@ -772,7 +791,12 @@
         iab_copied: 'הקישור הועתק ✓',
         iab_use_menu: 'הקישי על תפריט … → פתחי בדפדפן',
         stall_inapp: 'ההתחברות איטית בתוך הדפדפן המובנה. אם זה לא מסתיים, הקישי על "פתחי בדפדפן" למעלה ונסי שוב.',
-        stall_generic: 'ההתחברות לוקחת יותר זמן מהצפוי. בדקי את החיבור או נסי שוב.'
+        stall_generic: 'ההתחברות לוקחת יותר זמן מהצפוי. בדקי את החיבור או נסי שוב.',
+        preroll_sub: 'גלי את האסתטיקה שלך',
+        value_aesthetic: 'גלי את <em>האסתטיקה</em> שלך.',
+        value_community: 'הצטרפי <em>לקהילת</em> הסגנון שלך.',
+        value_outfits:   'שמרי את <em>הלוקים</em> שאת אוהבת.',
+        value_cta:       'הירשמי חינם. <span class="auth-value-spark">✦</span>'
       },
       quiz: {
         page_eyebrow: 'גלי את האסתטיקה שלך',
