@@ -258,17 +258,13 @@ window.__auraPublicPage = true;</script>
   };
 
   function renderResult() {
-    /* Auth gate: guests can take the quiz, but the final reveal +
-       Firestore save are signup-only. Stash answers + open the
-       premium signup modal. After auth, the registered 'quiz' resume
-       handler restores `answers` and calls renderResult() again. */
-    if (window.Aura && Aura.requireAuth && !Aura.isSignedIn()) {
-      Aura.requireAuth({
-        title:    'Reveal your aesthetic',
-        subtitle: 'Create your Aura profile to see your full result and join your style circle.',
-        eyebrow:  'Quiz result',
-        pending:  { key: 'quiz', data: { answers: answers.slice() } }
-      }).catch(function () { /* dismissed — stays on last question */ });
+    /* Defense-in-depth: the primary gate is _bootQuiz which prevents
+       guests from starting the quiz at all. This guard catches the
+       contrived edge case where auth state changes mid-quiz (e.g.,
+       user signed out in another tab via BroadcastChannel). Just
+       sends them back to the homepage rather than revealing data. */
+    if (window.Aura && Aura.isSignedIn && !Aura.isSignedIn()) {
+      window.location.replace('login.html?mode=signin&next=%2Fquiz.html');
       return;
     }
 
@@ -391,19 +387,56 @@ window.__auraPublicPage = true;</script>
     }
   }
 
-  /* Post-auth resume: when a guest finishes the quiz, hits the gate,
-     then signs up, login.html bounces them back here with the
-     `aura_pending_action` sessionStorage record. Restore answers and
-     re-fire renderResult so they see their aesthetic immediately. */
-  if (window.Aura && Aura.registerResume) {
-    Aura.registerResume('quiz', function (data) {
-      if (data && Array.isArray(data.answers)) answers = data.answers;
-      stepIndex = QUIZ.length;
-      try { renderResult(); } catch (e) { console.warn('quiz resume failed:', e); }
-    });
+  /* Render a sign-in CTA in place of the quiz when a guest dismisses
+     the gate modal. Keeps the page from sitting blank and gives them
+     an in-page entry point if they change their mind. */
+  function _renderQuizGuestState() {
+    container.innerHTML =
+      '<div class="quiz-guest-gate" style="text-align:center;padding:80px 24px 60px;max-width:520px;margin:0 auto;">' +
+        '<div style="font-size:32px;color:#8a6048;margin-bottom:18px;line-height:1;">✦</div>' +
+        '<h2 style="font-family:Playfair Display,serif;font-size:28px;font-weight:500;line-height:1.18;margin:0 0 14px;color:#1a0e08;">Sign in to take the quiz</h2>' +
+        '<p style="font-size:14px;line-height:1.6;color:#4a3b30;margin:0 0 28px;font-weight:300;">' +
+          'Create your Aura profile to discover your aesthetic, save your result, and unlock your style circle.' +
+        '</p>' +
+        '<div style="display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto;">' +
+          '<a href="login.html?mode=signup&next=%2Fquiz.html" class="btn" style="display:block;">Create account</a>' +
+          '<a href="login.html?mode=signin&next=%2Fquiz.html" class="btn-ghost" style="display:block;">Sign in</a>' +
+          '<a href="index.html" style="margin-top:8px;font-family:JetBrains Mono,monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:#8a6048;text-decoration:underline;text-underline-offset:3px;">Continue browsing</a>' +
+        '</div>' +
+      '</div>';
   }
 
-  render();
+  /* Boot — quiz is gated to authed users only. We wait for Firebase
+     to confirm auth state (Aura.onAuthReady) before deciding so we
+     never flash a question then redirect. Signed-in: start the quiz.
+     Guest: show modal immediately + leave a sign-in CTA on the page. */
+  function _bootQuiz() {
+    if (window.Aura && Aura.isSignedIn && Aura.isSignedIn()) {
+      render();
+      return;
+    }
+    _renderQuizGuestState();
+    if (window.Aura && Aura.requireAuth) {
+      Aura.requireAuth({
+        title:    'Sign in to take the quiz',
+        subtitle: 'Create your Aura profile to discover your aesthetic and unlock your style circle.',
+        eyebrow:  'Style Quiz'
+      }).catch(function () { /* dismissed — page CTA stays */ });
+    }
+  }
+
+  if (window.Aura && Aura.onAuthReady) {
+    /* Brief placeholder so the user doesn't see a flash of empty
+       container before auth state resolves (usually <100ms when
+       Firebase has cached credentials). */
+    container.innerHTML = '<div style="text-align:center;padding:80px 24px;color:#8a6048;">Loading your quiz…</div>';
+    Aura.onAuthReady(_bootQuiz);
+  } else {
+    /* Aura helper unavailable (script load failed) — degrade to the
+       guest state. Better than auto-starting the quiz, which would
+       lose the user's answers if they aren't actually signed in. */
+    _renderQuizGuestState();
+  }
 
   /* ── Language switch: re-render the visible quiz state ──────────
      Translated content lives in i18n.js's quiz.questions[] arrays
