@@ -219,23 +219,6 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
       });
     }
 
-    var nextParam = encodeURIComponent(returnUrl);
-
-    /* In-app browser bypass (TikTok, Instagram, Facebook, Snapchat, etc.):
-       overlay paint + click events are unreliable inside the system WebView.
-       Modals often render off-screen, fail to receive taps, or are obscured
-       by the host app's chrome. Full-page navigation is bulletproof here,
-       so skip the modal entirely and route straight to login.html with
-       ?next= preserved — the existing auth flow then bounces the user back
-       to the original page where the pending-action resume fires. */
-    var inApp = window.Aura && Aura.inApp && Aura.inApp.is;
-    if (inApp) {
-      return new Promise(function (resolve) {
-        resolve({ navigated: true });
-        window.location.href = 'login.html?mode=signup&next=' + nextParam;
-      });
-    }
-
     return new Promise(function (resolve, reject) {
       var modal = _getModal();
       var titleEl = modal.querySelector('[data-aura-gate-title]');

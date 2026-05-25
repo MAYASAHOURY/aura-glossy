@@ -361,30 +361,33 @@
     ],
 
     // HIJABI CORE — heroIdx:0=brown leather coat+pinstripe maxi · heroIdx:1=all-black tailored · heroIdx:2=gray knit+plaid scarf+pleated maxi
+    // 2026-05-25: queries reworked — removed "modest" from mainstream retailers (Zara/COS/H&M/Uniqlo)
+    // because they don't tag products that way and the keyword dropped results to zero. Modanisa
+    // (the actual modest-fashion retailer) keeps simple descriptive queries that match its catalog.
     hijabicore: [
       { name: 'The Daily Layer', tier: 'aff', tag: 'Brown editorial · leather coat and pinstripe skirt', heroIdx: 0, pieces: [
-        { category: 'Coat',      name: 'Brown Faux-Leather Oversized Belted Coat',     store: 'H&M',             price: '$79',  q: 'brown faux leather oversized belted coat women modest' },
-        { category: 'Top',       name: 'Brown Ribbed Turtleneck Sweater',              store: 'Uniqlo',          price: '$39',  q: 'brown ribbed turtleneck sweater women modest' },
-        { category: 'Skirt',     name: 'Brown Pinstripe Wool-Blend Maxi Skirt',        store: 'Zara',            price: '$59',  q: 'brown pinstripe wool blend maxi skirt women modest long' },
-        { category: 'Bag',       name: 'Brown Suede Structured Tote',                  store: 'COS',             price: '$245', q: 'brown suede structured leather tote bag women' },
-        { category: 'Scarf',     name: 'Brown Satin Modal Hijab',                      store: 'Modanisa',        price: '$18',  q: 'brown satin modal hijab women premium' },
-        { category: 'Accessory', name: 'Black Aviator Sunglasses',                     store: 'ASOS',            price: '$22',  q: 'black aviator sunglasses women minimal' }
+        { category: 'Coat',      name: 'Brown Faux-Leather Oversized Belted Coat',     store: 'H&M',             price: '$79',  q: 'brown faux leather belted long coat women' },
+        { category: 'Top',       name: 'Brown Ribbed Turtleneck Sweater',              store: 'Uniqlo',          price: '$39',  q: 'brown ribbed turtleneck sweater women' },
+        { category: 'Skirt',     name: 'Brown Pinstripe Wool-Blend Maxi Skirt',        store: 'Zara',            price: '$59',  q: 'brown pinstripe wool maxi skirt women' },
+        { category: 'Bag',       name: 'Brown Suede Structured Tote',                  store: 'COS',             price: '$245', q: 'brown suede leather tote bag women' },
+        { category: 'Scarf',     name: 'Brown Satin Modal Hijab',                      store: 'Modanisa',        price: '$18',  q: 'brown satin hijab women' },
+        { category: 'Accessory', name: 'Black Aviator Sunglasses',                     store: 'ASOS',            price: '$22',  q: 'black aviator sunglasses women' }
       ]},
       { name: 'The Tailored Edit', tier: 'mid', tag: 'All-black power · long coat and waistcoat', heroIdx: 1, pieces: [
-        { category: 'Coat',      name: 'Black Long Oversized Wool Coat',               store: 'COS',             price: '$295', q: 'black long oversized wool coat women modest tailored' },
+        { category: 'Coat',      name: 'Black Long Oversized Wool Coat',               store: 'COS',             price: '$295', q: 'black long wool coat women oversized' },
         { category: 'Blazer',    name: 'Black Fitted Tailored Waistcoat',              store: 'Zara',            price: '$59',  q: 'black fitted tailored waistcoat women' },
-        { category: 'Top',       name: 'Crisp White Oversized Button-Down Shirt',      store: 'Uniqlo',          price: '$45',  q: 'crisp white oversized button down shirt women modest' },
-        { category: 'Bottom',    name: 'Black Wide-Leg Tailored Trousers',             store: 'COS',             price: '$135', q: 'black wide leg tailored trousers women modest' },
+        { category: 'Top',       name: 'Crisp White Oversized Button-Down Shirt',      store: 'Uniqlo',          price: '$45',  q: 'white oversized button down shirt women' },
+        { category: 'Bottom',    name: 'Black Wide-Leg Tailored Trousers',             store: 'COS',             price: '$135', q: 'black wide leg tailored trousers women' },
         { category: 'Bag',       name: 'Brown Leather Mini Top-Handle Bag',            store: 'Charles & Keith', price: '$89',  q: 'brown leather mini top handle bag women' },
-        { category: 'Scarf',     name: 'Black Premium Satin Hijab',                    store: 'Modanisa',        price: '$18',  q: 'black satin premium hijab women modest' }
+        { category: 'Scarf',     name: 'Black Premium Satin Hijab',                    store: 'Modanisa',        price: '$18',  q: 'black satin hijab women' }
       ]},
       { name: 'The Cozy Polish', tier: 'aff', tag: 'Gray layered · oversized knit and pleated maxi', heroIdx: 2, pieces: [
-        { category: 'Top',       name: 'Gray Oversized Chunky Knit Sweater',           store: 'H&M',             price: '$45',  q: 'gray oversized chunky knit sweater women cozy modest' },
-        { category: 'Scarf',     name: 'Plaid Wool Oversized Blanket Scarf',           store: 'Zara',            price: '$45',  q: 'plaid wool oversized blanket scarf women neutral' },
-        { category: 'Skirt',     name: 'Charcoal Pleated Maxi Skirt',                  store: 'COS',             price: '$135', q: 'charcoal pleated maxi skirt women modest long' },
-        { category: 'Shoes',     name: 'White Leather Sneakers',                       store: 'Adidas',          price: '$85',  q: 'white leather sneakers women clean adidas stan smith' },
-        { category: 'Bag',       name: 'Black Woven Shoulder Bag',                     store: 'Zara',            price: '$49',  q: 'black woven shoulder bag women crochet' },
-        { category: 'Scarf',     name: 'Dark Gray Premium Hijab',                      store: 'Modanisa',        price: '$15',  q: 'dark gray premium hijab women modest' }
+        { category: 'Top',       name: 'Gray Oversized Chunky Knit Sweater',           store: 'H&M',             price: '$45',  q: 'gray oversized chunky knit sweater women' },
+        { category: 'Scarf',     name: 'Plaid Wool Oversized Blanket Scarf',           store: 'Zara',            price: '$45',  q: 'plaid wool oversized blanket scarf' },
+        { category: 'Skirt',     name: 'Charcoal Pleated Maxi Skirt',                  store: 'COS',             price: '$135', q: 'charcoal pleated maxi skirt women' },
+        { category: 'Shoes',     name: 'White Leather Sneakers',                       store: 'Adidas',          price: '$85',  q: 'stan smith white women' },
+        { category: 'Bag',       name: 'Black Woven Shoulder Bag',                     store: 'Zara',            price: '$49',  q: 'black woven shoulder bag women' },
+        { category: 'Scarf',     name: 'Dark Gray Premium Hijab',                      store: 'Modanisa',        price: '$15',  q: 'dark gray hijab women' }
       ]}
     ]
   };
@@ -685,28 +688,29 @@
     ],
 
     // HIJABI CORE — heroIdx:3=cream knit+beige satin · heroIdx:4=sage linen+white maxi · heroIdx:5=navy military+dark denim
+    // 2026-05-25: queries reworked (same rationale as CURATED.hijabicore above).
     hijabicore: [
       { name: 'The Quiet Luxury', tier: 'mid', tag: 'Cream knit and beige satin midi', heroIdx: 3, pieces: [
-        { category: 'Top',       name: 'Cream Oversized Fluffy Knit Sweater',          store: 'COS',             price: '$135', q: 'cream oversized fluffy knit sweater women cozy modest' },
-        { category: 'Skirt',     name: 'Beige Satin Bias-Cut Maxi Skirt',              store: 'Zara',            price: '$59',  q: 'beige satin bias cut maxi skirt women modest long' },
-        { category: 'Bag',       name: 'Cream Soft Leather Hobo Shoulder Bag',         store: 'COS',             price: '$195', q: 'cream soft leather hobo shoulder bag women' },
-        { category: 'Jewelry',   name: 'Gold Layered Pendant Necklace Set',            store: 'Mejuri',          price: '$98',  q: 'gold layered pendant necklace set women delicate' },
-        { category: 'Scarf',     name: 'Mauve Modal Satin Hijab',                      store: 'Modanisa',        price: '$22',  q: 'mauve modal satin hijab premium women' },
-        { category: 'Jewelry',   name: 'Gold Stacking Rings',                          store: 'H&M',             price: '$18',  q: 'gold stacking rings set women minimal' }
+        { category: 'Top',       name: 'Cream Oversized Fluffy Knit Sweater',          store: 'COS',             price: '$135', q: 'cream oversized knit sweater women' },
+        { category: 'Skirt',     name: 'Beige Satin Bias-Cut Maxi Skirt',              store: 'Zara',            price: '$59',  q: 'beige satin bias cut maxi skirt women' },
+        { category: 'Bag',       name: 'Cream Soft Leather Hobo Shoulder Bag',         store: 'COS',             price: '$195', q: 'cream leather hobo shoulder bag women' },
+        { category: 'Jewelry',   name: 'Gold Layered Pendant Necklace Set',            store: 'Mejuri',          price: '$98',  q: 'gold layered pendant necklace women' },
+        { category: 'Scarf',     name: 'Mauve Modal Satin Hijab',                      store: 'Modanisa',        price: '$22',  q: 'mauve satin hijab women' },
+        { category: 'Jewelry',   name: 'Gold Stacking Rings',                          store: 'H&M',             price: '$18',  q: 'gold stacking rings women' }
       ]},
       { name: 'The Summer Editorial', tier: 'aff', tag: 'Sage linen and white maxi', heroIdx: 4, pieces: [
-        { category: 'Jacket',    name: 'Sage Green Linen Tie-Front Cropped Jacket',    store: 'Zara',            price: '$59',  q: 'sage green linen tie front cropped jacket women modest' },
-        { category: 'Skirt',     name: 'White Linen Tiered Maxi Skirt',                store: 'H&M',             price: '$45',  q: 'white linen tiered maxi skirt women modest long' },
-        { category: 'Top',       name: 'White Lightweight Cotton Long-Sleeve Tee',     store: 'Uniqlo',          price: '$25',  q: 'white lightweight cotton long sleeve tee women modest' },
-        { category: 'Scarf',     name: 'White Premium Cotton Hijab',                   store: 'Modanisa',        price: '$15',  q: 'white premium cotton hijab women modest' },
-        { category: 'Shoes',     name: 'Nude Pointed-Toe Flats',                       store: 'H&M',             price: '$32',  q: 'nude pointed toe flats women minimal modest' }
+        { category: 'Jacket',    name: 'Sage Green Linen Tie-Front Cropped Jacket',    store: 'Zara',            price: '$59',  q: 'sage green linen jacket women' },
+        { category: 'Skirt',     name: 'White Linen Tiered Maxi Skirt',                store: 'H&M',             price: '$45',  q: 'white tiered maxi skirt women' },
+        { category: 'Top',       name: 'White Lightweight Cotton Long-Sleeve Tee',     store: 'Uniqlo',          price: '$25',  q: 'white long sleeve cotton t shirt women' },
+        { category: 'Scarf',     name: 'White Premium Cotton Hijab',                   store: 'Modanisa',        price: '$15',  q: 'white cotton hijab women' },
+        { category: 'Shoes',     name: 'Nude Pointed-Toe Flats',                       store: 'H&M',             price: '$32',  q: 'nude pointed toe flats women' }
       ]},
       { name: 'The Polished Travel', tier: 'mid', tag: 'Navy military and dark denim', heroIdx: 5, pieces: [
-        { category: 'Jacket',    name: 'Navy Military Tailored Jacket',                store: 'Zara',            price: '$89',  q: 'navy military tailored jacket women structured modest' },
-        { category: 'Bottom',    name: 'Dark Indigo High-Waist Wide-Leg Jeans',        store: 'Uniqlo',          price: '$49',  q: 'dark indigo high waist wide leg jeans women modest' },
-        { category: 'Bag',       name: 'Brown Monogram Mini Top-Handle Bag',           store: 'Charles & Keith', price: '$95',  q: 'brown monogram mini top handle bag women' },
-        { category: 'Shoes',     name: 'Brown Pointed Leather Pumps',                  store: 'COS',             price: '$165', q: 'brown pointed toe leather pumps women' },
-        { category: 'Scarf',     name: 'Chocolate Brown Modal Hijab',                  store: 'Modanisa',        price: '$18',  q: 'chocolate brown modal hijab women premium modest' }
+        { category: 'Jacket',    name: 'Navy Military Tailored Jacket',                store: 'Zara',            price: '$89',  q: 'navy military jacket women' },
+        { category: 'Bottom',    name: 'Dark Indigo High-Waist Wide-Leg Jeans',        store: 'Uniqlo',          price: '$49',  q: 'dark indigo high waist wide leg jeans women' },
+        { category: 'Bag',       name: 'Brown Monogram Mini Top-Handle Bag',           store: 'Charles & Keith', price: '$95',  q: 'brown mini top handle bag women' },
+        { category: 'Shoes',     name: 'Brown Pointed Leather Pumps',                  store: 'COS',             price: '$165', q: 'brown pointed leather pumps women' },
+        { category: 'Scarf',     name: 'Chocolate Brown Modal Hijab',                  store: 'Modanisa',        price: '$18',  q: 'chocolate brown hijab women' }
       ]}
     ]
   };
