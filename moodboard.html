@@ -3,14 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a0e08">
 <script>(function(){try{var l=localStorage.getItem("aura_lang");if(!l){var nl=(navigator.language||"en").toLowerCase().slice(0,2);l=(["en","es","ar","he"].indexOf(nl)>=0)?nl:"en";}document.documentElement.lang=l;document.documentElement.dir=(l==="ar"||l==="he")?"rtl":"ltr";}catch(e){}})();</script>
 <script>/* Public page — guests see empty-state CTA, signed-in users see their saved looks. */
 window.__auraPublicPage = true;</script>
 <title>Moodboard — Aura Glossy</title>
+<meta name="robots" content="index, follow">
 <meta name="description" content="Your personal Aura Glossy moodboard. Save and collect fashion inspiration, outfits, and looks from across the platform.">
 <meta property="og:title" content="Moodboard — Aura Glossy">
 <meta property="og:description" content="Save and collect your favorite fashion looks and build your personal style moodboard.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://auraglossy.com/moodboard.html">
+<meta property="og:site_name" content="Aura Glossy">
 <meta property="og:image" content="https://auraglossy.com/images/home/hero-1.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://auraglossy.com/moodboard.html">
@@ -18,17 +22,18 @@ window.__auraPublicPage = true;</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=42">
+<link rel="stylesheet" href="css/styles.css?v=43">
 </head>
 <body>
 
-<nav class="nav">
+<a href="#main-content" class="skip-link">Skip to content</a>
+<nav class="nav" aria-label="Primary">
   <a href="index.html" class="nav-logo">AURA GLOSS<span>Y</span></a>
   <ul class="nav-links">
     <li><a href="index.html" data-i18n="nav.home">Home</a></li>
     <li><a href="quiz.html" data-i18n="nav.quiz">Style Quiz</a></li>
     <li><a href="index.html#styles" data-i18n="nav.aesthetics">Aesthetics</a></li>
-    <li><a href="moodboard.html" class="active" data-i18n="nav.moodboard">Moodboard</a></li>
+    <li><a href="moodboard.html" class="active" data-i18n="nav.moodboard" aria-current="page">Moodboard</a></li>
     <li><a href="community.html" data-i18n="nav.community">Community</a></li>
     <li><a href="brands.html" data-i18n="nav.partners">Partners</a></li>
   </ul>
@@ -37,7 +42,7 @@ window.__auraPublicPage = true;</script>
   <div class="nav-burger" aria-label="Open menu" data-i18n-attr="aria-label:nav.open_menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
 </nav>
 
-<section class="moodboard-page">
+<section class="moodboard-page" id="main-content">
   <div class="moodboard-header">
     <span class="eyebrow" data-i18n="moodboard.eyebrow">Your collection</span>
     <h1><span data-i18n="moodboard.title_a">Your</span> <em data-i18n="moodboard.title_b">moodboard.</em></h1>
@@ -46,13 +51,13 @@ window.__auraPublicPage = true;</script>
   <div id="moodboard-container"></div>
 </section>
 
-<footer class="footer">
+<footer class="footer" role="contentinfo">
   <div class="container">
     <div class="footer-grid">
       <div><div class="footer-brand">AURA GLOSS<span>Y</span></div><p class="footer-tagline" data-i18n="footer.tagline">A curated fashion universe.</p></div>
       <div class="footer-col"><h4 data-i18n="footer.col_discover">Discover</h4><ul><li><a href="quiz.html" data-i18n="footer.link_quiz">Style quiz</a></li><li><a href="index.html#styles" data-i18n="footer.link_all">All aesthetics</a></li><li><a href="moodboard.html" data-i18n="nav.moodboard">Moodboard</a></li><li><a href="brands.html" data-i18n="nav.partners">Partners</a></li></ul></div>
       <div class="footer-col"><h4 data-i18n="footer.col_aesthetics">Aesthetics</h4><ul><li><a href="style.html#classic">Classic</a></li><li><a href="style.html#minimalist">Minimalist</a></li><li><a href="style.html#korean">Korean</a></li><li><a href="style.html#elegant">Elegant</a></li></ul></div>
-      <div class="footer-col"><h4 data-i18n="footer.col_partners">Shop partners</h4><ul><li>Zara · COS · Charles &amp; Keith</li><li>H&M · Uniqlo · ASOS</li><li>SHEIN · Mejuri · Modanisa</li><li>Nike · Adidas · Sephora</li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="privacy.html">Privacy policy</a></li><li><a href="terms.html">Terms of service</a></li><li><a href="cookies.html">Cookies</a></li><li><a href="accessibility.html">Accessibility</a></li></ul></div>
     </div>
     <div class="footer-bottom"><span data-i18n="footer.copyright">© 2026 Aura Glossy</span><span data-i18n="footer.designed">Designed with care, dressed with intention.</span></div>
   </div>
@@ -65,7 +70,7 @@ window.__auraPublicPage = true;</script>
 <script src="js/main.js?v=9"></script>
 <script src="js/i18n.js?v=12"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=15"></script>
+<script src="js/firebase.js?v=16"></script>
 <script src="js/animations.js?v=15"></script>
 <script>
 (function() {

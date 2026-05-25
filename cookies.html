@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{var l=localStorage.getItem("aura_lang");if(!l){var nl=(navigator.language||"en").toLowerCase().slice(0,2);l=(["en","es","ar","he"].indexOf(nl)>=0)?nl:"en";}document.documentElement.lang=l;document.documentElement.dir=(l==="ar"||l==="he")?"rtl":"ltr";}catch(e){}})();</script>
+<script>/* Public page — open browsing, action-level auth via Aura.requireAuth(). */
+window.__auraPublicPage = true;</script>
+<title>Cookies &amp; Storage — Aura Glossy</title>
+<meta name="description" content="Aura Glossy uses essential browser storage (localStorage and sessionStorage) for sign-in, language, and onboarding state. No tracking cookies, no third-party trackers.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Cookies &amp; Storage — Aura Glossy">
+<meta property="og:description" content="Exactly what Aura Glossy stores in your browser and why. No third-party trackers.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://auraglossy.com/cookies.html">
+<meta property="og:site_name" content="Aura Glossy">
+<meta property="og:image" content="https://auraglossy.com/images/home/hero-1.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://auraglossy.com/cookies.html">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=43">
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav class="nav" aria-label="Primary">
+  <a href="index.html" class="nav-logo" aria-label="Aura Glossy — home">AURA GLOSS<span>Y</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+    <li><a href="quiz.html" data-i18n="nav.quiz">Style Quiz</a></li>
+    <li><a href="index.html#styles" data-i18n="nav.aesthetics">Aesthetics</a></li>
+    <li><a href="moodboard.html" data-i18n="nav.moodboard">Moodboard</a></li>
+    <li><a href="community.html" data-i18n="nav.community">Community</a></li>
+    <li><a href="brands.html" data-i18n="nav.partners">Partners</a></li>
+  </ul>
+  <button class="nav-auth-btn" id="nav-auth-btn" onclick="navAuthClick()" data-i18n="nav.account">Account</button>
+  <div id="lang-switcher" class="nav-lang-slot"></div>
+  <div class="nav-burger" aria-label="Open menu" data-i18n-attr="aria-label:nav.open_menu" role="button" tabindex="0" aria-expanded="false"><span></span><span></span><span></span></div>
+</nav>
+
+<main id="main-content" class="legal-page">
+  <p class="legal-eyebrow">Legal</p>
+  <h1>Cookies &amp; storage</h1>
+  <p class="legal-meta">Last updated: 25 May 2026</p>
+
+  <div class="legal-callout">
+    <strong>The short version:</strong> Aura Glossy uses only essential browser storage — no tracking cookies, no third-party analytics, no advertising pixels. The list below shows every key we set, what it does, and where it lives.
+  </div>
+
+  <h2>How browser storage works</h2>
+  <p>Modern web platforms use two kinds of small client-side stores:</p>
+  <ul>
+    <li><strong><code>localStorage</code></strong> — persists across sessions on the same device until cleared.</li>
+    <li><strong><code>sessionStorage</code></strong> — clears when the browser tab is closed.</li>
+  </ul>
+  <p>Aura Glossy does <strong>not</strong> use traditional HTTP cookies for tracking. Firebase Authentication uses one cookie-like session ID for sign-in, and that's it.</p>
+
+  <h2>Keys we set</h2>
+
+  <h3>Essential (always set)</h3>
+  <ul>
+    <li><code>aura_lang</code> — your selected interface language (en / es / ar / he). <em>localStorage.</em></li>
+    <li><code>aura_intro_seen</code> — flag so the cinematic intro doesn't replay every visit. <em>localStorage.</em></li>
+    <li><code>aura_cookie_ok</code> — your acknowledgement of this notice. <em>localStorage.</em></li>
+    <li><code>aura_uid</code> — anonymous local ID for guest moodboard cache (only set if you save before signing up). <em>localStorage.</em></li>
+  </ul>
+
+  <h3>Only if you sign in</h3>
+  <ul>
+    <li><code>aura_has_session</code> — fast-path flag so protected pages don't blank-screen waiting for Firebase. <em>localStorage.</em></li>
+    <li><code>aura_quiz_id</code> — your current aesthetic, used to grant community access. <em>localStorage.</em></li>
+    <li><code>aura_onboarded</code> — flag so the welcome tour doesn't replay. <em>localStorage.</em></li>
+    <li><strong>Firebase auth session</strong> — managed by the Firebase Authentication SDK in IndexedDB. Required for sign-in to persist across tabs and browser restarts.</li>
+  </ul>
+
+  <h3>Per-session helpers (cleared when you close the tab)</h3>
+  <ul>
+    <li><code>aura_skip_intro</code> — skips the intro after sign-in.</li>
+    <li><code>aura_just_authed</code> — tells the homepage you just signed in (uses a longer auth-check timer).</li>
+    <li><code>aura_onboard_trigger</code> — set after a brand-new account signup so the welcome tour runs.</li>
+    <li><code>aura_pending_action</code> — temporary record of a save / shop / quiz click so we can resume it after sign-up.</li>
+  </ul>
+
+  <h2>Third-party</h2>
+  <p>The only third-party storage Aura Glossy depends on is Google Firebase Authentication (Google's own session cookies). We do not load Google Analytics, Facebook Pixel, advertising trackers, or A/B testing tools. When you click a "Shop now" link, the retailer's own cookies apply on the retailer's site — Aura Glossy can't see or set them.</p>
+
+  <h2>Clearing storage</h2>
+  <p>You can clear Aura Glossy's local storage at any time via your browser's settings (Site Data → auraglossy.com → Clear). Signing out also clears the session keys.</p>
+
+  <h2>Why we don't ask for fancy consent</h2>
+  <p>EU and Israeli rules require consent for non-essential tracking. Since Aura Glossy uses only essential storage to make the platform work (language, sign-in state, onboarding), no separate analytics consent is needed. We surface this page in our footer and show a small acknowledgement banner on first visit out of respect for transparency.</p>
+
+  <div class="legal-contact">
+    <h3>Questions?</h3>
+    <p><a href="mailto:auraglossy.support@gmail.com">auraglossy.support@gmail.com</a></p>
+  </div>
+
+  <a href="index.html" class="legal-back">← Back to Aura Glossy</a>
+</main>
+
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div><div class="footer-brand">AURA GLOSS<span>Y</span></div><p class="footer-tagline" data-i18n="footer.tagline">A curated fashion universe.</p></div>
+      <div class="footer-col"><h4 data-i18n="footer.col_discover">Discover</h4><ul><li><a href="quiz.html" data-i18n="footer.link_quiz">Style quiz</a></li><li><a href="index.html#styles" data-i18n="footer.link_all">All aesthetics</a></li><li><a href="moodboard.html" data-i18n="nav.moodboard">Moodboard</a></li><li><a href="brands.html" data-i18n="nav.partners">Partners</a></li></ul></div>
+      <div class="footer-col"><h4 data-i18n="footer.col_aesthetics">Aesthetics</h4><ul><li><a href="style.html#classic">Classic</a></li><li><a href="style.html#minimalist">Minimalist</a></li><li><a href="style.html#korean">Korean</a></li><li><a href="style.html#elegant">Elegant</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="privacy.html">Privacy policy</a></li><li><a href="terms.html">Terms of service</a></li><li><a href="cookies.html">Cookies</a></li><li><a href="accessibility.html">Accessibility</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span data-i18n="footer.copyright">© 2026 Aura Glossy</span><span data-i18n="footer.designed">Designed with care, dressed with intention.</span></div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="js/i18n.js?v=12"></script>
+<script src="js/monitor.js?v=2"></script>
+<script src="js/firebase.js?v=16"></script>
+<script>
+function navAuthClick() { window.location.href = 'settings.html'; }
+initAuthGuard();
+</script>
+
+</body>
+</html>

@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a0e08">
 <title>Aura Glossy ✦ Discover Your Fashion Aesthetic</title>
+<meta name="robots" content="index, follow">
 <meta name="description" content="Aura Glossy is a fashion-editorial aesthetic discovery platform. Take the style quiz, explore curated aesthetics, get AI styling advice, and build your personal moodboard.">
 <meta property="og:title" content="Aura Glossy ✦ Discover Your Fashion Aesthetic">
 <meta property="og:description" content="Take the style quiz and discover your personal aesthetic. Curated fashion inspiration, AI styling, and shoppable looks across 9 aesthetics.">
@@ -69,10 +71,11 @@ window.__auraPublicPage = true;
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=42">
+<link rel="stylesheet" href="css/styles.css?v=43">
 </head>
 <body>
 
+<a href="#main-content" class="skip-link">Skip to content</a>
 <!-- ===== PAGE VEIL — hides content until auth resolves; sits below intro (z 9997) ===== -->
 <div id="aura-veil" aria-hidden="true"></div>
 
@@ -139,10 +142,10 @@ window.__auraPublicPage = true;
 <div id="intro-spacer" aria-hidden="true"></div>
 
 
-<nav class="nav">
-  <a href="index.html" class="nav-logo">AURA GLOSS<span>Y</span></a>
+<nav class="nav" aria-label="Primary">
+  <a href="index.html" class="nav-logo" aria-label="Aura Glossy — home">AURA GLOSS<span>Y</span></a>
   <ul class="nav-links">
-    <li><a href="index.html" class="active" data-i18n="nav.home">Home</a></li>
+    <li><a href="index.html" class="active" data-i18n="nav.home" aria-current="page">Home</a></li>
     <li><a href="quiz.html" data-i18n="nav.quiz">Style Quiz</a></li>
     <li><a href="#styles" data-i18n="nav.aesthetics">Aesthetics</a></li>
     <li><a href="moodboard.html" data-i18n="nav.moodboard">Moodboard</a></li>
@@ -155,7 +158,7 @@ window.__auraPublicPage = true;
 </nav>
 
 <!-- HERO -->
-<section class="hero hero-minimal">
+<section class="hero hero-minimal" id="main-content">
   <div class="hero-grid">
     <div class="hero-content" data-parallax="0.06">
       <span class="eyebrow" data-i18n="hero.eyebrow">A curated fashion universe</span>
@@ -204,13 +207,13 @@ window.__auraPublicPage = true;
   </div>
 </section>
 
-<footer class="footer">
+<footer class="footer" role="contentinfo">
   <div class="container">
     <div class="footer-grid">
       <div><div class="footer-brand">AURA GLOSS<span>Y</span></div><p class="footer-tagline" data-i18n="footer.tagline">A curated fashion universe.</p></div>
       <div class="footer-col"><h4 data-i18n="footer.col_discover">Discover</h4><ul><li><a href="quiz.html" data-i18n="footer.link_quiz">Style quiz</a></li><li><a href="#styles" data-i18n="footer.link_all">All aesthetics</a></li><li><a href="moodboard.html" data-i18n="nav.moodboard">Moodboard</a></li><li><a href="brands.html" data-i18n="nav.partners">Partners</a></li></ul></div>
       <div class="footer-col"><h4 data-i18n="footer.col_aesthetics">Aesthetics</h4><ul><li><a href="style.html#classic">Classic</a></li><li><a href="style.html#minimalist">Minimalist</a></li><li><a href="style.html#korean">Korean</a></li><li><a href="style.html#elegant">Elegant</a></li></ul></div>
-      <div class="footer-col"><h4 data-i18n="footer.col_partners">Shop partners</h4><ul><li>Zara · COS · Charles &amp; Keith</li><li>H&M · Uniqlo · ASOS</li><li>SHEIN · Mejuri · Modanisa</li><li>Nike · Adidas · Sephora</li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="privacy.html">Privacy policy</a></li><li><a href="terms.html">Terms of service</a></li><li><a href="cookies.html">Cookies</a></li><li><a href="accessibility.html">Accessibility</a></li></ul></div>
     </div>
     <div class="footer-bottom"><span data-i18n="footer.copyright">© 2026 Aura Glossy</span><span data-i18n="footer.designed">Designed with care, dressed with intention.</span></div>
   </div>
@@ -224,7 +227,7 @@ window.__auraPublicPage = true;
 <script src="js/data.js?v=10" defer></script>
 <script src="js/main.js?v=9" defer></script>
 <script src="js/monitor.js?v=2" defer></script>
-<script src="js/firebase.js?v=15" defer></script>
+<script src="js/firebase.js?v=16" defer></script>
 <script src="js/animations.js?v=15" defer></script>
 <script src="js/onboarding.js?v=12" defer></script>
 <script>

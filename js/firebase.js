@@ -237,6 +237,32 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
 
       var nextParam = encodeURIComponent(returnUrl);
 
+      // ── A11y: focus trap + restore (WCAG 2.1.2 No Keyboard Trap, IS 5568) ──
+      // Save the element that had focus when the modal opened so we can
+      // restore it on dismiss. Then move keyboard focus into the modal
+      // and cycle Tab/Shift+Tab through its interactive elements.
+      var prevFocus = document.activeElement;
+      var focusables = [primary, secondary, dismiss, closeX];
+      function onTrap(e) {
+        if (e.key !== 'Tab') return;
+        // Confine tabbing to modal controls only
+        var current = document.activeElement;
+        var idx = focusables.indexOf(current);
+        if (idx === -1) {
+          e.preventDefault();
+          focusables[0].focus();
+          return;
+        }
+        var next;
+        if (e.shiftKey) {
+          next = idx === 0 ? focusables[focusables.length - 1] : focusables[idx - 1];
+        } else {
+          next = idx === focusables.length - 1 ? focusables[0] : focusables[idx + 1];
+        }
+        e.preventDefault();
+        next.focus();
+      }
+
       function cleanup() {
         modal.classList.remove('visible');
         primary.removeEventListener('click', goCreate);
@@ -245,6 +271,11 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
         closeX.removeEventListener('click', onDismiss);
         modal.removeEventListener('click', onBackdrop);
         document.removeEventListener('keydown', onEsc);
+        document.removeEventListener('keydown', onTrap);
+        // Restore focus to where it was before the modal opened
+        if (prevFocus && typeof prevFocus.focus === 'function') {
+          try { prevFocus.focus(); } catch (e) {}
+        }
       }
       function goCreate(e) {
         if (e) e.preventDefault();
@@ -277,9 +308,14 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
       closeX.addEventListener('click', onDismiss);
       modal.addEventListener('click', onBackdrop);
       document.addEventListener('keydown', onEsc);
+      document.addEventListener('keydown', onTrap);
 
-      // Reveal next frame so transition animates
-      requestAnimationFrame(function () { modal.classList.add('visible'); });
+      // Reveal next frame so transition animates, then move focus to
+      // the primary action so keyboard users start there
+      requestAnimationFrame(function () {
+        modal.classList.add('visible');
+        try { primary.focus(); } catch (e) {}
+      });
     });
   }
 
@@ -347,6 +383,53 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
       }
     }, 12000);
     return toast;
+  }
+
+  // ── Cookie / storage acknowledgement banner ─────────────────────
+  // Subtle premium notice shown on first visit if the user hasn't
+  // dismissed it. Stays out of the way (bottom-left corner, doesn't
+  // block content). Required for IL/EU transparency even though
+  // Aura Glossy uses only essential storage. Skipped on the legal
+  // pages themselves to avoid redundancy.
+  function _cookieBannerShouldShow() {
+    try {
+      if (localStorage.getItem('aura_cookie_ok')) return false;
+    } catch (e) { return false; }
+    var p = (location.pathname || '').toLowerCase();
+    // Don't show on the legal pages themselves (or login — already has its own legal strip)
+    if (p.indexOf('cookies') >= 0 || p.indexOf('privacy') >= 0 ||
+        p.indexOf('terms') >= 0 || p.indexOf('accessibility') >= 0 ||
+        p.indexOf('login') >= 0) return false;
+    return true;
+  }
+  function _mountCookieBanner() {
+    if (!_cookieBannerShouldShow()) return;
+    if (document.querySelector('.aura-cookie-banner')) return;
+    var el = document.createElement('div');
+    el.className = 'aura-cookie-banner';
+    el.setAttribute('role', 'region');
+    el.setAttribute('aria-label', 'Cookie notice');
+    el.innerHTML =
+      '<span class="aura-cookie-banner-text">' +
+        'Aura Glossy uses only essential browser storage to remember your sign-in and language. ' +
+        '<a href="cookies.html">Learn more</a>.' +
+      '</span>' +
+      '<button class="aura-cookie-banner-ok" type="button" aria-label="Acknowledge cookie notice">Got it</button>';
+    document.body.appendChild(el);
+    // Show next frame so transition (if any) animates
+    requestAnimationFrame(function () { el.classList.add('visible'); });
+    el.querySelector('.aura-cookie-banner-ok').addEventListener('click', function () {
+      try { localStorage.setItem('aura_cookie_ok', '1'); } catch (e) {}
+      el.classList.remove('visible');
+      setTimeout(function () { if (el.parentNode) el.remove(); }, 240);
+    });
+  }
+  // Mount on DOMContentLoaded so the banner exists in the layout but
+  // doesn't compete with critical paint
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _mountCookieBanner);
+  } else {
+    _mountCookieBanner();
   }
 
   // Public API

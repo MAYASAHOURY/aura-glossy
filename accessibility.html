@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{var l=localStorage.getItem("aura_lang");if(!l){var nl=(navigator.language||"en").toLowerCase().slice(0,2);l=(["en","es","ar","he"].indexOf(nl)>=0)?nl:"en";}document.documentElement.lang=l;document.documentElement.dir=(l==="ar"||l==="he")?"rtl":"ltr";}catch(e){}})();</script>
+<script>/* Public page — open browsing, action-level auth via Aura.requireAuth(). */
+window.__auraPublicPage = true;</script>
+<title>Accessibility Statement — Aura Glossy</title>
+<meta name="description" content="Aura Glossy is committed to making fashion discovery accessible to everyone. Our accessibility statement, supported features, and contact for accessibility issues.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Accessibility Statement — Aura Glossy">
+<meta property="og:description" content="How Aura Glossy supports users with disabilities, the standards we follow (WCAG 2.1 AA, IS 5568), and how to report accessibility issues.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://auraglossy.com/accessibility.html">
+<meta property="og:site_name" content="Aura Glossy">
+<meta property="og:image" content="https://auraglossy.com/images/home/hero-1.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Accessibility Statement — Aura Glossy">
+<meta name="twitter:description" content="Our commitment to accessibility, the standards we follow, and how to report issues.">
+<link rel="canonical" href="https://auraglossy.com/accessibility.html">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=43">
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<nav class="nav" aria-label="Primary">
+  <a href="index.html" class="nav-logo" aria-label="Aura Glossy — home">AURA GLOSS<span>Y</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+    <li><a href="quiz.html" data-i18n="nav.quiz">Style Quiz</a></li>
+    <li><a href="index.html#styles" data-i18n="nav.aesthetics">Aesthetics</a></li>
+    <li><a href="moodboard.html" data-i18n="nav.moodboard">Moodboard</a></li>
+    <li><a href="community.html" data-i18n="nav.community">Community</a></li>
+    <li><a href="brands.html" data-i18n="nav.partners">Partners</a></li>
+  </ul>
+  <button class="nav-auth-btn" id="nav-auth-btn" onclick="navAuthClick()" data-i18n="nav.account">Account</button>
+  <div id="lang-switcher" class="nav-lang-slot"></div>
+  <div class="nav-burger" aria-label="Open menu" data-i18n-attr="aria-label:nav.open_menu" role="button" tabindex="0" aria-expanded="false" aria-controls="primary-nav-list"><span></span><span></span><span></span></div>
+</nav>
+
+<main id="main-content" class="legal-page">
+  <p class="legal-eyebrow">Accessibility</p>
+  <h1>Accessibility statement</h1>
+  <p class="legal-meta">Last updated: 25 May 2026</p>
+
+  <h2>Our commitment</h2>
+  <p>Aura Glossy is committed to ensuring digital accessibility for people with disabilities. We are continuously improving the user experience for everyone and applying the relevant accessibility standards.</p>
+
+  <h2>Standards we follow</h2>
+  <p>Aura Glossy works toward conformance with the <strong>Web Content Accessibility Guidelines (WCAG) 2.1 Level AA</strong> and the Israeli accessibility standard <strong>IS 5568</strong>. We use these standards as a baseline for every design and engineering decision.</p>
+
+  <h2>Supported accessibility features</h2>
+  <ul>
+    <li><strong>Keyboard navigation</strong> — all interactive elements (links, buttons, hotspot dots, modals, form fields) are reachable and operable using only a keyboard.</li>
+    <li><strong>Skip-to-content link</strong> — a hidden link at the top of every page lets keyboard users jump directly to the main content.</li>
+    <li><strong>Visible focus indicators</strong> — keyboard focus is always shown with a warm-gold outline that doesn't change visual layout.</li>
+    <li><strong>Reduced motion</strong> — when your device requests reduced motion (macOS / iOS "Reduce motion", Windows "Show animations off"), Aura Glossy disables non-essential animations and transitions.</li>
+    <li><strong>Screen reader support</strong> — semantic HTML, ARIA labels on icon-only controls, dialog and live-region announcements for modals and toasts.</li>
+    <li><strong>Forced-colors / High Contrast Mode</strong> — focus indicators and key UI elements respect Windows High Contrast and macOS Increase Contrast settings.</li>
+    <li><strong>Language and direction</strong> — Aura Glossy supports English, Spanish, Arabic, and Hebrew with correct <code>lang</code> and <code>dir</code> attributes (Arabic and Hebrew render right-to-left).</li>
+    <li><strong>Font scaling</strong> — page layout responds to user-controlled text size in the browser and operating system.</li>
+    <li><strong>Mobile and touch</strong> — touch targets meet recommended minimum sizes; hotspot dots and menu controls work on touch without hover.</li>
+  </ul>
+
+  <h2>Browser and assistive technology support</h2>
+  <p>Aura Glossy is tested on the latest stable versions of:</p>
+  <ul>
+    <li>Safari (macOS, iOS) with VoiceOver</li>
+    <li>Chrome (Windows, macOS, Android) with NVDA / TalkBack</li>
+    <li>Firefox (Windows, macOS)</li>
+    <li>Edge (Windows) with Narrator</li>
+  </ul>
+  <p>Older browsers and in-app browsers (Instagram, TikTok, Facebook) are functionally supported but may have reduced visual polish. We recommend opening Aura Glossy in your default browser for the best experience.</p>
+
+  <h2>Known limitations</h2>
+  <p>We are transparent about areas where work is still in progress:</p>
+  <ul>
+    <li>Some outfit images use dynamic alt text generated from product names; we are gradually adding more descriptive curator-written captions.</li>
+    <li>Linked third-party retailer sites (Zara, H&amp;M, COS, Modanisa, etc.) have their own accessibility levels that we cannot control.</li>
+    <li>A small number of legacy animations use older patterns; they respect the system reduced-motion preference but may not fully pause in every browser.</li>
+  </ul>
+
+  <h2>Continuous improvement</h2>
+  <p>Accessibility is an ongoing process, not a finish line. Every new feature on Aura Glossy is reviewed against WCAG 2.1 AA before it ships. We re-audit the live site on a recurring schedule.</p>
+
+  <div class="legal-contact">
+    <h3>Contact for accessibility issues</h3>
+    <p>If you encounter an accessibility barrier on Aura Glossy — anywhere on the site — please tell us. We will respond within five business days and prioritise the fix.</p>
+    <p><strong>Email:</strong> <a href="mailto:auraglossy.support@gmail.com?subject=Accessibility%20issue">auraglossy.support@gmail.com</a></p>
+    <p>Please include: the page URL, what assistive technology you were using, and a short description of the problem.</p>
+  </div>
+
+  <a href="index.html" class="legal-back">← Back to Aura Glossy</a>
+</main>
+
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div><div class="footer-brand">AURA GLOSS<span>Y</span></div><p class="footer-tagline" data-i18n="footer.tagline">A curated fashion universe.</p></div>
+      <div class="footer-col"><h4 data-i18n="footer.col_discover">Discover</h4><ul><li><a href="quiz.html" data-i18n="footer.link_quiz">Style quiz</a></li><li><a href="index.html#styles" data-i18n="footer.link_all">All aesthetics</a></li><li><a href="moodboard.html" data-i18n="nav.moodboard">Moodboard</a></li><li><a href="brands.html" data-i18n="nav.partners">Partners</a></li></ul></div>
+      <div class="footer-col"><h4 data-i18n="footer.col_aesthetics">Aesthetics</h4><ul><li><a href="style.html#classic">Classic</a></li><li><a href="style.html#minimalist">Minimalist</a></li><li><a href="style.html#korean">Korean</a></li><li><a href="style.html#elegant">Elegant</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="privacy.html">Privacy policy</a></li><li><a href="terms.html">Terms of service</a></li><li><a href="cookies.html">Cookies</a></li><li><a href="accessibility.html">Accessibility</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span data-i18n="footer.copyright">© 2026 Aura Glossy</span><span data-i18n="footer.designed">Designed with care, dressed with intention.</span></div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="js/i18n.js?v=12"></script>
+<script src="js/monitor.js?v=2"></script>
+<script src="js/firebase.js?v=16"></script>
+<script>
+function navAuthClick() { window.location.href = 'settings.html'; }
+initAuthGuard();
+</script>
+
+</body>
+</html>

@@ -701,7 +701,8 @@ html[dir="rtl"] .reset-message { text-align: right; }
 </head>
 <body>
 
-<div class="auth-wrap">
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="auth-wrap" id="main-content">
 
   <!-- LEFT: photo -->
   <div class="auth-photo">
@@ -742,28 +743,29 @@ html[dir="rtl"] .reset-message { text-align: right; }
         <button class="auth-tab" id="tab-signin" data-i18n="login.tab_signin">Sign in</button>
       </div>
 
-      <!-- JOIN FORM -->
-      <div id="form-join">
+      <!-- JOIN FORM (div, not <form>, to preserve existing click-handler flow) -->
+      <div id="form-join" role="group" aria-label="Create your Aura Glossy account">
         <div class="auth-fields">
-          <div class="auth-field"><input type="text" id="join-name" placeholder="Your name" autocomplete="name" data-i18n-attr="placeholder:login.name_placeholder"></div>
-          <div class="auth-field"><input type="email" id="join-email" placeholder="Email address" autocomplete="email" data-i18n-attr="placeholder:login.email_placeholder"></div>
-          <div class="auth-field"><input type="password" id="join-pass" placeholder="Create password" autocomplete="new-password" data-i18n-attr="placeholder:login.new_password_placeholder"></div>
+          <div class="auth-field"><label for="join-name" class="visually-hidden">Your name</label><input type="text" id="join-name" name="name" placeholder="Your name" autocomplete="name" aria-label="Your name" aria-required="true" required minlength="1" maxlength="80" data-i18n-attr="placeholder:login.name_placeholder;aria-label:login.name_placeholder"></div>
+          <div class="auth-field"><label for="join-email" class="visually-hidden">Email address</label><input type="email" id="join-email" name="email" placeholder="Email address" autocomplete="email" inputmode="email" aria-label="Email address" aria-required="true" aria-describedby="join-error" required maxlength="254" data-i18n-attr="placeholder:login.email_placeholder;aria-label:login.email_placeholder"></div>
+          <div class="auth-field"><label for="join-pass" class="visually-hidden">Create password (at least 8 characters)</label><input type="password" id="join-pass" name="new-password" placeholder="Create password" autocomplete="new-password" aria-label="Create password" aria-required="true" aria-describedby="join-error" required minlength="8" maxlength="128" data-i18n-attr="placeholder:login.new_password_placeholder;aria-label:login.new_password_placeholder"></div>
         </div>
-        <p class="auth-error" id="join-error"></p>
-        <button class="auth-cta" id="join-btn" data-i18n="login.create_account">Create account →</button>
+        <p class="auth-error" id="join-error" role="alert" aria-live="polite"></p>
+        <button class="auth-cta" id="join-btn" type="button" data-i18n="login.create_account">Create account →</button>
+        <p style="margin-top:18px;font-size:11px;line-height:1.6;color:rgba(255,255,255,0.45);text-align:center;">By creating an account you agree to our <a href="terms.html" style="color:inherit;text-decoration:underline;">Terms</a> and <a href="privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a>.</p>
       </div>
 
-      <!-- SIGN IN FORM -->
-      <div id="form-signin" style="display:none">
+      <!-- SIGN IN FORM (div, not <form>, to preserve existing click-handler flow) -->
+      <div id="form-signin" style="display:none" role="group" aria-label="Sign in to Aura Glossy">
         <div class="auth-fields">
-          <div class="auth-field"><input type="email" id="si-email" placeholder="Email address" autocomplete="email" data-i18n-attr="placeholder:login.email_placeholder"></div>
-          <div class="auth-field"><input type="password" id="si-pass" placeholder="Password" autocomplete="current-password" data-i18n-attr="placeholder:login.password_placeholder"></div>
+          <div class="auth-field"><label for="si-email" class="visually-hidden">Email address</label><input type="email" id="si-email" name="email" placeholder="Email address" autocomplete="email" inputmode="email" aria-label="Email address" aria-required="true" aria-describedby="si-error" required maxlength="254" data-i18n-attr="placeholder:login.email_placeholder;aria-label:login.email_placeholder"></div>
+          <div class="auth-field"><label for="si-pass" class="visually-hidden">Password</label><input type="password" id="si-pass" name="password" placeholder="Password" autocomplete="current-password" aria-label="Password" aria-required="true" aria-describedby="si-error" required maxlength="128" data-i18n-attr="placeholder:login.password_placeholder;aria-label:login.password_placeholder"></div>
         </div>
-        <p class="auth-error" id="si-error"></p>
+        <p class="auth-error" id="si-error" role="alert" aria-live="polite"></p>
         <div class="auth-forgot-row">
           <button type="button" class="auth-forgot" id="forgot-btn" data-i18n="login.forgot_password">Forgot password?</button>
         </div>
-        <button class="auth-cta" id="si-btn" data-i18n="login.signin_btn">Sign in →</button>
+        <button class="auth-cta" id="si-btn" type="button" data-i18n="login.signin_btn">Sign in →</button>
       </div>
 
       <p class="auth-switch" id="switch-text">
@@ -798,7 +800,7 @@ html[dir="rtl"] .reset-message { text-align: right; }
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/i18n.js?v=12"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=15"></script>
+<script src="js/firebase.js?v=16"></script>
 <script src="js/animations.js?v=15"></script>
 <script>
 (function() {
@@ -1354,6 +1356,15 @@ html[dir="rtl"] .reset-message { text-align: right; }
   card.addEventListener('click', function (e) { e.stopPropagation(); });
 })();
 </script>
+
+<!-- Minimal legal-link strip (no footer-grid on this page).
+     Always visible during signup so users see Privacy + Terms before submitting. -->
+<nav aria-label="Legal" style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.6);background:rgba(10,8,10,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:100;pointer-events:auto;">
+  <a href="privacy.html" style="color:inherit;text-decoration:none;margin:0 12px;">Privacy</a>
+  <a href="terms.html" style="color:inherit;text-decoration:none;margin:0 12px;">Terms</a>
+  <a href="cookies.html" style="color:inherit;text-decoration:none;margin:0 12px;">Cookies</a>
+  <a href="accessibility.html" style="color:inherit;text-decoration:none;margin:0 12px;">Accessibility</a>
+</nav>
 
 </body>
 </html>

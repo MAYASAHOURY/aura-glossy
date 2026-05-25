@@ -12120,3 +12120,249 @@ html[dir="rtl"] .s-row { flex-direction: row-reverse; }
 @media (max-width: 720px) and (min-width: 641px) {
   .composer-text { padding: 16px 20px 14px; }
 }
+
+/* ============================================================
+   AURA — Accessibility additions (2026-05-25)
+
+   Production-grade a11y layer per IS 5568 / WCAG 2.1 AA:
+   - .skip-link        : hidden-until-focus jump to main content
+   - :focus-visible    : keyboard-only focus ring on all interactives
+   - prefers-reduced-motion : global safety net for users sensitive
+                              to animation (existing per-component
+                              media queries upstream still take effect)
+   - .visually-hidden  : utility for screen-reader-only labels
+
+   All styles use the existing brand palette — no visual redesign,
+   only additive a11y guarantees.
+   ============================================================ */
+
+/* Skip-to-content link — hidden until keyboard focus reveals it */
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 100001;
+  background: #1a0e08;
+  color: #faf7f2;
+  padding: 12px 18px;
+  text-decoration: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  transform: translateY(-150%);
+  transition: transform 0.18s ease;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid #d4b896;
+  outline-offset: 3px;
+}
+
+/* Visually-hidden utility (screen-reader-only text) */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Universal :focus-visible — keyboard-only focus indicator on
+   anything interactive that doesn't already have its own. We
+   target broad selectors but use :focus-visible (not :focus) so
+   mouse clicks don't show the ring — only Tab navigation does.
+   :where() keeps specificity at 0 so existing component styles
+   always win. */
+:where(a, button, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid #8a6048;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Hotspot dots — premium focus ring on warm gold so it integrates
+   with the existing glowing dot aesthetic */
+.hs-dot:focus-visible,
+.hs-dot-ring:focus-visible {
+  outline: 2px solid #d4b896;
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+/* Reduced-motion: global safety net.
+   Several components already opt-in via @media (prefers-reduced-motion: reduce)
+   blocks earlier in this file. This block catches everything else:
+   - shortens any transition to a minimal duration
+   - disables CSS animations / scroll smoothing
+   - keeps essential UI feedback (opacity flicker = ok, large motion = not ok)
+   Users with macOS "Reduce motion" or Windows "Show animations" off get a
+   calm interface; the visual layout is unchanged. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Disable scroll-driven and intersection-observer reveals — already-in-view
+     content is fine; preventing the slide-in keeps the reading experience steady. */
+  .reveal,
+  .reveal:not(.visible) {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* High-contrast focus for users with forced-colors / Windows High Contrast */
+@media (forced-colors: active) {
+  :where(a, button, input, [role="button"]):focus-visible {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
+  }
+}
+
+/* ── Legal pages (privacy, terms, accessibility, cookies) ───────────
+   Reuses .container layout and brand fonts; just provides readable
+   body copy at long-form length. Keeps premium feel via Playfair
+   headings + Inter body. */
+.legal-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 120px 24px 80px;
+  font-family: 'Inter', sans-serif;
+  color: #1a0e08;
+  line-height: 1.7;
+}
+.legal-page .legal-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #8a6048;
+  margin-bottom: 24px;
+}
+.legal-page h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+  color: #1a0e08;
+}
+.legal-page .legal-meta {
+  font-size: 12px;
+  color: #8a6048;
+  margin-bottom: 56px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+}
+.legal-page h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 56px 0 16px;
+  color: #1a0e08;
+  letter-spacing: -0.01em;
+}
+.legal-page h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 32px 0 10px;
+  color: #1a0e08;
+}
+.legal-page p,
+.legal-page li {
+  font-size: 15px;
+  color: #4a3b30;
+  margin: 0 0 14px;
+}
+.legal-page ul,
+.legal-page ol {
+  padding-left: 24px;
+  margin: 0 0 20px;
+}
+.legal-page li { margin-bottom: 8px; }
+.legal-page a {
+  color: #8a6048;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.legal-page a:hover { color: #1a0e08; }
+.legal-page .legal-callout {
+  background: #faf7f2;
+  border-left: 3px solid #8a6048;
+  padding: 18px 22px;
+  margin: 28px 0;
+  font-size: 14px;
+}
+.legal-page .legal-contact {
+  margin-top: 64px;
+  padding-top: 32px;
+  border-top: 1px solid #e0d0c0;
+  font-size: 14px;
+}
+.legal-page .legal-back {
+  display: inline-block;
+  margin-top: 48px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8a6048;
+  text-decoration: none;
+}
+.legal-page .legal-back:hover { color: #1a0e08; }
+
+/* ── Cookie acknowledgement banner (bottom-left, dismissable) ───
+   Subtle premium notice. Stays hidden after user clicks "Got it"
+   (stored in localStorage). Does not block content. */
+.aura-cookie-banner {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  max-width: 480px;
+  z-index: 99998;
+  background: #1a0e08;
+  color: #faf7f2;
+  padding: 16px 20px;
+  border-radius: 2px;
+  display: none;
+  align-items: center;
+  gap: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+}
+.aura-cookie-banner.visible { display: flex; }
+.aura-cookie-banner-text { flex: 1; min-width: 0; }
+.aura-cookie-banner-text a {
+  color: #d4b896;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.aura-cookie-banner-ok {
+  background: #faf7f2;
+  color: #1a0e08;
+  border: 0;
+  padding: 8px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+.aura-cookie-banner-ok:hover { background: #d4b896; }
