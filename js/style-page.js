@@ -2257,28 +2257,69 @@
     });
   });
 
-  // ── Gate shop links for guests ──────────────────────────────────
+  // ── Universal guest gate for ALL external shop links ────────────
   // Capture-phase delegated listener so it runs BEFORE the browser
-  // honors the <a target="_blank"> default. Guest taps → preventDefault,
-  // store the URL + retailer name as a pending action, show modal.
-  // After auth, the resume handler shows a "Welcome ✓ Continue to
-  // {retailer} →" toast — clicking it opens the original URL (preserving
-  // the user-gesture chain that window.open() needs to avoid being
-  // blocked by popup blockers).
+  // honors the <a target="_blank"> default. The listener intercepts
+  // ANY external retailer link the page can render — hotspot panels
+  // (.hs-panel-link, .hs-panel-link-alt), Shop Finder budget cards
+  // (.sfn-card), or any future `<a target="_blank">` that points
+  // off-domain, including links tagged `data-shop`.
+  //
+  // Behavior:
+  //   • Signed-in users → link opens normally.
+  //   • Guests → preventDefault + show the same premium signup modal,
+  //     queue the URL as a pending 'shop' action. After auth the
+  //     'shop' resume handler (registered just below) shows a
+  //     "Continue to {retailer} →" toast that opens the original URL.
+  //
+  // Same-origin links (internal nav) always pass through untouched —
+  // we ONLY block links to off-origin retailers / shopping destinations.
   document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('a.hs-panel-link, a.hs-panel-link-alt');
-    if (!a) return;
+    if (!e.target || !e.target.closest) return;
+    var a = e.target.closest('a');
+    if (!a || !a.href) return;
+
+    // Identify shop-like links: opens-in-new-tab, OR known retailer
+    // class, OR explicit data-shop attribute. (Any one is enough.)
+    var isNewTab    = a.target === '_blank';
+    var isShopClass = a.classList.contains('hs-panel-link')
+                   || a.classList.contains('hs-panel-link-alt')
+                   || a.classList.contains('sfn-card');
+    var isMarked    = a.hasAttribute('data-shop');
+    if (!isNewTab && !isShopClass && !isMarked) return;
+
+    // Same-origin internal links pass through (defensive — internal
+    // anchors should never have target=_blank here, but we don't
+    // want to swallow them if they ever do).
+    var url;
+    try { url = new URL(a.href, window.location.href); } catch (_) { return; }
+    if (url.origin === window.location.origin && !isMarked) return;
+
     var isAuthed = (window.Aura && Aura.isSignedIn) ? Aura.isSignedIn() : false;
     if (isAuthed) return; // logged in: open normally
-    if (!window.Aura || !Aura.requireAuth) return; // safety: degrade gracefully
+    if (!window.Aura || !Aura.requireAuth) return; // helper not loaded — degrade gracefully
+
     e.preventDefault();
     e.stopPropagation();
-    // Pull context from the surrounding panel for nicer modal copy
+
+    // Pull retailer + piece labels from the surrounding card / panel
+    // so the modal eyebrow and resume toast can name what the user
+    // was about to shop. Falls back to the URL hostname for unknown
+    // link surfaces (future-proof).
+    var retailer = '', pieceName = '';
     var panel = a.closest('.hs-panel');
-    var pieceName = panel ? (panel.querySelector('.hs-panel-name') || {}).textContent : '';
-    var retailer  = panel ? (panel.querySelector('.hs-panel-store') || {}).textContent : '';
-    var isAltLink = a.classList.contains('hs-panel-link-alt');
-    if (isAltLink) retailer = 'Pinterest';
+    if (panel) {
+      pieceName = ((panel.querySelector('.hs-panel-name')  || {}).textContent || '').trim();
+      retailer  = ((panel.querySelector('.hs-panel-store') || {}).textContent || '').trim();
+      if (a.classList.contains('hs-panel-link-alt')) retailer = 'Pinterest';
+    } else if (a.classList.contains('sfn-card')) {
+      retailer  = ((a.querySelector('.sfn-card-store') || {}).textContent || '').trim();
+      pieceName = ((a.querySelector('.sfn-card-q')     || {}).textContent || '').trim();
+    } else {
+      retailer  = (a.dataset && a.dataset.retailer) || url.hostname.replace(/^www\./, '') || 'retailer';
+      pieceName = (a.dataset && a.dataset.piece) || (a.textContent || '').trim();
+    }
+
     Aura.requireAuth({
       title:    'Sign in to shop this look',
       subtitle: 'Create your Aura profile to follow shoppable links and save your favourites.',

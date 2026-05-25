@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- ━━━━ MAINTENANCE GATE — must run FIRST. Toggle MAINTENANCE_MODE in js/maintenance.js. ━━━━ -->
-<script src="js/maintenance.js?v=2"></script>
+<script src="js/maintenance.js?v=3"></script>
 <script>(function(){try{var l=localStorage.getItem("aura_lang");if(!l){var nl=(navigator.language||"en").toLowerCase().slice(0,2);l=(["en","es","ar","he"].indexOf(nl)>=0)?nl:"en";}document.documentElement.lang=l;document.documentElement.dir=(l==="ar"||l==="he")?"rtl":"ltr";}catch(e){}})();</script>
 <!-- Login preroll removed: stability over cinematic intro. The form
      shows instantly on first paint so users from TikTok / Instagram
@@ -922,7 +922,9 @@ html[dir="rtl"] .reset-message { text-align: right; }
     var now = Date.now();
     if (now - _lastResend < 30000) {
       var wait = Math.ceil((30000 - (now - _lastResend)) / 1000);
-      _setVerifyStatus(_T('login.verify_wait', 'Please wait ' + wait + 's before sending another.'), true);
+      var waitMsg = _T('login.verify_wait', 'Please wait {secs}s before sending another.')
+                      .split('{secs}').join(wait);
+      _setVerifyStatus(waitMsg, true);
       return;
     }
     _lastResend = now;
@@ -1291,7 +1293,17 @@ html[dir="rtl"] .reset-message { text-align: right; }
   /* ✦✦ Sign out ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
   document.getElementById('signout-btn').addEventListener('click', () => auth.signOut());
 
-  function _T(k, f) { return (window.Aura && window.Aura.i18n) ? (window.Aura.i18n.t(k) || f) : f; }
+  /* _T(key, fallback) — translate or fall back to hard-coded English.
+     2026-05-25 fix: js/i18n.js's t() returns the KEY ITSELF when the
+     translation is missing. The previous `(t(k) || f)` check never
+     fired because the key string is truthy — users saw raw keys like
+     "login.verify_too_many" on the verify screen. Now we explicitly
+     compare the result to the key to detect the missing sentinel. */
+  function _T(k, f) {
+    if (!window.Aura || !window.Aura.i18n) return f;
+    var v = window.Aura.i18n.t(k);
+    return (v && v !== k) ? v : f;
+  }
   function showErr(el, msg) { el.textContent = msg; el.style.display = 'block'; }
   function friendlyErr(code) {
     /* Per-code i18n key + a specific English fallback so users get a
@@ -1372,7 +1384,12 @@ html[dir="rtl"] .reset-message { text-align: right; }
       '<line x1="1" y1="1" x2="23" y2="23"/>' +
     '</svg>';
 
-  function _T(k, f) { return (window.Aura && window.Aura.i18n) ? (window.Aura.i18n.t(k) || f) : f; }
+  /* _T fallback-aware (see explanation in the auth IIFE above). */
+  function _T(k, f) {
+    if (!window.Aura || !window.Aura.i18n) return f;
+    var v = window.Aura.i18n.t(k);
+    return (v && v !== k) ? v : f;
+  }
 
   function attachToggle(input) {
     if (input._eyeWired) return;
@@ -1447,7 +1464,24 @@ html[dir="rtl"] .reset-message { text-align: right; }
 
   if (!modal || !openBt) return;
 
-  function _T(k, f, vars) { return (window.Aura && window.Aura.i18n) ? (window.Aura.i18n.t(k, vars) || f) : f; }
+  /* _T fallback-aware + supports {var} substitution in both translation
+     and fallback. See the auth IIFE above for the missing-key sentinel
+     explanation. */
+  function _T(k, f, vars) {
+    var s;
+    if (window.Aura && window.Aura.i18n) {
+      var v = window.Aura.i18n.t(k, vars);
+      s = (v && v !== k) ? v : f;
+    } else {
+      s = f;
+    }
+    if (vars && typeof s === 'string') {
+      Object.keys(vars).forEach(function (vk) {
+        s = s.split('{' + vk + '}').join(vars[vk]);
+      });
+    }
+    return s;
+  }
 
   function show(msg, kind) {
     msgEl.textContent = msg || '';
