@@ -2289,9 +2289,13 @@
         message: shop.piece ? ('Saved your interest in: ' + shop.piece) : 'Welcome to Aura Glossy',
         ctaLabel: 'Continue to ' + (shop.retailer || 'retailer') + ' →',
         onContinue: function () {
-          // User-gesture-driven window.open survives most popup blockers
-          try { window.open(shop.url, '_blank', 'noopener'); }
-          catch (e) { window.location.href = shop.url; }
+          // User-gesture-driven window.open survives most popup blockers in
+          // regular browsers. In-app browsers (TikTok/Instagram/etc.) SILENTLY
+          // return null from window.open without throwing — fall back to a
+          // same-tab navigation so the user actually reaches the retailer.
+          var w = null;
+          try { w = window.open(shop.url, '_blank', 'noopener'); } catch (e) {}
+          if (!w) window.location.href = shop.url;
         }
       });
     });
