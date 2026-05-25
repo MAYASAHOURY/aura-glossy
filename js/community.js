@@ -716,9 +716,11 @@ function _attachFeedHandlers(group) {
 
 /* ── Reactions ───────────────────────────────────────────────── */
 function _toggleReaction(postId, type, group) {
-  if (!_currentUser) {
-    if (window.Aura && Aura.requireAuth) {
-      Aura.requireAuth({
+  // Account-touching action: require a verified email. Routes guests to
+  // the signup modal and signed-in-but-unverified users to login.html.
+  if (window.Aura && Aura.isVerifiedAccount && !Aura.isVerifiedAccount()) {
+    if (Aura.requireVerifiedEmail) {
+      Aura.requireVerifiedEmail({
         title: 'Sign in to react',
         subtitle: 'Create your Aura profile to like posts and join the conversation.',
         eyebrow: 'Community'
@@ -726,6 +728,7 @@ function _toggleReaction(postId, type, group) {
     }
     return;
   }
+  if (!_currentUser) return;
   var uid = _currentUser.uid;
   var ref = _db
     .collection('communities').doc(group.id)
@@ -803,9 +806,10 @@ function _submitComment(postId, group) {
   var content = input.value.trim();
   if (!content) return;
 
-  if (!_currentUser) {
-    if (window.Aura && Aura.requireAuth) {
-      Aura.requireAuth({
+  // Comments require a verified email.
+  if (window.Aura && Aura.isVerifiedAccount && !Aura.isVerifiedAccount()) {
+    if (Aura.requireVerifiedEmail) {
+      Aura.requireVerifiedEmail({
         title: 'Sign in to comment',
         subtitle: 'Create your Aura profile to join the conversation in your circle.',
         eyebrow: 'Community'
@@ -813,6 +817,7 @@ function _submitComment(postId, group) {
     }
     return;
   }
+  if (!_currentUser) return;
 
   input.disabled = true;
   var name = _currentUser.displayName || _currentUser.email || 'Style Member';
@@ -913,9 +918,11 @@ function _submitPost() {
     return;
   }
 
-  if (!_currentUser) {
-    if (window.Aura && Aura.requireAuth) {
-      Aura.requireAuth({
+  // Posts require a verified email — guests get signup modal,
+  // signed-in-but-unverified users get routed to the verify screen.
+  if (window.Aura && Aura.isVerifiedAccount && !Aura.isVerifiedAccount()) {
+    if (Aura.requireVerifiedEmail) {
+      Aura.requireVerifiedEmail({
         title: 'Sign in to post',
         subtitle: 'Create your Aura profile to share looks and thoughts with your circle.',
         eyebrow: 'Community'
@@ -923,6 +930,7 @@ function _submitPost() {
     }
     return;
   }
+  if (!_currentUser) return;
   if (!_currentGroup) {
     document.getElementById('composer-hint').textContent = 'Take the quiz to unlock your community first.';
     return;

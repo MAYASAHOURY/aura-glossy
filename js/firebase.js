@@ -140,6 +140,18 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
     try { return !!_auth.currentUser; } catch (e) { return false; }
   }
 
+  // True iff the user is signed in AND their email is verified.
+  // Google accounts always come with emailVerified=true, so they pass.
+  // Email/password accounts must click the inbox link first.
+  // 2026-05-25 — added so account-only writes (save, post, quiz result)
+  // can require a real email before allowing the action.
+  function isVerifiedAccount() {
+    try {
+      var u = _auth.currentUser;
+      return !!(u && u.emailVerified);
+    } catch (e) { return false; }
+  }
+
   // First-fire async hook: useful for guarded pages that want to
   // reveal/hide UI after auth state is known (avoids flash).
   var _authReady = false;
@@ -432,16 +444,51 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
     _mountCookieBanner();
   }
 
+  /* requireVerifiedEmail(opts) — same Promise contract as requireAuth,
+     but blocks signed-in-but-unverified users from continuing. Used by
+     account-touching actions (save, quiz result, community write).
+     - Guest → falls through to requireAuth (signup modal)
+     - Signed in but emailVerified=false → navigate to login.html, which
+       shows the verify screen with Resend + Check buttons
+     - Verified → resolve immediately so the caller continues normally */
+  function requireVerifiedEmail(opts) {
+    opts = opts || {};
+    if (isVerifiedAccount()) {
+      return Promise.resolve(_auth.currentUser);
+    }
+    if (isSignedIn()) {
+      // Signed in but unverified — preserve pending action then route to login
+      var returnUrl = opts.returnUrl || (location.pathname + location.search + location.hash);
+      if (opts.pending) {
+        setPending({
+          key: opts.pending.key,
+          data: opts.pending.data,
+          returnUrl: returnUrl,
+          ts: Date.now()
+        });
+      }
+      var nextParam = encodeURIComponent(returnUrl);
+      return new Promise(function (resolve) {
+        resolve({ navigated: true });
+        window.location.href = 'login.html?next=' + nextParam;
+      });
+    }
+    // Not signed in at all — existing signup modal handles it
+    return requireAuth(opts);
+  }
+
   // Public API
-  window.Aura.isSignedIn       = isSignedIn;
-  window.Aura.onAuthReady      = onAuthReady;
-  window.Aura.requireAuth      = requireAuth;
-  window.Aura.setPending       = setPending;
-  window.Aura.getPending       = getPending;
-  window.Aura.clearPending     = clearPending;
-  window.Aura.registerResume   = registerResume;
-  window.Aura.tryResumePending = tryResumePending;
-  window.Aura.showResumeToast  = showResumeToast;
+  window.Aura.isSignedIn          = isSignedIn;
+  window.Aura.isVerifiedAccount   = isVerifiedAccount;
+  window.Aura.onAuthReady         = onAuthReady;
+  window.Aura.requireAuth         = requireAuth;
+  window.Aura.requireVerifiedEmail = requireVerifiedEmail;
+  window.Aura.setPending          = setPending;
+  window.Aura.getPending          = getPending;
+  window.Aura.clearPending        = clearPending;
+  window.Aura.registerResume      = registerResume;
+  window.Aura.tryResumePending    = tryResumePending;
+  window.Aura.showResumeToast     = showResumeToast;
 })();
 
 /* Explicit pre-redirect session-flag setter — used by login.html
@@ -476,7 +523,13 @@ function clearAuraSessionFlag() {
 var AURA_SESSION_KEY = 'aura_has_session';
 _auth.onAuthStateChanged(function (user) {
   try {
-    if (user) {
+    /* 2026-05-25: aura_has_session is now ONLY set for fully verified
+       accounts. Email/password signups have user.emailVerified=false
+       until they click the inbox link — we leave the session flag
+       cleared so the sync head gate on settings.html bounces them back
+       to login.html (where the verify screen takes over). Google
+       sign-in always has emailVerified=true and passes through. */
+    if (user && user.emailVerified) {
       localStorage.setItem(AURA_SESSION_KEY, '1');
     } else {
       localStorage.removeItem(AURA_SESSION_KEY);

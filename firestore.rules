@@ -2,6 +2,27 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // ── Email-verified guard ───────────────────────────────────
+    // 2026-05-25: writes now require request.auth.token.email_verified.
+    // Google sign-in carries this token automatically (Google verifies
+    // the email at signup). Email/password signups must click the
+    // verification link before they can write to Firestore. Reads stay
+    // open to any authenticated owner so users can still see what they
+    // already have (and to avoid lockouts during the verification gap).
+    //
+    // IMPORTANT: this is the server-side enforcement layer. Client-side
+    // gates (Aura.requireVerifiedEmail) handle UX; this rule is the
+    // guarantee that a determined user with the JS console can't bypass.
+    //
+    // NOTE: firestore.rules is NOT auto-deployed by the Netlify
+    // pipeline. After this commit, run:
+    //   firebase deploy --only firestore:rules
+    // from the project root to push the rule change live.
+    function isVerified() {
+      return request.auth != null
+        && request.auth.token.email_verified == true;
+    }
+
     // ── User profiles & quiz results ────────────────────────────
     // Only the authenticated owner can read/write their own document,
     // and they can NEVER touch the `isAdmin` field from a client SDK.
@@ -9,26 +30,35 @@ service cloud.firestore {
     // SDK bypasses these rules), so self-promotion is impossible no
     // matter what the client sends.
     match /users/{userId} {
+      // Read stays available to any authenticated owner — avoids
+      // breaking users who exist but haven't verified yet (they can
+      // still see their own profile to figure out what's pending).
       allow read: if request.auth != null && request.auth.uid == userId;
 
-      // Create: owner only, and the new doc cannot ship with isAdmin set.
-      allow create: if request.auth != null
+      // Create: owner only, must be email-verified, and the new doc
+      // cannot ship with isAdmin set.
+      allow create: if isVerified()
         && request.auth.uid == userId
         && !('isAdmin' in request.resource.data);
 
-      // Update: owner only, and isAdmin must not be among the affected keys.
-      // (Updating other fields when isAdmin is already true is fine — the
-      // value isn't in the diff because it didn't change.)
-      allow update: if request.auth != null
+      // Update: owner only, must be email-verified, and isAdmin must
+      // not be among the affected keys. (Updating other fields when
+      // isAdmin is already true is fine — value isn't in the diff
+      // because it didn't change.)
+      allow update: if isVerified()
         && request.auth.uid == userId
         && !('isAdmin' in request.resource.data.diff(resource.data).affectedKeys());
 
-      allow delete: if request.auth != null && request.auth.uid == userId;
+      allow delete: if isVerified() && request.auth.uid == userId;
     }
 
     // ── Moodboard saved looks ────────────────────────────────────
     match /moodboards/{userId}/items/{itemId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Read: any authenticated owner (lets existing unverified
+      // accounts still see what they had previously saved).
+      allow read: if request.auth != null && request.auth.uid == userId;
+      // Write: owner + email-verified only.
+      allow write: if isVerified() && request.auth.uid == userId;
     }
 
     // ── Community circles ────────────────────────────────────────
@@ -68,15 +98,16 @@ service cloud.firestore {
 
     match /communities/{aestheticId}/posts/{postId} {
 
-      // Read: admin OR quiz-member of this circle
+      // Read: admin OR quiz-member of this circle (auth required;
+      // verification not required for reads so existing unverified
+      // accounts can still see what's in their circle).
       allow read: if request.auth != null
         && canAccessCommunity(aestheticId);
 
-      // Create: author must be self, aestheticId must match the URL,
-      // content must be a non-empty string ≤ 1 000 chars.
-      // Admins can post in any circle; regular users still need a
-      // matching quiz result.
-      allow create: if request.auth != null
+      // Create: must be email-verified AND a quiz-member of this circle,
+      // author must be self, aestheticId must match the URL, content
+      // must be a non-empty string ≤ 1 000 chars.
+      allow create: if isVerified()
         && canAccessCommunity(aestheticId)
         && request.resource.data.authorId   == request.auth.uid
         && request.resource.data.aestheticId == aestheticId
@@ -84,11 +115,9 @@ service cloud.firestore {
         && request.resource.data.content.size() > 0
         && request.resource.data.content.size() <= 1000;
 
-      // Update: post owner edits content — OR — any community member
-      // (or admin) toggles a reaction (only the `reactions` map may
-      // change). Both branches require the user can still access this
-      // circle (quiz-match or admin).
-      allow update: if request.auth != null
+      // Update: post owner edits — OR — any verified member (or admin)
+      // toggles a reaction. Both branches require email verification.
+      allow update: if isVerified()
         && canAccessCommunity(aestheticId)
         && (
           resource.data.authorId == request.auth.uid
@@ -96,11 +125,8 @@ service cloud.firestore {
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions'])
         );
 
-      // Delete: post author + still has access (quiz-match or admin).
-      // Admins can also delete posts they authored. Moderating other
-      // people's posts is intentionally NOT enabled — that would be a
-      // separate feature.
-      allow delete: if request.auth != null
+      // Delete: post author + email-verified + still has access.
+      allow delete: if isVerified()
         && resource.data.authorId == request.auth.uid
         && canAccessCommunity(aestheticId);
 
@@ -110,14 +136,14 @@ service cloud.firestore {
         allow read: if request.auth != null
           && canAccessCommunity(aestheticId);
 
-        allow create: if request.auth != null
+        allow create: if isVerified()
           && canAccessCommunity(aestheticId)
           && request.resource.data.authorId == request.auth.uid
           && request.resource.data.content is string
           && request.resource.data.content.size() > 0
           && request.resource.data.content.size() <= 400;
 
-        allow delete: if request.auth != null
+        allow delete: if isVerified()
           && resource.data.authorId == request.auth.uid
           && canAccessCommunity(aestheticId);
       }

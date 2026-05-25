@@ -2239,9 +2239,11 @@
     btn.addEventListener('click', e => {
       e.preventDefault(); e.stopPropagation();
       const item = { id: btn.dataset.saveId, img: btn.dataset.saveImg, label: btn.dataset.saveLabel || '', style: btn.dataset.saveStyle || '' };
-      const isAuthed = (window.Aura && Aura.isSignedIn) ? Aura.isSignedIn() : false;
-      if (!isAuthed && window.Aura && Aura.requireAuth) {
-        Aura.requireAuth({
+      // Save requires a verified email — guests get signup modal,
+      // signed-in-but-unverified users get routed to the verify screen.
+      const isVerified = (window.Aura && Aura.isVerifiedAccount) ? Aura.isVerifiedAccount() : false;
+      if (!isVerified && window.Aura && Aura.requireVerifiedEmail) {
+        Aura.requireVerifiedEmail({
           title: 'Save this to your moodboard',
           subtitle: 'Create your Aura profile to keep your favourite looks in one place.',
           eyebrow: 'Save look',

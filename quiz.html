@@ -63,7 +63,7 @@ window.__auraPublicPage = true;</script>
      when the user has chosen another language). -->
 <script src="js/i18n.js?v=12"></script>
 <script src="js/data.js?v=10"></script>
-<script src="js/main.js?v=9"></script>
+<script src="js/main.js?v=10"></script>
 <script src="js/animations.js?v=15"></script>
 <script>
 (function() {
@@ -263,13 +263,12 @@ window.__auraPublicPage = true;</script>
   };
 
   function renderResult() {
-    /* Defense-in-depth: the primary gate is _bootQuiz which prevents
-       guests from starting the quiz at all. This guard catches the
-       contrived edge case where auth state changes mid-quiz (e.g.,
-       user signed out in another tab via BroadcastChannel). Just
-       sends them back to the homepage rather than revealing data. */
-    if (window.Aura && Aura.isSignedIn && !Aura.isSignedIn()) {
-      window.location.replace('login.html?mode=signin&next=%2Fquiz.html');
+    /* Defense-in-depth: the primary gate is _bootQuiz. This guard
+       catches mid-quiz auth changes (e.g., sign-out in another tab via
+       BroadcastChannel, or email unverification edge cases). Sends them
+       back to login.html rather than revealing the result. */
+    if (window.Aura && Aura.isVerifiedAccount && !Aura.isVerifiedAccount()) {
+      window.location.replace('login.html?next=%2Fquiz.html');
       return;
     }
 
@@ -411,18 +410,20 @@ window.__auraPublicPage = true;</script>
       '</div>';
   }
 
-  /* Boot — quiz is gated to authed users only. We wait for Firebase
-     to confirm auth state (Aura.onAuthReady) before deciding so we
-     never flash a question then redirect. Signed-in: start the quiz.
-     Guest: show modal immediately + leave a sign-in CTA on the page. */
+  /* Boot — quiz is gated to verified accounts only. We wait for Firebase
+     to confirm auth state (Aura.onAuthReady) before deciding so we never
+     flash a question then redirect.
+     - Verified user → render the quiz
+     - Signed in but unverified → route to login.html (verify screen)
+     - Guest → show signup modal + leave a sign-in CTA on the page */
   function _bootQuiz() {
-    if (window.Aura && Aura.isSignedIn && Aura.isSignedIn()) {
+    if (window.Aura && Aura.isVerifiedAccount && Aura.isVerifiedAccount()) {
       render();
       return;
     }
     _renderQuizGuestState();
-    if (window.Aura && Aura.requireAuth) {
-      Aura.requireAuth({
+    if (window.Aura && Aura.requireVerifiedEmail) {
+      Aura.requireVerifiedEmail({
         title:    'Sign in to take the quiz',
         subtitle: 'Create your Aura profile to discover your aesthetic and unlock your style circle.',
         eyebrow:  'Style Quiz'
@@ -474,7 +475,7 @@ window.__auraPublicPage = true;</script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <!-- i18n.js is already loaded above the quiz IIFE; no duplicate needed. -->
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=16"></script>
+<script src="js/firebase.js?v=17"></script>
 <script>
 function navAuthClick() { window.location.href = 'settings.html'; }
 initAuthGuard();

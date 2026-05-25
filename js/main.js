@@ -63,9 +63,12 @@ function attachSaveButtons() {
     btn.addEventListener('click', e => {
       e.preventDefault(); e.stopPropagation();
       const item = { id, img: btn.dataset.saveImg, label: btn.dataset.saveLabel || '', style: btn.dataset.saveStyle || '' };
-      const isAuthed = (window.Aura && Aura.isSignedIn) ? Aura.isSignedIn() : !!(window._auth && _auth.currentUser);
-      if (!isAuthed && window.Aura && Aura.requireAuth) {
-        Aura.requireAuth({
+      // Save requires a verified email — Aura.requireVerifiedEmail routes guests
+      // to the signup modal, and signed-in-but-unverified users to login.html
+      // (which shows the verify screen). Verified users continue normally.
+      const isVerified = (window.Aura && Aura.isVerifiedAccount) ? Aura.isVerifiedAccount() : !!(window._auth && _auth.currentUser && _auth.currentUser.emailVerified);
+      if (!isVerified && window.Aura && Aura.requireVerifiedEmail) {
+        Aura.requireVerifiedEmail({
           title: 'Save this to your moodboard',
           subtitle: 'Create your Aura profile to keep your favourite looks in one place.',
           eyebrow: 'Save look',
