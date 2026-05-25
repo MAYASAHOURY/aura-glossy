@@ -24,38 +24,28 @@
 </script>
 <script>
 /* ─────────────────────────────────────────────────────────────────
-   AURA — SYNCHRONOUS AUTH GATE (must be first head script)
+   AURA — PUBLIC PAGE (2026-05-25 open browsing rewrite)
 
-   Runs BEFORE Firebase loads. Decides instantly whether to show
-   the page or redirect to login, using a localStorage flag that
-   firebase.js keeps in sync with onAuthStateChanged.
+   The homepage is now a public landing experience. No auth wall,
+   no redirect-to-login. Guests browse aesthetics, view outfits,
+   open community previews. Personal actions (save, shop link,
+   quiz result, community post) are gated by Aura.requireAuth()
+   which shows a premium signup modal at the moment of intent.
 
-   Why this exists:
-   • The platform is gated (sign-in required for everything).
-   • Firebase IndexedDB hydration takes 4-12s on TikTok/Instagram
-     in-app WebViews, which previously meant 4-12s of blank screen
-     before any decision was made.
-   • This gate decides in <1ms. If session flag is missing, we
-     replace-navigate to login.html before any layout / paint /
-     downstream script. User never sees a flash of the homepage.
+   This flag tells initAuthGuard() in firebase.js to skip the
+   "no user → redirect to login" timer and only update the nav
+   button to read "Sign in" / "Account" based on auth state.
 
-   Storage-blocked browsers (iOS private mode): we let them through
-   here and defer to Firebase's own guard. Worst case they see a
-   brief loader. We DO NOT silently bypass auth — initAuthGuard /
-   the listener at the bottom still enforces.
+   Security: all writes are still server-enforced by Firestore
+   rules — guests cannot save, post, comment, or read personal
+   data even by poking the console.
    ───────────────────────────────────────────────────────────────── */
-(function () {
-  try {
-    if (!localStorage.getItem('aura_has_session')) {
-      /* Hide the current page so we never flash homepage content
-         while the browser processes the navigation. */
-      document.documentElement.style.visibility = 'hidden';
-      window.location.replace('login.html');
-      return;
-    }
-  } catch (e) { /* storage blocked — Firebase will gate below */ }
+window.__auraPublicPage = true;
 
-  /* ── Environment hints (kept from the loading-reliability pass) ── */
+(function () {
+  /* Environment hints — these power the in-app banner, skip-intro
+     fast path, and slow-network adjustments. Kept verbatim from the
+     previous auth-gate IIFE since they don't depend on auth. */
   try {
     var ua = navigator.userAgent || '';
     var isInApp =
@@ -79,7 +69,7 @@
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=41">
+<link rel="stylesheet" href="css/styles.css?v=42">
 </head>
 <body>
 
@@ -232,9 +222,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js" defer></script>
 <script src="js/data.js?v=10" defer></script>
-<script src="js/main.js?v=8" defer></script>
+<script src="js/main.js?v=9" defer></script>
 <script src="js/monitor.js?v=2" defer></script>
-<script src="js/firebase.js?v=12" defer></script>
+<script src="js/firebase.js?v=13" defer></script>
 <script src="js/animations.js?v=15" defer></script>
 <script src="js/onboarding.js?v=12" defer></script>
 <script>
@@ -313,11 +303,9 @@ function _initAuthListener() {
       var btn = document.getElementById('nav-auth-btn');
       if (btn) btn.textContent = user ? 'Account' : 'Sign in';
       _revealPage();
-      if (!user) {
-        /* Stale-session bounce. firebase.js already cleared the
-           aura_has_session flag; navigate so the next load is clean. */
-        window.location.replace('login.html');
-      }
+      /* Public homepage (2026-05-25 open-browsing rewrite): no redirect
+         for guests. Guests browse freely; personal actions trigger the
+         Aura.requireAuth() signup modal at the moment of intent. */
     });
     return true;
   } catch(e) { return false; }

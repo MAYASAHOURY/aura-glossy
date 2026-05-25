@@ -2225,7 +2225,9 @@
   // Scroll to top after render — overrides browser scroll restoration
   requestAnimationFrame(() => window.scrollTo(0, 0));
 
-  // Wire up all save-to-moodboard buttons (inspo grid + hotspot outfit saves)
+  // Wire up all save-to-moodboard buttons (inspo grid + hotspot outfit saves).
+  // Guests get the signup modal; their save queues via Aura.requireAuth and
+  // auto-fires after auth via main.js's registered 'save' resume handler.
   document.querySelectorAll('[data-save-id]').forEach(btn => {
     if (btn._wired) return;
     btn._wired = true;
@@ -2233,11 +2235,67 @@
     btn.addEventListener('click', e => {
       e.preventDefault(); e.stopPropagation();
       const item = { id: btn.dataset.saveId, img: btn.dataset.saveImg, label: btn.dataset.saveLabel || '', style: btn.dataset.saveStyle || '' };
+      const isAuthed = (window.Aura && Aura.isSignedIn) ? Aura.isSignedIn() : false;
+      if (!isAuthed && window.Aura && Aura.requireAuth) {
+        Aura.requireAuth({
+          title: 'Save this to your moodboard',
+          subtitle: 'Create your Aura profile to keep your favourite looks in one place.',
+          eyebrow: 'Save look',
+          pending: { key: 'save', data: item }
+        }).catch(function () { /* user dismissed */ });
+        return;
+      }
       const added = typeof toggleMoodboard === 'function' ? toggleMoodboard(item) : false;
       btn.classList.toggle('saved', added);
       if (typeof showToast === 'function') showToast(added ? 'Saved to moodboard ✦' : 'Removed from moodboard');
     });
   });
+
+  // ── Gate shop links for guests ──────────────────────────────────
+  // Capture-phase delegated listener so it runs BEFORE the browser
+  // honors the <a target="_blank"> default. Guest taps → preventDefault,
+  // store the URL + retailer name as a pending action, show modal.
+  // After auth, the resume handler shows a "Welcome ✓ Continue to
+  // {retailer} →" toast — clicking it opens the original URL (preserving
+  // the user-gesture chain that window.open() needs to avoid being
+  // blocked by popup blockers).
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a.hs-panel-link, a.hs-panel-link-alt');
+    if (!a) return;
+    var isAuthed = (window.Aura && Aura.isSignedIn) ? Aura.isSignedIn() : false;
+    if (isAuthed) return; // logged in: open normally
+    if (!window.Aura || !Aura.requireAuth) return; // safety: degrade gracefully
+    e.preventDefault();
+    e.stopPropagation();
+    // Pull context from the surrounding panel for nicer modal copy
+    var panel = a.closest('.hs-panel');
+    var pieceName = panel ? (panel.querySelector('.hs-panel-name') || {}).textContent : '';
+    var retailer  = panel ? (panel.querySelector('.hs-panel-store') || {}).textContent : '';
+    var isAltLink = a.classList.contains('hs-panel-link-alt');
+    if (isAltLink) retailer = 'Pinterest';
+    Aura.requireAuth({
+      title:    'Sign in to shop this look',
+      subtitle: 'Create your Aura profile to follow shoppable links and save your favourites.',
+      eyebrow:  retailer ? ('Shop · ' + retailer) : 'Shop',
+      pending:  { key: 'shop', data: { url: a.href, retailer: retailer || 'retailer', piece: pieceName || '' } }
+    }).catch(function () { /* dismissed */ });
+  }, true);
+
+  // Resume handler for shop clicks (registered once globally).
+  if (window.Aura && Aura.registerResume) {
+    Aura.registerResume('shop', function (shop) {
+      if (!shop || !shop.url) return;
+      Aura.showResumeToast({
+        message: shop.piece ? ('Saved your interest in: ' + shop.piece) : 'Welcome to Aura Glossy',
+        ctaLabel: 'Continue to ' + (shop.retailer || 'retailer') + ' →',
+        onContinue: function () {
+          // User-gesture-driven window.open survives most popup blockers
+          try { window.open(shop.url, '_blank', 'noopener'); }
+          catch (e) { window.location.href = shop.url; }
+        }
+      });
+    });
+  }
 
   // Hotspot interactions
   // Desktop: hover to preview (320 ms grace period so the popup doesn't vanish

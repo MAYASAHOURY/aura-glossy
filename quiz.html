@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>(function(){try{var l=localStorage.getItem("aura_lang");if(!l){var nl=(navigator.language||"en").toLowerCase().slice(0,2);l=(["en","es","ar","he"].indexOf(nl)>=0)?nl:"en";}document.documentElement.lang=l;document.documentElement.dir=(l==="ar"||l==="he")?"rtl":"ltr";}catch(e){}})();</script>
-<script>/* Synchronous auth gate — redirect to login if no session marker.
-  Avoids the 4-12s blank-screen Firebase-IndexedDB wait on TikTok/IG WebViews. */
-(function(){try{if(!localStorage.getItem('aura_has_session')){document.documentElement.style.visibility='hidden';window.location.replace('login.html');return;}}catch(e){}})();</script>
+<script>/* Public page — guests can take the quiz; the final result reveal + Firestore save are signup-gated in renderResult(). */
+window.__auraPublicPage = true;</script>
 <title>Style Quiz — Aura Glossy</title>
 <meta name="description" content="Take the Aura Glossy style quiz and discover your personal fashion aesthetic. 10 questions to find your unique style identity.">
 <meta property="og:title" content="Style Quiz — Aura Glossy">
@@ -19,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=41">
+<link rel="stylesheet" href="css/styles.css?v=42">
 </head>
 <body>
 
@@ -59,7 +58,7 @@
      when the user has chosen another language). -->
 <script src="js/i18n.js?v=12"></script>
 <script src="js/data.js?v=10"></script>
-<script src="js/main.js?v=8"></script>
+<script src="js/main.js?v=9"></script>
 <script src="js/animations.js?v=15"></script>
 <script>
 (function() {
@@ -259,6 +258,20 @@
   };
 
   function renderResult() {
+    /* Auth gate: guests can take the quiz, but the final reveal +
+       Firestore save are signup-only. Stash answers + open the
+       premium signup modal. After auth, the registered 'quiz' resume
+       handler restores `answers` and calls renderResult() again. */
+    if (window.Aura && Aura.requireAuth && !Aura.isSignedIn()) {
+      Aura.requireAuth({
+        title:    'Reveal your aesthetic',
+        subtitle: 'Create your Aura profile to see your full result and join your style circle.',
+        eyebrow:  'Quiz result',
+        pending:  { key: 'quiz', data: { answers: answers.slice() } }
+      }).catch(function () { /* dismissed — stays on last question */ });
+      return;
+    }
+
     const result = calculateResult();
     const auraColor  = AURA_COLORS[result.id]  || '#c8b49a';
     const mantra     = AURA_MANTRAS[result.id] || 'Your style is your signature.';
@@ -378,6 +391,18 @@
     }
   }
 
+  /* Post-auth resume: when a guest finishes the quiz, hits the gate,
+     then signs up, login.html bounces them back here with the
+     `aura_pending_action` sessionStorage record. Restore answers and
+     re-fire renderResult so they see their aesthetic immediately. */
+  if (window.Aura && Aura.registerResume) {
+    Aura.registerResume('quiz', function (data) {
+      if (data && Array.isArray(data.answers)) answers = data.answers;
+      stepIndex = QUIZ.length;
+      try { renderResult(); } catch (e) { console.warn('quiz resume failed:', e); }
+    });
+  }
+
   render();
 
   /* ── Language switch: re-render the visible quiz state ──────────
@@ -411,7 +436,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <!-- i18n.js is already loaded above the quiz IIFE; no duplicate needed. -->
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=12"></script>
+<script src="js/firebase.js?v=13"></script>
 <script>
 function navAuthClick() { window.location.href = 'settings.html'; }
 initAuthGuard();

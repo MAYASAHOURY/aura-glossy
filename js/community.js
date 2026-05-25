@@ -716,7 +716,16 @@ function _attachFeedHandlers(group) {
 
 /* ── Reactions ───────────────────────────────────────────────── */
 function _toggleReaction(postId, type, group) {
-  if (!_currentUser) return;
+  if (!_currentUser) {
+    if (window.Aura && Aura.requireAuth) {
+      Aura.requireAuth({
+        title: 'Sign in to react',
+        subtitle: 'Create your Aura profile to like posts and join the conversation.',
+        eyebrow: 'Community'
+      }).catch(function () { /* dismissed */ });
+    }
+    return;
+  }
   var uid = _currentUser.uid;
   var ref = _db
     .collection('communities').doc(group.id)
@@ -793,6 +802,17 @@ function _submitComment(postId, group) {
   if (!input) return;
   var content = input.value.trim();
   if (!content) return;
+
+  if (!_currentUser) {
+    if (window.Aura && Aura.requireAuth) {
+      Aura.requireAuth({
+        title: 'Sign in to comment',
+        subtitle: 'Create your Aura profile to join the conversation in your circle.',
+        eyebrow: 'Community'
+      }).catch(function () { /* dismissed */ });
+    }
+    return;
+  }
 
   input.disabled = true;
   var name = _currentUser.displayName || _currentUser.email || 'Style Member';
@@ -887,11 +907,24 @@ function _initComposerTabs() {
 }
 
 function _submitPost() {
-  if (!_currentUser || !_currentGroup) return;
-
   var text = document.getElementById('composer-text').value.trim();
   if (!text) {
     document.getElementById('composer-hint').textContent = 'Write something first.';
+    return;
+  }
+
+  if (!_currentUser) {
+    if (window.Aura && Aura.requireAuth) {
+      Aura.requireAuth({
+        title: 'Sign in to post',
+        subtitle: 'Create your Aura profile to share looks and thoughts with your circle.',
+        eyebrow: 'Community'
+      }).catch(function () { /* dismissed */ });
+    }
+    return;
+  }
+  if (!_currentGroup) {
+    document.getElementById('composer-hint').textContent = 'Take the quiz to unlock your community first.';
     return;
   }
 

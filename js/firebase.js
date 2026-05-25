@@ -98,6 +98,269 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
   };
 })();
 
+/* ─────────────────────────────────────────────────────────────────
+   AURA — Signup-gate modal + requireAuth helper
+
+   Public-browsing UX rewrite (2026-05-25): the platform is now open
+   for read/browse but personal actions (save, shop link, quiz result,
+   community write) require auth. This API is the single gate every
+   guarded action calls.
+
+   API:
+     Aura.isSignedIn()                 → bool. Sync via _auth.currentUser.
+     Aura.onAuthReady(cb)              → callback fires with (user|null) when
+                                          Firebase auth state is first known.
+     Aura.requireAuth(opts) → Promise   → resolves with user on success,
+                                          rejects on dismiss.
+       opts = { title, subtitle, primaryLabel, secondaryLabel, returnUrl, pending }
+       - title/subtitle: gate modal copy
+       - primaryLabel:   "Create account" by default
+       - secondaryLabel: "Sign in" by default
+       - returnUrl:      where login.html should bounce back to (defaults
+                          to current page URL incl. hash + query)
+       - pending:        { key, data } — write to sessionStorage so the
+                          returnUrl page can resume the original action
+                          after auth (used for shop click, save, quiz)
+
+   Why sessionStorage for `pending`: it survives the redirect chain
+   (current page → login.html → back) and is per-tab, so two tabs
+   don't collide. Cleared by the resume handler on the returnUrl page.
+
+   Security: this is UX only. Firestore rules in firestore.rules
+   continue to enforce auth server-side. A guest who pokes the
+   console and tries to write is denied at the rules layer.
+   ───────────────────────────────────────────────────────────────── */
+(function () {
+  window.Aura = window.Aura || {};
+
+  // sessionStorage key for pending post-auth actions
+  var PENDING_KEY = 'aura_pending_action';
+
+  function isSignedIn() {
+    try { return !!_auth.currentUser; } catch (e) { return false; }
+  }
+
+  // First-fire async hook: useful for guarded pages that want to
+  // reveal/hide UI after auth state is known (avoids flash).
+  var _authReady = false;
+  var _authReadyCbs = [];
+  _auth.onAuthStateChanged(function (user) {
+    _authReady = true;
+    var cbs = _authReadyCbs.slice();
+    _authReadyCbs.length = 0;
+    cbs.forEach(function (cb) { try { cb(user); } catch (e) {} });
+  });
+  function onAuthReady(cb) {
+    if (typeof cb !== 'function') return;
+    if (_authReady) { try { cb(_auth.currentUser); } catch (e) {} return; }
+    _authReadyCbs.push(cb);
+  }
+
+  // Pending-action storage (survives the login redirect chain).
+  function setPending(action) {
+    try {
+      sessionStorage.setItem(PENDING_KEY, JSON.stringify(action));
+    } catch (e) {}
+  }
+  function getPending() {
+    try {
+      var raw = sessionStorage.getItem(PENDING_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  function clearPending() {
+    try { sessionStorage.removeItem(PENDING_KEY); } catch (e) {}
+  }
+
+  // Build the modal element lazily, return it. Idempotent.
+  function _getModal() {
+    var existing = document.getElementById('aura-gate-modal');
+    if (existing) return existing;
+    var el = document.createElement('div');
+    el.id = 'aura-gate-modal';
+    el.className = 'aura-gate-overlay';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.setAttribute('aria-labelledby', 'aura-gate-title');
+    el.innerHTML = ''
+      + '<div class="aura-gate-card">'
+      +   '<button class="aura-gate-close-x" aria-label="Close" type="button">×</button>'
+      +   '<div class="aura-gate-eyebrow" data-aura-gate-eyebrow>Aura Glossy</div>'
+      +   '<h2 class="aura-gate-title" id="aura-gate-title" data-aura-gate-title>Create your Aura profile</h2>'
+      +   '<p class="aura-gate-sub" data-aura-gate-sub>Save looks, discover your style, and join your circle.</p>'
+      +   '<div class="aura-gate-actions">'
+      +     '<button class="aura-gate-btn aura-gate-btn-primary" data-aura-gate-primary type="button">Create account</button>'
+      +     '<button class="aura-gate-btn aura-gate-btn-secondary" data-aura-gate-secondary type="button">Sign in</button>'
+      +   '</div>'
+      +   '<button class="aura-gate-dismiss" data-aura-gate-dismiss type="button">Continue browsing</button>'
+      + '</div>';
+    document.body.appendChild(el);
+    return el;
+  }
+
+  // Render & open the gate. Returns a Promise that resolves on
+  // user-initiated nav to login (we won't actually see resolution
+  // because login.html navigates away) — but we still resolve for
+  // local listeners that want to do follow-up work pre-navigation.
+  function requireAuth(opts) {
+    opts = opts || {};
+    // Short-circuit: already signed in → resolve immediately.
+    if (isSignedIn()) {
+      return Promise.resolve(_auth.currentUser);
+    }
+
+    var returnUrl = opts.returnUrl || (location.pathname + location.search + location.hash);
+    if (opts.pending) {
+      setPending({
+        key: opts.pending.key,
+        data: opts.pending.data,
+        returnUrl: returnUrl,
+        ts: Date.now()
+      });
+    }
+
+    return new Promise(function (resolve, reject) {
+      var modal = _getModal();
+      var titleEl = modal.querySelector('[data-aura-gate-title]');
+      var subEl   = modal.querySelector('[data-aura-gate-sub]');
+      var eyebrow = modal.querySelector('[data-aura-gate-eyebrow]');
+      var primary = modal.querySelector('[data-aura-gate-primary]');
+      var secondary = modal.querySelector('[data-aura-gate-secondary]');
+      var dismiss = modal.querySelector('[data-aura-gate-dismiss]');
+      var closeX  = modal.querySelector('.aura-gate-close-x');
+
+      titleEl.textContent = opts.title || 'Create your Aura profile';
+      subEl.textContent   = opts.subtitle || 'Save looks, discover your style, and join your circle.';
+      eyebrow.textContent = opts.eyebrow || 'Aura Glossy';
+      primary.textContent   = opts.primaryLabel || 'Create account';
+      secondary.textContent = opts.secondaryLabel || 'Sign in';
+
+      var nextParam = encodeURIComponent(returnUrl);
+
+      function cleanup() {
+        modal.classList.remove('visible');
+        primary.removeEventListener('click', goCreate);
+        secondary.removeEventListener('click', goSignIn);
+        dismiss.removeEventListener('click', onDismiss);
+        closeX.removeEventListener('click', onDismiss);
+        modal.removeEventListener('click', onBackdrop);
+        document.removeEventListener('keydown', onEsc);
+      }
+      function goCreate(e) {
+        if (e) e.preventDefault();
+        cleanup();
+        resolve({ navigated: true });
+        window.location.href = 'login.html?mode=signup&next=' + nextParam;
+      }
+      function goSignIn(e) {
+        if (e) e.preventDefault();
+        cleanup();
+        resolve({ navigated: true });
+        window.location.href = 'login.html?mode=signin&next=' + nextParam;
+      }
+      function onDismiss(e) {
+        if (e) e.preventDefault();
+        clearPending(); // user backed out — don't trigger resume on next nav
+        cleanup();
+        reject(new Error('dismissed'));
+      }
+      function onBackdrop(e) {
+        if (e.target === modal) onDismiss(e);
+      }
+      function onEsc(e) {
+        if (e.key === 'Escape') onDismiss(e);
+      }
+
+      primary.addEventListener('click', goCreate);
+      secondary.addEventListener('click', goSignIn);
+      dismiss.addEventListener('click', onDismiss);
+      closeX.addEventListener('click', onDismiss);
+      modal.addEventListener('click', onBackdrop);
+      document.addEventListener('keydown', onEsc);
+
+      // Reveal next frame so transition animates
+      requestAnimationFrame(function () { modal.classList.add('visible'); });
+    });
+  }
+
+  // Post-auth resume — called from each public page (or globally
+  // on DOMContentLoaded). Reads sessionStorage pending action and
+  // dispatches to the appropriate handler. Handlers (registered by
+  // page-specific scripts) clean up via clearPending() when done.
+  var _resumeHandlers = {};
+  function registerResume(key, handler) {
+    _resumeHandlers[key] = handler;
+  }
+  function tryResumePending() {
+    var pending = getPending();
+    if (!pending || !pending.key) return;
+    // Only resume for signed-in users (a guest somehow landing here
+    // with a pending action shouldn't fire it — protects against
+    // edge cases like the user cancelling auth mid-flow).
+    if (!isSignedIn()) return;
+    var handler = _resumeHandlers[pending.key];
+    if (typeof handler === 'function') {
+      try { handler(pending.data); } catch (e) { console.warn('Resume handler failed:', e); }
+      // Most handlers should clearPending() themselves once they've
+      // committed the action; clear here as a safety net so we never
+      // re-fire on subsequent loads.
+      clearPending();
+    }
+  }
+  // Auto-fire once auth state is known on every page load
+  onAuthReady(function () { tryResumePending(); });
+
+  // Build & show the post-auth "Continue to {retailer}" toast.
+  // Returns the toast element so callers can wire custom behavior.
+  function showResumeToast(opts) {
+    opts = opts || {};
+    var existing = document.querySelector('.aura-resume-toast');
+    if (existing) existing.remove();
+
+    var toast = document.createElement('div');
+    toast.className = 'aura-resume-toast';
+    toast.innerHTML = ''
+      + '<span class="aura-resume-toast-check">✓</span>'
+      + '<span class="aura-resume-toast-text" data-resume-text></span>'
+      + '<button class="aura-resume-toast-cta" data-resume-cta type="button"></button>'
+      + '<button class="aura-resume-toast-dismiss" aria-label="Dismiss" type="button">×</button>';
+    toast.querySelector('[data-resume-text]').textContent = opts.message || 'Welcome to Aura Glossy';
+    var cta = toast.querySelector('[data-resume-cta]');
+    cta.textContent = opts.ctaLabel || 'Continue →';
+    document.body.appendChild(toast);
+    requestAnimationFrame(function () { toast.classList.add('visible'); });
+
+    cta.addEventListener('click', function () {
+      if (typeof opts.onContinue === 'function') opts.onContinue();
+      toast.classList.remove('visible');
+      setTimeout(function () { if (toast.parentNode) toast.remove(); }, 320);
+    });
+    toast.querySelector('.aura-resume-toast-dismiss').addEventListener('click', function () {
+      toast.classList.remove('visible');
+      setTimeout(function () { if (toast.parentNode) toast.remove(); }, 320);
+    });
+    // Auto-dismiss after 12s if user ignores
+    setTimeout(function () {
+      if (toast.parentNode) {
+        toast.classList.remove('visible');
+        setTimeout(function () { if (toast.parentNode) toast.remove(); }, 320);
+      }
+    }, 12000);
+    return toast;
+  }
+
+  // Public API
+  window.Aura.isSignedIn       = isSignedIn;
+  window.Aura.onAuthReady      = onAuthReady;
+  window.Aura.requireAuth      = requireAuth;
+  window.Aura.setPending       = setPending;
+  window.Aura.getPending       = getPending;
+  window.Aura.clearPending     = clearPending;
+  window.Aura.registerResume   = registerResume;
+  window.Aura.tryResumePending = tryResumePending;
+  window.Aura.showResumeToast  = showResumeToast;
+})();
+
 /* Explicit pre-redirect session-flag setter — used by login.html
    right after auth succeeds, so the synchronous head-gate on the
    destination page (index.html) passes even if firebase.js's own
@@ -457,8 +720,10 @@ if (_authChannel) {
   _authChannel.onmessage = function(e) {
     if (e.data === 'logout' && location.pathname.indexOf('login') === -1) {
       /* Verify Firebase says no current user before acting —
-         stale BroadcastChannel events can arrive after a re-login in another tab */
-      if (!_auth.currentUser) {
+         stale BroadcastChannel events can arrive after a re-login in another tab.
+         PUBLIC pages don't auto-redirect on logout (just update nav button) —
+         the page is browsable as a guest. */
+      if (!_auth.currentUser && !window.__auraPublicPage) {
         window.location.replace('login.html');
       }
     }
@@ -539,21 +804,38 @@ if (_authChannel) {
 })();
 
 /*
- * initAuthGuard() — call once on every protected page.
- * Shows a loading veil until Firebase confirms auth state.
- * Redirects to login only after confirmation (not a timer guess).
- * Syncs logout across all open tabs via BroadcastChannel.
+ * initAuthGuard() — call once per page.
+ *
+ * Public-browsing mode (2026-05-25): on pages that set
+ * `window.__auraPublicPage = true` BEFORE this function is called,
+ * we update auth-aware UI (nav button, save state) but DO NOT
+ * auto-redirect to login. Personal actions on those pages call
+ * `Aura.requireAuth(...)` to open the signup modal instead.
+ *
+ * On strict pages (settings.html), the legacy behavior is preserved:
+ * shows a loading veil, redirects to login if auth doesn't confirm
+ * within 7s of fresh load (10s after bfcache restore — bfcache nulls
+ * are transient, not real sign-outs).
+ *
+ * BroadcastChannel logout sync still works on both modes — when one
+ * tab signs out, other tabs update their nav state. Only strict-mode
+ * tabs auto-redirect to login.
  */
 function initAuthGuard() {
-  /* Loading veil — prevents content flash on slow networks */
-  var veil = document.createElement('div');
-  veil.className = 'auth-veil';
-  veil.innerHTML = '<div class="auth-veil-dots"><div class="auth-veil-dot"></div><div class="auth-veil-dot"></div><div class="auth-veil-dot"></div></div>';
-  document.body.appendChild(veil);
+  var isPublic = !!window.__auraPublicPage;
 
+  /* Loading veil — strict pages only; public pages show content immediately */
+  var veil = null;
   function _revealPage() {
+    if (!veil) return;
     veil.classList.add('hidden');
     setTimeout(function() { if (veil.parentNode) veil.remove(); }, 380);
+  }
+  if (!isPublic) {
+    veil = document.createElement('div');
+    veil.className = 'auth-veil';
+    veil.innerHTML = '<div class="auth-veil-dots"><div class="auth-veil-dot"></div><div class="auth-veil-dot"></div><div class="auth-veil-dot"></div></div>';
+    document.body.appendChild(veil);
   }
 
   var _authed     = false;
@@ -570,9 +852,16 @@ function initAuthGuard() {
       if (btn) btn.textContent = 'Account';
       _revealPage();
     } else {
+      /* PUBLIC pages: no redirect, no veil to hide. Just update the
+         nav button to say "Sign in" so guests have an entry point. */
+      if (isPublic) {
+        var btn = document.getElementById('nav-auth-btn');
+        if (btn) btn.textContent = 'Sign in';
+        return;
+      }
+      /* STRICT pages from here down. */
       /* If we were already confirmed authed and this is a bfcache restore,
-         Firebase is just re-initializing — null is transient, NOT a sign-out.
-         Do not redirect. Use a long safety timer only. */
+         Firebase is just re-initializing — null is transient, NOT a sign-out. */
       if (_authed && _bfRestored) {
         _guardTimer = setTimeout(function() {
           if (!_auth.currentUser) window.location.replace('login.html');

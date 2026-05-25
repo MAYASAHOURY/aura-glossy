@@ -52,6 +52,8 @@ function initReveal() {
 }
 
 // ---- Save buttons ----
+// Saves are personal data → require auth. Guests get a signup modal and
+// the action queues in sessionStorage so it auto-fires on return.
 function attachSaveButtons() {
   document.querySelectorAll('[data-save-id]').forEach(btn => {
     if (btn._wired) return;
@@ -61,10 +63,35 @@ function attachSaveButtons() {
     btn.addEventListener('click', e => {
       e.preventDefault(); e.stopPropagation();
       const item = { id, img: btn.dataset.saveImg, label: btn.dataset.saveLabel || '', style: btn.dataset.saveStyle || '' };
+      const isAuthed = (window.Aura && Aura.isSignedIn) ? Aura.isSignedIn() : !!(window._auth && _auth.currentUser);
+      if (!isAuthed && window.Aura && Aura.requireAuth) {
+        Aura.requireAuth({
+          title: 'Save this to your moodboard',
+          subtitle: 'Create your Aura profile to keep your favourite looks in one place.',
+          eyebrow: 'Save look',
+          pending: { key: 'save', data: item }
+        }).catch(function () { /* user dismissed */ });
+        return;
+      }
       const added = toggleMoodboard(item);
       btn.classList.toggle('saved', added);
       showToast(added ? 'Saved to moodboard ✦' : 'Removed from moodboard');
     });
+  });
+}
+
+// Register the post-auth resume handler for save actions: after a guest
+// signs up, when the original page reloads we re-execute the save and
+// flash the saved-state on the matching button.
+if (window.Aura && Aura.registerResume) {
+  Aura.registerResume('save', function (item) {
+    if (!item || !item.id) return;
+    try {
+      const added = toggleMoodboard(item);
+      const btn = document.querySelector('[data-save-id="' + item.id + '"]');
+      if (btn) btn.classList.toggle('saved', added);
+      showToast(added ? 'Saved to moodboard ✦' : 'Removed from moodboard');
+    } catch (e) { console.warn('save resume failed:', e); }
   });
 }
 

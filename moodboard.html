@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>(function(){try{var l=localStorage.getItem("aura_lang");if(!l){var nl=(navigator.language||"en").toLowerCase().slice(0,2);l=(["en","es","ar","he"].indexOf(nl)>=0)?nl:"en";}document.documentElement.lang=l;document.documentElement.dir=(l==="ar"||l==="he")?"rtl":"ltr";}catch(e){}})();</script>
-<script>/* Synchronous auth gate — redirect to login if no session marker. */
-(function(){try{if(!localStorage.getItem('aura_has_session')){document.documentElement.style.visibility='hidden';window.location.replace('login.html');return;}}catch(e){}})();</script>
+<script>/* Public page — guests see empty-state CTA, signed-in users see their saved looks. */
+window.__auraPublicPage = true;</script>
 <title>Moodboard — Aura Glossy</title>
 <meta name="description" content="Your personal Aura Glossy moodboard. Save and collect fashion inspiration, outfits, and looks from across the platform.">
 <meta property="og:title" content="Moodboard — Aura Glossy">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=41">
+<link rel="stylesheet" href="css/styles.css?v=42">
 </head>
 <body>
 
@@ -62,10 +62,10 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/data.js?v=10"></script>
-<script src="js/main.js?v=8"></script>
+<script src="js/main.js?v=9"></script>
 <script src="js/i18n.js?v=12"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=12"></script>
+<script src="js/firebase.js?v=13"></script>
 <script src="js/animations.js?v=15"></script>
 <script>
 (function() {
@@ -76,7 +76,7 @@
   container.innerHTML = '<div style="text-align:center;padding:80px 24px;color:var(--ink-soft);">Loading your moodboard…</div>';
 
   /* ✦✦ Empty state ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
-  function buildEmptyState() {
+  function buildEmptyState(isGuest) {
     const teaser = [];
     Object.values(STYLES).forEach(s => {
       teaser.push({ img: s.heroImg, label: s.name });
@@ -85,9 +85,17 @@
     teaser.sort(() => Math.random() - 0.5);
 
     let html = '<div class="moodboard-empty"><div class="icon">✦</div>';
-    html += '<h3>Your moodboard is empty</h3>';
-    html += "<p>Save outfits across the platform and they'll collect here.</p>";
-    html += '<a href="index.html#styles" class="btn">Start exploring</a></div>';
+    if (isGuest) {
+      html += '<h3>Sign in to start your moodboard</h3>';
+      html += "<p>Save your favourite looks across every aesthetic and they'll collect here, on every device.</p>";
+      html += '<a href="login.html?mode=signup&next=%2Fmoodboard.html" class="btn">Create account</a>';
+      html += '<a href="index.html#styles" class="btn-ghost" style="margin-top:10px;display:inline-block;">Continue browsing</a>';
+    } else {
+      html += '<h3>Your moodboard is empty</h3>';
+      html += "<p>Save outfits across the platform and they'll collect here.</p>";
+      html += '<a href="index.html#styles" class="btn">Start exploring</a>';
+    }
+    html += '</div>';
     html += '<div class="moodboard-teaser"><h4>A taste of what you can save</h4>';
     html += '<div class="moodboard-teaser-grid">';
     teaser.slice(0, 15).forEach(t => {
@@ -100,7 +108,8 @@
 
   /* ✦✦ Main render ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
   function render(items) {
-    if (!items.length) { container.innerHTML = buildEmptyState(); return; }
+    const isGuest = !(window.Aura && Aura.isSignedIn && Aura.isSignedIn());
+    if (!items.length) { container.innerHTML = buildEmptyState(isGuest); return; }
 
     const styles  = [...new Set(items.map(i => i.style).filter(Boolean))];
     const filtered = currentFilter === 'all' ? items : items.filter(i => i.style === currentFilter);
@@ -174,8 +183,23 @@
     }
   }
 
-  /* ✦✦ Load from Firestore on page open ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
-  fbLoadAll().then(items => render(items));
+  /* ✦✦ Load from Firestore on page open ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦
+     Wait for Firebase auth state to be known before loading — guests
+     short-circuit to the empty state (no Firestore call), signed-in
+     users get their saved items. Falls back to fbLoadAll directly if
+     Aura.onAuthReady isn't available (degrades gracefully). */
+  function _renderForAuthState() {
+    if (window.Aura && Aura.isSignedIn && !Aura.isSignedIn()) {
+      render([]); /* guest → empty state with sign-in CTA */
+      return;
+    }
+    fbLoadAll().then(items => render(items)).catch(() => render([]));
+  }
+  if (window.Aura && Aura.onAuthReady) {
+    Aura.onAuthReady(_renderForAuthState);
+  } else {
+    _renderForAuthState();
+  }
 
 })();
 </script>

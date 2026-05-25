@@ -798,7 +798,7 @@ html[dir="rtl"] .reset-message { text-align: right; }
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/i18n.js?v=12"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=12"></script>
+<script src="js/firebase.js?v=13"></script>
 <script src="js/animations.js?v=15"></script>
 <script>
 (function() {
@@ -942,8 +942,29 @@ html[dir="rtl"] .reset-message { text-align: right; }
   /* Re-render when the user switches language so the copy translates */
   window.addEventListener('aura:langchange', _renderInAppBanner);
 
+  /* Determine post-auth destination. Honors ?next=<url> set by the
+     Aura.requireAuth() modal so users return to the page they were
+     browsing instead of always bouncing to index.html. The next URL
+     is validated to be same-origin (relative path) to prevent open-
+     redirect abuse. Falls back to index.html if missing/invalid. */
+  function _resolvePostAuthDest() {
+    try {
+      var p = new URLSearchParams(window.location.search);
+      var n = p.get('next');
+      if (!n) return 'index.html';
+      // Decode once. If still encoded (looks like %2F), bail to safe default.
+      var decoded = decodeURIComponent(n);
+      // Same-origin only: must start with /  (relative path or rooted path).
+      // Reject anything containing :// or starting with //, which could be an
+      // off-site URL bypassing the relative-path check.
+      if (/:\/\//.test(decoded) || decoded.indexOf('//') === 0) return 'index.html';
+      if (decoded.charAt(0) !== '/' && !/^[a-zA-Z0-9_-]+\.html/.test(decoded)) return 'index.html';
+      return decoded;
+    } catch (e) { return 'index.html'; }
+  }
+
   /* ✦✦ bfcache guard — when browser restores this page from cache
-     and the user is now signed in, skip straight to homepage. */
+     and the user is now signed in, skip straight to homepage (or ?next). */
   window.addEventListener('pageshow', function(e) {
     if (e.persisted && auth.currentUser) {
       if (_navigating) return;
@@ -954,8 +975,9 @@ html[dir="rtl"] .reset-message { text-align: right; }
       /* Explicit flag set — belt-and-suspenders for the head gate on index.html
          in case firebase.js's listener hasn't fired the localStorage write yet. */
       if (typeof setAuraSessionFlag === 'function') setAuraSessionFlag();
+      var dest = _resolvePostAuthDest();
       setTimeout(function() {
-        window.location.replace('index.html');
+        window.location.replace(dest);
       }, POST_AUTH_DELAY_MS);
     }
   });
@@ -981,8 +1003,9 @@ html[dir="rtl"] .reset-message { text-align: right; }
       /* NO aura_onboard_trigger here — only set in the create-account success path */
       /* 800 ms (1.4 s in-app) lets Firebase finish writing auth
          session to IndexedDB before we navigate. */
+      var dest = _resolvePostAuthDest();
       setTimeout(function() {
-        window.location.replace('index.html');
+        window.location.replace(dest);
       }, POST_AUTH_DELAY_MS);
     } else {
       formsEl.style.display = 'block';
