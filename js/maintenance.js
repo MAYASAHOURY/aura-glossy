@@ -197,6 +197,25 @@
     + '  .aura-admin-forgot{display:block;margin:12px auto 0;background:none;border:none;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:11px;font-weight:400;letter-spacing:.04em;color:rgba(185,169,154,.62);text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(185,169,154,.32);cursor:pointer;padding:6px 8px;transition:color .24s ease,text-decoration-color .24s ease}'
     + '  .aura-admin-forgot:hover,.aura-admin-forgot:focus-visible{color:#c79a85;text-decoration-color:rgba(199,154,133,.6);outline:none}'
     + '  .aura-admin-forgot:disabled{opacity:.45;cursor:not-allowed}'
+    /* ── "Hii Bossy ✨" post-login welcome transition ──────────────────
+          Full-screen premium overlay shown ONLY after a successful
+          admin sign-in (Firebase auth + Firestore isAdmin=true). Sits
+          at z-index 200 — above both the modal (z-100) and the
+          maintenance page underneath — so it is the sole thing visible
+          for the brief moment before we navigate into the site.
+          Background fades in first, then the inner text un-blurs and
+          rises with a subtle cubic-bezier curve. No buttons, no exit
+          animation — we replace the URL when the timer fires. */
+    + '  .aura-admin-welcome{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:32px;background:#0d0905;opacity:0;transition:opacity .6s ease;overflow:hidden;-webkit-font-smoothing:antialiased}'
+    + '  .aura-admin-welcome.is-visible{display:flex;opacity:1}'
+    + '  .aura-admin-welcome::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 60% 50% at 50% 45%, rgba(199,154,133,.36) 0%, rgba(60,32,22,.18) 35%, transparent 70%),radial-gradient(ellipse 90% 70% at 50% 50%, rgba(231,200,181,.06) 0%, transparent 60%);animation:auraGlowPulse 5s ease-in-out infinite alternate}'
+    + '  .aura-admin-welcome::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;mix-blend-mode:overlay;opacity:.14;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'2\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix values=\'0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.32 0\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E");background-size:200px 200px}'
+    + '  .aura-admin-welcome-inner{position:relative;z-index:1;text-align:center;filter:blur(10px);opacity:0;transform:translateY(10px);transition:filter .95s cubic-bezier(.2,.7,.2,1),opacity .95s ease,transform 1.1s cubic-bezier(.2,.7,.2,1)}'
+    + '  .aura-admin-welcome.is-revealed .aura-admin-welcome-inner{filter:blur(0);opacity:1;transform:translateY(0)}'
+    + '  .aura-admin-welcome-text{font-family:"Playfair Display","Times New Roman",serif;font-weight:400;font-style:italic;font-size:clamp(38px,7.4vw,68px);line-height:1.18;letter-spacing:-.005em;color:#f5ede3;margin:0;background:linear-gradient(180deg,#f5ede3 0%,#e7c8b5 100%);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-flex;align-items:baseline;gap:14px;flex-wrap:nowrap;justify-content:center}'
+    + '  .aura-admin-welcome-spark{font-style:normal;display:inline-block;-webkit-background-clip:initial;background-clip:initial;color:#e7c8b5;animation:auraTwinkle 2.4s ease-in-out infinite;text-shadow:0 0 16px rgba(231,200,181,.55),0 0 28px rgba(231,200,181,.32)}'
+    + '  @media (prefers-reduced-motion: reduce){.aura-admin-welcome-inner{transition-duration:.001ms}.aura-admin-welcome::before,.aura-admin-welcome-spark{animation:none}}'
+    + '  @media (max-width:520px){.aura-admin-welcome{padding:24px}.aura-admin-welcome-text{gap:10px}}'
     + '  @media (max-width:520px){.aura-admin-card{padding:30px 22px 24px}.aura-admin-title{font-size:22px}.aura-admin-trigger{bottom:20px;padding:14px 22px;letter-spacing:.28em}}'
     + '</style>';
 
@@ -217,6 +236,14 @@
     +     '<span class="aura-admin-arrow" aria-hidden="true">→</span>'
     +   '</button>'
     + '</main>'
+    + '<div class="aura-admin-welcome" id="aura-admin-welcome" role="status" aria-live="polite" aria-hidden="true">'
+    +   '<div class="aura-admin-welcome-inner">'
+    +     '<h2 class="aura-admin-welcome-text">'
+    +       '<span>Hii Bossy</span>'
+    +       '<span class="aura-admin-welcome-spark" aria-hidden="true">✨</span>'
+    +     '</h2>'
+    +   '</div>'
+    + '</div>'
     + '<div class="aura-admin-overlay" id="aura-admin-overlay" role="dialog" aria-modal="true" aria-labelledby="aura-admin-title" aria-hidden="true">'
     +   '<div class="aura-admin-card">'
     +     '<button type="button" class="aura-admin-close" id="aura-admin-close" aria-label="Close">✕</button>'
@@ -483,21 +510,25 @@
             var displayName = (cred.user && cred.user.displayName) ? cred.user.displayName : null;
             _rememberIdentity(email, displayName);
             try { localStorage.setItem(BYPASS_KEY_PERSIST, 'true'); } catch (e) {}
-            setHint('Welcome back. Loading the site…', 'loading');
-            setTimeout(function () {
-              var dest = window.location.pathname + window.location.search + window.location.hash;
-              /* If the user landed via ?admin=false (which force-clears
-                 the flag), strip it so the reload doesn't immediately
-                 wipe what we just set. */
-              if (/[?&]admin=/.test(window.location.search)) {
-                var clean = window.location.search
-                  .replace(/[?&]admin=[^&]*/gi, '')
-                  .replace(/^&/, '?');
-                if (clean === '?') clean = '';
-                dest = window.location.pathname + clean + window.location.hash;
-              }
-              window.location.replace(dest || '/');
-            }, 500);
+
+            /* Compute the post-welcome destination. If the admin landed
+               via ?admin=false (which force-clears the flag), strip the
+               param so the reload doesn't immediately wipe what we just
+               set. Same-origin only — we never honour arbitrary inputs. */
+            var dest = window.location.pathname + window.location.search + window.location.hash;
+            if (/[?&]admin=/.test(window.location.search)) {
+              var clean = window.location.search
+                .replace(/[?&]admin=[^&]*/gi, '')
+                .replace(/^&/, '?');
+              if (clean === '?') clean = '';
+              dest = window.location.pathname + clean + window.location.hash;
+            }
+            dest = dest || '/';
+
+            /* Premium welcome transition — fires ONLY here, inside the
+               post-isAdmin-check success branch. Guests, wrong creds,
+               and non-admin accounts never reach this code path. */
+            _showWelcomeAndContinue(dest);
           });
         });
       }).catch(function (err) {
@@ -526,6 +557,52 @@
         setHint(msg, 'error');
       });
     });
+
+    /* ─────────────────────────────────────────────────────────────
+       Premium post-admin-login welcome screen.
+       Triggered exclusively from the isAdmin=true success branch
+       above. Never fires for guests, wrong credentials, or non-admin
+       accounts — it lives downstream of the access check.
+
+       Sequence (≈1.7s total):
+         t=0     : hide the modal, body scroll already locked
+                   show welcome overlay (background fades in 0.6s)
+         t≈80ms : reveal inner content (un-blurs + rises ~1.1s)
+         t≈1700ms: window.location.replace(dest) — site loads
+       ───────────────────────────────────────────────────────────── */
+    function _showWelcomeAndContinue(dest) {
+      var welcome = document.getElementById('aura-admin-welcome');
+      if (!welcome) {
+        /* Defensive fallback: if the welcome DOM is missing for any
+           reason, skip the transition and navigate immediately rather
+           than stranding the admin on the modal. */
+        window.location.replace(dest);
+        return;
+      }
+      /* Hide the modal so the welcome overlay sits over a clean page
+         (the modal's z-index is 100, welcome is 200; but visually
+         removing the modal is nicer than overlapping it). */
+      if (overlay) {
+        overlay.classList.remove('is-visible');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+      /* Keep body scroll locked through the transition. */
+      try { document.body.style.overflow = 'hidden'; } catch (e) {}
+
+      welcome.classList.add('is-visible');
+      welcome.setAttribute('aria-hidden', 'false');
+      /* Tiny delay before revealing the inner content so the dark
+         background fades in first, then the text emerges. */
+      requestAnimationFrame(function () {
+        setTimeout(function () {
+          welcome.classList.add('is-revealed');
+        }, 80);
+      });
+
+      setTimeout(function () {
+        window.location.replace(dest);
+      }, 1700);
+    }
 
     /* ─────────────────────────────────────────────────────────────
        "Forgot admin password?" — Firebase password reset flow.
