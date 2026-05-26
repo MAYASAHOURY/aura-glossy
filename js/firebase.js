@@ -990,22 +990,75 @@ if (_authChannel) {
     document.body.appendChild(el);
     return el;
   }
+
+  /* ── Admin nav-bar entry: "● Report" link inside .nav-links ──────
+        Injected as the last item in the existing nav UL so it inherits
+        the page-specific nav-link styling for free (responsive collapse
+        into the burger menu on mobile, hover states, focus outlines).
+        We layer a small green pulse dot + rose-accent colour on top so
+        the link reads as an admin-only affordance, mirroring the
+        "● Hi Boss" pill's visual language.
+        Idempotent: we tag the <li> with data-nav-admin-report so a
+        re-render (e.g. live snapshot flip) won't add a duplicate. */
+  var NAV_LINK_STYLE_ID = 'aura-nav-admin-style';
+  var NAV_LINK_FLAG     = 'data-nav-admin-report';
+  function _injectNavLinkStyles() {
+    if (document.getElementById(NAV_LINK_STYLE_ID)) return;
+    var s = document.createElement('style');
+    s.id = NAV_LINK_STYLE_ID;
+    s.textContent =
+      '.nav-admin-link{' +
+        'display:inline-flex;align-items:center;gap:7px;' +
+        'color:#c084a0!important;' +
+      '}' +
+      '.nav-admin-link::before{' +
+        'content:"";display:inline-block;width:5px;height:5px;' +
+        'border-radius:50%;background:#6ec890;' +
+        'box-shadow:0 0 5px rgba(110,200,144,.85),0 0 12px rgba(110,200,144,.45);' +
+        'animation:auraAdminPulse 2.4s ease-in-out infinite;' +
+        'flex:0 0 5px' +
+      '}';
+    document.head.appendChild(s);
+  }
+  function _injectNavLink() {
+    var navLinks = document.querySelector('.nav-links');
+    if (!navLinks) return; /* page has no nav (admin-report.html, etc.) */
+    if (navLinks.querySelector('[' + NAV_LINK_FLAG + ']')) return; /* already injected */
+    _injectNavLinkStyles();
+    var li = document.createElement('li');
+    li.setAttribute(NAV_LINK_FLAG, '1');
+    var a = document.createElement('a');
+    a.href = 'admin-report.html';
+    a.className = 'nav-admin-link';
+    a.textContent = 'Report';
+    a.setAttribute('aria-label', 'Admin report (admin only)');
+    li.appendChild(a);
+    navLinks.appendChild(li);
+  }
+  function _removeNavLink() {
+    var li = document.querySelector('[' + NAV_LINK_FLAG + ']');
+    if (li && li.parentNode) li.parentNode.removeChild(li);
+  }
+
   function _hide() {
     var el = document.getElementById(EL_ID);
     if (el) el.classList.remove('is-visible');
+    _removeNavLink();
   }
   function _show() {
     _injectStyles();
     var el = _injectEl();
-    if (!el) return;
-    /* Double-rAF so the just-set display:flex committed before we
-       trigger the opacity transition — otherwise the badge would
-       flash in at full opacity instead of fading in. */
-    requestAnimationFrame(function () {
+    if (el) {
+      /* Double-rAF so the just-set display:flex committed before we
+         trigger the opacity transition — otherwise the badge would
+         flash in at full opacity instead of fading in. */
       requestAnimationFrame(function () {
-        el.classList.add('is-visible');
+        requestAnimationFrame(function () {
+          el.classList.add('is-visible');
+        });
       });
-    });
+    }
+    _injectNavLink();
   }
 
   /* Reads the admin flag from Firestore ONCE per sign-in. If the
