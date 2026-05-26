@@ -112,7 +112,70 @@
     bypass = false;
   }
 
-  if (!MAINTENANCE_MODE || bypass) return;
+  /* ── Trace logs for diagnosing maintenance leaks ──────────────────
+        Every page that loads maintenance.js prints exactly one of:
+          [MAINTENANCE] mode off — passing through
+          [MAINTENANCE] admin bypass active for {path}
+          [MAINTENANCE] blocked route: {path}
+        Plus event-driven logs when an active bypass gets invalidated
+        late (bfcache restore, cross-tab logout). If you ever see a
+        public page during maintenance, grep the console for these
+        lines to know exactly which path fired. */
+  var _path = (function () {
+    try { return location.pathname + location.search; } catch (e) { return '?'; }
+  })();
+
+  if (!MAINTENANCE_MODE) {
+    try { console.log('[MAINTENANCE] mode off — passing through'); } catch (e) {}
+    return; /* nothing to guard against — gate is disabled */
+  }
+  if (bypass) {
+    try { console.log('[MAINTENANCE] admin bypass active for ' + _path); } catch (e) {}
+    _installLateGuards();
+    return;
+  }
+
+  try { console.log('[MAINTENANCE] blocked route: ' + _path); } catch (e) {}
+
+  /* ── Late-invalidation guards ────────────────────────────────────
+        Once we've decided to honor a bypass and let the page render,
+        we still need to defend against two cases where the bypass
+        becomes invalid AFTER this script finishes:
+
+          1. bfcache restore — iOS Safari (and other browsers) can
+             restore the rendered DOM from memory when the user hits
+             Back, without re-running scripts. The bypass might have
+             been cleared in the meantime (logout, manual reset).
+
+          2. Cross-tab logout — the admin signs out in another tab,
+             which clears localStorage.aura_admin_bypass. We get a
+             'storage' event here and should reload immediately so
+             the maintenance gate re-evaluates and seals the page.
+
+        Both handlers do nothing if bypass is still valid; otherwise
+        they reload, which triggers maintenance.js fresh and renders
+        the maintenance screen. ──────────────────────────────────── */
+  function _installLateGuards() {
+    window.addEventListener('pageshow', function (ev) {
+      if (!ev.persisted) return; /* fresh load — head script will re-run */
+      if (!MAINTENANCE_MODE) return;
+      var stillBypass = false;
+      try { var v = localStorage.getItem(BYPASS_KEY); stillBypass = (v === 'true' || v === '1'); } catch (e) {}
+      if (!stillBypass) {
+        try { console.log('[MAINTENANCE] bfcache restore — bypass invalid, reloading'); } catch (e) {}
+        window.location.reload();
+      }
+    });
+    window.addEventListener('storage', function (ev) {
+      if (ev.key !== BYPASS_KEY) return;
+      if (!MAINTENANCE_MODE) return;
+      var stillBypass = (ev.newValue === 'true' || ev.newValue === '1');
+      if (!stillBypass) {
+        try { console.log('[MAINTENANCE] bypass cleared in another tab, reloading'); } catch (e) {}
+        window.location.reload();
+      }
+    });
+  }
 
   /* ─── Maintenance head ──────────────────────────────────────────────────
      Note: we set documentElement.innerHTML (not document.write), then

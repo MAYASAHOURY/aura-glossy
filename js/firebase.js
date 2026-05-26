@@ -905,6 +905,64 @@ if (_authChannel) {
 }
 
 /* ─────────────────────────────────────────────────────────────────
+   MAINTENANCE BYPASS REVALIDATOR
+
+   The maintenance gate in js/maintenance.js trusts a localStorage
+   flag (aura_admin_bypass) to decide whether to seal the page.
+   That flag is set when an admin successfully signs in through the
+   ADMIN ENTER modal, and is cleared on every documented sign-out
+   path. But Firestore (not localStorage) is the source of truth
+   for who is admin — so we double-check here once Firebase auth
+   resolves:
+
+     • No signed-in user but bypass active → stale bypass from a
+       past session. Clear it + reload. The reload re-runs
+       maintenance.js, sees no bypass, and seals the page.
+
+     • Signed-in user that is NOT admin in Firestore → bypass was
+       granted to a non-admin (URL trick, shared link, etc.). Sign
+       them out, clear bypass, reload → maintenance screen.
+
+     • Signed-in user that IS admin → bypass is legitimate. No-op.
+
+   This catches every scenario the static localStorage check can't:
+   token expiration, server-side admin revocation, cross-tab logout
+   races where the storage event arrived late. Console-logged so
+   future leaks can be traced.
+   ───────────────────────────────────────────────────────────────── */
+(function _revalidateBypass() {
+  if (!window.__auraMaintenanceMode) return; /* maintenance off — irrelevant */
+  var BYPASS_KEY = 'aura_admin_bypass';
+  function _hasBypass() {
+    try { var v = localStorage.getItem(BYPASS_KEY); return (v === 'true' || v === '1'); }
+    catch (e) { return false; }
+  }
+  function _clearAndReload(reason) {
+    try { localStorage.removeItem(BYPASS_KEY); } catch (e) {}
+    try { console.log('[MAINTENANCE] bypass revalidation failed: ' + reason + ' — reloading'); } catch (e) {}
+    window.location.reload();
+  }
+  _auth.onAuthStateChanged(function (user) {
+    if (!_hasBypass()) return; /* no bypass to validate */
+    if (!user) { _clearAndReload('no signed-in user'); return; }
+    /* Signed-in: verify admin via Firestore. Failure-closed: any
+       error in the lookup is treated as not-admin, so a flaky read
+       can't keep a leaked bypass alive. */
+    _db.collection('users').doc(user.uid).get().then(function (snap) {
+      var isAdmin = !!(snap.exists && snap.data() && snap.data().isAdmin === true);
+      if (!isAdmin) {
+        _auth.signOut().catch(function () {});
+        _clearAndReload('signed-in user is not admin');
+      } else {
+        try { console.log('[MAINTENANCE] bypass revalidated: admin confirmed'); } catch (e) {}
+      }
+    }).catch(function (err) {
+      _clearAndReload('admin check failed: ' + (err && err.code || 'unknown'));
+    });
+  });
+})();
+
+/* ─────────────────────────────────────────────────────────────────
    ADMIN STATUS INDICATOR  —  "● Hi Boss" badge
 
    Tiny premium pill fixed at top-left of every page that loads
