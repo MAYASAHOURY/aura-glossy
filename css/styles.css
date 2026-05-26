@@ -8990,6 +8990,28 @@ html[data-inapp] #aura-veil {
 }
 .hs-panel-link-alt:hover { color: #0a0a0a; }
 
+/* Google Shopping fallback — tertiary safety net.
+   Always renders alongside the Pinterest fallback so even if both
+   the retailer's search AND Pinterest return weak results, the
+   shopper has a product-aggregator search to fall back to.
+   Identical visual weight as .hs-panel-link-alt — the goal is "two
+   quiet escape hatches", not a competing CTA. */
+.hs-panel-link-shop {
+  display: block;
+  text-align: center;
+  margin-top: 2px;
+  padding: 4px 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #888;
+  border-radius: 1px;
+  transition: color 0.2s;
+}
+.hs-panel-link-shop:hover { color: #0a0a0a; }
+
 /* ============================================================
    AURA — Signup gate modal
    Triggered by Aura.requireAuth() when a guest taps a gated action

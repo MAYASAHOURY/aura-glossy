@@ -244,7 +244,10 @@ const EXTRA_STORE_URLS = {
   'Reformation':      q => 'https://www.thereformation.com/search?q=' + encodeURIComponent(q),
   'Aritzia':          q => 'https://www.aritzia.com/us/en/search?q=' + encodeURIComponent(q),
   '& Other Stories':  q => 'https://www.stories.com/en_usd/search.html?q=' + encodeURIComponent(q),
-  'Toteme':           q => 'https://toteme-studio.com/search?q=' + encodeURIComponent(q),
+  /* Toteme primary domain is toteme.com — `toteme-studio.com`
+     redirects but with an intermediate hop and sometimes drops the
+     search query. Use the canonical domain so the query survives. */
+  'Toteme':           q => 'https://toteme.com/search?q=' + encodeURIComponent(q),
   'A.P.C.':           q => 'https://www.apc-us.com/search?q=' + encodeURIComponent(q),
   'Charles & Keith':  q => 'https://www.charleskeith.com/us/search?q=' + encodeURIComponent(q),
   'JW PEI':           q => 'https://www.jwpei.com/search?q=' + encodeURIComponent(q),

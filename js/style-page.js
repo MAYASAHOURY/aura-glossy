@@ -1916,9 +1916,16 @@
       html01 += '<div class="hs-panel-name">' + piece.name + '</div>';
       html01 += '<div class="hs-panel-meta"><span class="hs-panel-store">' + piece.store + '</span><span class="hs-panel-price">' + piece.price + '</span></div>';
       html01 += '<a href="' + piece.url + '" class="hs-panel-link" target="_blank" rel="noopener noreferrer">Shop now →</a>';
-      // Defensive fallback — Pinterest always returns visual results even if retailer search is empty
+      /* Two layered fallbacks (Pinterest visual + Google Shopping
+         product aggregator). If the primary retailer's search returns
+         nothing or a redirect to their homepage, the shopper still has
+         two safe escape hatches that always show relevant results.
+         2026-05-26 hardening pass — Google Shopping added as a third
+         tier because Pinterest alone occasionally surfaces editorial
+         imagery rather than buyable products. */
       var fallbackQ = encodeURIComponent(piece.name + ' women');
       html01 += '<a href="https://www.pinterest.com/search/pins/?q=' + fallbackQ + '" class="hs-panel-link-alt" target="_blank" rel="noopener noreferrer">Or search Pinterest →</a>';
+      html01 += '<a href="https://www.google.com/search?tbm=shop&q=' + fallbackQ + '" class="hs-panel-link-shop" target="_blank" rel="noopener noreferrer">Or search Google Shopping →</a>';
       html01 += '</div></div>';
     });
     html01 += '<button class="hs-save-btn" data-save-id="' + outfit.saveId + '" data-save-img="' + outfit.img + '" data-save-label="' + outfit.label + '" data-save-style="' + s.name + '" aria-label="Save to moodboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>';
@@ -2291,6 +2298,7 @@
     var isNewTab    = a.target === '_blank';
     var isShopClass = a.classList.contains('hs-panel-link')
                    || a.classList.contains('hs-panel-link-alt')
+                   || a.classList.contains('hs-panel-link-shop')
                    || a.classList.contains('sfn-card');
     var isMarked    = a.hasAttribute('data-shop');
     if (!isNewTab && !isShopClass && !isMarked) return;
@@ -2311,8 +2319,15 @@
     if (panel) {
       pieceName = ((panel.querySelector('.hs-panel-name')  || {}).textContent || '').trim();
       retailer  = ((panel.querySelector('.hs-panel-store') || {}).textContent || '').trim();
-      source    = a.classList.contains('hs-panel-link-alt') ? 'pinterest_fallback' : 'hotspot';
-      if (a.classList.contains('hs-panel-link-alt')) retailer = 'Pinterest';
+      if (a.classList.contains('hs-panel-link-alt')) {
+        source = 'pinterest_fallback';
+        retailer = 'Pinterest';
+      } else if (a.classList.contains('hs-panel-link-shop')) {
+        source = 'google_shopping_fallback';
+        retailer = 'Google Shopping';
+      } else {
+        source = 'hotspot';
+      }
     } else if (a.classList.contains('sfn-card')) {
       retailer  = ((a.querySelector('.sfn-card-store') || {}).textContent || '').trim();
       pieceName = ((a.querySelector('.sfn-card-q')     || {}).textContent || '').trim();

@@ -208,7 +208,10 @@ const STORE_URLS = {
   'Brandy Melville': q => `https://us.brandymelville.com/search?q=${encodeURIComponent(q)}`,
   'Princess Polly':  q => `https://us.princesspolly.com/search?q=${encodeURIComponent(q)}`,
   'Mejuri':          q => `https://mejuri.com/search?q=${encodeURIComponent(q)}&type=product`,
-  'Dr. Martens':     q => `https://www.drmartens.com/us/en_us/search?q=${encodeURIComponent(q)}`,
+  /* Dr. Martens canonical search path is /us/en/search — `en_us`
+     returns a 301 to /us/en sometimes dropping the q param. Match
+     the working template in main.js EXTRA_STORE_URLS. */
+  'Dr. Martens':     q => `https://www.drmartens.com/us/en/search?q=${encodeURIComponent(q)}`,
   'Glossier':        q => `https://www.glossier.com/search?query=${encodeURIComponent(q)}`,
   'Beyond Retro':    q => `https://www.beyondretro.com/search?type=product&q=${encodeURIComponent(q)}`,
   'Everlane':        q => `https://www.everlane.com/search?q=${encodeURIComponent(q)}`,
