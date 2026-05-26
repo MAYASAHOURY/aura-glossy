@@ -73,6 +73,45 @@ body {
   text-decoration: none;
 }
 .ar-brand em { font-style: italic; color: var(--rose); }
+
+/* ── "Maintenance protected" header pill ──────────────────
+   Visible only when window.__auraMaintenanceMode === true.
+   Lets the admin see at a glance that the global seal is live
+   without scrolling to the banner. Uses the same green pulse
+   language as the "● Hi Boss" indicator so the visual hierarchy
+   stays consistent. */
+.ar-maint-pill {
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px 5px 9px;
+  background: rgba(122, 152, 138, 0.1);
+  border: 1px solid rgba(122, 152, 138, 0.32);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #4a7a5e;
+}
+.ar-maint-pill.is-visible { display: inline-flex; }
+.ar-maint-pill-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #6ec890;
+  box-shadow: 0 0 5px rgba(110,200,144,.85), 0 0 12px rgba(110,200,144,.45);
+  animation: ar-pulse 2.4s ease-in-out infinite;
+}
+@keyframes ar-pulse {
+  0%, 100% { opacity: 0.78; transform: scale(1); }
+  50%      { opacity: 1;     transform: scale(1.15); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ar-maint-pill-dot { animation: none; }
+}
 .ar-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .ar-filter-label {
   font-family: var(--font-mono);
@@ -601,6 +640,10 @@ body {
   <header class="ar-topbar">
     <div class="ar-topbar-inner">
       <a href="settings.html" class="ar-brand"><span>Admin</span> <em>Report</em></a>
+      <span class="ar-maint-pill" id="ar-maint-pill" title="MAINTENANCE_MODE is currently ON — every public route is sealed and analytics writes from non-admin sessions are dropped.">
+        <span class="ar-maint-pill-dot" aria-hidden="true"></span>
+        Maintenance protected
+      </span>
       <div class="ar-filters" role="group" aria-label="Date range">
         <span class="ar-filter-label">Range</span>
         <button class="ar-pill" data-range="today">Today</button>
@@ -914,7 +957,7 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/firebase.js?v=22"></script>
-<script src="js/admin-report.js?v=4"></script>
+<script src="js/admin-report.js?v=5"></script>
 
 </body>
 </html>

@@ -136,6 +136,10 @@
     if (window.__auraMaintenanceMode) {
       var banner = $('ar-maint-banner');
       if (banner) banner.classList.add('is-visible');
+      /* Header pill — same flag, smaller surface in the sticky top bar
+         so the admin sees the seal status without scrolling. */
+      var pill = $('ar-maint-pill');
+      if (pill) pill.classList.add('is-visible');
     }
 
     /* Range pills */

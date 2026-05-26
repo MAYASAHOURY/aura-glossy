@@ -205,8 +205,23 @@
     return out;
   }
 
+  /* During maintenance, the only legitimate event source is a
+     confirmed admin user browsing via bypass. Everything else
+     (guests, signed-in non-admins, race conditions where
+     isAdmin hasn't been read yet) gets dropped at the writer.
+     Without this guard, a brief window between page load and
+     Firestore admin confirmation would let "guest" page_view
+     events leak into the public dashboard counts — even though
+     the maintenance gate is supposed to seal the site. */
+  function _shouldEmit() {
+    var maintOn = !!(typeof window !== 'undefined' && window.__auraMaintenanceMode);
+    if (!maintOn) return true; /* maintenance off — fire normally */
+    return !!(_user && _isAdmin); /* maintenance on — admin only */
+  }
+
   function _writeNow(type, data) {
     if (!_db) return;
+    if (!_shouldEmit()) return; /* silently drop — see _shouldEmit() */
     var event = _baseContext();
     var clean = _clean(data);
     for (var k in clean) if (clean.hasOwnProperty(k)) event[k] = clean[k];
@@ -222,6 +237,17 @@
   }
 
   function _flushQueue() {
+    /* If we still shouldn't emit (maintenance on but no admin user),
+       drop the entire queue instead of writing leaked events. The
+       page is about to be reloaded anyway by firebase.js's
+       _revalidateBypass IIFE — we'd just be writing noise. */
+    if (!_shouldEmit()) {
+      if (_queue.length && console && console.log) {
+        try { console.log('[analytics] dropped ' + _queue.length + ' queued events (maintenance — no admin)'); } catch (e) {}
+      }
+      _queue = [];
+      return;
+    }
     var q = _queue;
     _queue = [];
     for (var i = 0; i < q.length; i++) {
