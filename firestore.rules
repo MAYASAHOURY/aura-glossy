@@ -149,6 +149,102 @@ service cloud.firestore {
       }
     }
 
+    // ── Admin-only analytics events ──────────────────────────────
+    // Lightweight append-only log used by admin-report.html. Documents
+    // are written by every visitor (guest or authed) on key UX events
+    // (page_view, shop_click, signup_modal_open, etc.).
+    //
+    // Security model:
+    //   • Anyone may CREATE a single event, but the schema is strictly
+    //     validated to block spam / payload abuse. Event types are a
+    //     whitelist; strings are length-capped; no extra fields allowed.
+    //   • Only admins may READ. Normal users (and guests) get
+    //     permission-denied if they try to query the collection — even
+    //     for their own events.
+    //   • Only admins may DELETE, and only events explicitly marked as
+    //     test=true. There is no bulk-delete by design.
+    //   • UPDATES are never allowed. Events are immutable once written.
+    //
+    // Schema (strict — extra fields are rejected by hasOnly):
+    //   type        string (whitelist below, ≤60 chars)
+    //   ts          server timestamp (request.time) — clients can't backdate
+    //   sessionId   string ≤60 chars (per-tab guest id; not PII)
+    //   isGuest     bool
+    //   uid         string ≤128 chars OR null
+    //   email       string ≤200 chars OR null  (signed-in user's own email)
+    //   isAdmin     bool OR missing
+    //   lang        string ≤4 chars ('en','es','ar','he') OR missing
+    //   rtl         bool OR missing
+    //   device      string ≤16 chars ('mobile'/'desktop'/'tablet') OR missing
+    //   browser     string ≤16 chars OR missing
+    //   os          string ≤16 chars OR missing
+    //   inApp       string ≤24 chars OR null OR missing
+    //   path        string ≤200 chars OR missing
+    //   referrer    string ≤300 chars OR null OR missing
+    //   aesthetic   string ≤32 chars OR null OR missing
+    //   outfitIndex number 0-99 OR null OR missing
+    //   category    string ≤40 chars OR null OR missing
+    //   retailer    string ≤80 chars OR null OR missing
+    //   shopUrl     string ≤600 chars OR null OR missing
+    //   source      string ≤32 chars OR null OR missing
+    //   quizResultId  string ≤32 chars OR null OR missing
+    //   quizQuestionIndex  number 0-99 OR null OR missing
+    //   modalAction string ≤32 chars OR null OR missing
+    //   modalReason string ≤32 chars OR null OR missing
+    //   metadata    map OR missing  (small flexible bucket — capped via size)
+    //   test        bool OR missing
+    function validAnalyticsEvent() {
+      let r = request.resource.data;
+      let allowed = ['type','ts','sessionId','isGuest','uid','email','isAdmin',
+                     'lang','rtl','device','browser','os','inApp','path','referrer',
+                     'aesthetic','outfitIndex','category','retailer','shopUrl','source',
+                     'quizResultId','quizQuestionIndex','modalAction','modalReason',
+                     'metadata','test'];
+      let types = ['page_view','aesthetic_view','shop_click','shop_gate_open',
+                   'save_click','save_success','save_gate_open',
+                   'quiz_start','quiz_complete','quiz_abandoned',
+                   'community_view','community_post','community_comment','community_reaction',
+                   'signup_modal_open','signup_modal_action',
+                   'lang_change','admin_login','admin_login_failed',
+                   'error','test'];
+      return r.keys().hasOnly(allowed)
+        && r.type is string && r.type in types
+        && r.ts == request.time
+        && r.sessionId is string && r.sessionId.size() > 0 && r.sessionId.size() <= 60
+        && r.isGuest is bool
+        && (r.uid == null || (r.uid is string && r.uid.size() <= 128))
+        && (!('email' in r) || r.email == null || (r.email is string && r.email.size() <= 200))
+        && (!('isAdmin' in r) || r.isAdmin is bool)
+        && (!('lang' in r) || (r.lang is string && r.lang.size() <= 4))
+        && (!('rtl' in r) || r.rtl is bool)
+        && (!('device' in r) || (r.device is string && r.device.size() <= 16))
+        && (!('browser' in r) || (r.browser is string && r.browser.size() <= 16))
+        && (!('os' in r) || (r.os is string && r.os.size() <= 16))
+        && (!('inApp' in r) || r.inApp == null || (r.inApp is string && r.inApp.size() <= 24))
+        && (!('path' in r) || (r.path is string && r.path.size() <= 200))
+        && (!('referrer' in r) || r.referrer == null || (r.referrer is string && r.referrer.size() <= 300))
+        && (!('aesthetic' in r) || r.aesthetic == null || (r.aesthetic is string && r.aesthetic.size() <= 32))
+        && (!('outfitIndex' in r) || r.outfitIndex == null || (r.outfitIndex is int && r.outfitIndex >= 0 && r.outfitIndex < 100))
+        && (!('category' in r) || r.category == null || (r.category is string && r.category.size() <= 40))
+        && (!('retailer' in r) || r.retailer == null || (r.retailer is string && r.retailer.size() <= 80))
+        && (!('shopUrl' in r) || r.shopUrl == null || (r.shopUrl is string && r.shopUrl.size() <= 600))
+        && (!('source' in r) || r.source == null || (r.source is string && r.source.size() <= 32))
+        && (!('quizResultId' in r) || r.quizResultId == null || (r.quizResultId is string && r.quizResultId.size() <= 32))
+        && (!('quizQuestionIndex' in r) || r.quizQuestionIndex == null || (r.quizQuestionIndex is int && r.quizQuestionIndex >= 0 && r.quizQuestionIndex < 100))
+        && (!('modalAction' in r) || r.modalAction == null || (r.modalAction is string && r.modalAction.size() <= 32))
+        && (!('modalReason' in r) || r.modalReason == null || (r.modalReason is string && r.modalReason.size() <= 32))
+        && (!('metadata' in r) || r.metadata is map)
+        && (!('test' in r) || r.test is bool);
+    }
+
+    match /analytics_events/{eventId} {
+      allow create: if validAnalyticsEvent();
+      allow read:   if request.auth != null && isAdmin();
+      allow delete: if request.auth != null && isAdmin()
+                    && resource.data.test == true;
+      allow update: if false;
+    }
+
     // ── Deny everything else ─────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;

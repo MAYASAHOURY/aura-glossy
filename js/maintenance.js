@@ -493,8 +493,22 @@
             var data = snap.exists ? snap.data() : null;
             var isAdmin = !!(data && data.isAdmin === true);
             if (!isAdmin) {
-              /* Credentials valid but NOT admin. Sign out so the
-                 non-admin session doesn't quietly persist. */
+              /* Credentials valid but NOT admin. Log the failed
+                 admin attempt for security visibility, then sign
+                 out so the non-admin session doesn't quietly persist. */
+              try {
+                db.collection('analytics_events').add({
+                  type: 'admin_login_failed',
+                  ts: firebase.firestore.FieldValue.serverTimestamp(),
+                  sessionId: 'maint_' + Math.random().toString(36).slice(2, 10),
+                  isGuest: false,
+                  uid: uid,
+                  email: email ? String(email).slice(0, 200) : null,
+                  isAdmin: false,
+                  path: location.pathname.slice(0, 200),
+                  metadata: { reason: 'not_admin' }
+                }).catch(function () {});
+              } catch (_) {}
               return auth.signOut().catch(function () {}).then(function () {
                 var err = new Error('not_admin');
                 err.code = 'aura/not-admin';
@@ -510,6 +524,23 @@
             var displayName = (cred.user && cred.user.displayName) ? cred.user.displayName : null;
             _rememberIdentity(email, displayName);
             try { localStorage.setItem(BYPASS_KEY_PERSIST, 'true'); } catch (e) {}
+            /* Analytics — admin_login. Fired directly via Firestore since
+               window.Aura.track isn't loaded on the maintenance screen.
+               Best-effort: failure here is silent (the bypass+reload still
+               happen). */
+            try {
+              db.collection('analytics_events').add({
+                type: 'admin_login',
+                ts: firebase.firestore.FieldValue.serverTimestamp(),
+                sessionId: 'maint_' + Math.random().toString(36).slice(2, 10),
+                isGuest: false,
+                uid: uid,
+                email: email ? String(email).slice(0, 200) : null,
+                isAdmin: true,
+                path: location.pathname.slice(0, 200),
+                device: (function(){var w=window.innerWidth||0;return w<768?'mobile':w<1024?'tablet':'desktop';})()
+              }).catch(function () {});
+            } catch (_) {}
 
             /* Compute the post-welcome destination. If the admin landed
                via ?admin=false (which force-clears the flag), strip the

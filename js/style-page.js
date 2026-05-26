@@ -2242,7 +2242,11 @@
       // Save requires a verified email — guests get signup modal,
       // signed-in-but-unverified users get routed to the verify screen.
       const isVerified = (window.Aura && Aura.isVerifiedAccount) ? Aura.isVerifiedAccount() : false;
+      try {
+        if (window.Aura && Aura.track) Aura.track('save_click', { aesthetic: (item.style || '').toLowerCase().slice(0, 32) || null });
+      } catch (e) {}
       if (!isVerified && window.Aura && Aura.requireVerifiedEmail) {
+        try { if (Aura.track) Aura.track('save_gate_open', { aesthetic: (item.style || '').toLowerCase().slice(0, 32) || null }); } catch (e) {}
         Aura.requireVerifiedEmail({
           title: 'Save this to your moodboard',
           subtitle: 'Create your Aura profile to keep your favourite looks in one place.',
@@ -2253,6 +2257,9 @@
       }
       const added = typeof toggleMoodboard === 'function' ? toggleMoodboard(item) : false;
       btn.classList.toggle('saved', added);
+      try {
+        if (added && window.Aura && Aura.track) Aura.track('save_success', { aesthetic: (item.style || '').toLowerCase().slice(0, 32) || null });
+      } catch (e) {}
       if (typeof showToast === 'function') showToast(added ? 'Saved to moodboard ✦' : 'Removed from moodboard');
     });
   });
@@ -2296,29 +2303,51 @@
     if (url.origin === window.location.origin && !isMarked) return;
 
     var isAuthed = (window.Aura && Aura.isSignedIn) ? Aura.isSignedIn() : false;
+
+    /* Determine retailer + source ONCE — used by both the auth gate
+       and the analytics events. */
+    var retailer = '', pieceName = '', source = 'link';
+    var panel = a.closest('.hs-panel');
+    if (panel) {
+      pieceName = ((panel.querySelector('.hs-panel-name')  || {}).textContent || '').trim();
+      retailer  = ((panel.querySelector('.hs-panel-store') || {}).textContent || '').trim();
+      source    = a.classList.contains('hs-panel-link-alt') ? 'pinterest_fallback' : 'hotspot';
+      if (a.classList.contains('hs-panel-link-alt')) retailer = 'Pinterest';
+    } else if (a.classList.contains('sfn-card')) {
+      retailer  = ((a.querySelector('.sfn-card-store') || {}).textContent || '').trim();
+      pieceName = ((a.querySelector('.sfn-card-q')     || {}).textContent || '').trim();
+      source    = 'shop_finder';
+    } else {
+      retailer  = (a.dataset && a.dataset.retailer) || url.hostname.replace(/^www\./, '') || 'retailer';
+      pieceName = (a.dataset && a.dataset.piece) || (a.textContent || '').trim();
+      source    = 'other';
+    }
+    /* Aesthetic id is in the URL hash on style.html */
+    var aestheticId = null;
+    try {
+      var h = (location.hash || '').replace('#', '').toLowerCase();
+      if (h) aestheticId = h.split(/[?&]/)[0].slice(0, 32);
+    } catch (_) {}
+
+    /* Analytics — fire regardless of auth state so we can correlate
+       guest gate opens with later signups via sessionId. */
+    try {
+      if (window.Aura && window.Aura.track) {
+        window.Aura.track(isAuthed ? 'shop_click' : 'shop_gate_open', {
+          retailer:  retailer ? String(retailer).slice(0, 80) : null,
+          category:  pieceName ? String(pieceName).slice(0, 40) : null,
+          source:    source,
+          aesthetic: aestheticId,
+          shopUrl:   String(a.href || '').slice(0, 600)
+        });
+      }
+    } catch (_) {}
+
     if (isAuthed) return; // logged in: open normally
     if (!window.Aura || !Aura.requireAuth) return; // helper not loaded — degrade gracefully
 
     e.preventDefault();
     e.stopPropagation();
-
-    // Pull retailer + piece labels from the surrounding card / panel
-    // so the modal eyebrow and resume toast can name what the user
-    // was about to shop. Falls back to the URL hostname for unknown
-    // link surfaces (future-proof).
-    var retailer = '', pieceName = '';
-    var panel = a.closest('.hs-panel');
-    if (panel) {
-      pieceName = ((panel.querySelector('.hs-panel-name')  || {}).textContent || '').trim();
-      retailer  = ((panel.querySelector('.hs-panel-store') || {}).textContent || '').trim();
-      if (a.classList.contains('hs-panel-link-alt')) retailer = 'Pinterest';
-    } else if (a.classList.contains('sfn-card')) {
-      retailer  = ((a.querySelector('.sfn-card-store') || {}).textContent || '').trim();
-      pieceName = ((a.querySelector('.sfn-card-q')     || {}).textContent || '').trim();
-    } else {
-      retailer  = (a.dataset && a.dataset.retailer) || url.hostname.replace(/^www\./, '') || 'retailer';
-      pieceName = (a.dataset && a.dataset.piece) || (a.textContent || '').trim();
-    }
 
     Aura.requireAuth({
       title:    'Sign in to shop this look',
@@ -2457,6 +2486,11 @@
   function _initUserFeatures() {
     /* Record this aesthetic as recently viewed (debounced 2s in firebase.js) */
     if (typeof fbRecordView === 'function') fbRecordView(s.id, s.name);
+    /* Analytics — aesthetic_view fires once per render (style-page is a
+       single-page surface, so re-renders are intentional re-views). */
+    try {
+      if (window.Aura && Aura.track) Aura.track('aesthetic_view', { aesthetic: (s.id || '').toLowerCase().slice(0, 32) || null });
+    } catch (e) {}
 
     /* Like button — sync state from Firestore then wire click */
     var likeBtn = document.getElementById('aesthetic-like-btn');

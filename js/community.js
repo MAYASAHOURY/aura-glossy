@@ -525,6 +525,11 @@ function _openGroup(group) {
   _currentGroup = group;
   history.replaceState(null, '', '#' + group.id);
 
+  /* Analytics — community_view (one per circle entry, includes admin) */
+  try {
+    if (window.Aura && Aura.track) Aura.track('community_view', { aesthetic: (group.id || '').toLowerCase().slice(0, 32) || null });
+  } catch (e) {}
+
   document.getElementById('comm-hub').style.display   = 'none';
   document.getElementById('comm-group').style.display = '';
 
@@ -747,6 +752,11 @@ function _toggleReaction(postId, type, group) {
     : firebase.firestore.FieldValue.arrayUnion(uid);
 
   ref.update(update).catch(function (e) { console.warn('Reaction failed:', e.message); });
+  /* Analytics — community_reaction (idempotent per click; we don't
+     distinguish add vs remove, just user-initiated reaction events). */
+  try {
+    if (window.Aura && Aura.track) Aura.track('community_reaction', { aesthetic: (group.id || '').toLowerCase().slice(0, 32) || null });
+  } catch (e) {}
 }
 
 /* ── Comments ────────────────────────────────────────────────── */
@@ -835,6 +845,7 @@ function _submitComment(postId, group) {
     })
     .then(function () {
       input.value = '';
+      try { if (window.Aura && Aura.track) Aura.track('community_comment', { aesthetic: (group.id || '').toLowerCase().slice(0, 32) || null }); } catch (e) {}
       _loadComments(postId, group);
     })
     .catch(function (e) { console.warn('Comment failed:', e.message); })
@@ -965,6 +976,7 @@ function _submitPost() {
     .then(function () {
       document.getElementById('composer-text').value = '';
       if (imgInput) imgInput.value = '';
+      try { if (window.Aura && Aura.track) Aura.track('community_post', { aesthetic: (_currentGroup && _currentGroup.id || '').toLowerCase().slice(0, 32) || null }); } catch (e) {}
       document.querySelector('.ctab[data-type="thought"]').click();
     })
     .catch(function (e) {

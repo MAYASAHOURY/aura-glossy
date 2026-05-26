@@ -67,7 +67,19 @@ function attachSaveButtons() {
       // to the signup modal, and signed-in-but-unverified users to login.html
       // (which shows the verify screen). Verified users continue normally.
       const isVerified = (window.Aura && Aura.isVerifiedAccount) ? Aura.isVerifiedAccount() : !!(window._auth && _auth.currentUser && _auth.currentUser.emailVerified);
+      /* Analytics — save_click always fires; save_gate_open fires when
+         the user is blocked behind the verify-email gate; save_success
+         fires after a real toggleMoodboard write. Style is read from
+         data-save-style for cross-page correlation. */
+      try {
+        if (window.Aura && Aura.track) {
+          Aura.track('save_click', { aesthetic: (item.style || '').toLowerCase().slice(0, 32) || null });
+        }
+      } catch (e) {}
       if (!isVerified && window.Aura && Aura.requireVerifiedEmail) {
+        try {
+          if (Aura.track) Aura.track('save_gate_open', { aesthetic: (item.style || '').toLowerCase().slice(0, 32) || null });
+        } catch (e) {}
         Aura.requireVerifiedEmail({
           title: 'Save this to your moodboard',
           subtitle: 'Create your Aura profile to keep your favourite looks in one place.',
@@ -78,6 +90,11 @@ function attachSaveButtons() {
       }
       const added = toggleMoodboard(item);
       btn.classList.toggle('saved', added);
+      try {
+        if (added && window.Aura && Aura.track) {
+          Aura.track('save_success', { aesthetic: (item.style || '').toLowerCase().slice(0, 32) || null });
+        }
+      } catch (e) {}
       showToast(added ? 'Saved to moodboard ✦' : 'Removed from moodboard');
     });
   });

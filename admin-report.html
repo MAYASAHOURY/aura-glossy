@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ━━━━ MAINTENANCE GATE — must run FIRST. ━━━━ -->
+<script src="js/maintenance.js?v=6"></script>
+<!-- ━━━━ Synchronous head-gate: this is the only strict-gated page
+     besides settings.html. We bounce non-authed users straight to
+     login.html before Firebase even loads. The real admin check
+     (users/{uid}.isAdmin === true) runs once Firebase hydrates;
+     non-admins get redirected to settings.html with a soft message. ━━━━ -->
+<script>(function(){try{if(!localStorage.getItem('aura_has_session')){document.documentElement.style.visibility='hidden';window.location.replace('login.html?next=%2Fadmin-report.html');return;}}catch(e){}})();</script>
+<meta name="robots" content="noindex, nofollow">
+<title>Admin Report — Aura Glossy</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #0a0a0a;
+  --ink-soft: #4a3b30;
+  --ink-mute: #8a7a6c;
+  --cream: #f7f4f0;
+  --paper: #fbf8f4;
+  --line: rgba(10,10,10,0.08);
+  --line-strong: rgba(10,10,10,0.18);
+  --rose: #c084a0;
+  --rose-soft: rgba(192,132,160,0.08);
+  --gold: #c79a85;
+  --green: #5a8c6e;
+  --red: #c87a6c;
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Playfair Display', Georgia, serif;
+}
+body {
+  font-family: var(--font-sans);
+  background: var(--cream);
+  color: var(--ink);
+  font-weight: 300;
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+/* ── Top bar ─────────────────────────────────────────────── */
+.ar-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(247,244,240,0.92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.ar-topbar-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.ar-brand {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.ar-brand em { font-style: italic; color: var(--rose); }
+.ar-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ar-filter-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-right: 4px;
+}
+.ar-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+.ar-pill:hover { border-color: var(--ink); }
+.ar-pill.is-active {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+.ar-select {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 7px 28px 7px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background:
+    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%230a0a0a' stroke-width='1.6'%3E%3Cpolyline points='3 4.5 6 7.5 9 4.5'/%3E%3C/svg%3E") no-repeat right 10px center / 10px;
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.ar-topbar-spacer { flex: 1; }
+.ar-refresh-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.18s;
+}
+.ar-refresh-btn:hover { opacity: 0.85; }
+.ar-refresh-btn:disabled { opacity: 0.45; cursor: wait; }
+
+/* ── Page wrap ───────────────────────────────────────────── */
+.ar-wrap {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 36px 28px 80px;
+}
+
+/* ── Status messages ─────────────────────────────────────── */
+.ar-status {
+  padding: 16px 18px;
+  border-radius: 4px;
+  background: var(--rose-soft);
+  border: 1px solid rgba(192,132,160,0.18);
+  color: var(--ink-soft);
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+.ar-status.is-error {
+  background: rgba(200,122,108,0.06);
+  border-color: rgba(200,122,108,0.24);
+  color: #8a4a3e;
+}
+.ar-status.is-info {
+  background: rgba(122,152,138,0.06);
+  border-color: rgba(122,152,138,0.24);
+  color: #3a5a4a;
+}
+
+/* ── Section ─────────────────────────────────────────────── */
+.ar-section { margin: 0 0 56px; }
+.ar-section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px; }
+.ar-section-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rose);
+}
+.ar-section-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.ar-section-sub {
+  font-size: 12px;
+  color: var(--ink-mute);
+  margin-left: auto;
+}
+
+/* ── KPI grid ────────────────────────────────────────────── */
+.ar-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+.ar-kpi {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 18px 18px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.ar-kpi-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 8px;
+}
+.ar-kpi-value {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.ar-kpi-foot {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--ink-mute);
+}
+.ar-kpi-foot strong { color: var(--ink-soft); font-weight: 500; }
+
+/* ── Card / panel ────────────────────────────────────────── */
+.ar-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 22px 22px 18px;
+}
+.ar-card + .ar-card { margin-top: 14px; }
+.ar-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.ar-card-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.ar-card-meta {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--ink-mute);
+}
+
+/* ── Two-col grid ────────────────────────────────────────── */
+.ar-cols-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+@media (max-width: 820px) {
+  .ar-cols-2 { grid-template-columns: 1fr; }
+}
+
+/* ── Tables ──────────────────────────────────────────────── */
+.ar-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.ar-table th, .ar-table td {
+  padding: 9px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.ar-table th {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  font-weight: 500;
+  background: transparent;
+}
+.ar-table tr:last-child td { border-bottom: none; }
+.ar-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.ar-table td.mono { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); }
+.ar-table td.dim  { color: var(--ink-mute); }
+.ar-table td.trunc {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ar-tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--line);
+  color: var(--ink-soft);
+}
+.ar-tag.is-admin { background: var(--rose-soft); color: var(--rose); border: 1px solid rgba(192,132,160,0.32); }
+.ar-tag.is-guest { background: rgba(199,154,133,0.1); color: var(--gold); }
+.ar-tag.is-user  { background: rgba(122,152,138,0.1); color: var(--green); }
+
+/* ── Horizontal bar list ─────────────────────────────────── */
+.ar-bar-list { display: flex; flex-direction: column; gap: 6px; }
+.ar-bar-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.6fr) minmax(100px, 4fr) auto;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+.ar-bar-label {
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ar-bar-track {
+  position: relative;
+  background: var(--line);
+  border-radius: 999px;
+  height: 6px;
+  overflow: hidden;
+}
+.ar-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, var(--gold), var(--rose));
+  border-radius: 999px;
+  transition: width 0.42s ease;
+}
+.ar-bar-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  min-width: 36px;
+}
+
+/* ── Funnel ──────────────────────────────────────────────── */
+.ar-funnel { display: flex; flex-direction: column; gap: 4px; }
+.ar-funnel-step {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.5fr) minmax(120px, 3fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 12px;
+}
+.ar-funnel-step:last-child { border-bottom: none; }
+.ar-funnel-label { color: var(--ink-soft); }
+.ar-funnel-bar { position: relative; background: var(--line); border-radius: 999px; height: 6px; overflow: hidden; }
+.ar-funnel-bar-fill { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, var(--gold), var(--rose)); border-radius: 999px; }
+.ar-funnel-count { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); font-variant-numeric: tabular-nums; min-width: 36px; text-align: right; }
+.ar-funnel-pct { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); min-width: 50px; text-align: right; }
+
+/* ── Stub notice ─────────────────────────────────────────── */
+.ar-stub {
+  border: 1px dashed var(--line-strong);
+  border-radius: 6px;
+  padding: 14px;
+  font-size: 12px;
+  color: var(--ink-mute);
+  text-align: center;
+  font-style: italic;
+}
+
+/* ── Loading + denied screens ────────────────────────────── */
+.ar-overlay {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--cream);
+  z-index: 100;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+.ar-overlay-spinner {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  border-top-color: var(--ink);
+  animation: ar-spin 0.9s linear infinite;
+}
+@keyframes ar-spin { to { transform: rotate(360deg); } }
+.ar-overlay-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.ar-overlay-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.ar-overlay-sub { font-size: 13px; color: var(--ink-soft); max-width: 440px; }
+.ar-overlay-cta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid var(--ink);
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
+.ar-foot {
+  text-align: center;
+  font-size: 11px;
+  color: var(--ink-mute);
+  padding: 20px;
+  border-top: 1px solid var(--line);
+  margin-top: 60px;
+}
+.ar-foot a { color: var(--ink-mute); text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 620px) {
+  .ar-topbar-inner { padding: 12px 18px; }
+  .ar-wrap { padding: 24px 18px 60px; }
+  .ar-section-title { font-size: 20px; }
+  .ar-kpi-value { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading overlay — covers everything until admin auth confirms -->
+<div class="ar-overlay" id="ar-loading">
+  <div class="ar-overlay-spinner" aria-hidden="true"></div>
+  <div class="ar-overlay-text">Verifying admin access…</div>
+</div>
+
+<!-- Denied overlay — shown if signed in but not admin -->
+<div class="ar-overlay" id="ar-denied" style="display:none">
+  <div class="ar-overlay-title">Admin only</div>
+  <p class="ar-overlay-sub">This dashboard is reserved for admin accounts. If you reached this page by mistake, head back to your settings.</p>
+  <a href="settings.html" class="ar-overlay-cta">Back to settings →</a>
+</div>
+
+<!-- Main dashboard — hidden until admin check passes -->
+<div id="ar-app" style="display:none">
+
+  <header class="ar-topbar">
+    <div class="ar-topbar-inner">
+      <a href="settings.html" class="ar-brand"><span>Admin</span> <em>Report</em></a>
+      <div class="ar-filters" role="group" aria-label="Date range">
+        <span class="ar-filter-label">Range</span>
+        <button class="ar-pill" data-range="today">Today</button>
+        <button class="ar-pill is-active" data-range="7d">7 days</button>
+        <button class="ar-pill" data-range="30d">30 days</button>
+        <button class="ar-pill" data-range="all">All</button>
+      </div>
+      <div class="ar-filters">
+        <span class="ar-filter-label">Aesthetic</span>
+        <select class="ar-select" id="ar-aesthetic-filter">
+          <option value="">All</option>
+          <option value="classic">Classic</option>
+          <option value="casual">Casual</option>
+          <option value="streetwear">Streetwear</option>
+          <option value="minimalist">Minimalist</option>
+          <option value="elegant">Elegant</option>
+          <option value="korean">Korean</option>
+          <option value="y2k">Y2K</option>
+          <option value="vintage">Vintage</option>
+          <option value="softgirl">Soft Girl</option>
+          <option value="hijabicore">Hijabi Core</option>
+        </select>
+      </div>
+      <div class="ar-topbar-spacer"></div>
+      <button class="ar-refresh-btn" id="ar-refresh">↻ Refresh</button>
+    </div>
+  </header>
+
+  <main class="ar-wrap">
+
+    <!-- Status / hint -->
+    <div class="ar-status is-info" id="ar-status">
+      Showing data for the selected range. Events are written by every visitor (guest and signed-in) on key UX moments — page views, shop clicks, signup-modal opens, quiz progress, community activity. Latest events appear within seconds; aggregates refresh on demand.
+    </div>
+
+    <!-- ── 1. OVERVIEW KPIs ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">01</span>
+        <h2 class="ar-section-title">Overview</h2>
+        <span class="ar-section-sub" id="ar-overview-meta"></span>
+      </div>
+      <div class="ar-kpi-grid" id="ar-kpis"></div>
+    </section>
+
+    <!-- ── 2. NEW USERS ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">02</span>
+        <h2 class="ar-section-title">New users</h2>
+      </div>
+      <div class="ar-card">
+        <div class="ar-card-head"><span class="ar-card-title">Latest signups</span><span class="ar-card-meta" id="ar-users-meta"></span></div>
+        <div class="ar-table-wrap" id="ar-users-table"></div>
+      </div>
+    </section>
+
+    <!-- ── 3. GUEST BEHAVIOR ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">03</span>
+        <h2 class="ar-section-title">Guest funnel</h2>
+        <span class="ar-section-sub">Where guests drop before signing up</span>
+      </div>
+      <div class="ar-card">
+        <div class="ar-funnel" id="ar-guest-funnel"></div>
+      </div>
+    </section>
+
+    <!-- ── 6. SHOPPING ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">04</span>
+        <h2 class="ar-section-title">Shopping</h2>
+      </div>
+      <div class="ar-cols-2">
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Top retailers</span></div>
+          <div class="ar-bar-list" id="ar-top-retailers"></div>
+        </div>
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Top aesthetics for shopping</span></div>
+          <div class="ar-bar-list" id="ar-top-aesthetics-shop"></div>
+        </div>
+      </div>
+      <div class="ar-card" style="margin-top:14px">
+        <div class="ar-card-head"><span class="ar-card-title">Latest shop events</span><span class="ar-card-meta" id="ar-shop-meta"></span></div>
+        <div id="ar-shop-table"></div>
+      </div>
+    </section>
+
+    <!-- ── 9. SIGNUP MODAL ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">05</span>
+        <h2 class="ar-section-title">Signup modal</h2>
+        <span class="ar-section-sub">What triggers it; what people do after</span>
+      </div>
+      <div class="ar-cols-2">
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Modal opens by reason</span></div>
+          <div class="ar-bar-list" id="ar-modal-reasons"></div>
+        </div>
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Modal actions</span></div>
+          <div class="ar-bar-list" id="ar-modal-actions"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 10. DEVICE / BROWSER ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">06</span>
+        <h2 class="ar-section-title">Device &amp; browser</h2>
+      </div>
+      <div class="ar-cols-2">
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Device</span></div>
+          <div class="ar-bar-list" id="ar-device-breakdown"></div>
+        </div>
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Browser / in-app</span></div>
+          <div class="ar-bar-list" id="ar-browser-breakdown"></div>
+        </div>
+      </div>
+      <div class="ar-cols-2" style="margin-top:14px">
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Language</span></div>
+          <div class="ar-bar-list" id="ar-lang-breakdown"></div>
+        </div>
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">OS</span></div>
+          <div class="ar-bar-list" id="ar-os-breakdown"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4. STYLE / AESTHETIC ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">07</span>
+        <h2 class="ar-section-title">Aesthetics</h2>
+      </div>
+      <div class="ar-card">
+        <div class="ar-card-head"><span class="ar-card-title">Page views &amp; shop clicks per aesthetic</span></div>
+        <div id="ar-aesthetic-table"></div>
+      </div>
+    </section>
+
+    <!-- ── 5. QUIZ ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">08</span>
+        <h2 class="ar-section-title">Quiz</h2>
+      </div>
+      <div class="ar-cols-2">
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Quiz funnel</span></div>
+          <div class="ar-funnel" id="ar-quiz-funnel"></div>
+        </div>
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Top quiz results</span></div>
+          <div class="ar-bar-list" id="ar-quiz-results"></div>
+          <div class="ar-stub" style="margin-top:12px;text-align:left">
+            <strong>Stub:</strong> per-question answer distribution is logged with key <code>quiz_question_index</code> but not yet visualised. Build on the events tab next.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7. COMMUNITY ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">09</span>
+        <h2 class="ar-section-title">Community</h2>
+      </div>
+      <div class="ar-cols-2">
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Most active circles</span></div>
+          <div class="ar-bar-list" id="ar-community-activity"></div>
+        </div>
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Activity breakdown</span></div>
+          <div class="ar-bar-list" id="ar-community-actions"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 8. MOODBOARD ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">10</span>
+        <h2 class="ar-section-title">Moodboard</h2>
+      </div>
+      <div class="ar-cols-2">
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Save events</span></div>
+          <div class="ar-bar-list" id="ar-save-breakdown"></div>
+        </div>
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Most-saved aesthetics</span></div>
+          <div class="ar-bar-list" id="ar-save-aesthetics"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 11. TECHNICAL HEALTH ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">11</span>
+        <h2 class="ar-section-title">Technical health</h2>
+      </div>
+      <div class="ar-card">
+        <div class="ar-card-head"><span class="ar-card-title">Recent client errors</span></div>
+        <div id="ar-errors-table"></div>
+        <div class="ar-stub" style="margin-top:12px;text-align:left">
+          <strong>Stub:</strong> Firebase permission-denied, failed image loads, and JS errors require additional instrumentation. Currently we log only events explicitly flagged <code>type:'error'</code>. Maintenance-mode status: check <code>js/maintenance.js</code> line 27 (<code>MAINTENANCE_MODE</code>). Netlify build status: check the Netlify dashboard.
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 12. ADMIN ACTIONS ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">12</span>
+        <h2 class="ar-section-title">Admin actions</h2>
+      </div>
+      <div class="ar-card">
+        <div class="ar-card-head"><span class="ar-card-title">Tools</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button class="ar-pill" id="ar-export-csv">↓ Export latest events (CSV)</button>
+          <button class="ar-pill" id="ar-delete-tests" title="Deletes only events tagged metadata.test === true">⌫ Delete test events</button>
+        </div>
+        <p style="font-size:11px;color:var(--ink-mute);margin-top:10px">
+          The CSV download contains the events currently loaded into the dashboard (capped at 5,000). Delete-test only removes events created with <code>Aura.track('test', {test:true})</code> — there is no bulk delete by design.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="ar-foot">
+    Aura Glossy admin report ·
+    <a href="settings.html">Back to settings</a> ·
+    <a href="index.html">Home</a>
+  </footer>
+
+</div>
+
+<!-- Firebase + i18n + admin-report logic -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="js/firebase.js?v=18"></script>
+<script src="js/admin-report.js?v=1"></script>
+
+</body>
+</html>

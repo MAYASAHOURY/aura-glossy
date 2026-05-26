@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1a0e08">
 <!-- ━━━━ MAINTENANCE GATE — must run FIRST. Toggle MAINTENANCE_MODE in js/maintenance.js. ━━━━ -->
-<script src="js/maintenance.js?v=5"></script>
+<script src="js/maintenance.js?v=6"></script>
 <script>(function(){try{var l=localStorage.getItem("aura_lang");if(!l){var nl=(navigator.language||"en").toLowerCase().slice(0,2);l=(["en","es","ar","he"].indexOf(nl)>=0)?nl:"en";}document.documentElement.lang=l;document.documentElement.dir=(l==="ar"||l==="he")?"rtl":"ltr";}catch(e){}})();</script>
 <script>/* Public page — guests can take the quiz; the final result reveal + Firestore save are signup-gated in renderResult(). */
 window.__auraPublicPage = true;</script>
@@ -65,7 +65,7 @@ window.__auraPublicPage = true;</script>
      when the user has chosen another language). -->
 <script src="js/i18n.js?v=12"></script>
 <script src="js/data.js?v=10"></script>
-<script src="js/main.js?v=10"></script>
+<script src="js/main.js?v=11"></script>
 <script src="js/animations.js?v=16"></script>
 <script>
 (function() {
@@ -143,6 +143,16 @@ window.__auraPublicPage = true;</script>
   function render() {
     clearTimeout(autoTimer);
     if (stepIndex >= QUIZ.length) { renderResult(); return; }
+    /* Analytics — quiz_start on the FIRST question render of a run.
+       Subsequent renders during the same run shouldn't re-fire it.
+       We track per-question views as a single quiz_start with the
+       index, so we can also see drop-off later. */
+    try {
+      if (stepIndex === 0 && !window.__auraQuizStartTracked && window.Aura && Aura.track) {
+        window.__auraQuizStartTracked = true;
+        Aura.track('quiz_start', { quizQuestionIndex: 0 });
+      }
+    } catch (e) {}
     const step = QUIZ[stepIndex];
     const tQ   = _trQ(stepIndex);                     /* live translation */
     const progress = (stepIndex / QUIZ.length) * 100;
@@ -391,6 +401,14 @@ window.__auraPublicPage = true;</script>
         answers:   answers.slice()
       });
     }
+    /* Analytics — quiz_complete after a real result. Only the result id
+       is logged; individual answers stay private (server-side only). */
+    try {
+      if (window.Aura && Aura.track) {
+        Aura.track('quiz_complete', { quizResultId: (result.id || '').slice(0, 32) || null });
+      }
+      window.__auraQuizStartTracked = false; /* allow a retake to re-fire quiz_start */
+    } catch (e) {}
   }
 
   /* Render a sign-in CTA in place of the quiz when a guest dismisses
@@ -477,7 +495,8 @@ window.__auraPublicPage = true;</script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <!-- i18n.js is already loaded above the quiz IIFE; no duplicate needed. -->
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=17"></script>
+<script src="js/firebase.js?v=18"></script>
+<script src="js/analytics.js?v=1"></script>
 <script>
 function navAuthClick() { window.location.href = 'settings.html'; }
 initAuthGuard();

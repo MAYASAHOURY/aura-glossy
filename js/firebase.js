@@ -231,6 +231,19 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
       });
     }
 
+    /* Analytics: signup_modal_open. modalReason is the inferred trigger
+       (shop / save / quiz / community / generic), derived from opts. */
+    try {
+      if (window.Aura && window.Aura.track) {
+        var reason = (opts.pending && opts.pending.key) ||
+                     (opts.eyebrow || '').toLowerCase().split(/[\s·]+/)[0] ||
+                     'unknown';
+        window.Aura.track('signup_modal_open', {
+          modalReason: String(reason).slice(0, 32)
+        });
+      }
+    } catch (e) {}
+
     return new Promise(function (resolve, reject) {
       var modal = _getModal();
       var titleEl = modal.querySelector('[data-aura-gate-title]');
@@ -240,6 +253,20 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
       var secondary = modal.querySelector('[data-aura-gate-secondary]');
       var dismiss = modal.querySelector('[data-aura-gate-dismiss]');
       var closeX  = modal.querySelector('.aura-gate-close-x');
+
+      var _modalReason = (opts.pending && opts.pending.key) ||
+                        (opts.eyebrow || '').toLowerCase().split(/[\s·]+/)[0] ||
+                        'unknown';
+      function _trackAction(action) {
+        try {
+          if (window.Aura && window.Aura.track) {
+            window.Aura.track('signup_modal_action', {
+              modalAction: action,
+              modalReason: String(_modalReason).slice(0, 32)
+            });
+          }
+        } catch (e) {}
+      }
 
       titleEl.textContent = opts.title || 'Create your Aura profile';
       subEl.textContent   = opts.subtitle || 'Save looks, discover your style, and join your circle.';
@@ -291,18 +318,21 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
       }
       function goCreate(e) {
         if (e) e.preventDefault();
+        _trackAction('create');
         cleanup();
         resolve({ navigated: true });
         window.location.href = 'login.html?mode=signup&next=' + nextParam;
       }
       function goSignIn(e) {
         if (e) e.preventDefault();
+        _trackAction('signin');
         cleanup();
         resolve({ navigated: true });
         window.location.href = 'login.html?mode=signin&next=' + nextParam;
       }
       function onDismiss(e) {
         if (e) e.preventDefault();
+        _trackAction('dismiss');
         clearPending(); // user backed out — don't trigger resume on next nav
         cleanup();
         reject(new Error('dismissed'));
