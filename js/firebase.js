@@ -890,7 +890,15 @@ if (_authChannel) {
          PUBLIC pages don't auto-redirect on logout (just update nav button) —
          the page is browsable as a guest. */
       if (!_auth.currentUser && !window.__auraPublicPage) {
-        window.location.replace('login.html');
+        /* Maintenance-aware: under MAINTENANCE_MODE, clear the admin
+           bypass flag so the strict-gated destination renders the
+           maintenance screen instead of a stale signed-in shell. */
+        if (window.__auraMaintenanceMode) {
+          try { localStorage.removeItem('aura_admin_bypass'); } catch (e2) {}
+          window.location.replace('index.html');
+        } else {
+          window.location.replace('login.html');
+        }
       }
     }
   };
@@ -1025,12 +1033,25 @@ function initAuthGuard() {
         if (btn) btn.textContent = 'Sign in';
         return;
       }
-      /* STRICT pages from here down. */
+      /* STRICT pages from here down. Helper routes the post-signout
+         destination through the maintenance gate when MAINTENANCE_MODE
+         is on — the strict pages (settings, admin-report) would
+         otherwise bounce to login.html, which currently shows the
+         maintenance screen anyway, but only after clearing the admin
+         bypass do non-admin users stay locked out reliably. */
+      function _strictRedirect() {
+        if (window.__auraMaintenanceMode) {
+          try { localStorage.removeItem('aura_admin_bypass'); } catch (e3) {}
+          window.location.replace('index.html');
+        } else {
+          window.location.replace('login.html');
+        }
+      }
       /* If we were already confirmed authed and this is a bfcache restore,
          Firebase is just re-initializing — null is transient, NOT a sign-out. */
       if (_authed && _bfRestored) {
         _guardTimer = setTimeout(function() {
-          if (!_auth.currentUser) window.location.replace('login.html');
+          if (!_auth.currentUser) _strictRedirect();
         }, 10000);
         return; /* _authed stays true — no false redirect */
       }
@@ -1038,7 +1059,7 @@ function initAuthGuard() {
       _guardTimer = setTimeout(function() {
         if (!_authed && !_auth.currentUser) {
           if (_authChannel) _authChannel.postMessage('logout');
-          window.location.replace('login.html');
+          _strictRedirect();
         }
       }, 7000);
     }

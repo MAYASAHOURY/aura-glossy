@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- ━━━━ MAINTENANCE GATE — must run FIRST. Toggle MAINTENANCE_MODE in js/maintenance.js. ━━━━ -->
-<script src="js/maintenance.js?v=6"></script>
+<script src="js/maintenance.js?v=7"></script>
 <script>(function(){try{var l=localStorage.getItem("aura_lang");if(!l){var nl=(navigator.language||"en").toLowerCase().slice(0,2);l=(["en","es","ar","he"].indexOf(nl)>=0)?nl:"en";}document.documentElement.lang=l;document.documentElement.dir=(l==="ar"||l==="he")?"rtl":"ltr";}catch(e){}})();</script>
 <script>/* Synchronous auth gate — redirect to login if no session marker. */
 (function(){try{if(!localStorage.getItem('aura_has_session')){document.documentElement.style.visibility='hidden';window.location.replace('login.html');return;}}catch(e){}})();</script>
@@ -310,7 +310,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/i18n.js?v=12"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=18"></script>
+<script src="js/firebase.js?v=19"></script>
 <script src="js/analytics.js?v=1"></script>
 <script src="js/animations.js?v=16"></script>
 <script>
@@ -430,6 +430,14 @@ window.addEventListener('pageshow', function(e) {
 });
 
 document.getElementById('signout-btn').addEventListener('click', function() {
+  /* Maintenance-aware logout. If MAINTENANCE_MODE is true (exposed by
+     js/maintenance.js as window.__auraMaintenanceMode), we ALSO clear
+     the admin bypass flag and redirect back to the maintenance screen
+     instead of login.html — so non-admin users never see the sign-in
+     form during a maintenance period, and the admin can only re-enter
+     via the ADMIN ENTER pill on the maintenance screen. */
+  var maintActive = !!window.__auraMaintenanceMode;
+
   /* Belt-and-suspenders: clear EVERY auth-adjacent marker
      synchronously before signOut() resolves. firebase.js's listener
      does this too — but in slow in-app browsers the listener can
@@ -445,14 +453,22 @@ document.getElementById('signout-btn').addEventListener('click', function() {
     try { sessionStorage.removeItem('aura_onboard_trigger'); } catch (e) {}
   }
   try { localStorage.removeItem('aura_uid'); } catch (e) {}
+  if (maintActive) {
+    try { localStorage.removeItem('aura_admin_bypass'); } catch (e) {}
+  }
 
-  firebase.auth().signOut().then(function() {
-    /* Replace current history entry so back button can't return to settings */
-    history.replaceState(null, '', 'login.html');
-    window.location.replace('login.html');
-  }).catch(function () {
-    /* Even if signOut() rejects, the flags are gone — leave to login */
-    window.location.replace('login.html');
+  function _finishSignOut() {
+    var dest = maintActive ? 'index.html' : 'login.html';
+    /* Replace current history entry so back button can't return to
+       settings (and so the now-cleared maintenance bypass can't be
+       resurrected via history navigation). */
+    history.replaceState(null, '', dest);
+    window.location.replace(dest);
+  }
+
+  firebase.auth().signOut().then(_finishSignOut).catch(function () {
+    /* Even if signOut() rejects, the flags are gone — proceed to dest */
+    _finishSignOut();
   });
 });
 

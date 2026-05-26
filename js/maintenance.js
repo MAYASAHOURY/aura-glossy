@@ -26,6 +26,14 @@
 
   var MAINTENANCE_MODE = true;
 
+  /* Expose the maintenance flag globally so other modules can read it
+     synchronously. Used by the settings + login sign-out flows and the
+     cross-tab BroadcastChannel('aura_auth') handler in firebase.js to
+     decide whether to land back on the maintenance screen (index.html)
+     or on the normal sign-in form (login.html). Set BEFORE the bypass
+     check so it's available even when the gate is bypassed. */
+  try { window.__auraMaintenanceMode = MAINTENANCE_MODE; } catch (e) {}
+
   /* ── Firebase config — duplicated from js/firebase.js because that
         module never loads while the maintenance gate is active. Used
         ONLY by the admin-entry modal below; the config is already

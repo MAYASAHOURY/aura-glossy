@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- ━━━━ MAINTENANCE GATE — must run FIRST. Toggle MAINTENANCE_MODE in js/maintenance.js. ━━━━ -->
-<script src="js/maintenance.js?v=6"></script>
+<script src="js/maintenance.js?v=7"></script>
 <script>(function(){try{var l=localStorage.getItem("aura_lang");if(!l){var nl=(navigator.language||"en").toLowerCase().slice(0,2);l=(["en","es","ar","he"].indexOf(nl)>=0)?nl:"en";}document.documentElement.lang=l;document.documentElement.dir=(l==="ar"||l==="he")?"rtl":"ltr";}catch(e){}})();</script>
 <!-- Login preroll removed: stability over cinematic intro. The form
      shows instantly on first paint so users from TikTok / Instagram
@@ -829,7 +829,7 @@ html[dir="rtl"] .reset-message { text-align: right; }
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/i18n.js?v=12"></script>
 <script src="js/monitor.js?v=2"></script>
-<script src="js/firebase.js?v=18"></script>
+<script src="js/firebase.js?v=19"></script>
 <script src="js/animations.js?v=16"></script>
 <script>
 (function() {
@@ -1290,8 +1290,24 @@ html[dir="rtl"] .reset-message { text-align: right; }
     }
   });
 
-  /* ✦✦ Sign out ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦ */
-  document.getElementById('signout-btn').addEventListener('click', () => auth.signOut());
+  /* ✦✦ Sign out ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦
+     Reachable only from the verify-email screen (an admin who landed
+     here mid-flow during maintenance). Maintenance-aware: under
+     MAINTENANCE_MODE we also clear the admin bypass flag and route
+     back to the maintenance screen instead of letting the user back
+     to the sign-in / sign-up forms on this same page. */
+  document.getElementById('signout-btn').addEventListener('click', function () {
+    var maintActive = !!window.__auraMaintenanceMode;
+    if (typeof clearAuraSessionFlag === 'function') clearAuraSessionFlag();
+    if (maintActive) {
+      try { localStorage.removeItem('aura_admin_bypass'); } catch (e) {}
+    }
+    auth.signOut().catch(function () {}).then(function () {
+      if (maintActive) window.location.replace('index.html');
+      /* Non-maintenance: onAuthStateChanged handler restores the forms
+         on the same page; no nav needed. */
+    });
+  });
 
   /* _T(key, fallback) — translate or fall back to hard-coded English.
      2026-05-25 fix: js/i18n.js's t() returns the KEY ITSELF when the
