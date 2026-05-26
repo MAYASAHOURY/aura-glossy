@@ -161,6 +161,10 @@
          is set synchronously by js/maintenance.js before any other head
          script runs, so it's always defined here. */
       isMaintenanceMode: !!(typeof window !== 'undefined' && window.__auraMaintenanceMode),
+      /* Hostname the event was fired from. Lets the admin report
+         filter out local-preview (localhost / private IPs) traffic
+         so dev testing never pollutes the public visitor counts. */
+      host:      (typeof location !== 'undefined' && location.hostname) ? String(location.hostname).slice(0, 80) : null,
       lang:      _lang(),
       rtl:       _rtl(),
       device:    _device(),

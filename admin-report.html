@@ -446,6 +446,51 @@ body {
   margin: 0;
 }
 
+/* ── Data Quality strip ─────────────────────────────────────
+   One-line panel directly under the maintenance banner. Tells the
+   admin exactly how many events were loaded, how many counted as
+   public, and which exclusion reasons fired. The numbers update on
+   every re-render (audience toggle / range change / refresh) so
+   what's shown in the KPIs is fully auditable. */
+.ar-data-quality {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding: 11px 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  margin: 0 0 22px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.ar-dq-label {
+  color: var(--rose);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+}
+.ar-dq-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.ar-dq-item strong {
+  color: var(--ink);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.ar-dq-item.ar-dq-public strong { color: #4a7a5e; }
+.ar-dq-sep {
+  width: 1px;
+  height: 11px;
+  background: var(--line-strong);
+  align-self: center;
+  opacity: 0.5;
+}
+
 /* ── KPI footnote ────────────────────────────────────────── */
 .ar-kpi-note {
   margin: 12px 2px 0;
@@ -617,7 +662,23 @@ body {
 
     <!-- Status / hint -->
     <div class="ar-status is-info" id="ar-status">
-      Showing data for the selected range. Events are written by every visitor (guest and signed-in) on key UX moments — page views, shop clicks, signup-modal opens, quiz progress, community activity. Latest events appear within seconds; aggregates refresh on demand.
+      Every KPI below is computed from the events that survived the audience filter. Hover any KPI label for its exact definition; check the Data quality strip for the exclusion breakdown; scroll to <strong>Latest events</strong> for a per-row audit including whether each event was counted as public.
+    </div>
+
+    <!-- Data quality strip — populated by _render() -->
+    <div class="ar-data-quality" id="ar-data-quality" role="status" aria-live="polite">
+      <span class="ar-dq-label">Data quality</span>
+      <span class="ar-dq-item"><strong id="ar-dq-total">0</strong> raw</span>
+      <span class="ar-dq-sep" aria-hidden="true"></span>
+      <span class="ar-dq-item ar-dq-public"><strong id="ar-dq-public">0</strong> public</span>
+      <span class="ar-dq-sep" aria-hidden="true"></span>
+      <span class="ar-dq-item"><strong id="ar-dq-excl-admin">0</strong> admin excl.</span>
+      <span class="ar-dq-item"><strong id="ar-dq-excl-test">0</strong> test excl.</span>
+      <span class="ar-dq-item"><strong id="ar-dq-excl-maint">0</strong> maint excl.</span>
+      <span class="ar-dq-item"><strong id="ar-dq-excl-local">0</strong> local excl.</span>
+      <span class="ar-dq-sep" aria-hidden="true"></span>
+      <span class="ar-dq-item">range <strong id="ar-dq-range">7d</strong></span>
+      <span class="ar-dq-item">updated <strong id="ar-dq-updated">—</strong></span>
     </div>
 
     <!-- ── 1. OVERVIEW KPIs ── -->
@@ -636,7 +697,7 @@ body {
       <div class="ar-section-head">
         <span class="ar-section-num">02</span>
         <h2 class="ar-section-title">Latest events</h2>
-        <span class="ar-section-sub">Live feed — most recent first</span>
+        <span class="ar-section-sub">All recent events — the Public? column shows what was counted</span>
       </div>
       <div class="ar-card">
         <div id="ar-latest-events-table"></div>
@@ -853,7 +914,7 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/firebase.js?v=22"></script>
-<script src="js/admin-report.js?v=3"></script>
+<script src="js/admin-report.js?v=4"></script>
 
 </body>
 </html>

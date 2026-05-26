@@ -24,10 +24,18 @@
   var _db, _auth;
   var _range = '7d';
   var _aesthetic = '';
-  var _audience = 'public'; /* 'public' | 'all' — see _filterAudience() */
+  var _audience = 'public'; /* 'public' | 'all' — see _publicCheck() */
   var _events = [];   /* current loaded events (capped) */
   var _users  = [];   /* most-recent users sample */
   var _loading = false;
+  var _lastUpdated = null; /* HH:MM:SS string for the Data quality strip */
+
+  /* Minimum sample sizes for honest conversion rates. Below these
+     thresholds we show "—" + a "Not enough data" foot rather than
+     publishing a misleading percentage. Tuned conservatively. */
+  var MIN_QUIZ_SAMPLE  = 5;
+  var MIN_MODAL_SAMPLE = 5;
+  var MIN_GUEST_SAMPLE = 10;
 
   /* ── Helpers ──────────────────────────────────────────────── */
   function $(id) { return document.getElementById(id); }
@@ -212,27 +220,70 @@
     }).then(function () {
       _loading = false;
       if (btn) { btn.disabled = false; btn.textContent = '↻ Refresh'; }
+      /* Last-updated timestamp for the Data quality strip */
+      var d = new Date();
+      var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+      _lastUpdated = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
     });
   }
 
   /* ── Audience filter ──────────────────────────────────────────
-     "public" mode excludes events that aren't real visitor traffic:
-       • isAdmin === true        (admin browsing via bypass)
-       • test    === true        (synthetic test events)
-       • isMaintenanceScreen=true (events fired from the maintenance
-                                   screen itself, if we ever start
-                                   tracking them — schema is ready)
-     "all" mode shows everything. ────────────────────────────── */
-  function _isPublicEvent(e) {
-    if (e.isAdmin === true) return false;
-    if (e.test === true) return false;
-    if (e.isMaintenanceScreen === true) return false;
-    return true;
+     Returns { ok, reason } so the Latest Events table can show
+     WHY each event was excluded. Reasons (in priority order):
+
+       admin           — isAdmin === true (admin browsing via bypass)
+       test            — test === true (synthetic / manual test events)
+       maintenance     — isMaintenanceMode === true (event fired
+                          while the public surface was sealed; the
+                          only people who can fire events at all
+                          during maintenance are admins via bypass)
+       maintenance-scr — isMaintenanceScreen === true (reserved for
+                          future per-session maintenance-view tracking;
+                          schema accepts it)
+       local           — host is localhost / 127.0.0.1 / private IPv4
+                          (events from dev preview never count as
+                          real visitor traffic)
+
+     Anything else is "public". The check runs in priority order —
+     a single event hitting multiple criteria reports the most
+     informative reason first. ───────────────────────────────── */
+  function _isLocalHost(host) {
+    if (!host) return false;
+    if (host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0') return true;
+    if (/^10\./.test(host)) return true;
+    if (/^192\.168\./.test(host)) return true;
+    if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)) return true;
+    return false;
   }
+  function _publicCheck(e) {
+    if (e.isAdmin === true)            return { ok: false, reason: 'admin' };
+    if (e.test === true)               return { ok: false, reason: 'test' };
+    if (e.isMaintenanceMode === true)  return { ok: false, reason: 'maintenance' };
+    if (e.isMaintenanceScreen === true) return { ok: false, reason: 'maintenance-screen' };
+    if (e.host && _isLocalHost(e.host)) return { ok: false, reason: 'local' };
+    return { ok: true, reason: 'public' };
+  }
+  function _isPublicEvent(e) { return _publicCheck(e).ok; }
 
   /* ── Render: dispatch to each section ─────────────────────── */
   function _render() {
     var publicOnly = _audience === 'public';
+
+    /* Tally exclusion reasons across the FULL loaded set so the
+       Data quality strip shows the same numbers regardless of which
+       audience pill is active. */
+    var dq = { total: _events.length, public: 0, admin: 0, test: 0, maintenance: 0, local: 0, maintenanceScreen: 0 };
+    for (var i = 0; i < _events.length; i++) {
+      var c = _publicCheck(_events[i]);
+      if (c.ok) dq.public++;
+      else if (c.reason === 'admin')              dq.admin++;
+      else if (c.reason === 'test')               dq.test++;
+      else if (c.reason === 'maintenance')        dq.maintenance++;
+      else if (c.reason === 'maintenance-screen') dq.maintenanceScreen++;
+      else if (c.reason === 'local')              dq.local++;
+    }
+    _renderDataQuality(dq);
+
     var ev = _events.filter(function (e) {
       if (_aesthetic && e.aesthetic !== _aesthetic) return false;
       if (publicOnly && !_isPublicEvent(e)) return false;
@@ -269,8 +320,8 @@
       }
     }
 
-    _renderKpis(ev);
-    _renderLatestEvents(ev);
+    _renderKpis(ev, publicOnly);
+    _renderLatestEvents();  /* always shows ALL events with per-row Public/Reason */
     _renderUsers();
     _renderGuestFunnel(ev);
     _renderShopping(ev);
@@ -283,43 +334,77 @@
     _renderErrors(ev);
   }
 
-  /* ── Latest events — live feed of individual events ────────── */
-  function _renderLatestEvents(ev) {
+  /* ── Data quality strip ──────────────────────────────────── */
+  function _renderDataQuality(dq) {
+    var set = function (id, v) { var el = $(id); if (el) el.textContent = String(v); };
+    set('ar-dq-total',       dq.total);
+    set('ar-dq-public',      dq.public);
+    set('ar-dq-excl-admin',  dq.admin);
+    set('ar-dq-excl-test',   dq.test);
+    set('ar-dq-excl-maint',  dq.maintenance + dq.maintenanceScreen);
+    set('ar-dq-excl-local',  dq.local);
+    set('ar-dq-range',       _rangeLabel(_range));
+    set('ar-dq-updated',     _lastUpdated || '—');
+  }
+
+  /* ── Latest events — live feed of individual events ──────────
+     Always shows ALL recent events regardless of the audience
+     toggle. The per-row "Status" column makes the decision
+     transparent: ✓ public, or ⊘ <reason> if excluded. Includes the
+     6-char Firestore doc id so an admin can grep it in the
+     console if needed. ─────────────────────────────────────── */
+  function _renderLatestEvents() {
     var el = $('ar-latest-events-table');
     if (!el) return;
-    if (!ev.length) {
-      el.innerHTML = '<div class="ar-stub" style="text-align:left">No events match the current filter. Try widening the date range or switching to <em>All (incl. admin)</em> at the top.</div>';
+    if (!_events.length) {
+      el.innerHTML = '<div class="ar-stub" style="text-align:left">No events loaded for this range. Try widening the date filter at the top.</div>';
       return;
     }
-    var rows = ev.slice(0, 50).map(function (e) {
+    var rows = _events.slice(0, 50).map(function (e) {
       var role;
-      if (e.isAdmin) role = '<span class="ar-tag is-admin">admin</span>';
-      else if (e.isGuest) role = '<span class="ar-tag is-guest">guest</span>';
-      else role = '<span class="ar-tag is-user">user</span>';
+      if (e.isAdmin)       role = '<span class="ar-tag is-admin">admin</span>';
+      else if (e.isGuest)  role = '<span class="ar-tag is-guest">guest</span>';
+      else                 role = '<span class="ar-tag is-user">user</span>';
+
       var maint = e.isMaintenanceMode
-        ? '<span class="ar-tag is-maint">maint</span>'
+        ? '<span class="ar-tag is-maint">yes</span>'
         : '<span class="dim">—</span>';
+
+      var pubCheck = _publicCheck(e);
+      var status = pubCheck.ok
+        ? '<span class="ar-tag" style="background:rgba(122,152,138,.14);color:#4a7a5e;border:1px solid rgba(122,152,138,.32)" title="Counted in public KPIs">✓ public</span>'
+        : '<span class="ar-tag" style="background:rgba(170,160,150,.14);color:#6a5a4a;border:1px solid rgba(170,160,150,.32)" title="Excluded from public KPIs — reason: ' + txt(pubCheck.reason) + '">⊘ ' + txt(pubCheck.reason) + '</span>';
+
       var browser = e.inApp ? ('inapp · ' + e.inApp) : (e.browser || '—');
+      var shortId = e.id ? e.id.slice(0, 6) : '—';
+
       return '<tr>' +
+        '<td class="mono dim" title="' + txt(e.id || '') + '">' + txt(shortId) + '</td>' +
         '<td class="dim">' + fmtTime(e.ts) + '</td>' +
         '<td class="mono">' + txt(e.type) + '</td>' +
         '<td class="trunc mono dim">' + txt(e.path || '—') + '</td>' +
         '<td>' + role + '</td>' +
         '<td>' + maint + '</td>' +
+        '<td>' + status + '</td>' +
         '<td>' + (e.aesthetic ? txt(COMM_LABELS[e.aesthetic] || e.aesthetic) : '<span class="dim">—</span>') + '</td>' +
         '<td class="mono dim">' + txt(browser) + '</td>' +
       '</tr>';
     }).join('');
     el.innerHTML = '<table class="ar-table"><thead><tr>' +
-      '<th>Time</th><th>Type</th><th>Path</th><th>Role</th><th>Maint</th><th>Aesthetic</th><th>Browser</th>' +
+      '<th>ID</th><th>Time</th><th>Type</th><th>Path</th><th>Role</th><th>Maint</th><th>Public?</th><th>Aesthetic</th><th>Browser</th>' +
       '</tr></thead><tbody>' + rows + '</tbody></table>';
   }
   function _rangeLabel(r) {
     return { 'today': 'today', '7d': 'last 7 days', '30d': 'last 30 days', 'all': 'all time' }[r] || r;
   }
 
-  /* ── 1. KPIs ──────────────────────────────────────────────── */
-  function _renderKpis(ev) {
+  /* ── 1. KPIs ──────────────────────────────────────────────────
+     Each card carries a `def` tooltip explaining EXACTLY what is
+     counted, derived from the audience filter currently active.
+     Conversion rates are gated by minimum sample sizes — below the
+     threshold we show "—" with a "Not enough data" foot rather than
+     publishing a misleading percentage. ─────────────────────── */
+  function _renderKpis(ev, publicOnly) {
     var kpis = $('ar-kpis');
     if (!kpis) return;
 
@@ -345,8 +430,10 @@
       if (e.type === 'signup_modal_action' && e.modalAction && modalActions.hasOwnProperty(e.modalAction)) {
         modalActions[e.modalAction]++;
       }
+      /* Unique-user count excludes admins explicitly — even in "All"
+         audience mode we don't want to count the admin as a "user". */
       if (e.isGuest && e.sessionId) uniqueGuestSessions[e.sessionId] = 1;
-      if (!e.isGuest && e.uid)      uniqueUserUids[e.uid] = 1;
+      if (!e.isGuest && !e.isAdmin && e.uid) uniqueUserUids[e.uid] = 1;
       if (e.type === 'page_view') {
         var et = e.ts && e.ts.toMillis ? e.ts.toMillis() : 0;
         if (et && et >= todayStart) todayPageViews++;
@@ -359,35 +446,78 @@
       if (ct >= weekStart)  weekUserSignups++;
     }
 
-    var totalUsers = _users.length; /* up to 40 — note this is a sample, not exact */
+    var totalUsers = _users.length;
     var guestSessions = Object.keys(uniqueGuestSessions).length;
     var userSessions  = Object.keys(uniqueUserUids).length;
     var modalOpens    = counts.signup_modal_open;
-    var quizConv      = fmtPct(counts.quiz_complete, counts.quiz_start);
-    var shopGateConv  = modalOpens > 0 ? fmtPct(modalActions.create + modalActions.signin, modalOpens) : '—';
-    var visitorToSignup = guestSessions > 0
-      ? fmtPct(modalActions.create + modalActions.signin, guestSessions)
-      : '—';
+    var modalActed    = modalActions.create + modalActions.signin;
+
+    /* Minimum-sample guards. Show "—" + explanation when sample is
+       too small to publish a meaningful percentage. */
+    var quizConv, quizFoot;
+    if (counts.quiz_start >= MIN_QUIZ_SAMPLE) {
+      quizConv = fmtPct(counts.quiz_complete, counts.quiz_start);
+      quizFoot = 'start → complete';
+    } else {
+      quizConv = '—';
+      quizFoot = 'Not enough data (need ' + MIN_QUIZ_SAMPLE + '+ quiz starts)';
+    }
+    var gateConv, gateFoot;
+    if (modalOpens >= MIN_MODAL_SAMPLE) {
+      gateConv = fmtPct(modalActed, modalOpens);
+      gateFoot = 'modal open → create/signin';
+    } else {
+      gateConv = '—';
+      gateFoot = 'Not enough data (need ' + MIN_MODAL_SAMPLE + '+ modal opens)';
+    }
+    var visConv, visFoot;
+    if (guestSessions >= MIN_GUEST_SAMPLE) {
+      visConv = fmtPct(modalActed, guestSessions);
+      visFoot = 'guest session → modal action';
+    } else {
+      visConv = '—';
+      visFoot = 'Not enough data (need ' + MIN_GUEST_SAMPLE + '+ guest sessions)';
+    }
+
+    /* Definitions — show the exact rule when the admin hovers a
+       KPI label. The wording reflects the current audience setting. */
+    var modeNote = publicOnly
+      ? ' (public-only set: admin, test, maintenance, and local-preview events are excluded)'
+      : ' (All-audience set: every loaded event is counted)';
 
     var cards = [
-      { label: 'Page views',      value: fmtNum(counts.page_view),     foot: '<strong>' + fmtNum(todayPageViews) + '</strong> today' },
-      { label: 'Unique guests',   value: fmtNum(guestSessions),         foot: 'sessions in range' },
-      { label: 'Unique users',    value: fmtNum(userSessions),          foot: 'distinct signed-in uids' },
-      { label: 'Latest signups',  value: fmtNum(totalUsers),            foot: '<strong>' + fmtNum(todayUserSignups) + '</strong> today · <strong>' + fmtNum(weekUserSignups) + '</strong> this week' },
-      { label: 'Shop clicks',     value: fmtNum(counts.shop_click),     foot: '+ <strong>' + fmtNum(counts.shop_gate_open) + '</strong> guest gates' },
-      { label: 'Saves',           value: fmtNum(counts.save_success),   foot: '+ <strong>' + fmtNum(counts.save_gate_open) + '</strong> guest gates' },
-      { label: 'Quiz starts',     value: fmtNum(counts.quiz_start),     foot: '<strong>' + fmtNum(counts.quiz_complete) + '</strong> completed' },
-      { label: 'Community posts', value: fmtNum(counts.community_post), foot: '<strong>' + fmtNum(counts.community_comment) + '</strong> comments · <strong>' + fmtNum(counts.community_reaction) + '</strong> reactions' },
-      { label: 'Modal opens',     value: fmtNum(modalOpens),            foot: '<strong>' + fmtNum(modalActions.create) + '</strong> created · <strong>' + fmtNum(modalActions.signin) + '</strong> signed-in · <strong>' + fmtNum(modalActions.dismiss) + '</strong> dismissed' },
-      { label: 'Quiz conversion', value: quizConv,                       foot: 'start → complete' },
-      { label: 'Gate conversion', value: shopGateConv,                   foot: 'modal open → action' },
-      { label: 'Visitor → signup',value: visitorToSignup,                foot: 'guest sessions → modal action' }
+      { label: 'Page views',       def: 'Count of page_view events in the selected range' + modeNote + '.',
+        value: fmtNum(counts.page_view), foot: '<strong>' + fmtNum(todayPageViews) + '</strong> today' },
+      { label: 'Unique guests',    def: 'Distinct guest sessionIds (isGuest=true). One per browser-tab session' + modeNote + '.',
+        value: fmtNum(guestSessions), foot: 'guest sessions in range' },
+      { label: 'Unique users',     def: 'Distinct signed-in uids that are NOT flagged isAdmin. Real-account browsing only.',
+        value: fmtNum(userSessions), foot: 'distinct non-admin uids' },
+      { label: 'Latest signups',   def: 'Most-recent user docs in the users collection. Sample capped at 40 — exact only for the recent slice.',
+        value: fmtNum(totalUsers), foot: '<strong>' + fmtNum(todayUserSignups) + '</strong> today · <strong>' + fmtNum(weekUserSignups) + '</strong> this week' },
+      { label: 'Shop clicks',      def: 'shop_click events. Fired only when a signed-in user (or admin) actually opens a retailer link' + modeNote + '.',
+        value: fmtNum(counts.shop_click), foot: '+ <strong>' + fmtNum(counts.shop_gate_open) + '</strong> guest gates' },
+      { label: 'Saves',            def: 'save_success events — moodboard saves that completed.',
+        value: fmtNum(counts.save_success), foot: '+ <strong>' + fmtNum(counts.save_gate_open) + '</strong> guest gates' },
+      { label: 'Quiz starts',      def: 'quiz_start events — one per quiz session (re-fires after a retake).',
+        value: fmtNum(counts.quiz_start), foot: '<strong>' + fmtNum(counts.quiz_complete) + '</strong> completed' },
+      { label: 'Community posts',  def: 'community_post events — successful post writes to Firestore.',
+        value: fmtNum(counts.community_post), foot: '<strong>' + fmtNum(counts.community_comment) + '</strong> comments · <strong>' + fmtNum(counts.community_reaction) + '</strong> reactions' },
+      { label: 'Modal opens',      def: 'signup_modal_open events. Fired when Aura.requireAuth opens the gate for a guest action.',
+        value: fmtNum(modalOpens), foot: '<strong>' + fmtNum(modalActions.create) + '</strong> created · <strong>' + fmtNum(modalActions.signin) + '</strong> signed-in · <strong>' + fmtNum(modalActions.dismiss) + '</strong> dismissed' },
+      { label: 'Quiz conversion',  def: 'quiz_complete / quiz_start. Hidden when fewer than ' + MIN_QUIZ_SAMPLE + ' starts to avoid misleading low-sample percentages.',
+        value: quizConv, foot: quizFoot },
+      { label: 'Gate conversion',  def: 'create+signin actions / modal_open events. Hidden when fewer than ' + MIN_MODAL_SAMPLE + ' opens.',
+        value: gateConv, foot: gateFoot },
+      { label: 'Visitor → signup', def: 'modal create+signin actions / unique guest sessions. Hidden when fewer than ' + MIN_GUEST_SAMPLE + ' guest sessions.',
+        value: visConv, foot: visFoot }
     ];
 
     kpis.innerHTML = cards.map(function (c) {
-      return '<div class="ar-kpi"><div class="ar-kpi-label">' + txt(c.label) + '</div>' +
-             '<div class="ar-kpi-value">' + c.value + '</div>' +
-             '<div class="ar-kpi-foot">' + c.foot + '</div></div>';
+      return '<div class="ar-kpi">' +
+        '<div class="ar-kpi-label" title="' + txt(c.def) + '">' + txt(c.label) +
+          ' <span style="opacity:.55;font-weight:400" aria-hidden="true">ⓘ</span></div>' +
+        '<div class="ar-kpi-value">' + c.value + '</div>' +
+        '<div class="ar-kpi-foot">' + c.foot + '</div></div>';
     }).join('');
   }
 

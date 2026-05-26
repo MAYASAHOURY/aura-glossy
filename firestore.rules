@@ -196,7 +196,7 @@ service cloud.firestore {
     function validAnalyticsEvent() {
       let r = request.resource.data;
       let allowed = ['type','ts','sessionId','isGuest','uid','email','isAdmin',
-                     'isMaintenanceMode','isMaintenanceScreen',
+                     'isMaintenanceMode','isMaintenanceScreen','host',
                      'lang','rtl','device','browser','os','inApp','path','referrer',
                      'aesthetic','outfitIndex','category','retailer','shopUrl','source',
                      'quizResultId','quizQuestionIndex','modalAction','modalReason',
@@ -219,6 +219,7 @@ service cloud.firestore {
         && (!('isAdmin' in r) || r.isAdmin is bool)
         && (!('isMaintenanceMode' in r) || r.isMaintenanceMode is bool)
         && (!('isMaintenanceScreen' in r) || r.isMaintenanceScreen is bool)
+        && (!('host' in r) || r.host == null || (r.host is string && r.host.size() <= 80))
         && (!('lang' in r) || (r.lang is string && r.lang.size() <= 4))
         && (!('rtl' in r) || r.rtl is bool)
         && (!('device' in r) || (r.device is string && r.device.size() <= 16))
