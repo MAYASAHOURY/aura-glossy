@@ -239,7 +239,57 @@
         no_comments: 'No comments yet. Be the first.',
         delete_post: 'Delete post',
         delete_confirm: 'Delete this post?',
-        liked: 'Liked', like: 'Like'
+        liked: 'Liked', like: 'Like',
+        /* Hub + circle access UI (added 2026-05-26 — replaces
+           hard-coded English so RTL + ES users see translated
+           buttons in the hub and access modals). Aesthetic names
+           are passed as {name}/{own} variables and are NOT
+           translated — they remain in EN with dir="ltr" inline
+           where rendered, per the established convention. */
+        enter_circle:           'Enter Circle →',
+        enter_my_community:     'Enter My Community →',
+        your_circle_badge:      'Your Circle',
+        your_community:         'Your community',
+        admin_eyebrow:          'Admin Access',
+        admin_title:            'All circles open.',
+        admin_sub:              'Every community is accessible.',
+        not_sure_eyebrow:       'Not sure yet?',
+        find_aesthetic_title:   'Find your aesthetic.',
+        find_aesthetic_sub:     'Take the 5-minute style quiz to unlock your exclusive community circle.',
+        already_took_btn:       'Already took the quiz? Reload ↻',
+        circles_eyebrow:        'Private Circles',
+        find_community_title:   'Find your community.',
+        find_community_sub:     'Take the style quiz to discover your aesthetic and unlock your exclusive circle.',
+        welcome_back:           'Welcome back.',
+        you_belong_to:          'You belong to the {name} circle.'
+      },
+      /* Modal copy for the access-control overlay shown when a non-
+         admin tries to enter a circle that isn't theirs (or before
+         they've taken the quiz). Aesthetic names interpolate via
+         {name}/{own} and stay in English regardless of locale. */
+      access: {
+        no_quiz_title:          'Discover your aesthetic first',
+        no_quiz_body:           'Take the style quiz to unlock your exclusive community circle.',
+        take_quiz_btn:          'Take the Style Quiz →',
+        not_now:                'Not now',
+        wrong_circle_title:     "This isn't your style circle",
+        wrong_circle_body:      'The {name} community is a private group.',
+        wrong_circle_yours:     'Your community is {own}.',
+        go_to_my_circle:        'Go to my circle →',
+        close:                  'Close',
+        profile_changed_title:  'Your style profile changed',
+        profile_changed_body:   'Take the quiz again to unlock your community.',
+        aesthetic_changed_title:'Your aesthetic just changed',
+        aesthetic_changed_body: "You're now part of the {name} circle. Access to your previous circle has been closed.",
+        enter_cta:              'Enter {name} →',
+        stay_in_hub:            'Stay in the hub'
+      },
+      quiz_guest: {
+        title:       'Sign in to take the quiz',
+        sub:         'Create your Aura profile to discover your aesthetic, save your result, and unlock your style circle.',
+        create:      'Create account',
+        signin:      'Sign in',
+        continue:    'Continue browsing'
       },
       moodboard: {
         eyebrow: 'Your collection',
@@ -476,7 +526,47 @@
         no_comments: 'Aún no hay comentarios. Sé el primero.',
         delete_post: 'Eliminar publicación',
         delete_confirm: '¿Eliminar esta publicación?',
-        liked: 'Me gusta', like: 'Me gusta'
+        liked: 'Me gusta', like: 'Me gusta',
+        enter_circle:           'Entrar al círculo →',
+        enter_my_community:     'Entrar a mi comunidad →',
+        your_circle_badge:      'Tu círculo',
+        your_community:         'Tu comunidad',
+        admin_eyebrow:          'Acceso de administrador',
+        admin_title:            'Todos los círculos abiertos.',
+        admin_sub:              'Cada comunidad es accesible.',
+        not_sure_eyebrow:       '¿No estás segura?',
+        find_aesthetic_title:   'Encuentra tu estética.',
+        find_aesthetic_sub:     'Haz el quiz de estilo de 5 minutos para desbloquear tu círculo exclusivo.',
+        already_took_btn:       '¿Ya hiciste el quiz? Recargar ↻',
+        circles_eyebrow:        'Círculos privados',
+        find_community_title:   'Encuentra tu comunidad.',
+        find_community_sub:     'Haz el quiz de estilo para descubrir tu estética y desbloquear tu círculo exclusivo.',
+        welcome_back:           'Bienvenida de nuevo.',
+        you_belong_to:          'Perteneces al círculo {name}.'
+      },
+      access: {
+        no_quiz_title:          'Descubre tu estética primero',
+        no_quiz_body:           'Haz el quiz de estilo para desbloquear tu círculo exclusivo.',
+        take_quiz_btn:          'Hacer el quiz de estilo →',
+        not_now:                'Ahora no',
+        wrong_circle_title:     'Este no es tu círculo de estilo',
+        wrong_circle_body:      'La comunidad {name} es un grupo privado.',
+        wrong_circle_yours:     'Tu comunidad es {own}.',
+        go_to_my_circle:        'Ir a mi círculo →',
+        close:                  'Cerrar',
+        profile_changed_title:  'Tu perfil de estilo cambió',
+        profile_changed_body:   'Haz el quiz de nuevo para desbloquear tu comunidad.',
+        aesthetic_changed_title:'Tu estética cambió',
+        aesthetic_changed_body: 'Ahora formas parte del círculo {name}. El acceso a tu círculo anterior se ha cerrado.',
+        enter_cta:              'Entrar a {name} →',
+        stay_in_hub:            'Quedarme en el inicio'
+      },
+      quiz_guest: {
+        title:       'Inicia sesión para hacer el quiz',
+        sub:         'Crea tu perfil de Aura para descubrir tu estética, guardar tu resultado y desbloquear tu círculo de estilo.',
+        create:      'Crear cuenta',
+        signin:      'Iniciar sesión',
+        continue:    'Seguir explorando'
       },
       moodboard: {
         eyebrow: 'Tu colección',
@@ -708,7 +798,47 @@
         no_comments: 'لا توجد تعليقات بعد. كن الأول.',
         delete_post: 'حذف المنشور',
         delete_confirm: 'هل تريد حذف هذا المنشور؟',
-        liked: 'أعجبني', like: 'إعجاب'
+        liked: 'أعجبني', like: 'إعجاب',
+        enter_circle:           'ادخلي الدائرة',
+        enter_my_community:     'ادخلي مجتمعي',
+        your_circle_badge:      'دائرتك',
+        your_community:         'مجتمعك',
+        admin_eyebrow:          'وصول المسؤول',
+        admin_title:            'كل الدوائر مفتوحة.',
+        admin_sub:              'كل مجتمع متاح.',
+        not_sure_eyebrow:       'لستِ متأكدة؟',
+        find_aesthetic_title:   'اكتشفي جماليّتك.',
+        find_aesthetic_sub:     'ابدئي اختبار الستايل في 5 دقائق لفتح دائرتك الخاصة.',
+        already_took_btn:       'هل أنهيتِ الاختبار؟ إعادة تحميل ↻',
+        circles_eyebrow:        'دوائر خاصة',
+        find_community_title:   'اكتشفي مجتمعك.',
+        find_community_sub:     'ابدئي اختبار الستايل لاكتشاف جماليّتك وفتح دائرتك الخاصة.',
+        welcome_back:           'أهلاً من جديد.',
+        you_belong_to:          'أنتِ في دائرة {name}.'
+      },
+      access: {
+        no_quiz_title:          'اكتشفي جماليّتك أولاً',
+        no_quiz_body:           'ابدئي اختبار الستايل لفتح دائرتك الخاصة.',
+        take_quiz_btn:          'ابدئي اختبار الستايل',
+        not_now:                'ليس الآن',
+        wrong_circle_title:     'هذه ليست دائرة ستايلك',
+        wrong_circle_body:      'مجتمع {name} مجموعة خاصة.',
+        wrong_circle_yours:     'مجتمعك هو {own}.',
+        go_to_my_circle:        'اذهبي إلى دائرتي',
+        close:                  'إغلاق',
+        profile_changed_title:  'تغيّر ملف الستايل',
+        profile_changed_body:   'أعيدي اختبار الستايل لفتح مجتمعك.',
+        aesthetic_changed_title:'تغيّرت جماليّتك',
+        aesthetic_changed_body: 'أنتِ الآن جزء من دائرة {name}. تم إغلاق وصولك إلى دائرتك السابقة.',
+        enter_cta:              'ادخلي {name}',
+        stay_in_hub:            'البقاء في الواجهة'
+      },
+      quiz_guest: {
+        title:       'سجّلي الدخول لبدء الاختبار',
+        sub:         'أنشئي ملفك في أورا لاكتشاف جماليّتك، حفظ النتيجة، وفتح دائرة الستايل الخاصة بك.',
+        create:      'إنشاء حساب',
+        signin:      'تسجيل الدخول',
+        continue:    'متابعة التصفح'
       },
       moodboard: {
         eyebrow: 'مجموعتك',
@@ -939,7 +1069,47 @@
         no_comments: 'אין עדיין תגובות. היי הראשונה.',
         delete_post: 'מחיקת פוסט',
         delete_confirm: 'למחוק את הפוסט?',
-        liked: 'אהבתי', like: 'לייק'
+        liked: 'אהבתי', like: 'לייק',
+        enter_circle:           'היכנסי לחוג',
+        enter_my_community:     'היכנסי לקהילה שלי',
+        your_circle_badge:      'החוג שלך',
+        your_community:         'הקהילה שלך',
+        admin_eyebrow:          'גישת מנהל',
+        admin_title:            'כל החוגים פתוחים.',
+        admin_sub:              'כל הקהילות נגישות.',
+        not_sure_eyebrow:       'עוד לא בטוחה?',
+        find_aesthetic_title:   'מצאי את האסתטיקה שלך.',
+        find_aesthetic_sub:     'התחילי את חידון הסגנון בן 5 הדקות כדי לפתוח את החוג הבלעדי שלך.',
+        already_took_btn:       'כבר עשית את החידון? טען מחדש ↻',
+        circles_eyebrow:        'חוגים פרטיים',
+        find_community_title:   'מצאי את הקהילה שלך.',
+        find_community_sub:     'התחילי את חידון הסגנון כדי לגלות את האסתטיקה שלך ולפתוח את החוג הבלעדי שלך.',
+        welcome_back:           'ברוכה השבה.',
+        you_belong_to:          'את שייכת לחוג {name}.'
+      },
+      access: {
+        no_quiz_title:          'גלי את האסתטיקה שלך קודם',
+        no_quiz_body:           'התחילי את חידון הסגנון כדי לפתוח את החוג הבלעדי שלך.',
+        take_quiz_btn:          'התחילי את חידון הסגנון',
+        not_now:                'לא עכשיו',
+        wrong_circle_title:     'זה לא חוג הסגנון שלך',
+        wrong_circle_body:      'הקהילה {name} היא קבוצה פרטית.',
+        wrong_circle_yours:     'הקהילה שלך היא {own}.',
+        go_to_my_circle:        'עברי לחוג שלי',
+        close:                  'סגירה',
+        profile_changed_title:  'פרופיל הסגנון שלך השתנה',
+        profile_changed_body:   'עשי את החידון שוב כדי לפתוח את הקהילה שלך.',
+        aesthetic_changed_title:'האסתטיקה שלך השתנתה',
+        aesthetic_changed_body: 'את עכשיו חלק מחוג {name}. הגישה לחוג הקודם שלך נסגרה.',
+        enter_cta:              'היכנסי {name}',
+        stay_in_hub:            'להישאר במרכז'
+      },
+      quiz_guest: {
+        title:       'התחברי כדי להתחיל את החידון',
+        sub:         'צרי את הפרופיל שלך באורה כדי לגלות את האסתטיקה, לשמור את התוצאה, ולפתוח את חוג הסגנון שלך.',
+        create:      'יצירת חשבון',
+        signin:      'התחברות',
+        continue:    'המשך לעיין'
       },
       moodboard: {
         eyebrow: 'האוסף שלך',

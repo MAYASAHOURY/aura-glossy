@@ -39,7 +39,12 @@ var COMM_GROUPS = [
   { id: 'y2k',          name: 'Y2K',              color: '#c084fc', tagline: 'Nostalgic & bold',      symbol: '✩' },
   { id: 'vintage',      name: 'Vintage',          color: '#c8966a', tagline: 'Retro soul',            symbol: '◉' },
   { id: 'softgirl',     name: 'Soft Girl',        color: '#ffacc7', tagline: 'Romantic & dreamy',     symbol: '✿' },
-  { id: 'darkacademia', name: 'Dark Academia',    color: '#6b5a3e', tagline: 'Scholarly & moody',     symbol: '◼' },
+  /* Dark Academia removed 2026-05-26 — it was never a stable
+     supported aesthetic. Legacy analytics events that reference
+     'darkacademia' are still rendered in the admin report under a
+     "Legacy / Unknown" label; the active community list intentionally
+     no longer includes it. Do not re-add without coordinating with
+     the quiz scoring map (which never produced it anyway). */
   { id: 'hijabicore',   name: 'Hijabi Core',      color: '#8a6048', tagline: 'Modest. Modern. Magnetic.', symbol: '☾' },
 ];
 
@@ -54,6 +59,35 @@ var _quizHydrated  = false;  // first snapshot has arrived
 
 /* Tiny accessor used by other modules (settings.html badge, debugging). */
 window.AuraIsAdmin = function () { return _isAdmin; };
+
+/* ── i18n helper ──────────────────────────────────────────────
+   Returns the translated string for a key, falling back to the
+   English literal if Aura.i18n isn't loaded or the key is missing.
+   Treats the case where Aura.i18n.t(key) returns the key itself
+   (the missing-translation sentinel) as a miss, so the EN literal
+   shows instead of a raw key like "community.enter_circle". */
+function _t(key, fallback, vars) {
+  if (window.Aura && window.Aura.i18n && window.Aura.i18n.t) {
+    var v = window.Aura.i18n.t(key, vars);
+    if (v && v !== key) return v;
+  }
+  /* Manual var interpolation for the fallback path */
+  var s = fallback || '';
+  if (vars && typeof s === 'string') {
+    Object.keys(vars).forEach(function (k) {
+      s = s.split('{' + k + '}').join(vars[k]);
+    });
+  }
+  return s;
+}
+
+/* Wrap an English aesthetic name in a ltr-isolated span so it
+   doesn't reverse direction inside RTL-language strings like the
+   Hebrew/Arabic access modals. Class `aura-name-ltr` is defined in
+   css/styles.css. */
+function _ltrName(name) {
+  return '<span class="aura-name-ltr" dir="ltr">' + _esc(name) + '</span>';
+}
 
 /* ── Bootstrap ──────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function () {
@@ -211,11 +245,11 @@ function _showQuizChangedNotice(prevId, newId) {
   if (!newId) {
     box.innerHTML =
       '<div class="access-icon">✦</div>' +
-      '<h3>Your style profile changed</h3>' +
-      '<p>Take the quiz again to unlock your community.</p>' +
+      '<h3>' + _esc(_t('access.profile_changed_title', 'Your style profile changed')) + '</h3>' +
+      '<p>'  + _esc(_t('access.profile_changed_body',  'Take the quiz again to unlock your community.')) + '</p>' +
       '<div class="access-actions">' +
-        '<a href="quiz.html" class="btn access-primary-btn">Take the Style Quiz →</a>' +
-        '<button class="btn-ghost" onclick="closeAccessModal()">Close</button>' +
+        '<a href="quiz.html" class="btn access-primary-btn">' + _esc(_t('access.take_quiz_btn', 'Take the Style Quiz →')) + '</a>' +
+        '<button class="btn-ghost" onclick="closeAccessModal()">' + _esc(_t('access.close', 'Close')) + '</button>' +
       '</div>';
   } else {
     var grp      = COMM_GROUPS.find(function (g) { return g.id === newId; });
@@ -223,13 +257,15 @@ function _showQuizChangedNotice(prevId, newId) {
     var grpColor = grp ? grp.color : '#c084a0';
     box.innerHTML =
       '<div class="access-icon" style="color:' + grpColor + '">✦</div>' +
-      '<h3>Your aesthetic just changed</h3>' +
-      '<p>You\'re now part of the <strong>' + _esc(grpName) + '</strong> circle.<br>' +
-      'Access to your previous circle has been closed.</p>' +
+      '<h3>' + _esc(_t('access.aesthetic_changed_title', 'Your aesthetic just changed')) + '</h3>' +
+      '<p>'  + _t('access.aesthetic_changed_body',
+                  "You're now part of the {name} circle. Access to your previous circle has been closed.",
+                  { name: '<strong>' + _ltrName(grpName) + '</strong>' }) + '</p>' +
       '<div class="access-actions">' +
         '<button class="btn access-primary-btn" style="background:' + grpColor + ';border-color:' + grpColor + '"' +
-          ' onclick="enterGroup(\'' + newId + '\');closeAccessModal()">Enter ' + _esc(grpName) + ' →</button>' +
-        '<button class="btn-ghost" onclick="closeAccessModal()">Stay in the hub</button>' +
+          ' onclick="enterGroup(\'' + newId + '\');closeAccessModal()">' +
+          _t('access.enter_cta', 'Enter {name} →', { name: _ltrName(grpName) }) + '</button>' +
+        '<button class="btn-ghost" onclick="closeAccessModal()">' + _esc(_t('access.stay_in_hub', 'Stay in the hub')) + '</button>' +
       '</div>';
   }
   document.getElementById('access-modal').style.display = 'flex';
@@ -276,9 +312,9 @@ function _renderHub() {
      logic. The hero copy is intentionally subtle — not a giant
      "ADMIN MODE" billboard, just a quiet "All circles open." */
   if (_isAdmin) {
-    if (heroEyebrow) heroEyebrow.textContent = 'Admin Access';
-    if (heroH1)      heroH1.textContent      = 'All circles open.';
-    if (heroSub)     heroSub.textContent      = 'Every community is accessible.';
+    if (heroEyebrow) heroEyebrow.textContent = _t('community.admin_eyebrow', 'Admin Access');
+    if (heroH1)      heroH1.textContent      = _t('community.admin_title',   'All circles open.');
+    if (heroSub)     heroSub.textContent     = _t('community.admin_sub',     'Every community is accessible.');
     container.innerHTML = COMM_GROUPS.map(function (g) {
       return _groupCard(g, 'admin');
     }).join('');
@@ -292,9 +328,9 @@ function _renderHub() {
 
   if (!_userQuiz) {
     // No result yet — invite them to take the quiz
-    if (heroEyebrow) heroEyebrow.textContent = 'Private Circles';
-    if (heroH1)      heroH1.textContent      = 'Find your community.';
-    if (heroSub)     heroSub.textContent      = 'Take the style quiz to discover your aesthetic and unlock your exclusive circle.';
+    if (heroEyebrow) heroEyebrow.textContent = _t('community.circles_eyebrow',      'Private Circles');
+    if (heroH1)      heroH1.textContent      = _t('community.find_community_title', 'Find your community.');
+    if (heroSub)     heroSub.textContent     = _t('community.find_community_sub',   'Take the style quiz to discover your aesthetic and unlock your exclusive circle.');
     container.innerHTML = _noQuizBanner() + COMM_GROUPS.map(function (g) {
       return _groupCard(g, 'noquiz');
     }).join('');
@@ -303,11 +339,12 @@ function _renderHub() {
 
   // User has a quiz result — greet them by name
   var myGroup = COMM_GROUPS.find(function (g) { return g.id === _userQuiz.id; });
-  if (heroEyebrow) heroEyebrow.textContent = 'Your Style Circle';
-  if (heroH1)      heroH1.textContent      = 'Welcome back.';
+  if (heroEyebrow) heroEyebrow.textContent = _t('community.page_eyebrow', 'Your style circle');
+  if (heroH1)      heroH1.textContent      = _t('community.welcome_back', 'Welcome back.');
   if (heroSub)     heroSub.innerHTML       =
-    'You belong to the <strong style="color:' + (myGroup ? myGroup.color : 'inherit') + '">' +
-    _esc(_userQuiz.name) + '</strong> circle.';
+    _t('community.you_belong_to', 'You belong to the {name} circle.', {
+      name: '<strong style="color:' + (myGroup ? myGroup.color : 'inherit') + '">' + _ltrName(_userQuiz.name) + '</strong>'
+    });
 
   // User's own group first, then others
   var sorted = COMM_GROUPS.slice().sort(function (a, b) {
@@ -341,7 +378,7 @@ function _myGroupBanner(group) {
     '</div>' +
     '<div class="cib-right">' +
       '<button class="cib-enter-btn" style="background:' + group.color + '" onclick="enterGroup(\'' + group.id + '\')">' +
-        'Enter My Community →' +
+        _esc(_t('community.enter_my_community', 'Enter My Community →')) +
       '</button>' +
     '</div>' +
     '</div>';
@@ -349,11 +386,11 @@ function _myGroupBanner(group) {
 
 function _noQuizBanner() {
   return '<div class="hub-quiz-cta">' +
-    '<p class="eyebrow">Not sure yet?</p>' +
-    '<h2>Find your aesthetic.</h2>' +
-    '<p>Take the 5-minute style quiz to unlock your exclusive community circle.</p>' +
-    '<a href="quiz.html" class="btn comm-quiz-btn">Take the Style Quiz →</a>' +
-    '<button class="hub-reload-btn" onclick="_retryLoadQuiz()">Already took the quiz? Reload ↻</button>' +
+    '<p class="eyebrow">' + _esc(_t('community.not_sure_eyebrow',    'Not sure yet?'))                                                    + '</p>' +
+    '<h2>'                + _esc(_t('community.find_aesthetic_title','Find your aesthetic.'))                                              + '</h2>' +
+    '<p>'                 + _esc(_t('community.find_aesthetic_sub',  'Take the 5-minute style quiz to unlock your exclusive community circle.')) + '</p>' +
+    '<a href="quiz.html" class="btn comm-quiz-btn">' + _esc(_t('access.take_quiz_btn', 'Take the Style Quiz →')) + '</a>' +
+    '<button class="hub-reload-btn" onclick="_retryLoadQuiz()">' + _esc(_t('community.already_took_btn', 'Already took the quiz? Reload ↻')) + '</button>' +
     '</div>';
 }
 
@@ -417,11 +454,11 @@ function _groupCard(group, state) {
       '<span class="group-symbol">' + group.symbol + '</span>' +
       '<h3 class="group-card-name">' + group.name + '</h3>' +
       '<p class="group-card-tagline">' + group.tagline + '</p>' +
-      (isMine ? '<span class="group-card-badge">Your Circle</span>' : '') +
+      (isMine ? '<span class="group-card-badge">' + _esc(_t('community.your_circle_badge', 'Your Circle')) + '</span>' : '') +
     '</div>' +
     '<div class="group-card-cta">' +
       (canEnter
-        ? '<span class="group-enter-btn">Enter Circle →</span>'
+        ? '<span class="group-enter-btn">' + _esc(_t('community.enter_circle', 'Enter Circle →')) + '</span>'
         : '<span class="group-lock-icon">⊘</span>') +
     '</div>' +
     (isLocked ? '<div class="group-card-frost"></div>' : '') +
@@ -488,11 +525,11 @@ function _tryEnterGroup(group) {
 function _showNoQuizModal() {
   document.getElementById('access-modal-box').innerHTML =
     '<div class="access-icon">✦</div>' +
-    '<h3>Discover your aesthetic first</h3>' +
-    '<p>Take the style quiz to unlock your exclusive community circle.</p>' +
+    '<h3>' + _esc(_t('access.no_quiz_title', 'Discover your aesthetic first')) + '</h3>' +
+    '<p>'  + _esc(_t('access.no_quiz_body',  'Take the style quiz to unlock your exclusive community circle.')) + '</p>' +
     '<div class="access-actions">' +
-      '<a href="quiz.html" class="btn access-primary-btn">Take the Style Quiz →</a>' +
-      '<button class="btn-ghost" onclick="closeAccessModal()">Not now</button>' +
+      '<a href="quiz.html" class="btn access-primary-btn">' + _esc(_t('access.take_quiz_btn', 'Take the Style Quiz →')) + '</a>' +
+      '<button class="btn-ghost" onclick="closeAccessModal()">' + _esc(_t('access.not_now', 'Not now')) + '</button>' +
     '</div>';
   document.getElementById('access-modal').style.display = 'flex';
 }
@@ -503,15 +540,19 @@ function _showWrongGroupModal(groupId) {
   var gName   = group   ? group.name   : groupId;
   var myColor = myGroup ? myGroup.color : '#c4a882';
 
+  /* Aesthetic names interpolate via {name}/{own}; they stay in
+     English and are wrapped in <span dir="ltr"> via _ltrName() so
+     RTL locales don't reverse them. */
   document.getElementById('access-modal-box').innerHTML =
     '<div class="access-icon" style="color:' + myColor + '">⊘</div>' +
-    '<h3>This isn\'t your style circle</h3>' +
-    '<p>The <strong>' + _esc(gName) + '</strong> community is a private group.<br>' +
-    'Your community is <strong>' + _esc(_userQuiz.name) + '</strong>.</p>' +
+    '<h3>' + _esc(_t('access.wrong_circle_title', "This isn't your style circle")) + '</h3>' +
+    '<p>'  + _t('access.wrong_circle_body',  'The {name} community is a private group.', { name: '<strong>' + _ltrName(gName) + '</strong>' }) + '<br>' +
+            _t('access.wrong_circle_yours', 'Your community is {own}.',                    { own:  '<strong>' + _ltrName(_userQuiz.name) + '</strong>' }) +
+    '</p>' +
     '<div class="access-actions">' +
       '<button class="btn access-primary-btn" style="background:' + myColor + ';border-color:' + myColor + '"' +
-        ' onclick="enterGroup(\'' + _userQuiz.id + '\');closeAccessModal()">Go to my circle →</button>' +
-      '<button class="btn-ghost" onclick="closeAccessModal()">Close</button>' +
+        ' onclick="enterGroup(\'' + _userQuiz.id + '\');closeAccessModal()">' + _esc(_t('access.go_to_my_circle', 'Go to my circle →')) + '</button>' +
+      '<button class="btn-ghost" onclick="closeAccessModal()">' + _esc(_t('access.close', 'Close')) + '</button>' +
     '</div>';
   document.getElementById('access-modal').style.display = 'flex';
 }

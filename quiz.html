@@ -63,7 +63,7 @@ window.__auraPublicPage = true;</script>
 <!-- i18n.js loaded FIRST so the quiz IIFE below can read Aura.i18n
      synchronously at first render (otherwise we'd flash English even
      when the user has chosen another language). -->
-<script src="js/i18n.js?v=12"></script>
+<script src="js/i18n.js?v=13"></script>
 <script src="js/data.js?v=10"></script>
 <script src="js/main.js?v=11"></script>
 <script src="js/animations.js?v=16"></script>
@@ -415,17 +415,30 @@ window.__auraPublicPage = true;</script>
      the gate modal. Keeps the page from sitting blank and gives them
      an in-page entry point if they change their mind. */
   function _renderQuizGuestState() {
+    /* Translated via Aura.i18n.t() with the same English fallback as
+       before. Re-rendered on aura:langchange (the auth-guarded path
+       above) so the guest CTA reflects the new language even though
+       the page never reveals the quiz steps to a non-verified user. */
+    function _qt(key, fallback) {
+      if (window.Aura && window.Aura.i18n && window.Aura.i18n.t) {
+        var v = window.Aura.i18n.t(key);
+        if (v && v !== key) return v;
+      }
+      return fallback;
+    }
     container.innerHTML =
       '<div class="quiz-guest-gate" style="text-align:center;padding:80px 24px 60px;max-width:520px;margin:0 auto;">' +
         '<div style="font-size:32px;color:#8a6048;margin-bottom:18px;line-height:1;">✦</div>' +
-        '<h2 style="font-family:Playfair Display,serif;font-size:28px;font-weight:500;line-height:1.18;margin:0 0 14px;color:#1a0e08;">Sign in to take the quiz</h2>' +
+        '<h2 style="font-family:Playfair Display,serif;font-size:28px;font-weight:500;line-height:1.18;margin:0 0 14px;color:#1a0e08;">' +
+          _qt('quiz_guest.title', 'Sign in to take the quiz') +
+        '</h2>' +
         '<p style="font-size:14px;line-height:1.6;color:#4a3b30;margin:0 0 28px;font-weight:300;">' +
-          'Create your Aura profile to discover your aesthetic, save your result, and unlock your style circle.' +
+          _qt('quiz_guest.sub', 'Create your Aura profile to discover your aesthetic, save your result, and unlock your style circle.') +
         '</p>' +
         '<div style="display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto;">' +
-          '<a href="login.html?mode=signup&next=%2Fquiz.html" class="btn" style="display:block;">Create account</a>' +
-          '<a href="login.html?mode=signin&next=%2Fquiz.html" class="btn-ghost" style="display:block;">Sign in</a>' +
-          '<a href="index.html" style="margin-top:8px;font-family:JetBrains Mono,monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:#8a6048;text-decoration:underline;text-underline-offset:3px;">Continue browsing</a>' +
+          '<a href="login.html?mode=signup&next=%2Fquiz.html" class="btn" style="display:block;">' + _qt('quiz_guest.create', 'Create account') + '</a>' +
+          '<a href="login.html?mode=signin&next=%2Fquiz.html" class="btn-ghost" style="display:block;">' + _qt('quiz_guest.signin', 'Sign in') + '</a>' +
+          '<a href="index.html" style="margin-top:8px;font-family:JetBrains Mono,monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:#8a6048;text-decoration:underline;text-underline-offset:3px;">' + _qt('quiz_guest.continue', 'Continue browsing') + '</a>' +
         '</div>' +
       '</div>';
   }
@@ -474,6 +487,20 @@ window.__auraPublicPage = true;</script>
        copy on screen behind / above the fresh translation. */
     var openModal = document.querySelector('.quiz-modal-overlay');
     if (openModal && openModal.parentNode) openModal.remove();
+
+    /* AUTH GUARD (2026-05-26 fix): language switching must NEVER
+       expose quiz questions or the result screen to unverified
+       users. The previous code called render() unconditionally when
+       stepIndex was within QUIZ.length, which meant a guest who
+       landed on quiz.html (and saw the sign-in CTA), then changed
+       the picker language, would suddenly see the actual quiz
+       questions because stepIndex was still 0. Re-route through
+       the same gate that _bootQuiz uses so guests stay on the
+       guest CTA in the new language. */
+    if (window.Aura && Aura.isVerifiedAccount && !Aura.isVerifiedAccount()) {
+      _renderQuizGuestState();
+      return;
+    }
 
     if (stepIndex < QUIZ.length) {
       /* Mid-quiz: re-render the current question. We don't preserve
