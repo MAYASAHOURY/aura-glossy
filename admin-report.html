@@ -412,6 +412,52 @@ body {
   border: 1px solid var(--ink);
 }
 
+/* ── Maintenance banner (shown when window.__auraMaintenanceMode is true) */
+.ar-maint-banner {
+  display: none;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  background: linear-gradient(180deg, #fff5e6 0%, #fef0e0 100%);
+  border: 1px solid rgba(199, 154, 133, 0.42);
+  border-radius: 6px;
+  margin: 0 0 22px;
+}
+.ar-maint-banner.is-visible { display: flex; }
+.ar-maint-banner-icon {
+  font-size: 22px;
+  color: #c79a85;
+  line-height: 1;
+  flex: 0 0 22px;
+}
+.ar-maint-banner-body { flex: 1; min-width: 0; }
+.ar-maint-banner-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8a4a3e;
+  margin: 0 0 6px;
+}
+.ar-maint-banner-text {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #5a3a2e;
+  margin: 0;
+}
+
+/* ── KPI footnote ────────────────────────────────────────── */
+.ar-kpi-note {
+  margin: 12px 2px 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--ink-mute);
+}
+.ar-kpi-note em { font-style: italic; color: var(--ink-soft); }
+
+/* ── Audience tag colours ────────────────────────────────── */
+.ar-tag.is-maint { background: rgba(199,154,133,.14); color: #8a4a3e; border: 1px solid rgba(199,154,133,.32); }
+
 /* ── Empty-state hero ────────────────────────────────────── */
 .ar-empty-hero {
   background: linear-gradient(180deg, var(--paper) 0%, #fffaf4 100%);
@@ -517,6 +563,11 @@ body {
         <button class="ar-pill" data-range="30d">30 days</button>
         <button class="ar-pill" data-range="all">All</button>
       </div>
+      <div class="ar-filters" role="group" aria-label="Audience filter">
+        <span class="ar-filter-label">Audience</span>
+        <button class="ar-pill is-active" data-audience="public" title="Real visitor traffic only — excludes events from admin browsing, test events, and maintenance-screen views.">Public only</button>
+        <button class="ar-pill" data-audience="all" title="Show everything, including admin browsing and test events.">All (incl. admin)</button>
+      </div>
       <div class="ar-filters">
         <span class="ar-filter-label">Aesthetic</span>
         <select class="ar-select" id="ar-aesthetic-filter">
@@ -539,6 +590,18 @@ body {
   </header>
 
   <main class="ar-wrap">
+
+    <!-- Maintenance banner — shown when window.__auraMaintenanceMode === true -->
+    <div class="ar-maint-banner" id="ar-maint-banner" role="status">
+      <div class="ar-maint-banner-icon" aria-hidden="true">⚠</div>
+      <div class="ar-maint-banner-body">
+        <p class="ar-maint-banner-title">Maintenance mode is ON — public traffic may be blocked</p>
+        <p class="ar-maint-banner-text">
+          Public visitors are sealed at the maintenance screen and never load the site's JavaScript, so most of the events below come from admin browsing via the bypass plus events from before / after maintenance windows.
+          To see real visitor data, flip <code>MAINTENANCE_MODE</code> in <code>js/maintenance.js</code> to <code>false</code> and bump the cache buster.
+        </p>
+      </div>
+    </div>
 
     <!-- Empty state hero — shown when no analytics events exist yet -->
     <div class="ar-empty-hero" id="ar-empty-hero" role="status" aria-live="polite">
@@ -565,12 +628,25 @@ body {
         <span class="ar-section-sub" id="ar-overview-meta"></span>
       </div>
       <div class="ar-kpi-grid" id="ar-kpis"></div>
+      <p class="ar-kpi-note" id="ar-kpi-note">Showing <em>public-only</em> events. Toggle <em>All (incl. admin)</em> above to include admin browsing + test events.</p>
     </section>
 
-    <!-- ── 2. NEW USERS ── -->
+    <!-- ── 2. LATEST EVENTS — live feed of every individual event ── -->
     <section class="ar-section">
       <div class="ar-section-head">
         <span class="ar-section-num">02</span>
+        <h2 class="ar-section-title">Latest events</h2>
+        <span class="ar-section-sub">Live feed — most recent first</span>
+      </div>
+      <div class="ar-card">
+        <div id="ar-latest-events-table"></div>
+      </div>
+    </section>
+
+    <!-- ── 3. NEW USERS ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">03</span>
         <h2 class="ar-section-title">New users</h2>
       </div>
       <div class="ar-card">
@@ -582,7 +658,7 @@ body {
     <!-- ── 3. GUEST BEHAVIOR ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">03</span>
+        <span class="ar-section-num">04</span>
         <h2 class="ar-section-title">Guest funnel</h2>
         <span class="ar-section-sub">Where guests drop before signing up</span>
       </div>
@@ -594,7 +670,7 @@ body {
     <!-- ── 6. SHOPPING ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">04</span>
+        <span class="ar-section-num">05</span>
         <h2 class="ar-section-title">Shopping</h2>
       </div>
       <div class="ar-cols-2">
@@ -616,7 +692,7 @@ body {
     <!-- ── 9. SIGNUP MODAL ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">05</span>
+        <span class="ar-section-num">06</span>
         <h2 class="ar-section-title">Signup modal</h2>
         <span class="ar-section-sub">What triggers it; what people do after</span>
       </div>
@@ -635,7 +711,7 @@ body {
     <!-- ── 10. DEVICE / BROWSER ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">06</span>
+        <span class="ar-section-num">07</span>
         <h2 class="ar-section-title">Device &amp; browser</h2>
       </div>
       <div class="ar-cols-2">
@@ -663,7 +739,7 @@ body {
     <!-- ── 4. STYLE / AESTHETIC ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">07</span>
+        <span class="ar-section-num">08</span>
         <h2 class="ar-section-title">Aesthetics</h2>
       </div>
       <div class="ar-card">
@@ -675,7 +751,7 @@ body {
     <!-- ── 5. QUIZ ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">08</span>
+        <span class="ar-section-num">09</span>
         <h2 class="ar-section-title">Quiz</h2>
       </div>
       <div class="ar-cols-2">
@@ -696,7 +772,7 @@ body {
     <!-- ── 7. COMMUNITY ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">09</span>
+        <span class="ar-section-num">10</span>
         <h2 class="ar-section-title">Community</h2>
       </div>
       <div class="ar-cols-2">
@@ -714,7 +790,7 @@ body {
     <!-- ── 8. MOODBOARD ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">10</span>
+        <span class="ar-section-num">11</span>
         <h2 class="ar-section-title">Moodboard</h2>
       </div>
       <div class="ar-cols-2">
@@ -732,7 +808,7 @@ body {
     <!-- ── 11. TECHNICAL HEALTH ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">11</span>
+        <span class="ar-section-num">12</span>
         <h2 class="ar-section-title">Technical health</h2>
       </div>
       <div class="ar-card">
@@ -747,7 +823,7 @@ body {
     <!-- ── 12. ADMIN ACTIONS ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">12</span>
+        <span class="ar-section-num">13</span>
         <h2 class="ar-section-title">Admin actions</h2>
       </div>
       <div class="ar-card">
@@ -777,7 +853,7 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/firebase.js?v=22"></script>
-<script src="js/admin-report.js?v=2"></script>
+<script src="js/admin-report.js?v=3"></script>
 
 </body>
 </html>

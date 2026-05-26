@@ -24,6 +24,7 @@
   var _db, _auth;
   var _range = '7d';
   var _aesthetic = '';
+  var _audience = 'public'; /* 'public' | 'all' — see _filterAudience() */
   var _events = [];   /* current loaded events (capped) */
   var _users  = [];   /* most-recent users sample */
   var _loading = false;
@@ -121,6 +122,14 @@
   function _start() {
     showOverlay('ar-app');
 
+    /* Maintenance banner — visible whenever maintenance.js exposed
+       the global flag, regardless of bypass state. This is the
+       authoritative signal that public traffic is being sealed. */
+    if (window.__auraMaintenanceMode) {
+      var banner = $('ar-maint-banner');
+      if (banner) banner.classList.add('is-visible');
+    }
+
     /* Range pills */
     var pills = document.querySelectorAll('.ar-pill[data-range]');
     for (var i = 0; i < pills.length; i++) {
@@ -130,6 +139,18 @@
         _range = r;
         for (var j = 0; j < pills.length; j++) pills[j].classList.toggle('is-active', pills[j] === e.currentTarget);
         _loadAll();
+      });
+    }
+    /* Audience pills (public/all). Doesn't re-fetch — events are already
+       loaded; we just re-filter + re-render. Instant. */
+    var audPills = document.querySelectorAll('.ar-pill[data-audience]');
+    for (var ai = 0; ai < audPills.length; ai++) {
+      audPills[ai].addEventListener('click', function (e) {
+        var a = e.currentTarget.getAttribute('data-audience');
+        if (!a || a === _audience) return;
+        _audience = a;
+        for (var aj = 0; aj < audPills.length; aj++) audPills[aj].classList.toggle('is-active', audPills[aj] === e.currentTarget);
+        _render();
       });
     }
     /* Aesthetic filter */
@@ -194,11 +215,29 @@
     });
   }
 
+  /* ── Audience filter ──────────────────────────────────────────
+     "public" mode excludes events that aren't real visitor traffic:
+       • isAdmin === true        (admin browsing via bypass)
+       • test    === true        (synthetic test events)
+       • isMaintenanceScreen=true (events fired from the maintenance
+                                   screen itself, if we ever start
+                                   tracking them — schema is ready)
+     "all" mode shows everything. ────────────────────────────── */
+  function _isPublicEvent(e) {
+    if (e.isAdmin === true) return false;
+    if (e.test === true) return false;
+    if (e.isMaintenanceScreen === true) return false;
+    return true;
+  }
+
   /* ── Render: dispatch to each section ─────────────────────── */
   function _render() {
-    var ev = _aesthetic
-      ? _events.filter(function (e) { return e.aesthetic === _aesthetic; })
-      : _events;
+    var publicOnly = _audience === 'public';
+    var ev = _events.filter(function (e) {
+      if (_aesthetic && e.aesthetic !== _aesthetic) return false;
+      if (publicOnly && !_isPublicEvent(e)) return false;
+      return true;
+    });
 
     /* Empty-state hero: only show when there are NO events at all for
        the current range (pre-filter). If the filter is what produced
@@ -210,14 +249,28 @@
       hero.classList.toggle('is-visible', trulyEmpty);
     }
 
-    /* Update meta strip */
+    /* Update meta strip — show both the filtered count and (when
+       relevant) the excluded count so the admin sees exactly what
+       was hidden by the audience filter. */
     var meta = $('ar-overview-meta');
     if (meta) {
+      var excludedCount = _events.length - ev.length;
       meta.textContent = ev.length + ' events · range: ' + _rangeLabel(_range)
-        + (_aesthetic ? ' · ' + COMM_LABELS[_aesthetic] : '');
+        + (_aesthetic ? ' · ' + COMM_LABELS[_aesthetic] : '')
+        + (excludedCount > 0 ? ' · ' + excludedCount + ' filtered out' : '');
+    }
+    /* Update KPI note to reflect the current toggle */
+    var note = $('ar-kpi-note');
+    if (note) {
+      if (publicOnly) {
+        note.innerHTML = 'Showing <em>public-only</em> events. Toggle <em>All (incl. admin)</em> above to include admin browsing + test events.';
+      } else {
+        note.innerHTML = 'Showing <em>all</em> events including admin browsing and test data.';
+      }
     }
 
     _renderKpis(ev);
+    _renderLatestEvents(ev);
     _renderUsers();
     _renderGuestFunnel(ev);
     _renderShopping(ev);
@@ -228,6 +281,38 @@
     _renderCommunity(ev);
     _renderMoodboard(ev);
     _renderErrors(ev);
+  }
+
+  /* ── Latest events — live feed of individual events ────────── */
+  function _renderLatestEvents(ev) {
+    var el = $('ar-latest-events-table');
+    if (!el) return;
+    if (!ev.length) {
+      el.innerHTML = '<div class="ar-stub" style="text-align:left">No events match the current filter. Try widening the date range or switching to <em>All (incl. admin)</em> at the top.</div>';
+      return;
+    }
+    var rows = ev.slice(0, 50).map(function (e) {
+      var role;
+      if (e.isAdmin) role = '<span class="ar-tag is-admin">admin</span>';
+      else if (e.isGuest) role = '<span class="ar-tag is-guest">guest</span>';
+      else role = '<span class="ar-tag is-user">user</span>';
+      var maint = e.isMaintenanceMode
+        ? '<span class="ar-tag is-maint">maint</span>'
+        : '<span class="dim">—</span>';
+      var browser = e.inApp ? ('inapp · ' + e.inApp) : (e.browser || '—');
+      return '<tr>' +
+        '<td class="dim">' + fmtTime(e.ts) + '</td>' +
+        '<td class="mono">' + txt(e.type) + '</td>' +
+        '<td class="trunc mono dim">' + txt(e.path || '—') + '</td>' +
+        '<td>' + role + '</td>' +
+        '<td>' + maint + '</td>' +
+        '<td>' + (e.aesthetic ? txt(COMM_LABELS[e.aesthetic] || e.aesthetic) : '<span class="dim">—</span>') + '</td>' +
+        '<td class="mono dim">' + txt(browser) + '</td>' +
+      '</tr>';
+    }).join('');
+    el.innerHTML = '<table class="ar-table"><thead><tr>' +
+      '<th>Time</th><th>Type</th><th>Path</th><th>Role</th><th>Maint</th><th>Aesthetic</th><th>Browser</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table>';
   }
   function _rangeLabel(r) {
     return { 'today': 'today', '7d': 'last 7 days', '30d': 'last 30 days', 'all': 'all time' }[r] || r;

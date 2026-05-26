@@ -196,6 +196,7 @@ service cloud.firestore {
     function validAnalyticsEvent() {
       let r = request.resource.data;
       let allowed = ['type','ts','sessionId','isGuest','uid','email','isAdmin',
+                     'isMaintenanceMode','isMaintenanceScreen',
                      'lang','rtl','device','browser','os','inApp','path','referrer',
                      'aesthetic','outfitIndex','category','retailer','shopUrl','source',
                      'quizResultId','quizQuestionIndex','modalAction','modalReason',
@@ -206,6 +207,7 @@ service cloud.firestore {
                    'community_view','community_post','community_comment','community_reaction',
                    'signup_modal_open','signup_modal_action',
                    'lang_change','admin_login','admin_login_failed',
+                   'maintenance_view',
                    'error','test'];
       return r.keys().hasOnly(allowed)
         && r.type is string && r.type in types
@@ -215,6 +217,8 @@ service cloud.firestore {
         && (r.uid == null || (r.uid is string && r.uid.size() <= 128))
         && (!('email' in r) || r.email == null || (r.email is string && r.email.size() <= 200))
         && (!('isAdmin' in r) || r.isAdmin is bool)
+        && (!('isMaintenanceMode' in r) || r.isMaintenanceMode is bool)
+        && (!('isMaintenanceScreen' in r) || r.isMaintenanceScreen is bool)
         && (!('lang' in r) || (r.lang is string && r.lang.size() <= 4))
         && (!('rtl' in r) || r.rtl is bool)
         && (!('device' in r) || (r.device is string && r.device.size() <= 16))

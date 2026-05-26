@@ -154,6 +154,13 @@
       uid:       _user ? _user.uid : null,
       email:     _user && _user.email ? String(_user.email).slice(0, 200) : null,
       isAdmin:   !!_isAdmin,
+      /* True when the maintenance gate was ON at the time of this event.
+         Lets the admin report cleanly separate "events while the public
+         surface was sealed" (almost always admin browsing via bypass)
+         from real public visitor traffic. window.__auraMaintenanceMode
+         is set synchronously by js/maintenance.js before any other head
+         script runs, so it's always defined here. */
+      isMaintenanceMode: !!(typeof window !== 'undefined' && window.__auraMaintenanceMode),
       lang:      _lang(),
       rtl:       _rtl(),
       device:    _device(),
