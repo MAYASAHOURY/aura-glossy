@@ -147,6 +147,9 @@
     if (csv) csv.addEventListener('click', _exportCsv);
     var del = $('ar-delete-tests');
     if (del) del.addEventListener('click', _deleteTestEvents);
+    /* Empty-state Refresh button uses the same handler as the top bar */
+    var emptyRefresh = $('ar-empty-refresh');
+    if (emptyRefresh) emptyRefresh.addEventListener('click', function () { _loadAll(); });
 
     _loadAll();
   }
@@ -196,6 +199,16 @@
     var ev = _aesthetic
       ? _events.filter(function (e) { return e.aesthetic === _aesthetic; })
       : _events;
+
+    /* Empty-state hero: only show when there are NO events at all for
+       the current range (pre-filter). If the filter is what produced
+       zero, the sections themselves render per-section empty stubs.
+       Status strip stays visible either way for legibility. */
+    var hero = $('ar-empty-hero');
+    if (hero) {
+      var trulyEmpty = _events.length === 0;
+      hero.classList.toggle('is-visible', trulyEmpty);
+    }
 
     /* Update meta strip */
     var meta = $('ar-overview-meta');

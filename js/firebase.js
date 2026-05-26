@@ -904,6 +904,128 @@ if (_authChannel) {
   };
 }
 
+/* ─────────────────────────────────────────────────────────────────
+   ADMIN STATUS INDICATOR  —  "● Hi Boss" badge
+
+   Tiny premium pill fixed at top-left of every page that loads
+   firebase.js. Shown ONLY when:
+     • Firebase user is currently signed in, AND
+     • users/{uid}.isAdmin === true  (server-trusted Firestore field)
+
+   Never shown for guests or normal authenticated users.
+
+   Implementation choices:
+   ─────────────────────────────────────────────────────────────────
+   • position: fixed — no layout shift; rendering is independent
+     of the nav so it can coexist with every page's chrome.
+   • pointer-events: none — clicks pass through to the nav beneath
+     so it can't accidentally shadow a logo / link tap.
+   • single users/{uid}.get() per sign-in (not a snapshot) — the
+     indicator doesn't need live admin-flag updates. A reload picks
+     up a flipped flag, and that's fine for a status badge.
+   • The "AUTHED + ADMIN" check happens fully client-side, but the
+     authority on what an admin can DO remains the Firestore rules.
+     If a non-admin somehow forces the indicator on via DevTools,
+     they still can't read/write admin-only data.
+   ───────────────────────────────────────────────────────────────── */
+(function _adminIndicator() {
+  var STYLE_ID = 'aura-admin-indicator-style';
+  var EL_ID    = 'aura-admin-indicator';
+
+  function _injectStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+    var s = document.createElement('style');
+    s.id = STYLE_ID;
+    s.textContent =
+      '.aura-admin-indicator{' +
+        /* Tucks into the nav's top padding strip — sits above the
+           visible AURA logo letters (which render ~23px below the
+           viewport top in the default nav). Tight line-height + small
+           padding keeps the total box height under that gap. */
+        'position:fixed;top:3px;left:8px;z-index:1000;' +
+        'display:none;align-items:center;gap:6px;' +
+        'padding:2.5px 9px 2.5px 7px;' +
+        'background:rgba(18,12,8,.78);' +
+        '-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);' +
+        'border:1px solid rgba(110,200,144,.32);border-radius:999px;' +
+        'font-family:"JetBrains Mono","Inter",monospace,sans-serif;' +
+        'font-size:8.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;line-height:1;' +
+        'color:rgba(240,229,214,.92);' +
+        'pointer-events:none;user-select:none;' +
+        'opacity:0;transition:opacity .42s ease;' +
+        'box-shadow:0 4px 14px rgba(0,0,0,.18)' +
+      '}' +
+      '.aura-admin-indicator.is-visible{display:inline-flex;opacity:1}' +
+      '.aura-admin-indicator-dot{' +
+        'display:inline-block;width:5px;height:5px;border-radius:50%;' +
+        'background:#6ec890;' +
+        'box-shadow:0 0 5px rgba(110,200,144,.85),0 0 12px rgba(110,200,144,.45);' +
+        'animation:auraAdminPulse 2.4s ease-in-out infinite' +
+      '}' +
+      '@keyframes auraAdminPulse{0%,100%{opacity:.78;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}' +
+      '@media (prefers-reduced-motion:reduce){' +
+        '.aura-admin-indicator-dot{animation:none}' +
+      '}' +
+      '@media (max-width:520px){' +
+        /* On phones the burger sits top-right, so top-left has plenty
+           of clearance. Slightly larger tap-target-friendly footprint. */
+        '.aura-admin-indicator{top:3px;left:6px;font-size:8.5px;padding:2.5px 9px 2.5px 7px;letter-spacing:.14em}' +
+        '.aura-admin-indicator-dot{width:5px;height:5px}' +
+      '}';
+    document.head.appendChild(s);
+  }
+
+  function _injectEl() {
+    var existing = document.getElementById(EL_ID);
+    if (existing) return existing;
+    if (!document.body) return null;
+    var el = document.createElement('div');
+    el.id = EL_ID;
+    el.className = 'aura-admin-indicator';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-label', 'Admin signed in');
+    el.innerHTML =
+      '<span class="aura-admin-indicator-dot" aria-hidden="true"></span>' +
+      '<span class="aura-admin-indicator-text">Hi Boss</span>';
+    document.body.appendChild(el);
+    return el;
+  }
+  function _hide() {
+    var el = document.getElementById(EL_ID);
+    if (el) el.classList.remove('is-visible');
+  }
+  function _show() {
+    _injectStyles();
+    var el = _injectEl();
+    if (!el) return;
+    /* Double-rAF so the just-set display:flex committed before we
+       trigger the opacity transition — otherwise the badge would
+       flash in at full opacity instead of fading in. */
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        el.classList.add('is-visible');
+      });
+    });
+  }
+
+  /* Reads the admin flag from Firestore ONCE per sign-in. If the
+     read fails (offline, rules glitch) we fail closed — no indicator. */
+  function _checkAdmin(user) {
+    if (!user) { _hide(); return; }
+    _db.collection('users').doc(user.uid).get().then(function (snap) {
+      var isAdmin = !!(snap.exists && snap.data() && snap.data().isAdmin === true);
+      if (isAdmin) _show(); else _hide();
+    }).catch(function () { _hide(); });
+  }
+
+  function _go() {
+    _injectStyles();
+    _auth.onAuthStateChanged(_checkAdmin);
+  }
+  if (document.readyState !== 'loading') _go();
+  else document.addEventListener('DOMContentLoaded', _go);
+})();
+
 /* ── Mobile burger menu — instant tap on iOS WebViews ──────────────
    firebase.js runs on every page, so wiring the burger here means
    every page gets the same instant-response handler — including

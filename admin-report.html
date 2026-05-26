@@ -412,6 +412,64 @@ body {
   border: 1px solid var(--ink);
 }
 
+/* ── Empty-state hero ────────────────────────────────────── */
+.ar-empty-hero {
+  background: linear-gradient(180deg, var(--paper) 0%, #fffaf4 100%);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 48px 32px 40px;
+  text-align: center;
+  margin: 0 0 32px;
+  display: none;
+}
+.ar-empty-hero.is-visible { display: block; }
+.ar-empty-hero-icon {
+  font-size: 32px;
+  color: var(--rose);
+  line-height: 1;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 2px 6px rgba(192,132,160,.28));
+}
+.ar-empty-hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 10px;
+}
+.ar-empty-hero-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 26px;
+  line-height: 1.25;
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+.ar-empty-hero-title em { font-style: italic; color: var(--rose); }
+.ar-empty-hero-body {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 520px;
+  margin: 0 auto 22px;
+}
+.ar-empty-hero-cta {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  border: 1px solid var(--ink);
+  cursor: pointer;
+  transition: opacity 0.18s, transform 0.18s;
+}
+.ar-empty-hero-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+
 /* ── Footer ──────────────────────────────────────────────── */
 .ar-foot {
   text-align: center;
@@ -481,6 +539,18 @@ body {
   </header>
 
   <main class="ar-wrap">
+
+    <!-- Empty state hero — shown when no analytics events exist yet -->
+    <div class="ar-empty-hero" id="ar-empty-hero" role="status" aria-live="polite">
+      <div class="ar-empty-hero-icon" aria-hidden="true">✦</div>
+      <div class="ar-empty-hero-eyebrow">Aura Report</div>
+      <h2 class="ar-empty-hero-title">No events <em>yet</em>.</h2>
+      <p class="ar-empty-hero-body">
+        Analytics begin collecting the moment visitors touch the site — every page view, shop click, signup-modal open, save attempt, quiz step, and community action lives here.
+        While maintenance mode is active the public surface is sealed, so the only events you'll see are your own admin sign-ins. Lift maintenance to start the flow.
+      </p>
+      <button type="button" class="ar-empty-hero-cta" id="ar-empty-refresh">↻ Refresh</button>
+    </div>
 
     <!-- Status / hint -->
     <div class="ar-status is-info" id="ar-status">
@@ -706,8 +776,8 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="js/firebase.js?v=19"></script>
-<script src="js/admin-report.js?v=1"></script>
+<script src="js/firebase.js?v=20"></script>
+<script src="js/admin-report.js?v=2"></script>
 
 </body>
 </html>
