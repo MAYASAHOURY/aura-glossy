@@ -54,13 +54,34 @@
             html.push('<span class="word-wrap"><span class="word">' + chunk + '</span></span>');
           });
         } else if (node.nodeType === 1) {
-          // Element node (e.g. <em>) — wrap as a single word unit
+          // Element node (e.g. <em>) — wrap as a single word unit.
+          // Preserve ALL attributes of the inner element so things
+          // like data-i18n (used by the language switcher) survive
+          // the wrap. Without this, querySelectorAll('[data-i18n]')
+          // returns zero matches after the hero animates, so a later
+          // setLang() call has nothing to re-translate and the title
+          // stays stuck in the originally-rendered language. Logged
+          // 2026-05-26 against the live homepage: switcher said
+          // "English" but the hero rendered in Hebrew.
           var tag = node.tagName.toLowerCase();
-          html.push(
-            '<span class="word-wrap"><span class="word">' +
-            '<' + tag + '>' + node.innerHTML + '</' + tag + '>' +
-            '</span></span>'
-          );
+          /* Self-closing void element (e.g. <br>) — pass through
+             unwrapped. Wrapping <br> as a "word" produced a stray
+             second <br> (browsers parsed the closing tag as another
+             open tag) and added extra vertical whitespace. */
+          if (tag === 'br' || tag === 'hr' || tag === 'img') {
+            html.push(node.outerHTML);
+          } else {
+            var attrs = '';
+            for (var ai = 0; ai < node.attributes.length; ai++) {
+              var a = node.attributes[ai];
+              attrs += ' ' + a.name + '="' + String(a.value).replace(/"/g, '&quot;') + '"';
+            }
+            html.push(
+              '<span class="word-wrap"><span class="word">' +
+              '<' + tag + attrs + '>' + node.innerHTML + '</' + tag + '>' +
+              '</span></span>'
+            );
+          }
         }
       });
       el.innerHTML = html.join('');
