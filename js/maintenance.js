@@ -41,15 +41,26 @@
   };
   var FB_SDK_BASE = 'https://www.gstatic.com/firebasejs/9.22.0/';
   var BYPASS_KEY_PERSIST  = 'aura_admin_bypass';
-  /* Canonical owner-admin email. Pre-fills the form on first open so
-     the owner doesn't have to retype it every time. The actual admin
-     grant is the Firestore users/{uid}.isAdmin === true field — this
-     constant is UX only, never trusted on its own. */
+  /* Canonical owner identity. Pre-fills the form on first open so
+     the owner doesn't have to retype every time. The actual admin
+     grant is the Firestore users/{uid}.isAdmin === true field — these
+     constants are UX-only, never trusted on their own.
+
+     LABEL is a friendly display name shown above the email field
+     ("Maya Admin"). After a successful admin sign-in, both label and
+     email are persisted to localStorage so the modal greets the same
+     admin on subsequent visits. EMAIL is always editable; LABEL is
+     display-only and updates from Firebase user.displayName after the
+     first successful login (or stays at the default if no displayName
+     is set on the account).
+
+     PASSWORD IS NEVER STORED. Firebase Auth is the sole password
+     authority. The "Forgot admin password?" link in the modal triggers
+     Firebase's sendPasswordResetEmail() — recovery flows through
+     Firebase, not through us. */
+  var ADMIN_DEFAULT_LABEL  = 'Maya Admin';
   var ADMIN_DEFAULT_EMAIL  = 'auraglossy.support@gmail.com';
-  /* Stores the email that last completed a successful admin sign-in,
-     so subsequent maintenance-page visits on the same browser pre-fill
-     with whatever the admin used (might be a different admin email
-     than the default). Reset by clearing browser storage. */
+  var REMEMBERED_LABEL_KEY = 'aura_admin_last_label';
   var REMEMBERED_EMAIL_KEY = 'aura_admin_last_email';
 
   /* ── Admin bypass (URL flag, persisted in localStorage) ───────────────────
@@ -177,6 +188,15 @@
     + '  .aura-admin-hint{margin-top:14px;min-height:18px;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:11.5px;line-height:1.5;text-align:center;color:#8a7a6c;transition:color .24s ease}'
     + '  .aura-admin-hint.is-error{color:#d49a8c}'
     + '  .aura-admin-hint.is-loading{color:#c79a85}'
+    + '  .aura-admin-hint.is-success{color:#e7c8b5}'
+    /* ── Saved-admin identity row (avatar circle + friendly label) ── */
+    + '  .aura-admin-identity{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;margin:0 0 18px;border:1px solid rgba(199,154,133,.18);border-radius:999px;background:rgba(199,154,133,.06)}'
+    + '  .aura-admin-identity-avatar{width:26px;height:26px;flex:0 0 26px;border-radius:50%;background:linear-gradient(180deg,rgba(199,154,133,.42),rgba(176,135,112,.42));color:#f5ede3;display:flex;align-items:center;justify-content:center;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}'
+    + '  .aura-admin-identity-name{flex:1;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:12px;font-weight:500;letter-spacing:.04em;color:#f0e5d6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    /* ── "Forgot admin password?" link — subtle text button under hint ── */
+    + '  .aura-admin-forgot{display:block;margin:12px auto 0;background:none;border:none;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:11px;font-weight:400;letter-spacing:.04em;color:rgba(185,169,154,.62);text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(185,169,154,.32);cursor:pointer;padding:6px 8px;transition:color .24s ease,text-decoration-color .24s ease}'
+    + '  .aura-admin-forgot:hover,.aura-admin-forgot:focus-visible{color:#c79a85;text-decoration-color:rgba(199,154,133,.6);outline:none}'
+    + '  .aura-admin-forgot:disabled{opacity:.45;cursor:not-allowed}'
     + '  @media (max-width:520px){.aura-admin-card{padding:30px 22px 24px}.aura-admin-title{font-size:22px}.aura-admin-trigger{bottom:20px;padding:14px 22px;letter-spacing:.28em}}'
     + '</style>';
 
@@ -203,6 +223,10 @@
     +     '<div class="aura-admin-eyebrow">Aura Glossy</div>'
     +     '<h2 class="aura-admin-title" id="aura-admin-title">Admin access</h2>'
     +     '<p class="aura-admin-sub">Sign in with your admin account to continue while the site is under maintenance.</p>'
+    +     '<div class="aura-admin-identity" id="aura-admin-identity" aria-hidden="true">'
+    +       '<span class="aura-admin-identity-avatar" id="aura-admin-identity-avatar">M</span>'
+    +       '<span class="aura-admin-identity-name" id="aura-admin-identity-name">Maya Admin</span>'
+    +     '</div>'
     +     '<form id="aura-admin-form" autocomplete="off" novalidate>'
     +       '<div class="aura-admin-field">'
     +         '<label class="aura-admin-label" for="aura-admin-email">Email</label>'
@@ -214,6 +238,7 @@
     +       '</div>'
     +       '<button type="submit" class="aura-admin-submit" id="aura-admin-submit">Enter</button>'
     +       '<p class="aura-admin-hint" id="aura-admin-hint" aria-live="polite" aria-atomic="true"></p>'
+    +       '<button type="button" class="aura-admin-forgot" id="aura-admin-forgot">Forgot admin password?</button>'
     +     '</form>'
     +   '</div>'
     + '</div>'
@@ -290,8 +315,11 @@
      ───────────────────────────────────────────────────────────────── */
   _wireAdminEntry();
 
-  /* Email memory helpers — separate from _wireAdminEntry so the
-     hoisting order works regardless of where each is called. */
+  /* Identity-memory helpers — separate from _wireAdminEntry so the
+     hoisting order works regardless of where each is called. We store
+     ONLY the admin label (display name) and email. The password is
+     never written to localStorage, sessionStorage, Firestore, or any
+     other persistence layer; Firebase Auth owns it. */
   function _getRememberedEmail() {
     try {
       var v = localStorage.getItem(REMEMBERED_EMAIL_KEY);
@@ -299,23 +327,41 @@
     } catch (e) {}
     return ADMIN_DEFAULT_EMAIL;
   }
-  function _rememberEmail(email) {
+  function _getRememberedLabel() {
+    try {
+      var v = localStorage.getItem(REMEMBERED_LABEL_KEY);
+      if (v && typeof v === 'string' && v.trim()) return v.trim();
+    } catch (e) {}
+    return ADMIN_DEFAULT_LABEL;
+  }
+  /* Save the identity of the admin who just signed in. Both fields are
+     optional — pass `null` to preserve the previously remembered value
+     for that field (e.g. Firebase user with no displayName shouldn't
+     clobber an existing label). */
+  function _rememberIdentity(email, label) {
     try {
       if (email && typeof email === 'string' && /\S+@\S+\.\S+/.test(email)) {
         localStorage.setItem(REMEMBERED_EMAIL_KEY, email);
+      }
+      if (label && typeof label === 'string' && label.trim()) {
+        localStorage.setItem(REMEMBERED_LABEL_KEY, label.trim());
       }
     } catch (e) {}
   }
 
   function _wireAdminEntry() {
-    var trigger  = document.getElementById('aura-admin-trigger');
-    var overlay  = document.getElementById('aura-admin-overlay');
-    var closeBtn = document.getElementById('aura-admin-close');
-    var form     = document.getElementById('aura-admin-form');
-    var emailEl  = document.getElementById('aura-admin-email');
-    var passEl   = document.getElementById('aura-admin-password');
-    var submitEl = document.getElementById('aura-admin-submit');
-    var hintEl   = document.getElementById('aura-admin-hint');
+    var trigger    = document.getElementById('aura-admin-trigger');
+    var overlay    = document.getElementById('aura-admin-overlay');
+    var closeBtn   = document.getElementById('aura-admin-close');
+    var form       = document.getElementById('aura-admin-form');
+    var emailEl    = document.getElementById('aura-admin-email');
+    var passEl     = document.getElementById('aura-admin-password');
+    var submitEl   = document.getElementById('aura-admin-submit');
+    var hintEl     = document.getElementById('aura-admin-hint');
+    var forgotEl   = document.getElementById('aura-admin-forgot');
+    var identityEl = document.getElementById('aura-admin-identity');
+    var nameEl     = document.getElementById('aura-admin-identity-name');
+    var avatarEl   = document.getElementById('aura-admin-identity-avatar');
     if (!trigger || !overlay || !form) return;
 
     var _busy = false;
@@ -326,15 +372,31 @@
       hintEl.textContent = msg || '';
       hintEl.classList.remove('is-error');
       hintEl.classList.remove('is-loading');
+      hintEl.classList.remove('is-success');
       if (state === 'error')   hintEl.classList.add('is-error');
       if (state === 'loading') hintEl.classList.add('is-loading');
+      if (state === 'success') hintEl.classList.add('is-success');
     }
-    function setBusy(b) {
+    /* `busyLabel` is optional: when present (e.g. 'Verifying…') the
+       submit button text changes to that label. Forgot-password flow
+       passes nothing so the button keeps reading "Enter" while just
+       being disabled — the hint area carries the actual status. */
+    function setBusy(b, busyLabel) {
       _busy = !!b;
       if (submitEl) {
         submitEl.disabled = _busy;
-        submitEl.textContent = _busy ? 'Verifying…' : 'Enter';
+        if (_busy && busyLabel)      submitEl.textContent = busyLabel;
+        else if (!_busy)              submitEl.textContent = 'Enter';
       }
+      if (forgotEl) forgotEl.disabled = _busy;
+    }
+    /* Refresh the identity row (avatar letter + display name) from
+       whatever label is currently remembered. Called on every modal
+       open so the row reflects the most recent saved admin. */
+    function _refreshIdentity() {
+      var label = _getRememberedLabel();
+      if (nameEl)   nameEl.textContent   = label;
+      if (avatarEl) avatarEl.textContent = (label || 'A').charAt(0).toUpperCase();
     }
     function openPanel() {
       _prevFocus = document.activeElement;
@@ -343,9 +405,10 @@
       try { document.body.style.overflow = 'hidden'; } catch (e) {}
       setHint('');
       setBusy(false);
-      /* Pre-fill the email field with the last admin email used on this
-         device, or the canonical default if none. Editable — a second
-         admin can still sign in by replacing the value. */
+      /* Refresh the identity row from whatever label is remembered,
+         then pre-fill the email field. Password field stays empty
+         every single time — it is never persisted anywhere. */
+      _refreshIdentity();
       if (emailEl && !emailEl.value) {
         emailEl.value = _getRememberedEmail();
       }
@@ -390,7 +453,7 @@
         setHint('Enter your email and password.', 'error');
         return;
       }
-      setBusy(true);
+      setBusy(true, 'Verifying…');
       setHint('Verifying…', 'loading');
 
       _loadFirebase().then(function () {
@@ -411,11 +474,14 @@
                 throw err;
               });
             }
-            /* Admin verified — remember the email that succeeded for
-               next time, set the existing bypass flag, and reload.
-               Reload via location.replace so back-button can't bring the
-               maintenance gate back during this session. */
-            _rememberEmail(email);
+            /* Admin verified — remember the email that succeeded AND the
+               admin's displayName (label) for next time, set the existing
+               bypass flag, then reload. Password is NEVER persisted; if
+               displayName is empty we pass null so an existing remembered
+               label survives. Reload via location.replace so back-button
+               can't bring the maintenance gate back during this session. */
+            var displayName = (cred.user && cred.user.displayName) ? cred.user.displayName : null;
+            _rememberIdentity(email, displayName);
             try { localStorage.setItem(BYPASS_KEY_PERSIST, 'true'); } catch (e) {}
             setHint('Welcome back. Loading the site…', 'loading');
             setTimeout(function () {
@@ -456,6 +522,62 @@
           msg = 'This account is disabled.';
         } else {
           msg = 'Admin login unavailable. Try again.';
+        }
+        setHint(msg, 'error');
+      });
+    });
+
+    /* ─────────────────────────────────────────────────────────────
+       "Forgot admin password?" — Firebase password reset flow.
+
+       Sends a Firebase password-reset email to whatever email is
+       currently in the field. Firebase Auth is the sole password
+       authority; we never see, store, or transmit a new password —
+       Firebase emails the admin a magic reset link, they click it,
+       set a new password on Firebase's own page, and come back.
+
+       Soft success / error states render in the same hint area as
+       the sign-in flow. Both buttons are disabled while a reset is
+       in flight so the user can't double-submit.
+       ───────────────────────────────────────────────────────────── */
+    if (forgotEl) forgotEl.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (_busy) return;
+      var email = (emailEl && emailEl.value || '').trim();
+      if (!email) {
+        setHint('Enter your admin email first.', 'error');
+        try { emailEl.focus(); } catch (_) {}
+        return;
+      }
+      if (!/\S+@\S+\.\S+/.test(email)) {
+        setHint('Enter a valid email first.', 'error');
+        try { emailEl.focus(); } catch (_) {}
+        return;
+      }
+      setBusy(true); /* no busy label — Enter button just disables */
+      setHint('Sending reset email…', 'loading');
+
+      _loadFirebase().then(function () {
+        return firebase.auth().sendPasswordResetEmail(email);
+      }).then(function () {
+        setBusy(false);
+        setHint('Password reset email sent to ' + email + '. Check your inbox.', 'success');
+      }).catch(function (err) {
+        setBusy(false);
+        var code = err && err.code;
+        var msg;
+        if (code === 'auth/user-not-found') {
+          msg = 'No account found with that email.';
+        } else if (code === 'auth/invalid-email') {
+          msg = 'Enter a valid email first.';
+        } else if (code === 'auth/too-many-requests') {
+          msg = 'Too many requests. Try again in a moment.';
+        } else if (code === 'auth/network-request-failed' ||
+                   code === 'aura/load-failed' ||
+                   code === 'aura/load-timeout') {
+          msg = 'Reset unavailable. Try again.';
+        } else {
+          msg = 'Could not send reset email. Try again.';
         }
         setHint(msg, 'error');
       });
