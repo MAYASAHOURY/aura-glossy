@@ -1,11 +1,24 @@
 [build]
   publish = "."
-  command = ""
   functions = "netlify/functions"
 
 [build.environment]
-  NETLIFY_NEXT_PLUGIN_SKIP = "true"
   NODE_ENV = "production"
+
+# ── Functions config — explicit so Netlify always bundles Node deps
+#    even though there's no root build step. esbuild is the modern
+#    bundler that handles firebase-admin's transitive deps cleanly. ──
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Don't auto-treat _lib/ as a function — its files are shared helpers
+# required by the real handlers.
+[functions.waitlist-subscribe]
+  included_files = ["netlify/functions/_lib/**"]
+
+[functions.waitlist-verify]
+  included_files = ["netlify/functions/_lib/**"]
 
 # ── Firebase Auth handler: no CSP (proxied from Firebase, needs its own scripts) ──
 [[headers]]
