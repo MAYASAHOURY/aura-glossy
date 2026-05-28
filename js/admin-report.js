@@ -33,8 +33,9 @@
   var _range = '7d';
   var _aesthetic = '';
   var _audience = 'public'; /* 'public' | 'all' — see _publicCheck() */
-  var _events = [];   /* current loaded events (capped) */
-  var _users  = [];   /* most-recent users sample */
+  var _events   = [];   /* current loaded events (capped) */
+  var _users    = [];   /* most-recent users sample */
+  var _waitlist = [];   /* hardened-waitlist entries (server-only writes) */
   var _loading = false;
   var _lastUpdated = null; /* HH:MM:SS string for the Data quality strip */
 
@@ -215,16 +216,26 @@
       _db.collection('users').orderBy('createdAt', 'desc').limit(40).get().catch(function () {
         /* Older user docs may not have createdAt — fall back to no order */
         return _db.collection('users').limit(40).get().catch(function () { return { docs: [] }; });
+      }),
+      /* Waitlist — admin-only read per rules. Cap at 500 most recent;
+         older entries can be exported via the Firebase Console. */
+      _db.collection('waitlist').orderBy('createdAt', 'desc').limit(500).get().catch(function (e) {
+        console.warn('waitlist load failed:', e && e.code);
+        /* If the older `ts` field still exists from pre-hardening rows,
+           fall back to no order so the dashboard still shows them. */
+        return _db.collection('waitlist').limit(500).get().catch(function () { return { docs: [] }; });
       })
     ]).then(function (results) {
       var evSnap = results[0];
       var uSnap  = results[1];
+      var wSnap  = results[2];
       _events = evSnap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
       _users  = uSnap.docs.map(function (d) {
         var data = d.data() || {};
         data.uid = d.id;
         return data;
       });
+      _waitlist = wSnap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
       _render();
     }).catch(function (e) {
       $('ar-status').className = 'ar-status is-error';
@@ -335,6 +346,7 @@
     _renderKpis(ev, publicOnly);
     _renderLatestEvents();  /* always shows ALL events with per-row Public/Reason */
     _renderUsers();
+    _renderWaitlist();      /* hardened double-opt-in waitlist analytics */
     _renderGuestFunnel(ev);
     _renderShopping(ev);
     _renderModal(ev);
@@ -570,7 +582,150 @@
       '</tr></thead><tbody>' + rows + '</tbody></table>';
   }
 
-  /* ── 3. Guest funnel ──────────────────────────────────────── */
+  /* ── 4. Waitlist (hardened double opt-in) ─────────────────────
+     Stats come directly from the `waitlist` Firestore collection,
+     which is admin-only-read per rules. Writes are server-only
+     through the Netlify Function — so every row here is a real
+     email that went through honeypot + time-trap + format check +
+     disposable blocklist + per-IP rate limit.
+
+     Each row carries:
+       email, emailHash, createdAt, lang, sourcePage,
+       userAgent, ip, isVerified, status,
+       verifyToken? + verifyTokenExpiresAt? (cleared after confirm),
+       verifiedAt? (set after the user clicks the email),
+       lastResentAt? + resendCount?, lastSendError? + lastSendErrorAt?
+
+     KPIs surface:
+       Total, Verified, Pending, Today, 7d, 30d, Verify conversion %
+     Plus breakdowns by language + sourcePage + the latest 30 rows. */
+  function _renderWaitlist() {
+    var kpisEl = $('ar-waitlist-kpis');
+    var meta   = $('ar-waitlist-meta');
+    var langsEl = $('ar-waitlist-langs');
+    var srcEl   = $('ar-waitlist-sources');
+    var tableEl = $('ar-waitlist-table');
+    var tableMeta = $('ar-waitlist-table-meta');
+
+    var rows = _waitlist || [];
+    var now = Date.now();
+    var DAY = 86400 * 1000;
+    function _ms(r) {
+      var t = r.createdAt;
+      if (t && typeof t.toMillis === 'function') return t.toMillis();
+      if (t && typeof t.toDate === 'function')   return t.toDate().getTime();
+      return 0;
+    }
+    var totals = {
+      total:    rows.length,
+      verified: 0,
+      pending:  0,
+      today:    0,
+      week:     0,
+      month:    0,
+      err:      0
+    };
+    var byLang   = {};
+    var bySource = {};
+    rows.forEach(function (r) {
+      var ms = _ms(r);
+      var verified = r.isVerified === true;
+      if (verified) totals.verified++;
+      else          totals.pending++;
+      if (ms && now - ms < DAY)        totals.today++;
+      if (ms && now - ms < 7 * DAY)    totals.week++;
+      if (ms && now - ms < 30 * DAY)   totals.month++;
+      if (r.lastSendError) totals.err++;
+      var L = r.lang || 'unknown';
+      byLang[L] = (byLang[L] || 0) + 1;
+      var S = r.sourcePage || '/';
+      /* Group every /style.html#... under /style.html for legibility. */
+      var sKey = S.split('#')[0].split('?')[0].slice(0, 60) || '/';
+      bySource[sKey] = (bySource[sKey] || 0) + 1;
+    });
+    var convRate = totals.total > 0 ? Math.round((totals.verified / totals.total) * 100) : 0;
+
+    if (meta) {
+      meta.textContent = totals.total + ' total · verify rate ' + convRate + '% · ' + totals.err + ' send errors';
+    }
+
+    /* KPI grid */
+    if (kpisEl) {
+      var kpis = [
+        { label: 'Total signups',  value: fmtNum(totals.total),    foot: 'All time' },
+        { label: 'Verified',       value: fmtNum(totals.verified), foot: '<strong>' + convRate + '%</strong> conversion' },
+        { label: 'Pending verify', value: fmtNum(totals.pending),  foot: 'Not yet clicked' },
+        { label: 'Today',          value: fmtNum(totals.today),    foot: 'Last 24h' },
+        { label: '7 days',         value: fmtNum(totals.week),     foot: 'Trailing week' },
+        { label: '30 days',        value: fmtNum(totals.month),    foot: 'Trailing month' }
+      ];
+      kpisEl.innerHTML = kpis.map(function (k) {
+        return '<div class="ar-kpi">' +
+          '<div class="ar-kpi-label">' + txt(k.label) + '</div>' +
+          '<div class="ar-kpi-value">' + k.value + '</div>' +
+          '<div class="ar-kpi-foot">' + k.foot + '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    /* Bar list helpers */
+    function barList(target, dict, labelMap) {
+      if (!target) return;
+      var entries = Object.entries(dict)
+        .sort(function (a, b) { return b[1] - a[1]; })
+        .slice(0, 8);
+      if (!entries.length) {
+        target.innerHTML = '<div class="ar-stub">No data.</div>';
+        return;
+      }
+      var max = entries[0][1] || 1;
+      target.innerHTML = entries.map(function (e) {
+        var pct = Math.round((e[1] / max) * 100);
+        var label = (labelMap && labelMap[e[0]]) || e[0];
+        return '<div class="ar-bar-row">' +
+          '<span class="ar-bar-label">' + txt(label) + '</span>' +
+          '<div class="ar-bar-track"><div class="ar-bar-fill" style="width:' + pct + '%"></div></div>' +
+          '<span class="ar-bar-count">' + fmtNum(e[1]) + '</span>' +
+        '</div>';
+      }).join('');
+    }
+    barList(langsEl, byLang, { en:'English', es:'Español', ar:'العربية', he:'עברית', unknown:'Unknown' });
+    barList(srcEl,   bySource);
+
+    /* Latest entries table — newest first, capped at 30. */
+    if (tableEl) {
+      if (!rows.length) {
+        tableEl.innerHTML = '<div class="ar-stub">No waitlist entries yet. The form on the maintenance screen writes here once people subscribe.</div>';
+        if (tableMeta) tableMeta.textContent = '';
+      } else {
+        var sorted = rows.slice().sort(function (a, b) { return _ms(b) - _ms(a); }).slice(0, 30);
+        if (tableMeta) tableMeta.textContent = 'Showing latest ' + sorted.length + ' of ' + rows.length;
+        var html = '<table class="ar-table"><thead><tr>' +
+          '<th>Email</th><th>Status</th><th>Lang</th><th>Source</th><th>Sent error?</th><th>Created</th>' +
+          '</tr></thead><tbody>' +
+          sorted.map(function (r) {
+            var statusTag = r.isVerified === true
+              ? '<span class="ar-tag is-user">verified</span>'
+              : '<span class="ar-tag" style="color:var(--gold)">pending</span>';
+            var err = r.lastSendError
+              ? '<span class="ar-tag" style="color:var(--red);max-width:200px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom" title="' + txt(r.lastSendError) + '">⚠ send failed</span>'
+              : '<span class="dim">—</span>';
+            return '<tr>' +
+              '<td class="mono trunc">' + txt(r.email || '—') + '</td>' +
+              '<td>' + statusTag + '</td>' +
+              '<td class="dim">' + txt(r.lang || '—') + '</td>' +
+              '<td class="mono trunc">' + txt(r.sourcePage || '/') + '</td>' +
+              '<td>' + err + '</td>' +
+              '<td class="dim">' + (r.createdAt ? fmtTime(r.createdAt) : '—') + '</td>' +
+            '</tr>';
+          }).join('') +
+          '</tbody></table>';
+        tableEl.innerHTML = html;
+      }
+    }
+  }
+
+  /* ── 5. Guest funnel ──────────────────────────────────────── */
   function _renderGuestFunnel(ev) {
     var wrap = $('ar-guest-funnel');
     if (!wrap) return;

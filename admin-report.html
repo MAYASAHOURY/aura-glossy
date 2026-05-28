@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- ━━━━ MAINTENANCE GATE — must run FIRST. ━━━━ -->
-<script src="js/maintenance.js?v=10"></script>
+<script src="js/maintenance.js?v=11"></script>
 <!-- ━━━━ Synchronous head-gate: this is the only strict-gated page
      besides settings.html. We bounce non-authed users straight to
      login.html before Firebase even loads. The real admin check
@@ -763,10 +763,37 @@ body {
       </div>
     </section>
 
-    <!-- ── 3. GUEST BEHAVIOR ── -->
+    <!-- ── 4. WAITLIST ──
+         Server-side waitlist (Netlify Function + Brevo double opt-in).
+         The KPI grid + breakdown table read directly from the
+         `waitlist` Firestore collection — admin-only per rules. -->
     <section class="ar-section">
       <div class="ar-section-head">
         <span class="ar-section-num">04</span>
+        <h2 class="ar-section-title">Waitlist</h2>
+        <span class="ar-section-sub" id="ar-waitlist-meta">Double opt-in via Brevo</span>
+      </div>
+      <div class="ar-kpi-grid" id="ar-waitlist-kpis"></div>
+      <div class="ar-cols-2" style="margin-top:14px">
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Signups by language</span></div>
+          <div class="ar-bar-list" id="ar-waitlist-langs"></div>
+        </div>
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Source page</span></div>
+          <div class="ar-bar-list" id="ar-waitlist-sources"></div>
+        </div>
+      </div>
+      <div class="ar-card" style="margin-top:14px">
+        <div class="ar-card-head"><span class="ar-card-title">Latest waitlist entries</span><span class="ar-card-meta" id="ar-waitlist-table-meta"></span></div>
+        <div id="ar-waitlist-table"></div>
+      </div>
+    </section>
+
+    <!-- ── 5. GUEST BEHAVIOR ── -->
+    <section class="ar-section">
+      <div class="ar-section-head">
+        <span class="ar-section-num">05</span>
         <h2 class="ar-section-title">Guest funnel</h2>
         <span class="ar-section-sub">Where guests drop before signing up</span>
       </div>
@@ -778,7 +805,7 @@ body {
     <!-- ── 6. SHOPPING ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">05</span>
+        <span class="ar-section-num">06</span>
         <h2 class="ar-section-title">Shopping</h2>
       </div>
       <div class="ar-cols-2">
@@ -800,7 +827,7 @@ body {
     <!-- ── 9. SIGNUP MODAL ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">06</span>
+        <span class="ar-section-num">07</span>
         <h2 class="ar-section-title">Signup modal</h2>
         <span class="ar-section-sub">What triggers it; what people do after</span>
       </div>
@@ -819,7 +846,7 @@ body {
     <!-- ── 10. DEVICE / BROWSER ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">07</span>
+        <span class="ar-section-num">08</span>
         <h2 class="ar-section-title">Device &amp; browser</h2>
       </div>
       <div class="ar-cols-2">
@@ -847,7 +874,7 @@ body {
     <!-- ── 4. STYLE / AESTHETIC ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">08</span>
+        <span class="ar-section-num">09</span>
         <h2 class="ar-section-title">Aesthetics</h2>
       </div>
       <div class="ar-card">
@@ -859,7 +886,7 @@ body {
     <!-- ── 5. QUIZ ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">09</span>
+        <span class="ar-section-num">10</span>
         <h2 class="ar-section-title">Quiz</h2>
       </div>
       <div class="ar-cols-2">
@@ -880,7 +907,7 @@ body {
     <!-- ── 7. COMMUNITY ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">10</span>
+        <span class="ar-section-num">11</span>
         <h2 class="ar-section-title">Community</h2>
       </div>
       <div class="ar-cols-2">
@@ -898,7 +925,7 @@ body {
     <!-- ── 8. MOODBOARD ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">11</span>
+        <span class="ar-section-num">12</span>
         <h2 class="ar-section-title">Moodboard</h2>
       </div>
       <div class="ar-cols-2">
@@ -916,7 +943,7 @@ body {
     <!-- ── 11. TECHNICAL HEALTH ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">12</span>
+        <span class="ar-section-num">13</span>
         <h2 class="ar-section-title">Technical health</h2>
       </div>
       <div class="ar-card">
@@ -931,7 +958,7 @@ body {
     <!-- ── 12. ADMIN ACTIONS ── -->
     <section class="ar-section">
       <div class="ar-section-head">
-        <span class="ar-section-num">13</span>
+        <span class="ar-section-num">14</span>
         <h2 class="ar-section-title">Admin actions</h2>
       </div>
       <div class="ar-card">
@@ -961,7 +988,7 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/firebase.js?v=23"></script>
-<script src="js/admin-report.js?v=6"></script>
+<script src="js/admin-report.js?v=7"></script>
 
 </body>
 </html>

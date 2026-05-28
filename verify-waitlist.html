@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d0905">
+<meta name="robots" content="noindex, nofollow">
+<title>Aura Glossy — Waitlist confirmation</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<!-- Pre-paint lang/dir setter — same pattern as the rest of the site. -->
+<script>(function(){try{var l=localStorage.getItem('aura_lang');if(!l){var nl=(navigator.language||'en').toLowerCase().slice(0,2);l=(['en','es','ar','he'].indexOf(nl)>=0)?nl:'en';}document.documentElement.lang=l;document.documentElement.dir=(l==='ar'||l==='he')?'rtl':'ltr';}catch(e){}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html,body {
+  height: 100%; width: 100%;
+  background: #0d0905;
+  color: #f0e5d6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+body {
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  line-height: 1.55;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  animation: fadeIn 1.4s ease-out both;
+  overflow: hidden;
+}
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 45%, rgba(60,32,22,.65) 0%, rgba(30,16,10,.25) 35%, transparent 70%),
+    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(199,154,133,.05) 0%, transparent 60%);
+  animation: glow 9s ease-in-out infinite alternate;
+}
+body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1; mix-blend-mode: overlay; opacity: .18;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.32 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+main {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 560px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+}
+.logo {
+  display: flex; align-items: center; justify-content: center; gap: 18px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.55em;
+  color: #f0e5d6;
+  opacity: 0.92;
+  animation: rise 1.4s 0.15s cubic-bezier(.2,.7,.2,1) both;
+}
+.logo .rule { flex: 0 0 44px; height: 1px; background: linear-gradient(90deg, transparent, rgba(199,154,133,.7), transparent); }
+.logo .mark { display: inline-flex; align-items: baseline; gap: 0.55em; text-indent: 0.55em; }
+.logo .star { color: #c79a85; font-size: 13px; letter-spacing: 0; text-indent: 0; transform: translateY(-1px); animation: twinkle 4.4s ease-in-out infinite; }
+
+.icon-wrap {
+  margin-top: 38px;
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 28px;
+  animation: rise 1.4s 0.3s cubic-bezier(.2,.7,.2,1) both;
+}
+.icon-wrap.is-success {
+  background: radial-gradient(circle at 35% 30%, rgba(231,200,181,.4) 0%, rgba(110,200,144,.18) 70%);
+  border: 1px solid rgba(110,200,144,.42);
+  box-shadow: 0 0 28px rgba(110,200,144,.22), 0 0 64px rgba(110,200,144,.08);
+  color: #6ec890;
+}
+.icon-wrap.is-info {
+  background: radial-gradient(circle at 35% 30%, rgba(231,200,181,.3) 0%, rgba(199,154,133,.18) 70%);
+  border: 1px solid rgba(199,154,133,.42);
+  color: #c79a85;
+}
+.icon-wrap.is-warn {
+  background: radial-gradient(circle at 35% 30%, rgba(231,200,181,.3) 0%, rgba(212,154,140,.14) 70%);
+  border: 1px solid rgba(212,154,140,.42);
+  color: #d49a8c;
+}
+
+h1 {
+  margin-top: 28px;
+  font-family: 'Playfair Display', 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: clamp(28px, 4.8vw, 44px);
+  line-height: 1.18;
+  letter-spacing: -0.005em;
+  color: #f5ede3;
+  animation: rise 1.5s 0.5s cubic-bezier(.2,.7,.2,1) both;
+}
+h1 em {
+  font-style: italic;
+  font-weight: 400;
+  background: linear-gradient(180deg, #f5ede3 0%, #e7c8b5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+p.sub {
+  margin-top: 20px;
+  max-width: 42ch;
+  font-size: clamp(13.5px, 1.55vw, 15.5px);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  color: #b8a99a;
+  animation: rise 1.6s 0.7s cubic-bezier(.2,.7,.2,1) both;
+}
+.shimmer {
+  position: relative;
+  margin-top: 36px;
+  width: 140px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(199,154,133,.35) 50%, transparent 100%);
+  animation: rise 1.7s 0.9s cubic-bezier(.2,.7,.2,1) both;
+}
+.shimmer::before {
+  content: "";
+  position: absolute;
+  top: 50%; left: 0;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #e7c8b5;
+  box-shadow: 0 0 12px rgba(231,200,181,.65), 0 0 24px rgba(231,200,181,.28);
+  transform: translate(0, -50%);
+  animation: trail 4.8s ease-in-out infinite;
+}
+.actions {
+  margin-top: 32px;
+  display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+  animation: rise 1.8s 1.1s cubic-bezier(.2,.7,.2,1) both;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 22px;
+  background: linear-gradient(180deg, #c79a85 0%, #b08770 100%);
+  color: #1a0e08;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  transition: opacity 0.24s, background 0.24s;
+}
+.btn:hover { opacity: 0.92; }
+.btn.btn-ghost {
+  background: transparent;
+  color: rgba(231,200,181,0.85);
+  border: 1px solid rgba(199,154,133,0.42);
+}
+.btn.btn-ghost:hover { color: #f5ede3; border-color: rgba(199,154,133,0.7); }
+
+.foot {
+  position: fixed;
+  bottom: 26px; left: 0; right: 0;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 11px;
+  color: #6e604f;
+  z-index: 2;
+  opacity: 0.9;
+  animation: rise 2s 1.4s cubic-bezier(.2,.7,.2,1) both;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rise   { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes glow   { 0% { opacity: .85; } 100% { opacity: 1; } }
+@keyframes twinkle{ 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes trail  { 0% { left: 0; opacity: 0; } 15% { opacity: 1; } 50% { left: calc(100% - 6px); opacity: 1; } 65% { opacity: 1; } 100% { left: 0; opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}
+@media (max-width: 520px) {
+  body { padding: 32px 22px; }
+  .logo { gap: 12px; font-size: 10px; letter-spacing: 0.45em; }
+  .logo .rule { flex: 0 0 30px; }
+  .foot { font-size: 10.5px; }
+}
+</style>
+</head>
+<body>
+
+<main>
+  <div class="logo" aria-label="Aura Glossy">
+    <span class="rule" aria-hidden="true"></span>
+    <span class="mark"><span class="star" aria-hidden="true">✦</span>Aura Glossy</span>
+    <span class="rule" aria-hidden="true"></span>
+  </div>
+
+  <div class="icon-wrap" id="icon" aria-hidden="true">✦</div>
+  <h1 id="title">—</h1>
+  <p class="sub" id="sub">—</p>
+  <div class="shimmer" aria-hidden="true"></div>
+  <div class="actions" id="actions"></div>
+</main>
+
+<p class="foot" id="foot">—</p>
+
+<script>
+/* ============================================================
+   Verify page — reads ?state= from URL, paints the right variant.
+   Translations bundled inline since this is a single-purpose page;
+   no need to load js/i18n.js just for four strings per language. */
+
+var COPY = {
+  en: {
+    verified:         { icon: '✓', cls: 'is-success', h1: 'You’re in.',          sub: 'Your email is confirmed. We’ll let you know the moment we open the doors.', cta: 'Back to Aura Glossy', foot: 'Welcome to your editorial moment.' },
+    already_verified: { icon: '✦', cls: 'is-info',    h1: 'You’re already in.',  sub: 'Looks like this email is already on the list. Nothing more to do — we’ll see you at the launch.', cta: 'Back to Aura Glossy', foot: 'Thank you for the patience.' },
+    expired:          { icon: '◐', cls: 'is-warn',    h1: 'This link <em>expired</em>.', sub: 'Verification links are valid for 24 hours. Pop your email in again and we’ll send a fresh one.', cta: 'Try again', ctaGhost: true, foot: 'Aura Glossy · auraglossy.com' },
+    not_found:        { icon: '?', cls: 'is-warn',    h1: 'We couldn’t find this link.', sub: 'It may have already been used, or it doesn’t match anything in our list. You can re-enter your email to start fresh.', cta: 'Back to the waitlist', foot: 'Aura Glossy · auraglossy.com' },
+    invalid:          { icon: '?', cls: 'is-warn',    h1: 'This link is invalid.',    sub: 'The verification link looks broken. Go back and re-enter your email — we’ll send a fresh one.', cta: 'Back to the waitlist', foot: 'Aura Glossy · auraglossy.com' },
+    server_error:     { icon: '!', cls: 'is-warn',    h1: 'Something went wrong.',    sub: 'A temporary problem on our side. Please try the link again in a moment, or pop your email back in.', cta: 'Back to the waitlist', foot: 'Aura Glossy · auraglossy.com' }
+  },
+  es: {
+    verified:         { icon: '✓', cls: 'is-success', h1: 'Estás dentro.',       sub: 'Tu email está confirmado. Te avisaremos en el momento que abramos las puertas.', cta: 'Volver a Aura Glossy', foot: 'Bienvenida a tu momento editorial.' },
+    already_verified: { icon: '✦', cls: 'is-info',    h1: 'Ya estabas dentro.',      sub: 'Este email ya está en la lista. Nada más que hacer — nos vemos en el lanzamiento.', cta: 'Volver a Aura Glossy', foot: 'Gracias por la paciencia.' },
+    expired:          { icon: '◐', cls: 'is-warn',    h1: 'Este enlace <em>caducó</em>.', sub: 'Los enlaces son válidos durante 24 horas. Introduce tu email de nuevo y te enviaremos uno fresco.', cta: 'Intentar de nuevo', foot: 'Aura Glossy · auraglossy.com' },
+    not_found:        { icon: '?', cls: 'is-warn',    h1: 'No encontramos este enlace.', sub: 'Puede que ya se haya usado, o no coincide con nada en nuestra lista. Vuelve a introducir tu email para empezar de nuevo.', cta: 'Volver a la lista', foot: 'Aura Glossy · auraglossy.com' },
+    invalid:          { icon: '?', cls: 'is-warn',    h1: 'Enlace no válido.',  sub: 'El enlace parece estar roto. Vuelve a introducir tu email y te enviaremos uno fresco.', cta: 'Volver a la lista', foot: 'Aura Glossy · auraglossy.com' },
+    server_error:     { icon: '!', cls: 'is-warn',    h1: 'Algo salió mal.',     sub: 'Un problema temporal de nuestro lado. Por favor inténtalo de nuevo en un momento.', cta: 'Volver a la lista', foot: 'Aura Glossy · auraglossy.com' }
+  },
+  ar: {
+    verified:         { icon: '✓', cls: 'is-success', h1: 'أنتِ بالداخل.', sub: 'تأكّد بريدكِ. سنُعلمكِ في اللحظة التي نفتح فيها الأبواب.', cta: 'العودة إلى Aura Glossy', foot: 'مرحبًا بكِ في لحظتكِ التحريريّة.' },
+    already_verified: { icon: '✦', cls: 'is-info',    h1: 'أنتِ بالفعل على القائمة.', sub: 'هذا البريد موجود مسبقًا على القائمة. لا شيء آخر يُفعَل — نراكِ عند الإطلاق.', cta: 'العودة إلى Aura Glossy', foot: 'شكراً لصبركِ.' },
+    expired:          { icon: '◐', cls: 'is-warn',    h1: 'هذا الرابط <em>منتهي الصلاحيّة</em>.', sub: 'الروابط صالحة لمدة 24 ساعة. أدخلي بريدكِ من جديد وسنرسل واحدًا جديدًا.', cta: 'حاولي مرّة أخرى', foot: 'Aura Glossy · auraglossy.com' },
+    not_found:        { icon: '?', cls: 'is-warn',    h1: 'لم نعثر على هذا الرابط.',   sub: 'قد يكون قد استُخدم بالفعل، أو لا يتطابق مع شيء في قائمتنا. أعيدي إدخال بريدكِ للبدء من جديد.', cta: 'العودة إلى القائمة', foot: 'Aura Glossy · auraglossy.com' },
+    invalid:          { icon: '?', cls: 'is-warn',    h1: 'الرابط غير صالح.',          sub: 'يبدو أن الرابط مكسور. عودي وأدخلي بريدكِ من جديد، وسنرسل واحدًا جديدًا.', cta: 'العودة إلى القائمة', foot: 'Aura Glossy · auraglossy.com' },
+    server_error:     { icon: '!', cls: 'is-warn',    h1: 'حدث خطأ.',                 sub: 'مشكلة مؤقّتة من جهتنا. حاولي بعد قليل.', cta: 'العودة إلى القائمة', foot: 'Aura Glossy · auraglossy.com' }
+  },
+  he: {
+    verified:         { icon: '✓', cls: 'is-success', h1: 'את בפנים.',                sub: 'הדוא"ל אושר. נעדכן אותך ברגע שנפתח את הדלתות.', cta: 'חזרה ל-Aura Glossy', foot: 'ברוכה הבאה לרגע העריכה שלך.' },
+    already_verified: { icon: '✦', cls: 'is-info',    h1: 'את כבר ברשימה.',          sub: 'הדוא"ל הזה כבר נמצא ברשימה. אין מה לעשות — ניפגש בהשקה.', cta: 'חזרה ל-Aura Glossy', foot: 'תודה על הסבלנות.' },
+    expired:          { icon: '◐', cls: 'is-warn',    h1: 'הקישור <em>פג תוקף</em>.', sub: 'הקישורים בתוקף ל-24 שעות. הזיני את הדוא"ל שוב ונשלח קישור חדש.', cta: 'לנסות שוב', foot: 'Aura Glossy · auraglossy.com' },
+    not_found:        { icon: '?', cls: 'is-warn',    h1: 'לא מצאנו את הקישור הזה.',  sub: 'יכול להיות שכבר שימש, או לא תואם רשומה ברשימה. הזיני את הדוא"ל מחדש כדי להתחיל מחדש.', cta: 'חזרה לרשימה', foot: 'Aura Glossy · auraglossy.com' },
+    invalid:          { icon: '?', cls: 'is-warn',    h1: 'הקישור לא תקין.',          sub: 'נראה ששבר. חזרי והזיני את הדוא"ל מחדש — נשלח קישור חדש.', cta: 'חזרה לרשימה', foot: 'Aura Glossy · auraglossy.com' },
+    server_error:     { icon: '!', cls: 'is-warn',    h1: 'משהו השתבש.',              sub: 'בעיה זמנית בצד שלנו. נסי שוב בעוד רגע.', cta: 'חזרה לרשימה', foot: 'Aura Glossy · auraglossy.com' }
+  }
+};
+
+var lang = (document.documentElement.lang || 'en').slice(0, 2);
+if (!COPY[lang]) lang = 'en';
+
+var state = (new URLSearchParams(window.location.search).get('state') || 'invalid').toLowerCase();
+if (!COPY[lang][state]) state = 'invalid';
+
+var L = COPY[lang][state];
+
+document.title = 'Aura Glossy — ' + (L.h1 || 'Waitlist').replace(/<[^>]+>/g, '');
+
+var iconEl    = document.getElementById('icon');
+var titleEl   = document.getElementById('title');
+var subEl     = document.getElementById('sub');
+var actionsEl = document.getElementById('actions');
+var footEl    = document.getElementById('foot');
+
+iconEl.textContent = L.icon;
+iconEl.classList.add(L.cls);
+titleEl.innerHTML  = L.h1;
+subEl.textContent  = L.sub;
+footEl.textContent = L.foot;
+
+/* CTA. For success/already_verified → primary back to /. For warnings → ghost back to /. */
+var btn = document.createElement('a');
+btn.href = '/';
+btn.textContent = L.cta;
+btn.className = 'btn' + (L.cls === 'is-warn' ? ' btn-ghost' : '');
+actionsEl.appendChild(btn);
+</script>
+
+</body>
+</html>

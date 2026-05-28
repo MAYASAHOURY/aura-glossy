@@ -275,25 +275,28 @@ service cloud.firestore {
     //   path    string <= 200 chars (entry path for attribution)
     //
     // No `uid`, no `name`, no extras — keeps PII surface minimal.
-    function validWaitlistEntry() {
-      let r = request.resource.data;
-      let allowed = ['email','ts','lang','source','path'];
-      return r.keys().hasOnly(allowed)
-        && r.email is string
-        && r.email.size() > 0 && r.email.size() <= 200
-        && r.email.lower() == r.email
-        && r.email.matches('[^@\\s]+@[^@\\s]+\\.[^@\\s]+')
-        && r.ts == request.time
-        && r.lang is string && r.lang.size() > 0 && r.lang.size() <= 4
-        && r.source is string && r.source.size() > 0 && r.source.size() <= 32
-        && r.path is string && r.path.size() <= 200;
-    }
-
+    // ── Waitlist (server-only writes) ───────────────────────────
+    // As of the hardened-waitlist deploy, all writes are performed by
+    // the Netlify Function `waitlist-subscribe` using the Firebase
+    // Admin SDK — which BYPASSES these rules. The Admin SDK is the only
+    // legitimate writer; clients are denied entirely.
+    //
+    // This closes off the previous "anyone can POST a fake email
+    // directly to Firestore from devtools" hole and gives us:
+    //  - Real email validation (format, length, disposable, fake)
+    //  - Honeypot + time-trap bot protection
+    //  - Per-IP rate limiting
+    //  - Double opt-in via Brevo confirmation email
+    //  - Deterministic doc id (sha256 of email) for native dedupe
+    //
+    // Admins can still READ for the admin-report dashboard, and
+    // DELETE for moderation. UPDATEs from clients remain denied
+    // (the Admin SDK handles verification-flow updates server-side).
     match /waitlist/{entryId} {
-      allow create: if validWaitlistEntry();
+      allow create: if false;   // server-only via Firebase Admin SDK
+      allow update: if false;   // server-only via Firebase Admin SDK
       allow read:   if request.auth != null && isAdmin();
       allow delete: if request.auth != null && isAdmin();
-      allow update: if false;
     }
 
     // ── Deny everything else ─────────────────────────────────────

@@ -108,10 +108,15 @@
       waitlist_label:   'Your email',
       waitlist_placeholder: 'you@example.com',
       waitlist_cta:     'Join the waitlist',
-      waitlist_invalid: 'Please enter a valid email.',
-      waitlist_sending: 'Saving…',
-      waitlist_success: 'You’re on the list ✦',
-      waitlist_success_sub: 'We’ll let you know the moment we open.',
+      waitlist_invalid: 'Please enter a real, well-formed email.',
+      waitlist_sending: 'Sending…',
+      waitlist_success: 'Check your inbox ✦',
+      waitlist_success_sub: 'We sent a one-click confirmation. Click it to lock in your spot.',
+      waitlist_already: 'You’re already on the list ✨',
+      waitlist_already_sub: 'We’ll let you know the moment we open the doors.',
+      waitlist_resent:  'We sent a fresh link ✦',
+      waitlist_resent_sub: 'Your previous code expired. Check your inbox — the new link is valid for 24 hours.',
+      waitlist_rate:    'Too many tries. Take a breath and try again in a minute.',
       waitlist_error:   'Couldn’t save your email. Try again in a moment.',
       admin_enter: 'Admin enter',
       admin_title: 'Admin access',
@@ -135,10 +140,15 @@
       waitlist_label:   'Tu email',
       waitlist_placeholder: 'tu@email.com',
       waitlist_cta:     'Unirse a la lista',
-      waitlist_invalid: 'Introduce un email válido, por favor.',
-      waitlist_sending: 'Guardando…',
-      waitlist_success: 'Estás en la lista ✦',
-      waitlist_success_sub: 'Te avisaremos en el momento que abramos.',
+      waitlist_invalid: 'Introduce un email real y bien formado.',
+      waitlist_sending: 'Enviando…',
+      waitlist_success: 'Revisa tu bandeja ✦',
+      waitlist_success_sub: 'Te enviamos un enlace de confirmación de un clic. Confírmalo para asegurar tu lugar.',
+      waitlist_already: 'Ya estás en la lista ✨',
+      waitlist_already_sub: 'Te avisaremos en el momento que abramos las puertas.',
+      waitlist_resent:  'Enviamos un enlace nuevo ✦',
+      waitlist_resent_sub: 'Tu código anterior caducó. Revisa tu bandeja — el nuevo enlace es válido durante 24 horas.',
+      waitlist_rate:    'Demasiados intentos. Respira y vuelve a intentarlo en un minuto.',
       waitlist_error:   'No pudimos guardar tu email. Inténtalo de nuevo.',
       admin_enter: 'Entrar como admin',
       admin_title: 'Acceso de admin',
@@ -162,10 +172,15 @@
       waitlist_label:   'بريدكِ الإلكتروني',
       waitlist_placeholder: 'you@example.com',
       waitlist_cta:     'انضمّي إلى القائمة',
-      waitlist_invalid: 'يرجى إدخال بريد صالح.',
-      waitlist_sending: 'يتم الحفظ…',
-      waitlist_success: 'أنتِ على القائمة ✦',
-      waitlist_success_sub: 'سنُعلمكِ في اللحظة التي نفتح فيها.',
+      waitlist_invalid: 'يرجى إدخال بريد حقيقي وصحيح.',
+      waitlist_sending: 'جارٍ الإرسال…',
+      waitlist_success: 'تحقّقي من بريدكِ ✦',
+      waitlist_success_sub: 'أرسلنا لكِ رابط تأكيد بنقرة واحدة. اضغطي عليه لتثبيت مكانكِ.',
+      waitlist_already: 'أنتِ بالفعل على القائمة ✨',
+      waitlist_already_sub: 'سنُعلمكِ في اللحظة التي نفتح فيها الأبواب.',
+      waitlist_resent:  'أرسلنا رابطًا جديدًا ✦',
+      waitlist_resent_sub: 'انتهت صلاحيّة رابطكِ السابق. تحقّقي من بريدكِ — الرابط الجديد صالح لمدة 24 ساعة.',
+      waitlist_rate:    'محاولات كثيرة. خذي نفسًا وحاولي بعد دقيقة.',
       waitlist_error:   'تعذّر حفظ بريدكِ. حاولي بعد قليل.',
       admin_enter: 'دخول الأدمن',
       admin_title: 'دخول الأدمن',
@@ -189,10 +204,15 @@
       waitlist_label:   'האימייל שלך',
       waitlist_placeholder: 'you@example.com',
       waitlist_cta:     'הצטרפות לרשימה',
-      waitlist_invalid: 'נא להזין אימייל תקין.',
-      waitlist_sending: 'שומרים…',
-      waitlist_success: 'את ברשימה ✦',
-      waitlist_success_sub: 'נעדכן אותך ברגע שנפתח.',
+      waitlist_invalid: 'נא להזין אימייל אמיתי ותקין.',
+      waitlist_sending: 'שולחים…',
+      waitlist_success: 'בדקי את תיבת הדואר ✦',
+      waitlist_success_sub: 'שלחנו לך לינק אישור בלחיצה אחת. לחצי עליו כדי לקבוע את מקומך.',
+      waitlist_already: 'את כבר ברשימה ✨',
+      waitlist_already_sub: 'נעדכן אותך ברגע שניפתח את הדלתות.',
+      waitlist_resent:  'שלחנו לך לינק חדש ✦',
+      waitlist_resent_sub: 'הלינק הקודם פג תוקף. בדקי את תיבת הדואר — הלינק החדש בתוקף ל-24 שעות.',
+      waitlist_rate:    'יותר מדי ניסיונות. קחי נשימה ונסי שוב בעוד דקה.',
       waitlist_error:   'לא הצלחנו לשמור את האימייל. נסי שוב.',
       admin_enter: 'כניסת אדמין',
       admin_title: 'כניסת אדמין',
@@ -437,6 +457,7 @@
     + '  @media (max-width:520px){.aura-admin-welcome{padding:24px}.aura-admin-welcome-text{gap:10px}}'
     + '  @media (max-width:520px){.aura-admin-card{padding:30px 22px 24px}.aura-admin-title{font-size:22px}.aura-admin-trigger{bottom:20px;padding:14px 22px;letter-spacing:.28em}}'
     /* ── Waitlist form (premium, inline, animates in after the sub copy) ── */
+    + '  .aura-waitlist-hp{position:absolute;left:-9999px;top:auto;width:1px;height:1px;opacity:0;pointer-events:none}' /* honeypot — bots fill it, humans never see it */
     + '  .aura-waitlist{position:relative;margin-top:40px;width:100%;max-width:380px;animation:auraRise 2.2s 1.05s cubic-bezier(.2,.7,.2,1) both}'
     + '  .aura-waitlist-eyebrow{display:block;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:9px;font-weight:500;letter-spacing:.42em;text-transform:uppercase;color:#c79a85;margin-bottom:12px;text-align:center}'
     + '  .aura-waitlist-form{display:flex;align-items:stretch;gap:8px;width:100%}'
@@ -485,11 +506,18 @@
     +     '<form class="aura-waitlist-form" id="aura-waitlist-form" autocomplete="off" novalidate>'
     +       '<label class="visually-hidden" for="aura-waitlist-email" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">' + MTH('waitlist_label') + '</label>'
     +       '<input class="aura-waitlist-input" type="email" id="aura-waitlist-email" name="email" placeholder="' + MTH('waitlist_placeholder') + '" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="off" required>'
+    /* Honeypot — bots autofill any input named "website"/"url"/"phone".
+       Real humans never see this; if it gets filled, treat as bot. */
+    +       '<input class="aura-waitlist-hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">'
     +       '<button type="submit" class="aura-waitlist-btn" id="aura-waitlist-btn">' + MTH('waitlist_cta') + '</button>'
     +     '</form>'
+    /* Success row — dynamic title + subtitle populated by _wireWaitlist
+       based on the server response (subscribed / already_subscribed /
+       verification_resent / etc.). The default copy from i18n is shown
+       on first render but overwritten on every submit. */
     +     '<div class="aura-waitlist-success" role="status" aria-live="polite">'
     +       '<span class="aura-waitlist-success-mark" aria-hidden="true">✦</span>'
-    +       '<span class="aura-waitlist-success-text">' + MTH('waitlist_success') + '<span class="aura-waitlist-success-sub">' + MTH('waitlist_success_sub') + '</span></span>'
+    +       '<span class="aura-waitlist-success-text" id="aura-waitlist-success-text">' + MTH('waitlist_success') + '<span class="aura-waitlist-success-sub" id="aura-waitlist-success-sub">' + MTH('waitlist_success_sub') + '</span></span>'
     +     '</div>'
     +     '<p class="aura-waitlist-hint" id="aura-waitlist-hint" aria-live="polite" aria-atomic="true"></p>'
     +   '</div>'
@@ -616,32 +644,47 @@
   _wireWaitlist();
 
   /* ─────────────────────────────────────────────────────────────
-     WAITLIST — Firestore-backed email capture.
+     WAITLIST — server-side double opt-in via Netlify Function.
 
      The maintenance screen is the most-trafficked surface during a
      build window. Capturing emails turns that traffic into a real
-     "launch day" mailing list. Posts directly to the `waitlist`
-     collection — Firestore rules allow create-only with a strict
-     schema (email + ts + lang + path). No auth required: this is
-     intentionally open so guests can subscribe.
+     "launch day" mailing list. Posts to
+       /.netlify/functions/waitlist-subscribe
+     which (1) validates the email server-side, (2) writes to Firestore
+     via the Admin SDK, and (3) sends a Brevo confirmation email.
 
-     Defensive design:
-     - Client-side email regex catches obvious typos
-     - Firestore rules cap email length, require lowercase, and
-       reject any extra fields
-     - Duplicate emails are allowed at write time (Firestore can't
-       enforce uniqueness without auth); we de-dupe at send time
-       when we actually email the list
-     - Failures fall back to a soft error in the same hint area
-       used by the admin modal — never a hard crash
+     Client-side guarantees:
+     - Honeypot field (hidden input named "website") — bots fill it
+     - Time-trap (must wait ≥2s between form render and submit) — bots
+       submit instantly
+     - Client-side regex pre-check so obvious typos never round-trip
+     - Same-origin POST so CSP allows it without extra origins
+
+     Response handling:
+     - subscribed             → "check your inbox" success state
+     - verification_resent    → "we sent a fresh link" (was unverified)
+     - already_subscribed     → "you're already in" friendly nudge
+     - invalid_email          → error hint
+     - rate_limited           → "too many tries, take a breath"
+     - server_error           → generic error hint
      ───────────────────────────────────────────────────────────── */
   function _wireWaitlist() {
-    var form    = document.getElementById('aura-waitlist-form');
-    var emailEl = document.getElementById('aura-waitlist-email');
-    var btnEl   = document.getElementById('aura-waitlist-btn');
-    var hintEl  = document.getElementById('aura-waitlist-hint');
-    var wrap    = document.getElementById('aura-waitlist');
+    var form     = document.getElementById('aura-waitlist-form');
+    var emailEl  = document.getElementById('aura-waitlist-email');
+    var btnEl    = document.getElementById('aura-waitlist-btn');
+    var hintEl   = document.getElementById('aura-waitlist-hint');
+    var wrap     = document.getElementById('aura-waitlist');
+    var titleEl  = document.getElementById('aura-waitlist-success-text');
+    var subEl    = document.getElementById('aura-waitlist-success-sub');
+    var hpEl     = form && form.querySelector('input[name="website"]');
     if (!form || !emailEl || !btnEl) return;
+
+    /* t0 = the moment the form rendered. Anything submitted faster than
+       MIN_RENDER_MS after t0 is treated as a bot — both client AND
+       server check this. Keep MIN_RENDER_MS small (2s) so real humans
+       are never caught by it. */
+    var t0 = Date.now();
+    var MIN_RENDER_MS = 2 * 1000;
 
     var _busy = false;
     function setHint(msg, state) {
@@ -656,51 +699,117 @@
     }
     function setBusy(b) {
       _busy = !!b;
-      if (btnEl) btnEl.disabled = _busy;
+      if (btnEl)   btnEl.disabled  = _busy;
       if (emailEl) emailEl.disabled = _busy;
-      if (btnEl) btnEl.textContent = _busy ? MT('waitlist_sending') : MT('waitlist_cta');
+      if (btnEl)   btnEl.textContent = _busy ? MT('waitlist_sending') : MT('waitlist_cta');
     }
+    /* Swap the success row's title + subtitle based on the response
+       status, then reveal it. Cleaner than maintaining 3 separate
+       success DOM elements. */
+    function reveal(state) {
+      var titleKey, subKey;
+      if (state === 'already_subscribed') {
+        titleKey = 'waitlist_already';
+        subKey   = 'waitlist_already_sub';
+      } else if (state === 'verification_resent') {
+        titleKey = 'waitlist_resent';
+        subKey   = 'waitlist_resent_sub';
+      } else {
+        /* default — fresh subscribe */
+        titleKey = 'waitlist_success';
+        subKey   = 'waitlist_success_sub';
+      }
+      try {
+        /* Preserve the inner subtitle <span> when we set the title,
+           since the original markup nests <sub> inside <text>. We do
+           it manually to keep the DOM stable. */
+        if (titleEl) {
+          /* Remove children, then re-insert title text + the sub span. */
+          while (titleEl.firstChild) titleEl.removeChild(titleEl.firstChild);
+          titleEl.appendChild(document.createTextNode(MT(titleKey)));
+          if (subEl) titleEl.appendChild(subEl);
+        }
+        if (subEl) subEl.textContent = MT(subKey);
+      } catch (_) {}
+      if (wrap) wrap.classList.add('is-success');
+    }
+
+    /* Tight client-side regex — rejects obvious typos but stays
+       permissive enough not to false-reject real corporate emails.
+       Server validates more strictly (disposable, fake patterns). */
+    var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (_busy) return;
       var email = (emailEl.value || '').trim().toLowerCase();
-      /* Tight RFC-shaped regex — rejects obvious typos but stays
-         permissive enough not to false-reject real corporate emails. */
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
+      if (!email || !EMAIL_RE.test(email) || email.length > 254) {
         setHint(MT('waitlist_invalid'), 'error');
         try { emailEl.focus(); } catch (_) {}
         return;
       }
+      /* Client-side time-trap. If a bot somehow submits faster than
+         MIN_RENDER_MS the server will also reject — but failing fast
+         on the client avoids the round-trip. */
+      var hp = (hpEl && hpEl.value) || '';
+
       setBusy(true);
       setHint(MT('waitlist_sending'), 'loading');
 
-      _loadFirebase().then(function () {
-        var db = firebase.firestore();
-        return db.collection('waitlist').add({
-          email: email,
-          ts:    firebase.firestore.FieldValue.serverTimestamp(),
-          lang:  MAINT_LANG,
-          /* `source` lets the admin distinguish maintenance-page captures
-             from any future waitlist surface (e.g. a teaser banner once
-             we lift maintenance). String-capped via rules. */
-          source: 'maintenance',
-          /* Path the email arrived from — usually `/` but could be a
-             deep link. Helps measure which entry points convert. */
-          path:   (location.pathname || '/').slice(0, 200)
-        });
-      }).then(function () {
+      var payload = {
+        email:      email,
+        lang:       MAINT_LANG,
+        sourcePage: (location.pathname || '/').slice(0, 200),
+        hp:         hp,
+        t0:         t0
+      };
+
+      var ENDPOINT = '/.netlify/functions/waitlist-subscribe';
+
+      fetch(ENDPOINT, {
+        method:  'POST',
+        mode:    'same-origin',
+        cache:   'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload)
+      }).then(function (res) {
+        return res.json().then(function (data) { return { status: res.status, data: data }; })
+                         .catch(function () { return { status: res.status, data: {} }; });
+      }).then(function (out) {
         setBusy(false);
-        setHint('', '');
-        /* Reveal the success row + hide the form. No reload — the
-           visitor stays on the maintenance screen so they can read
-           the rest of the copy. */
-        if (wrap) wrap.classList.add('is-success');
-        try { emailEl.value = ''; } catch (_) {}
+        var s = (out.data && out.data.status) || '';
+        if (out.status >= 200 && out.status < 300) {
+          /* Normalize: any 200 status means we accept the response. */
+          if (s === 'already_subscribed') {
+            reveal('already_subscribed');
+          } else if (s === 'verification_resent') {
+            reveal('verification_resent');
+          } else {
+            reveal('subscribed');
+          }
+          setHint('', '');
+          try { emailEl.value = ''; } catch (_) {}
+          /* Reset the time-trap baseline so a repeat submit is honest. */
+          t0 = Date.now();
+          return;
+        }
+        if (out.status === 429 || s === 'rate_limited') {
+          setHint(MT('waitlist_rate'), 'error');
+          return;
+        }
+        if (out.status === 400 || s === 'invalid_email' || s === 'invalid_request') {
+          setHint(MT('waitlist_invalid'), 'error');
+          try { emailEl.focus(); } catch (_) {}
+          return;
+        }
+        /* Anything else — generic error. The function logs server-side
+           detail. */
+        setHint(MT('waitlist_error'), 'error');
+        try { console.warn('[waitlist] non-ok response:', out.status, s); } catch (_) {}
       }).catch(function (err) {
         setBusy(false);
         setHint(MT('waitlist_error'), 'error');
-        try { console.warn('[waitlist] write failed:', err && err.code); } catch (_) {}
+        try { console.warn('[waitlist] network error:', err && err.message); } catch (_) {}
       });
     });
   }

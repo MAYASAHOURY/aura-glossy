@@ -1,0 +1,9 @@
+{
+  "name": "aura-glossy-functions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Netlify Functions for Aura Glossy — server-side waitlist + Brevo email. Each .js file in this folder becomes a /.netlify/functions/<filename> endpoint.",
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}
