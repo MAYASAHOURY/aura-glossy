@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Aura Glossy — Firestore Rules Verification</title>
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: #0d0905;
+  color: #f0e5d6;
+  min-height: 100vh;
+  padding: 32px 24px 80px;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+.wrap { max-width: 980px; margin: 0 auto; }
+h1 { font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: 32px; margin-bottom: 8px; color: #f5ede3; }
+.sub { color: #8a7a6c; font-size: 13px; margin-bottom: 28px; max-width: 60ch; }
+.row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.row input {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(199,154,133,0.28); border-radius: 2px;
+  padding: 11px 13px; color: #f0e5d6; font-family: inherit; font-size: 14px; min-width: 240px; outline: none;
+}
+.row input:focus { border-color: rgba(199,154,133,0.6); }
+button {
+  background: linear-gradient(180deg,#c79a85,#b08770); color: #1a0e08; border: none; border-radius: 2px;
+  padding: 11px 18px; font-family: inherit; font-size: 11px; font-weight: 600; letter-spacing: 0.16em;
+  text-transform: uppercase; cursor: pointer; transition: opacity .2s;
+}
+button:hover { opacity: 0.9; }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+button.secondary { background: transparent; color: #c79a85; border: 1px solid rgba(199,154,133,0.45); }
+button.secondary:hover { color: #f5ede3; border-color: rgba(199,154,133,0.8); }
+.identity {
+  background: rgba(199,154,133,0.05); border: 1px solid rgba(199,154,133,0.25);
+  border-radius: 4px; padding: 11px 14px; margin-bottom: 22px; font-size: 13px;
+}
+.identity strong { color: #f5ede3; font-weight: 600; }
+.identity .admin-pill {
+  display: inline-block; background: rgba(110,200,144,.15); color: #6ec890;
+  padding: 1px 9px; border-radius: 999px; font-size: 9px; letter-spacing: 0.16em;
+  font-weight: 600; text-transform: uppercase; margin-left: 8px;
+}
+.identity .nonadmin-pill {
+  display: inline-block; background: rgba(212,154,140,.15); color: #d49a8c;
+  padding: 1px 9px; border-radius: 999px; font-size: 9px; letter-spacing: 0.16em;
+  font-weight: 600; text-transform: uppercase; margin-left: 8px;
+}
+section { margin: 32px 0; }
+h2 { font-family: Georgia, serif; font-size: 18px; font-style: italic; color: #c79a85; margin-bottom: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid rgba(199,154,133,0.12); }
+th { color: #8a7a6c; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; }
+.test-name { color: #b8a99a; }
+.expected { color: #8a7a6c; font-size: 11px; font-style: italic; }
+.result-pass { color: #6ec890; font-weight: 600; }
+.result-fail { color: #d49a8c; font-weight: 600; }
+.result-pending { color: #8a7a6c; font-style: italic; }
+.result-skip { color: #8a7a6c; font-style: italic; opacity: 0.7; }
+.detail { color: #8a7a6c; font-size: 11px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.summary {
+  margin-top: 22px; padding: 14px 16px; background: rgba(199,154,133,0.08);
+  border: 1px solid rgba(199,154,133,0.25); border-radius: 4px; font-size: 13px;
+}
+.legend { color: #8a7a6c; font-size: 11px; margin-top: 10px; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Firestore Rules Verification</h1>
+  <p class="sub">
+    Runs the production-rules battery against your live <code>aura-fashion-fc2d4</code> Firestore.
+    Tests in <em>Guest section</em> require no sign-in; tests in <em>Admin section</em> need you signed in as an admin account.
+    All test writes use the suffix <code>__VERIFY__</code> in their fields so you can find &amp; delete them after.
+  </p>
+
+  <div class="identity" id="identity">Initializing Firebase…</div>
+
+  <div class="row">
+    <input type="email" id="adminEmail" placeholder="Admin email" autocomplete="email">
+    <input type="password" id="adminPass" placeholder="Admin password" autocomplete="current-password">
+    <button id="signInBtn">Sign in as admin</button>
+    <button id="signOutBtn" class="secondary">Sign out</button>
+  </div>
+
+  <section>
+    <h2>1. Guest battery (run unauthenticated — sign out first)</h2>
+    <table id="guestTable">
+      <thead>
+        <tr><th style="width:38%">Test</th><th style="width:26%">Expected</th><th style="width:16%">Result</th><th>Detail</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="row" style="margin-top:14px"><button id="runGuestBtn">Run guest tests</button></div>
+  </section>
+
+  <section>
+    <h2>2. Admin battery (sign in first)</h2>
+    <table id="adminTable">
+      <thead>
+        <tr><th style="width:38%">Test</th><th style="width:26%">Expected</th><th style="width:16%">Result</th><th>Detail</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="row" style="margin-top:14px"><button id="runAdminBtn">Run admin tests</button></div>
+  </section>
+
+  <div class="summary" id="summary">Run the batteries above to see a pass/fail summary.</div>
+  <p class="legend">
+    Cleanup: open Firebase Console → Firestore → collections <code>waitlist</code>,
+    <code>analytics_events</code>, <code>communities/&lt;aestheticId&gt;/posts</code>
+    and delete any documents containing <code>__VERIFY__</code> in their fields.
+  </p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script>
+/* Same web config as js/firebase.js (it's the public web SDK config — security comes
+   from rules + authorized domains). Anyone can have this. */
+const FB_CONFIG = {
+  apiKey:            "AIzaSyAO0RDi_9YaSm-kpTpB7MHVyDkcaveUqlk",
+  authDomain:        "auraglossy.com",
+  projectId:         "aura-fashion-fc2d4",
+  storageBucket:     "aura-fashion-fc2d4.firebasestorage.app",
+  messagingSenderId: "246808677665",
+  appId:             "1:246808677665:web:4ef423fef9e63b9989c260"
+};
+firebase.initializeApp(FB_CONFIG);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+/* ── Identity bar ───────────────────────────────────────────── */
+const idEl = document.getElementById('identity');
+let currentIsAdmin = false;
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    idEl.innerHTML = '<strong>Signed out</strong> — guest tests will run as anonymous.';
+    currentIsAdmin = false;
+    return;
+  }
+  let isAdminBadge = '';
+  try {
+    const snap = await db.collection('users').doc(user.uid).get();
+    currentIsAdmin = !!(snap.exists && snap.data() && snap.data().isAdmin === true);
+    isAdminBadge = currentIsAdmin
+      ? '<span class="admin-pill">isAdmin ✓</span>'
+      : '<span class="nonadmin-pill">not admin</span>';
+  } catch (e) {
+    isAdminBadge = '<span class="nonadmin-pill">read failed</span>';
+  }
+  idEl.innerHTML = '<strong>Signed in:</strong> ' + (user.email || user.uid) +
+                   ' &middot; emailVerified: ' + (user.emailVerified ? 'yes' : 'no') +
+                   isAdminBadge;
+});
+
+document.getElementById('signInBtn').addEventListener('click', async () => {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass  = document.getElementById('adminPass').value;
+  if (!email || !pass) return alert('Enter email + password');
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch (e) { alert('Sign-in failed: ' + e.code); }
+});
+document.getElementById('signOutBtn').addEventListener('click', async () => { await auth.signOut(); });
+
+/* ── Tiny test runner ───────────────────────────────────────── */
+function render(table, rows) {
+  const tbody = table.querySelector('tbody');
+  tbody.innerHTML = '';
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    const resCls = r.result === 'PASS' ? 'result-pass'
+                 : r.result === 'FAIL' ? 'result-fail'
+                 : r.result === 'SKIP' ? 'result-skip' : 'result-pending';
+    tr.innerHTML = '<td class="test-name">' + escape(r.name) + '</td>' +
+                   '<td class="expected">' + escape(r.expected) + '</td>' +
+                   '<td class="' + resCls + '">' + escape(r.result || '—') + '</td>' +
+                   '<td class="detail">' + escape(r.detail || '') + '</td>';
+    tbody.appendChild(tr);
+  });
+}
+function escape(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+async function runOne(fn) {
+  try {
+    const r = await fn();
+    return { result: r.ok ? 'PASS' : 'FAIL', detail: r.detail || '' };
+  } catch (e) {
+    return { result: 'FAIL', detail: (e && (e.code || e.message)) || String(e) };
+  }
+}
+
+/* ── Guest battery ──────────────────────────────────────────── */
+const guestTests = [
+  { name: 'Valid waitlist create (lowercase email, all fields)',
+    expected: 'create succeeds',
+    fn: async () => {
+      const ref = await db.collection('waitlist').add({
+        email: ('verify__' + Date.now() + '@example.com').toLowerCase(),
+        ts:    firebase.firestore.FieldValue.serverTimestamp(),
+        lang:  'en',
+        source:'verify',
+        path:  '/__VERIFY__'
+      });
+      return { ok: !!ref.id, detail: 'id=' + ref.id };
+    } },
+  { name: 'Waitlist with bad email format',
+    expected: 'permission-denied',
+    fn: async () => {
+      try {
+        await db.collection('waitlist').add({
+          email: 'not-an-email',
+          ts:    firebase.firestore.FieldValue.serverTimestamp(),
+          lang:  'en',
+          source:'verify',
+          path:  '/__VERIFY__'
+        });
+        return { ok: false, detail: 'write was accepted — rule failed' };
+      } catch (e) {
+        return { ok: (e.code === 'permission-denied'), detail: e.code };
+      }
+    } },
+  { name: 'Waitlist with extra field (hasOnly check)',
+    expected: 'permission-denied',
+    fn: async () => {
+      try {
+        await db.collection('waitlist').add({
+          email: 'verify@valid.com',
+          ts:    firebase.firestore.FieldValue.serverTimestamp(),
+          lang:  'en',
+          source:'verify',
+          path:  '/__VERIFY__',
+          extra: 'injected'
+        });
+        return { ok: false, detail: 'write was accepted — rule failed' };
+      } catch (e) {
+        return { ok: (e.code === 'permission-denied'), detail: e.code };
+      }
+    } },
+  { name: 'Valid analytics_events page_view',
+    expected: 'create succeeds',
+    fn: async () => {
+      const ref = await db.collection('analytics_events').add({
+        type:      'test',
+        ts:        firebase.firestore.FieldValue.serverTimestamp(),
+        sessionId: 'verify_' + Date.now().toString(36),
+        isGuest:   true,
+        uid:       null,
+        test:      true,
+        metadata:  { source: '__VERIFY__' }
+      });
+      return { ok: !!ref.id, detail: 'id=' + ref.id };
+    } },
+  { name: 'analytics_events with invalid type',
+    expected: 'permission-denied',
+    fn: async () => {
+      try {
+        await db.collection('analytics_events').add({
+          type:      'INVALID_BAD_TYPE_NAME',
+          ts:        firebase.firestore.FieldValue.serverTimestamp(),
+          sessionId: 'verify_bad',
+          isGuest:   true
+        });
+        return { ok: false, detail: 'write accepted — rule failed' };
+      } catch (e) {
+        return { ok: (e.code === 'permission-denied'), detail: e.code };
+      }
+    } },
+  { name: 'Read analytics_events (admin-only)',
+    expected: 'permission-denied',
+    fn: async () => {
+      try {
+        await db.collection('analytics_events').limit(1).get();
+        return { ok: false, detail: 'read succeeded — rule failed' };
+      } catch (e) {
+        return { ok: (e.code === 'permission-denied'), detail: e.code };
+      }
+    } },
+  { name: 'Read waitlist (admin-only)',
+    expected: 'permission-denied',
+    fn: async () => {
+      try {
+        await db.collection('waitlist').limit(1).get();
+        return { ok: false, detail: 'read succeeded — rule failed' };
+      } catch (e) {
+        return { ok: (e.code === 'permission-denied'), detail: e.code };
+      }
+    } },
+  { name: 'Read communities/classic/posts (auth required)',
+    expected: 'permission-denied',
+    fn: async () => {
+      try {
+        await db.collection('communities').doc('classic').collection('posts').limit(1).get();
+        return { ok: false, detail: 'read succeeded — rule failed' };
+      } catch (e) {
+        return { ok: (e.code === 'permission-denied'), detail: e.code };
+      }
+    } },
+];
+
+document.getElementById('runGuestBtn').addEventListener('click', async () => {
+  if (auth.currentUser) {
+    alert('You are signed in — sign out first to run the guest battery as a true guest.');
+    return;
+  }
+  const t = document.getElementById('guestTable');
+  const rows = guestTests.map(r => ({ ...r, result: 'RUNNING…', detail: '' }));
+  render(t, rows);
+  for (let i = 0; i < guestTests.length; i++) {
+    const r = await runOne(guestTests[i].fn);
+    rows[i].result = r.result;
+    rows[i].detail = r.detail;
+    render(t, rows);
+  }
+  updateSummary();
+});
+
+/* ── Admin battery (needs signed-in admin account) ──────────── */
+let _seedPostId = null;
+let _seedCommentId = null;
+const adminTests = [
+  { name: 'Read own users/{uid} doc',
+    expected: 'success, shows isAdmin',
+    fn: async () => {
+      const u = auth.currentUser;
+      if (!u) return { ok: false, detail: 'not signed in' };
+      const snap = await db.collection('users').doc(u.uid).get();
+      return { ok: snap.exists, detail: 'isAdmin=' + JSON.stringify(snap.data() && snap.data().isAdmin) };
+    } },
+  { name: 'Cannot self-demote (set isAdmin in update)',
+    expected: 'permission-denied',
+    fn: async () => {
+      const u = auth.currentUser;
+      if (!u) return { ok: false, detail: 'not signed in' };
+      try {
+        await db.collection('users').doc(u.uid).update({ isAdmin: false });
+        return { ok: false, detail: 'update accepted — rule failed' };
+      } catch (e) {
+        return { ok: (e.code === 'permission-denied'), detail: e.code };
+      }
+    } },
+  { name: 'Admin can read analytics_events',
+    expected: 'success',
+    fn: async () => {
+      const snap = await db.collection('analytics_events').orderBy('ts', 'desc').limit(3).get();
+      return { ok: true, detail: 'returned ' + snap.size + ' docs' };
+    } },
+  { name: 'Admin can read waitlist',
+    expected: 'success',
+    fn: async () => {
+      const snap = await db.collection('waitlist').limit(5).get();
+      return { ok: true, detail: 'returned ' + snap.size + ' docs' };
+    } },
+  { name: 'Admin creates a community post (classic)',
+    expected: 'success',
+    fn: async () => {
+      const u = auth.currentUser;
+      if (!u) return { ok: false, detail: 'not signed in' };
+      const name = u.displayName || u.email || 'Verify Admin';
+      const ref = await db.collection('communities').doc('classic').collection('posts').add({
+        authorId:      u.uid,
+        authorName:    name + ' __VERIFY__',
+        authorInitial: name[0].toUpperCase(),
+        content:       '__VERIFY__ admin moderation test post — safe to delete.',
+        imageUrl:      null,
+        type:          'thought',
+        aestheticId:   'classic',
+        reactions:     { heart: [], fire: [], sparkle: [] },
+        createdAt:     firebase.firestore.FieldValue.serverTimestamp()
+      });
+      _seedPostId = ref.id;
+      return { ok: !!ref.id, detail: 'postId=' + ref.id };
+    } },
+  { name: 'Admin creates a comment on that post',
+    expected: 'success',
+    fn: async () => {
+      const u = auth.currentUser;
+      if (!u || !_seedPostId) return { ok: false, detail: 'no post' };
+      const name = u.displayName || u.email || 'Verify Admin';
+      const ref = await db.collection('communities').doc('classic')
+        .collection('posts').doc(_seedPostId)
+        .collection('comments').add({
+          authorId:      u.uid,
+          authorName:    name + ' __VERIFY__',
+          authorInitial: name[0].toUpperCase(),
+          content:       '__VERIFY__ comment',
+          createdAt:     firebase.firestore.FieldValue.serverTimestamp()
+        });
+      _seedCommentId = ref.id;
+      return { ok: !!ref.id, detail: 'commentId=' + ref.id };
+    } },
+  { name: 'Admin deletes that comment (moderation)',
+    expected: 'success',
+    fn: async () => {
+      if (!_seedPostId || !_seedCommentId) return { ok: false, detail: 'no comment' };
+      await db.collection('communities').doc('classic')
+        .collection('posts').doc(_seedPostId)
+        .collection('comments').doc(_seedCommentId).delete();
+      return { ok: true, detail: 'deleted' };
+    } },
+  { name: 'Admin deletes that post (moderation)',
+    expected: 'success',
+    fn: async () => {
+      if (!_seedPostId) return { ok: false, detail: 'no post' };
+      await db.collection('communities').doc('classic').collection('posts').doc(_seedPostId).delete();
+      return { ok: true, detail: 'deleted' };
+    } },
+  { name: 'Admin can enter circle that does not match own quizResult',
+    expected: 'success (admin bypass via canAccessCommunity)',
+    fn: async () => {
+      const snap = await db.collection('communities').doc('hijabicore').collection('posts').limit(1).get();
+      return { ok: true, detail: 'read ' + snap.size + ' posts from non-own circle' };
+    } },
+];
+
+document.getElementById('runAdminBtn').addEventListener('click', async () => {
+  if (!auth.currentUser) {
+    alert('Sign in first.');
+    return;
+  }
+  if (!currentIsAdmin) {
+    alert('Signed-in user does not have users/{uid}.isAdmin === true. Set it in Firebase Console first.');
+    return;
+  }
+  const t = document.getElementById('adminTable');
+  const rows = adminTests.map(r => ({ ...r, result: 'RUNNING…', detail: '' }));
+  render(t, rows);
+  for (let i = 0; i < adminTests.length; i++) {
+    const r = await runOne(adminTests[i].fn);
+    rows[i].result = r.result;
+    rows[i].detail = r.detail;
+    render(t, rows);
+  }
+  updateSummary();
+});
+
+function updateSummary() {
+  const all = [...document.querySelectorAll('#guestTable tbody tr, #adminTable tbody tr')];
+  let pass = 0, fail = 0, pending = 0;
+  all.forEach(tr => {
+    const r = tr.children[2].textContent.trim();
+    if (r === 'PASS') pass++;
+    else if (r === 'FAIL') fail++;
+    else if (r) pending++;
+  });
+  const s = document.getElementById('summary');
+  if (fail === 0 && pass > 0 && pending === 0) {
+    s.innerHTML = '<strong style="color:#6ec890">All ' + pass + ' tests passed.</strong> Rules are behaving as expected. Clean up __VERIFY__ docs in Firebase Console when done.';
+  } else if (fail > 0) {
+    s.innerHTML = '<strong style="color:#d49a8c">' + fail + ' failed</strong>, ' + pass + ' passed' + (pending ? ', ' + pending + ' pending' : '') + '. Review failed rows above.';
+  } else {
+    s.innerHTML = pass + ' passed, ' + pending + ' pending. Run both batteries for the full picture.';
+  }
+}
+
+/* Pre-render placeholder rows so the user sees the test list before running */
+render(document.getElementById('guestTable'), guestTests.map(t => ({ ...t, result: '—', detail: '' })));
+render(document.getElementById('adminTable'), adminTests.map(t => ({ ...t, result: '—', detail: '' })));
+</script>
+</body>
+</html>
