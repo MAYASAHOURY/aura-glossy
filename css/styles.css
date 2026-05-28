@@ -8957,6 +8957,20 @@ html[data-inapp] #aura-veil {
   font-size: 10px;
   color: #0a0a0a;
 }
+/* FTC affiliate disclosure — clear and conspicuous at the moment of click.
+   Sits between the price row and the primary "Shop now" CTA so the user
+   sees it before following the retailer link. Italic + muted so it reads
+   as honest context, not a CTA. */
+.hs-panel-disclosure {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: #9a8a7c;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
 .hs-panel-link {
   display: block;
   background: #0a0a0a;

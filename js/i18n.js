@@ -291,6 +291,36 @@
         signin:      'Sign in',
         continue:    'Continue browsing'
       },
+      /* Mantra shown on the quiz-result reveal — one per aesthetic id.
+         Read by quiz.html via Aura.i18n.t('quiz_mantras.{id}') so the
+         most emotional moment of the experience translates with the
+         rest of the UI. Keep these short, lyrical, and tonally
+         consistent with each aesthetic's identity. */
+      quiz_mantras: {
+        classic:    'Timeless is always in style.',
+        minimalist: 'Less is the new more.',
+        korean:     'Softness is its own kind of strength.',
+        elegant:    "Dress like you're already where you want to be.",
+        y2k:        'The future looked better the first time.',
+        streetwear: 'Style speaks before you do.',
+        casual:     'Effortless is a full-time job.',
+        softgirl:   'Sweetness is never out of season.',
+        vintage:    'Old souls wear the best things.',
+        hijabicore: 'Modesty is the loudest kind of grace.'
+      },
+      /* Signup-gate modal copy. Aura.requireAuth(opts) picks the block
+         that matches opts.pending.key (save/shop/quiz/community/verify),
+         falling back to gate.default. Each block has eyebrow/title/sub.
+         CTA buttons share gate.cta.* so they translate once. */
+      gate: {
+        save:      { eyebrow: 'Save look',      title: 'Save this to your moodboard',       sub: 'Create your Aura profile to keep your favourite looks in one place.' },
+        shop:      { eyebrow: 'Shop link',      title: 'Sign in to keep your shopping trail', sub: 'Create your Aura profile so saved looks, shop history, and your moodboard travel with you.' },
+        quiz:      { eyebrow: 'Style Quiz',     title: 'Sign in to take the quiz',          sub: 'Create your Aura profile to discover your aesthetic and unlock your style circle.' },
+        community: { eyebrow: 'Style Circle',   title: 'Join your style circle',            sub: "Sign in to enter your aesthetic's private circle and start sharing looks." },
+        verify:    { eyebrow: 'Verify email',   title: 'Verify your email to continue',     sub: 'Just one click in your inbox unlocks save, post, and quiz.' },
+        default:   { eyebrow: 'Aura Glossy',    title: 'Create your Aura profile',          sub: 'Save looks, discover your style, and join your circle.' },
+        cta:       { create: 'Create account',  signin: 'Sign in', dismiss: 'Maybe later',  close: 'Close' }
+      },
       moodboard: {
         eyebrow: 'Your collection',
         title_a: 'Your', title_b: 'moodboard.',
@@ -568,6 +598,27 @@
         signin:      'Iniciar sesión',
         continue:    'Seguir explorando'
       },
+      quiz_mantras: {
+        classic:    'Lo atemporal nunca pasa de moda.',
+        minimalist: 'Menos es el nuevo más.',
+        korean:     'La suavidad es su propia forma de fuerza.',
+        elegant:    'Vístete como si ya estuvieras donde quieres estar.',
+        y2k:        'El futuro se veía mejor la primera vez.',
+        streetwear: 'Tu estilo habla antes que tú.',
+        casual:     'Lo natural es un trabajo a tiempo completo.',
+        softgirl:   'La dulzura nunca pasa de temporada.',
+        vintage:    'Las almas viejas llevan lo mejor.',
+        hijabicore: 'La modestia es la forma más alta de elegancia.'
+      },
+      gate: {
+        save:      { eyebrow: 'Guardar look',       title: 'Guarda esto en tu moodboard',           sub: 'Crea tu perfil de Aura para tener todos tus looks favoritos en un solo lugar.' },
+        shop:      { eyebrow: 'Enlace de tienda',   title: 'Inicia sesión para guardar tu camino',  sub: 'Crea tu perfil de Aura para que tus looks guardados, historial de tiendas y moodboard viajen contigo.' },
+        quiz:      { eyebrow: 'Quiz de estilo',     title: 'Inicia sesión para hacer el quiz',      sub: 'Crea tu perfil de Aura para descubrir tu estética y desbloquear tu círculo de estilo.' },
+        community: { eyebrow: 'Círculo de estilo',  title: 'Únete a tu círculo de estilo',          sub: 'Inicia sesión para entrar al círculo privado de tu estética y empezar a compartir looks.' },
+        verify:    { eyebrow: 'Verificar email',    title: 'Verifica tu email para continuar',     sub: 'Un solo clic en tu bandeja desbloquea guardar, publicar y el quiz.' },
+        default:   { eyebrow: 'Aura Glossy',        title: 'Crea tu perfil de Aura',               sub: 'Guarda looks, descubre tu estilo y únete a tu círculo.' },
+        cta:       { create: 'Crear cuenta',        signin: 'Iniciar sesión', dismiss: 'Quizá más tarde', close: 'Cerrar' }
+      },
       moodboard: {
         eyebrow: 'Tu colección',
         title_a: 'Tu', title_b: 'moodboard.',
@@ -840,6 +891,27 @@
         signin:      'تسجيل الدخول',
         continue:    'متابعة التصفح'
       },
+      quiz_mantras: {
+        classic:    'الكلاسيك لا يخرج من الموضة أبدًا.',
+        minimalist: 'الأقل هو الكثير الجديد.',
+        korean:     'النعومة قوّة بذاتها.',
+        elegant:    'ارتدي وكأنّكِ بالفعل في المكان الذي تريدين.',
+        y2k:        'المستقبل بدا أجمل في المرة الأولى.',
+        streetwear: 'ستايلك يتحدّث قبلكِ.',
+        casual:     'البساطة عمل بدوام كامل.',
+        softgirl:   'الحلاوة لا موسم لها.',
+        vintage:    'الأرواح القديمة تختار الأفضل.',
+        hijabicore: 'الاحتشام هو أعلى مراتب الأناقة.'
+      },
+      gate: {
+        save:      { eyebrow: 'حفظ اللوك',         title: 'احفظي هذا في الموودبورد',          sub: 'أنشئي ملفّكِ في أورا لتجمعي كل اللوكات المفضلة في مكان واحد.' },
+        shop:      { eyebrow: 'رابط المتجر',       title: 'سجّلي الدخول لتبقى رحلة التسوّق معكِ', sub: 'أنشئي ملفّكِ في أورا حتى يسافر معكِ كل لوك محفوظ وكل خطوة تسوّق.' },
+        quiz:      { eyebrow: 'اختبار الستايل',    title: 'سجّلي الدخول لبدء الاختبار',         sub: 'أنشئي ملفّكِ في أورا لاكتشاف جماليّتك وفتح دائرة الستايل الخاصة بكِ.' },
+        community: { eyebrow: 'دائرة الستايل',     title: 'انضمّي إلى دائرتك',                 sub: 'سجّلي الدخول للدخول إلى الدائرة الخاصة بجماليّتكِ ومشاركة لوكاتكِ.' },
+        verify:    { eyebrow: 'تأكيد البريد',      title: 'أكّدي بريدكِ للمتابعة',             sub: 'نقرة واحدة في بريدكِ تفتح الحفظ والنشر والاختبار.' },
+        default:   { eyebrow: 'أورا غلوسي',        title: 'أنشئي ملفّكِ في أورا',              sub: 'احفظي اللوكات، اكتشفي ستايلك، وانضمّي إلى دائرتك.' },
+        cta:       { create: 'إنشاء حساب',         signin: 'تسجيل الدخول', dismiss: 'لاحقًا',  close: 'إغلاق' }
+      },
       moodboard: {
         eyebrow: 'مجموعتك',
         title_a: 'لوحة', title_b: 'إلهامك.',
@@ -1110,6 +1182,27 @@
         create:      'יצירת חשבון',
         signin:      'התחברות',
         continue:    'המשך לעיין'
+      },
+      quiz_mantras: {
+        classic:    'הקלאסי תמיד באופנה.',
+        minimalist: 'פחות זה ה־יותר החדש.',
+        korean:     'הרכות היא סוג של חוזק משלה.',
+        elegant:    'התלבשי כאילו את כבר במקום שאת רוצה להיות בו.',
+        y2k:        'העתיד נראה טוב יותר בפעם הראשונה.',
+        streetwear: 'הסטייל שלך מדבר לפנייך.',
+        casual:     'מראה טבעי הוא עבודה במשרה מלאה.',
+        softgirl:   'מתיקות אף פעם לא יוצאת מהעונה.',
+        vintage:    'נשמות ישנות לובשות את הדברים הכי טובים.',
+        hijabicore: 'הצניעות היא הצורה הגבוהה ביותר של חן.'
+      },
+      gate: {
+        save:      { eyebrow: 'שמירת לוק',         title: 'שמרי את זה למודבורד שלך',            sub: 'צרי את הפרופיל שלך באורה כדי לשמור את כל הלוקים האהובים במקום אחד.' },
+        shop:      { eyebrow: 'קישור קנייה',       title: 'התחברי כדי לשמור את שביל הקניות',    sub: 'צרי את הפרופיל שלך באורה כדי שלוקים שמורים, היסטוריית קניות והמודבורד יסעו איתך.' },
+        quiz:      { eyebrow: 'חידון סטייל',       title: 'התחברי כדי להתחיל את החידון',       sub: 'צרי את הפרופיל שלך באורה כדי לגלות את האסתטיקה ולפתוח את חוג הסגנון שלך.' },
+        community: { eyebrow: 'חוג סטייל',         title: 'הצטרפי לחוג שלך',                   sub: 'התחברי כדי להיכנס לחוג הפרטי של האסתטיקה שלך ולשתף לוקים.' },
+        verify:    { eyebrow: 'אימות אימייל',      title: 'אמתי את האימייל כדי להמשיך',        sub: 'קליק אחד בתיבה שלך פותח שמירה, פרסום וחידון.' },
+        default:   { eyebrow: 'אורה גלוסי',        title: 'צרי את הפרופיל שלך באורה',          sub: 'שמרי לוקים, גלי את הסטייל שלך, והצטרפי לחוג שלך.' },
+        cta:       { create: 'יצירת חשבון',        signin: 'התחברות',     dismiss: 'אולי בהמשך', close: 'סגירה' }
       },
       moodboard: {
         eyebrow: 'האוסף שלך',

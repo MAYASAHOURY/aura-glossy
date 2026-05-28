@@ -204,7 +204,7 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
       +     '<button class="aura-gate-btn aura-gate-btn-primary" data-aura-gate-primary type="button">Create account</button>'
       +     '<button class="aura-gate-btn aura-gate-btn-secondary" data-aura-gate-secondary type="button">Sign in</button>'
       +   '</div>'
-      +   '<button class="aura-gate-dismiss" data-aura-gate-dismiss type="button">Continue browsing</button>'
+      +   '<button class="aura-gate-dismiss" data-aura-gate-dismiss type="button">Maybe later</button>'
       + '</div>';
     document.body.appendChild(el);
     return el;
@@ -268,11 +268,65 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function() {
         } catch (e) {}
       }
 
-      titleEl.textContent = opts.title || 'Create your Aura profile';
-      subEl.textContent   = opts.subtitle || 'Save looks, discover your style, and join your circle.';
-      eyebrow.textContent = opts.eyebrow || 'Aura Glossy';
-      primary.textContent   = opts.primaryLabel || 'Create account';
-      secondary.textContent = opts.secondaryLabel || 'Sign in';
+      /* Contextual default copy — picks a more specific eyebrow/title/sub
+         based on the pending action key (save/shop/quiz/community), so a
+         user mid-save sees "Save this look" rather than the generic
+         "Create your Aura profile". Caller-provided opts always win.
+         i18n: each pendingKey resolves through Aura.i18n.t('gate.<key>.{title,sub,eyebrow}')
+         when available, so ES/AR/HE users get translated context too. */
+      var _gKey = (opts.pending && opts.pending.key) || null;
+      function _gtr(path, fallback) {
+        try {
+          if (window.Aura && window.Aura.i18n && window.Aura.i18n.t) {
+            var v = window.Aura.i18n.t(path);
+            if (v && v !== path) return v;
+          }
+        } catch (e) {}
+        return fallback;
+      }
+      var GATE_DEFAULTS = {
+        save: {
+          eyebrow: _gtr('gate.save.eyebrow', 'Save look'),
+          title:   _gtr('gate.save.title',   'Save this to your moodboard'),
+          sub:     _gtr('gate.save.sub',     'Create your Aura profile to keep your favourite looks in one place.')
+        },
+        shop: {
+          eyebrow: _gtr('gate.shop.eyebrow', 'Shop link'),
+          title:   _gtr('gate.shop.title',   'Sign in to keep your shopping trail'),
+          sub:     _gtr('gate.shop.sub',     'Create your Aura profile so saved looks, shop history, and your moodboard travel with you.')
+        },
+        quiz: {
+          eyebrow: _gtr('gate.quiz.eyebrow', 'Style Quiz'),
+          title:   _gtr('gate.quiz.title',   'Sign in to take the quiz'),
+          sub:     _gtr('gate.quiz.sub',     'Create your Aura profile to discover your aesthetic and unlock your style circle.')
+        },
+        community: {
+          eyebrow: _gtr('gate.community.eyebrow', 'Style Circle'),
+          title:   _gtr('gate.community.title',   'Join your style circle'),
+          sub:     _gtr('gate.community.sub',     'Sign in to enter your aesthetic’s private circle and start sharing looks.')
+        },
+        verify: {
+          eyebrow: _gtr('gate.verify.eyebrow', 'Verify email'),
+          title:   _gtr('gate.verify.title',   'Verify your email to continue'),
+          sub:     _gtr('gate.verify.sub',     'Just one click in your inbox unlocks save, post, and quiz.')
+        }
+      };
+      var _g = (GATE_DEFAULTS[_gKey]) || {
+        eyebrow: _gtr('gate.default.eyebrow', 'Aura Glossy'),
+        title:   _gtr('gate.default.title',   'Create your Aura profile'),
+        sub:     _gtr('gate.default.sub',     'Save looks, discover your style, and join your circle.')
+      };
+      titleEl.textContent = opts.title    || _g.title;
+      subEl.textContent   = opts.subtitle || _g.sub;
+      eyebrow.textContent = opts.eyebrow  || _g.eyebrow;
+      primary.textContent   = opts.primaryLabel   || _gtr('gate.cta.create', 'Create account');
+      secondary.textContent = opts.secondaryLabel || _gtr('gate.cta.signin', 'Sign in');
+      /* Localise the dismiss + close labels too — these were hardcoded
+         in the modal markup so they need to be re-set every requireAuth call. */
+      try {
+        if (dismiss) dismiss.textContent = _gtr('gate.cta.dismiss', 'Maybe later');
+        if (closeX)  closeX.setAttribute('aria-label', _gtr('gate.cta.close', 'Close'));
+      } catch (e) {}
 
       var nextParam = encodeURIComponent(returnUrl);
 

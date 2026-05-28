@@ -780,12 +780,12 @@
 
   const BRAND_GUIDE = {
     classic: {
-      aff: { stores: 'H&M · Bershka · ASOS · SHEIN', note: 'H&M Divided and Bershka carry structured blazers and tailored trousers that rival mid-range options at a fraction of the price.' },
+      aff: { stores: 'H&M · ASOS · SHEIN · Uniqlo', note: 'H&M Divided and ASOS carry structured blazers and tailored trousers that rival mid-range options at a fraction of the price. Uniqlo for genuinely well-made basics.' },
       mid: { stores: 'Zara · COS · Massimo Dutti · Uniqlo', note: 'Massimo Dutti is the definitive mid-range classic wardrobe. COS for clean tailoring, Uniqlo for the best quality basics.' },
       lux: { stores: 'Toteme · A.P.C. · Jacquemus · Reformation · Acne Studios', note: 'Toteme defines the modern classic wardrobe. A.P.C. for the perfect trench, the right leather bag, and the ideal slim jean.' }
     },
     casual: {
-      aff: { stores: 'H&M · Uniqlo · SHEIN · Bershka', note: 'Uniqlo offers genuinely well-made basics at low prices — their denim, linen, and knitwear consistently exceed expectations.' },
+      aff: { stores: 'H&M · Uniqlo · SHEIN · ASOS', note: 'Uniqlo offers genuinely well-made basics at low prices — their denim, linen, and knitwear consistently exceed expectations.' },
       mid: { stores: 'Levis · Zara · Aritzia · Free People', note: 'Levis for the best mid-range denim — it outlasts everything else. Aritzia for elevated casuals that never feel try-hard.' },
       lux: { stores: 'Everlane · COS · A.P.C. · Toteme', note: 'A.P.C. Denim is a genuine investment piece that ages beautifully. Everlane for transparent pricing and consistently clean basics.' }
     },
@@ -810,7 +810,7 @@
       lux: { stores: 'Acne Studios · A.P.C. · Toteme · Jacquemus', note: 'Acne Studios for the oversized blazer that elevates everything. Korean luxury aligns naturally with Scandinavian and French minimalism.' }
     },
     y2k: {
-      aff: { stores: 'SHEIN · Cider · AliExpress · Bershka · Princess Polly', note: 'SHEIN and Cider are the strongest affordable sources for Y2K — low-rise jeans, baby tees, platform shoes, rhinestone everything.' },
+      aff: { stores: 'SHEIN · Cider · AliExpress · Princess Polly · H&M', note: 'SHEIN and Cider are the strongest affordable sources for Y2K — low-rise jeans, baby tees, platform shoes, rhinestone everything.' },
       mid: { stores: 'ASOS · Urban Outfitters · Zara · Princess Polly', note: 'Urban Outfitters and Princess Polly curate the best mid-range Y2K references — the most accurate 2000s revival pieces available.' },
       lux: { stores: 'Jacquemus · Acne Studios', note: 'Jacquemus and Acne Studios do high-fashion Y2K — sculptural micro bags, precise denim, and statement shoes built to last.' }
     },
@@ -916,12 +916,12 @@
   const FASHION_DIR = {
     classic: {
       tops: {
-        aff: [D('White Cotton Button-Down','H&M','$25','white cotton button down shirt women'), D('Fitted Ivory Shell Top','SHEIN','$16','fitted ivory shell top women'), D('Ribbed Crewneck Knit','Bershka','$22','ribbed crewneck knit top women')],
+        aff: [D('White Cotton Button-Down','H&M','$25','white cotton button down shirt women'), D('Fitted Ivory Shell Top','SHEIN','$16','fitted ivory shell top women'), D('Ribbed Crewneck Knit','ASOS','$22','ribbed crewneck knit top women')],
         mid: [D('Silk Camisole Ivory','COS','$59','silk camisole top women ivory'), D('Merino Crew Sweater','COS','$125','merino wool crew sweater women'), D('Premium Linen Shirt','Uniqlo','$45','premium linen shirt women')],
         lux: [D('Silk Shell Top','Reformation','$128','silk shell top women'), D('Cashmere Crewneck','Toteme','$580','cashmere crewneck sweater women'), D('Fine Silk Blouse','Massimo Dutti','$185','fine silk blouse women')]
       },
       pants: {
-        aff: [D('High-Waist Tailored Trousers','H&M','$35','high waist tailored trousers women'), D('Straight-Leg Beige Trousers','SHEIN','$28','straight leg beige trousers women'), D('Wide-Leg Black Trousers','Bershka','$32','wide leg black trousers women')],
+        aff: [D('High-Waist Tailored Trousers','H&M','$35','high waist tailored trousers women'), D('Straight-Leg Beige Trousers','SHEIN','$28','straight leg beige trousers women'), D('Wide-Leg Black Trousers','ASOS','$32','wide leg black trousers women')],
         mid: [D('Tailored Wide-Leg Trousers','COS','$165','tailored wide leg trousers women'), D('High-Rise Straight Trousers','COS','$79','high rise straight trousers women'), D('Wool Blend Trousers','Zara','$89','wool blend tailored trousers women')],
         lux: [D('Wool Pleated Trousers','Toteme','$495','wool pleated trousers women'), D('Straight-Cut Trousers','A.P.C.','$295','straight cut tailored trousers women'), D('Silk Wide-Leg Trousers','Reformation','$198','silk wide leg trousers women')]
       },
@@ -936,12 +936,12 @@
         lux: [D('Silk Wrap Dress','Reformation','$248','silk wrap dress women'), D('Minimal Midi Dress','Toteme','$595','minimal midi dress women'), D('Structured Midi Dress','Massimo Dutti','$245','structured midi dress women')]
       },
       jackets: {
-        aff: [D('Tailored Blazer','H&M','$65','tailored blazer women'), D('Classic Trench Coat','SHEIN','$55','classic trench coat women'), D('Double-Breasted Blazer','Bershka','$59','double breasted blazer women')],
+        aff: [D('Tailored Blazer','H&M','$65','tailored blazer women'), D('Classic Trench Coat','SHEIN','$55','classic trench coat women'), D('Double-Breasted Blazer','ASOS','$59','double breasted blazer women')],
         mid: [D('Wool Overcoat','COS','$199','wool overcoat women'), D('Classic Blazer','Zara','$119','classic blazer women tailored'), D('Tailored Coat','COS','$395','tailored long coat women')],
         lux: [D('Classic Trench','Toteme','$895','classic trench coat women'), D('Structured Blazer','A.P.C.','$545','structured blazer women'), D('Cashmere Coat','Massimo Dutti','$595','cashmere wool coat women')]
       },
       shoes: {
-        aff: [D('Pointed Ballet Flats','SHEIN','$22','pointed ballet flats women'), D('Block Heel Pumps','H&M','$45','block heel pumps women'), D('Classic Loafers','Bershka','$35','classic loafers women')],
+        aff: [D('Pointed Ballet Flats','SHEIN','$22','pointed ballet flats women'), D('Block Heel Pumps','H&M','$45','block heel pumps women'), D('Classic Loafers','ASOS','$35','classic loafers women')],
         mid: [D('Leather Loafers','COS','$99','leather loafers women'), D('Slingback Heels','& Other Stories','$165','slingback heels women'), D('Kitten Heel Mules','COS','$175','kitten heel mules women')],
         lux: [D('Pointed Slingback','A.P.C.','$395','pointed slingback heels women'), D('Classic Leather Loafer','Reformation','$278','leather loafer women classic'), D('Leather Mules','Toteme','$450','leather mules women')]
       },
@@ -951,7 +951,7 @@
         lux: [D('Leather Chelsea Boots','A.P.C.','$495','leather chelsea boots women'), D('Knee-High Leather Boots','Toteme','$695','leather knee high boots women'), D('Classic Ankle Boot','Reformation','$328','leather ankle boots women')]
       },
       bags: {
-        aff: [D('Structured Faux-Leather Tote','H&M','$35','structured tote bag women'), D('Mini Top Handle','SHEIN','$25','mini top handle bag women'), D('Beige Shoulder Bag','Bershka','$39','beige shoulder bag women')],
+        aff: [D('Structured Faux-Leather Tote','H&M','$35','structured tote bag women'), D('Mini Top Handle','SHEIN','$25','mini top handle bag women'), D('Beige Shoulder Bag','ASOS','$39','beige shoulder bag women')],
         mid: [D('Structured Top Handle','Charles & Keith','$89','structured top handle bag women'), D('Leather Shoulder Bag','COS','$119','leather shoulder bag women'), D('Mini Shoulder Bag','& Other Stories','$99','mini shoulder bag women')],
         lux: [D('Gabbi Bag','JW PEI','$88','gabbi bag women structured leather'), D('Half Moon Bag','A.P.C.','$545','half moon leather bag women'), D('Structured Leather Tote','Toteme','$690','structured leather tote bag')]
       },
@@ -984,12 +984,12 @@
         lux: [D('Cashmere Crew Sweater','COS','$175','cashmere crew sweater women'), D('Supima Pocket Tee','Everlane','$48','supima pocket tee women'), D('Linen Relaxed Shirt','Reformation','$128','linen relaxed shirt women')]
       },
       pants: {
-        aff: [D('Straight-Leg Blue Jeans','SHEIN','$28','straight leg blue jeans women'), D('Relaxed Sweatpants','H&M','$28','relaxed sweatpants women'), D('High-Waist Barrel Jeans','Bershka','$35','high waist barrel jeans women')],
+        aff: [D('Straight-Leg Blue Jeans','SHEIN','$28','straight leg blue jeans women'), D('Relaxed Sweatpants','H&M','$28','relaxed sweatpants women'), D('High-Waist Barrel Jeans','ASOS','$35','high waist barrel jeans women')],
         mid: [D('Wide-Leg Light Wash Jeans','COS','$69','wide leg light wash jeans women'), D('Classic Straight Jeans','Levis','$89','classic straight jeans women'), D('Wide-Leg Jeans','Aritzia','$128','wide leg jeans women')],
         lux: [D('High-Rise Straight Jeans','Levis','$98','high rise straight leg jeans women premium'), D('Barrel-Leg Jeans','Reformation','$148','barrel leg jeans women'), D('Perfect Jean','Everlane','$128','perfect straight jeans women')]
       },
       skirts: {
-        aff: [D('Denim Mini Skirt','SHEIN','$22','denim mini skirt women'), D('Jersey Midi Skirt','H&M','$28','jersey midi skirt women'), D('Cargo Mini Skirt','Bershka','$32','cargo mini skirt women')],
+        aff: [D('Denim Mini Skirt','SHEIN','$22','denim mini skirt women'), D('Jersey Midi Skirt','H&M','$28','jersey midi skirt women'), D('Cargo Mini Skirt','ASOS','$32','cargo mini skirt women')],
         mid: [D('Linen Midi Skirt','Zara','$69','linen midi skirt women'), D('Denim Midi Skirt','COS','$65','denim midi skirt women'), D('Wrap Skirt','ASOS','$45','wrap midi skirt women casual')],
         lux: [D('Linen Wrap Midi Skirt','Reformation','$148','linen wrap midi skirt women'), D('Denim Midi Skirt','Levis','$89','denim midi skirt women'), D('Cotton Maxi Skirt','Everlane','$98','cotton maxi skirt women')]
       },
@@ -1009,7 +1009,7 @@
         lux: [D('Stan Smith Leather','Adidas','$110','adidas stan smith leather white women'), D('Leather Sneakers','A.P.C.','$295','white leather sneakers women premium'), D('Classic Runner','Adidas','$120','adidas stan smith white women')]
       },
       boots: {
-        aff: [D('Ankle Combat Boots','H&M','$55','ankle combat boots women'), D('Chelsea Boots','SHEIN','$42','chelsea boots women'), D('Side-Zip Boots','Bershka','$48','side zip ankle boots women')],
+        aff: [D('Ankle Combat Boots','H&M','$55','ankle combat boots women'), D('Chelsea Boots','SHEIN','$42','chelsea boots women'), D('Side-Zip Boots','ASOS','$48','side zip ankle boots women')],
         mid: [D('Leather Chelsea Boots','COS','$119','leather chelsea boots women'), D('Combat Boots','Dr. Martens','$179','dr martens 1460 boots women'), D('Lug-Sole Ankle Boots','ASOS','$95','lug sole ankle boots women')],
         lux: [D('1460 Smooth Boots','Dr. Martens','$179','dr martens 1460 smooth boots women'), D('Leather Combat Boots','A.P.C.','$495','leather combat boots women'), D('Chelsea Boots','Reformation','$298','leather chelsea boots women')]
       },
@@ -1110,22 +1110,22 @@
         lux: [D('Cashmere Turtleneck','Toteme','$580','cashmere turtleneck black women'), D('Silk Slip Top','& Other Stories','$145','silk slip top women'), D('Merino Polo','A.P.C.','$195','merino wool polo sweater women')]
       },
       pants: {
-        aff: [D('High-Rise Black Trousers','SHEIN','$28','high rise black tailored trousers women'), D('Linen Wide-Leg','H&M','$35','linen wide leg trousers women'), D('Straight White Trousers','Bershka','$30','straight white trousers women')],
+        aff: [D('High-Rise Black Trousers','SHEIN','$28','high rise black tailored trousers women'), D('Linen Wide-Leg','H&M','$35','linen wide leg trousers women'), D('Straight White Trousers','ASOS','$30','straight white trousers women')],
         mid: [D('Tailored Wide-Leg Trousers','COS','$165','tailored wide leg trousers women'), D('Linen Trousers','Everlane','$98','linen trousers women'), D('High-Rise Trousers','& Other Stories','$129','high rise tailored trousers women')],
         lux: [D('Wool Pleated Trousers','Toteme','$495','wool pleated trousers women'), D('Fluid Trousers','Acne Studios','$395','fluid trousers women'), D('Tailored Trousers','A.P.C.','$295','tailored straight trousers women')]
       },
       skirts: {
-        aff: [D('Straight Midi Skirt','H&M','$30','straight midi skirt women'), D('A-Line Midi Skirt','SHEIN','$22','a-line midi skirt women minimal'), D('High-Slit Midi','Bershka','$28','high slit midi skirt women')],
+        aff: [D('Straight Midi Skirt','H&M','$30','straight midi skirt women'), D('A-Line Midi Skirt','SHEIN','$22','a-line midi skirt women minimal'), D('High-Slit Midi','ASOS','$28','high slit midi skirt women')],
         mid: [D('Tailored Midi Skirt','COS','$145','tailored midi skirt women'), D('Linen Midi Skirt','Everlane','$88','linen midi skirt women'), D('Straight Skirt','& Other Stories','$99','straight midi skirt women')],
         lux: [D('Pleated Silk Midi','Toteme','$395','pleated silk midi skirt women'), D('Slit Skirt','Acne Studios','$345','slit midi skirt women'), D('Pencil Skirt','A.P.C.','$245','pencil midi skirt women')]
       },
       dresses: {
-        aff: [D('Slip Midi Dress','H&M','$35','slip midi dress women'), D('Fitted Sheath Dress','SHEIN','$28','fitted sheath dress women'), D('Linen Shift Dress','Bershka','$32','linen shift dress women')],
+        aff: [D('Slip Midi Dress','H&M','$35','slip midi dress women'), D('Fitted Sheath Dress','SHEIN','$28','fitted sheath dress women'), D('Linen Shift Dress','ASOS','$32','linen shift dress women')],
         mid: [D('Clean Shift Dress','COS','$165','clean shift dress women'), D('Linen Column Dress','Everlane','$128','linen column dress women'), D('Midi Dress','& Other Stories','$129','minimal midi dress women')],
         lux: [D('Minimal Midi Dress','Toteme','$595','minimal midi dress women'), D('Clean Column Dress','Acne Studios','$595','column dress women'), D('Cotton Dress','A.P.C.','$295','cotton minimal dress women')]
       },
       jackets: {
-        aff: [D('Tailored Blazer','H&M','$65','tailored blazer women minimal'), D('Simple Trench','SHEIN','$45','simple trench coat women'), D('Clean Overcoat','Bershka','$55','clean overcoat women')],
+        aff: [D('Tailored Blazer','H&M','$65','tailored blazer women minimal'), D('Simple Trench','SHEIN','$45','simple trench coat women'), D('Clean Overcoat','ASOS','$55','clean overcoat women')],
         mid: [D('Clean-Cut Blazer','COS','$275','clean cut blazer women'), D('Classic Trench Coat','Everlane','$228','classic trench coat women'), D('Long Coat','& Other Stories','$245','long coat women minimal')],
         lux: [D('Minimal Trench','Toteme','$895','minimal trench coat women'), D('Structured Coat','Acne Studios','$895','structured coat women'), D('Long Coat','A.P.C.','$595','long coat women tailored')]
       },
@@ -1135,12 +1135,12 @@
         lux: [D('Leather Mules','Toteme','$450','leather mules women'), D('Pointed Shoes','Acne Studios','$495','pointed leather shoes women'), D('Loafers','A.P.C.','$395','leather loafers women premium')]
       },
       boots: {
-        aff: [D('Ankle Boots','H&M','$55','ankle boots women minimal'), D('Clean Chelsea','SHEIN','$42','clean chelsea boots women'), D('Square-Toe Boots','Bershka','$52','square toe ankle boots women')],
+        aff: [D('Ankle Boots','H&M','$55','ankle boots women minimal'), D('Clean Chelsea','SHEIN','$42','clean chelsea boots women'), D('Square-Toe Boots','ASOS','$52','square toe ankle boots women')],
         mid: [D('Ankle Boots','COS','$245','leather ankle boots women'), D('Chelsea Boots','Everlane','$198','chelsea boots women leather'), D('Square-Toe Boots','& Other Stories','$195','square toe boots women')],
         lux: [D('Leather Ankle Boots','Toteme','$495','leather ankle boots women'), D('Leather Boots','Acne Studios','$695','leather boots women minimal'), D('Chelsea Boots','A.P.C.','$495','chelsea boots women leather premium')]
       },
       bags: {
-        aff: [D('Black Shoulder Bag','H&M','$25','black shoulder bag minimal women'), D('Minimal Tote','SHEIN','$20','minimal tote bag women'), D('Clean Crossbody','Bershka','$28','clean crossbody bag women')],
+        aff: [D('Black Shoulder Bag','H&M','$25','black shoulder bag minimal women'), D('Minimal Tote','SHEIN','$20','minimal tote bag women'), D('Clean Crossbody','ASOS','$28','clean crossbody bag women')],
         mid: [D('Structured Black Bag','COS','$175','structured black leather bag women'), D('Day Market Tote','Everlane','$148','day market tote bag women'), D('Minimal Shoulder Bag','& Other Stories','$129','minimal shoulder bag women')],
         lux: [D('Structured Leather Bag','JW PEI','$98','structured leather shoulder bag women'), D('Minimal Bag','Toteme','$595','minimal leather bag women'), D('Leather Tote','A.P.C.','$395','leather tote bag women')]
       },
@@ -1357,37 +1357,37 @@
 
     vintage: {
       tops: {
-        aff: [D('Prairie Blouse Cream','SHEIN','$22','prairie blouse vintage cream women'), D('Paisley Print Blouse','H&M','$28','paisley print blouse women vintage'), D('Ribbed Turtleneck','Bershka','$22','ribbed turtleneck women vintage')],
+        aff: [D('Prairie Blouse Cream','SHEIN','$22','prairie blouse vintage cream women'), D('Paisley Print Blouse','H&M','$28','paisley print blouse women vintage'), D('Ribbed Turtleneck','ASOS','$22','ribbed turtleneck women vintage')],
         mid: [D('70s Style Blouse','Free People','$98','70s style blouse women vintage'), D('Paisley Blouse','Urban Outfitters','$65','paisley print blouse women'), D('Vintage-Look Knit','ASOS','$55','vintage look knit top women')],
         lux: [D('Silk Romantic Blouse','Reformation','$178','silk romantic blouse women vintage'), D('Broderie Blouse','Sézane','$148','broderie blouse women vintage'), D('Prairie Blouse','Free People','$138','prairie blouse women premium')]
       },
       pants: {
-        aff: [D('High-Waist Flare Jeans','SHEIN','$32','high waist flare jeans 70s vintage women'), D('Corduroy Wide-Leg','H&M','$38','corduroy wide leg trousers women vintage'), D('Patchwork Jeans','Bershka','$38','patchwork jeans women vintage')],
+        aff: [D('High-Waist Flare Jeans','SHEIN','$32','high waist flare jeans 70s vintage women'), D('Corduroy Wide-Leg','H&M','$38','corduroy wide leg trousers women vintage'), D('Patchwork Jeans','ASOS','$38','patchwork jeans women vintage')],
         mid: [D('High-Waist Flare Trousers','COS','$85','high waist flare trousers women vintage'), D('Corduroy Flare Pants','Urban Outfitters','$79','corduroy flare pants women'), D('70s Flare Jeans','ASOS','$69','70s style flare jeans women')],
         lux: [D('Wide-Leg Wool Trousers','Reformation','$228','wide leg wool trousers women vintage'), D('Flare Jeans','Levis','$168','flare jeans women premium vintage wash'), D('Corduroy Flare','Free People','$138','corduroy flare pants women premium')]
       },
       skirts: {
-        aff: [D('Corduroy A-Line Skirt','SHEIN','$28','corduroy a-line skirt vintage women'), D('Denim Midi Skirt','H&M','$35','denim midi skirt women vintage'), D('Suede Mini Skirt','Bershka','$30','suede mini skirt women vintage')],
+        aff: [D('Corduroy A-Line Skirt','SHEIN','$28','corduroy a-line skirt vintage women'), D('Denim Midi Skirt','H&M','$35','denim midi skirt women vintage'), D('Suede Mini Skirt','ASOS','$30','suede mini skirt women vintage')],
         mid: [D('Corduroy Midi Skirt','Urban Outfitters','$75','corduroy midi skirt women'), D('Suede Midi Skirt','Free People','$98','suede midi skirt women vintage'), D('A-Line Midi Skirt','ASOS','$59','vintage a-line midi skirt women')],
         lux: [D('Corduroy Midi Skirt','Reformation','$178','corduroy midi skirt women'), D('Suede Skirt','Free People','$168','suede skirt women premium vintage'), D('Wool Midi Skirt','Sézane','$148','wool midi skirt women vintage')]
       },
       dresses: {
-        aff: [D('Floral Midi Dress','SHEIN','$28','floral midi dress vintage women 70s'), D('Prairie Dress','H&M','$38','prairie dress women vintage boho'), D('Smocked Maxi Dress','Bershka','$35','smocked maxi dress women vintage')],
+        aff: [D('Floral Midi Dress','SHEIN','$28','floral midi dress vintage women 70s'), D('Prairie Dress','H&M','$38','prairie dress women vintage boho'), D('Smocked Maxi Dress','ASOS','$35','smocked maxi dress women vintage')],
         mid: [D('70s Wrap Dress','Free People','$128','70s wrap dress women vintage'), D('Floral Maxi Dress','Urban Outfitters','$89','floral maxi dress women vintage boho'), D('Prairie Midi Dress','ASOS','$75','prairie midi dress women vintage')],
         lux: [D('Floral Midi Dress','Reformation','$248','floral midi dress women vintage'), D('Prairie Dress','Sézane','$198','prairie dress women premium'), D('Wrap Maxi Dress','Free People','$178','wrap maxi dress women vintage')]
       },
       jackets: {
-        aff: [D('Faux Suede Jacket','H&M','$55','faux suede jacket women vintage'), D('Corduroy Blazer','SHEIN','$38','corduroy blazer women vintage'), D('Denim Jacket','Bershka','$42','vintage wash denim jacket women')],
+        aff: [D('Faux Suede Jacket','H&M','$55','faux suede jacket women vintage'), D('Corduroy Blazer','SHEIN','$38','corduroy blazer women vintage'), D('Denim Jacket','ASOS','$42','vintage wash denim jacket women')],
         mid: [D('Suede Fringe Jacket','Free People','$198','suede fringe jacket women vintage'), D('Vintage Denim Jacket','Urban Outfitters','$75','vintage wash denim jacket women'), D('Corduroy Jacket','ASOS','$89','corduroy jacket women vintage')],
         lux: [D('Suede Jacket','Free People','$268','suede jacket women premium vintage'), D('Shearling Jacket','Acne Studios','$1295','shearling jacket women'), D('Leather Jacket','A.P.C.','$695','leather jacket women vintage')]
       },
       shoes: {
-        aff: [D('Suede Ankle Boots','SHEIN','$45','suede ankle boots vintage women'), D('Brown Suede Loafers','H&M','$45','brown suede loafers vintage women'), D('Square-Toe Flats','Bershka','$32','square toe flats women vintage')],
+        aff: [D('Suede Ankle Boots','SHEIN','$45','suede ankle boots vintage women'), D('Brown Suede Loafers','H&M','$45','brown suede loafers vintage women'), D('Square-Toe Flats','ASOS','$32','square toe flats women vintage')],
         mid: [D('Tan Suede Knee Boots','COS','$129','suede knee high boots tan women'), D('Vintage Loafers','Urban Outfitters','$89','vintage loafers women 70s'), D('Suede Block Heels','Free People','$98','suede block heel shoes women vintage')],
         lux: [D('Tall Suede Boots','Acne Studios','$595','tall suede boots tan women'), D('Leather Loafers','A.P.C.','$395','leather loafers women vintage'), D('Block Heel Boots','Reformation','$298','block heel boots women vintage')]
       },
       boots: {
-        aff: [D('Suede Ankle Boots','H&M','$55','suede ankle boots women vintage'), D('Knee-High Boots','SHEIN','$48','knee high boots women vintage'), D('Cowboy Boots','Bershka','$58','cowboy boots women vintage')],
+        aff: [D('Suede Ankle Boots','H&M','$55','suede ankle boots women vintage'), D('Knee-High Boots','SHEIN','$48','knee high boots women vintage'), D('Cowboy Boots','ASOS','$58','cowboy boots women vintage')],
         mid: [D('Tan Suede Platform Boots','COS','$129','tan suede platform boots vintage women'), D('Dr. Martens 1460','Dr. Martens','$179','dr martens 1460 cherry red women'), D('Cowboy Boots','Urban Outfitters','$149','cowboy boots women vintage')],
         lux: [D('Suede Boots','Acne Studios','$895','suede boots women vintage'), D('Leather Cowboy Boots','Reformation','$398','leather cowboy boots women'), D('Tall Boots','A.P.C.','$695','tall leather boots women')]
       },
@@ -1915,7 +1915,12 @@
       html01 += '<div class="hs-panel-cat">' + piece.category + '</div>';
       html01 += '<div class="hs-panel-name">' + piece.name + '</div>';
       html01 += '<div class="hs-panel-meta"><span class="hs-panel-store">' + piece.store + '</span><span class="hs-panel-price">' + piece.price + '</span></div>';
-      html01 += '<a href="' + piece.url + '" class="hs-panel-link" target="_blank" rel="noopener noreferrer">Shop now →</a>';
+      /* FTC-compliant affiliate disclosure — clear, conspicuous, and at
+         the moment of click rather than buried in /terms. Aura must
+         disclose any commission relationship the moment the shopper is
+         about to follow a retailer link. */
+      html01 += '<div class="hs-panel-disclosure" aria-label="Affiliate disclosure">Affiliate link · Aura may earn a commission</div>';
+      html01 += '<a href="' + piece.url + '" class="hs-panel-link" target="_blank" rel="noopener noreferrer sponsored">Shop now →</a>';
       /* Two layered fallbacks (Pinterest visual + Google Shopping
          product aggregator). If the primary retailer's search returns
          nothing or a redirect to their homepage, the shopper still has
@@ -2087,8 +2092,6 @@
     var map = {
       'SHEIN':            'https://us.shein.com/pdsearch/' + e + '/',
       'H&M':              'https://www2.hm.com/en_us/search-results.html?q=' + e,
-      'Bershka':          'https://www.bershka.com/us/search?searchTerm=' + e,
-      'Temu':             'https://www.temu.com/search_result.html?search_key=' + e,
       'AliExpress':       'https://www.aliexpress.com/wholesale?SearchText=' + e,
       'Zara':             'https://www.zara.com/us/en/search?searchTerm=' + e,
       'ASOS':             'https://www.asos.com/search/?q=' + e,
@@ -2098,7 +2101,7 @@
       'Reformation':      'https://www.thereformation.com/search?q=' + e,
       'Jacquemus':        'https://jacquemus.com/search?q=' + e,
       'Acne Studios':     'https://www.acnestudios.com/en/search?q=' + e,
-      'Toteme':           'https://toteme-studio.com/en/search/?q=' + e,
+      'Toteme':           'https://toteme.com/search?q=' + e,
       'Tiffany & Co.':    'https://www.tiffany.com/search/?q=' + e,
       'Sephora':          'https://www.sephora.com/search?keyword=' + e,
       'Dior Beauty':      'https://www.dior.com/en_us/beauty/search?q=' + e
@@ -2109,7 +2112,7 @@
   function sfnStores(budget, cat) {
     var beauty = (cat === 'makeup' || cat === 'fragrances');
     var acc    = (cat === 'shoes' || cat === 'boots' || cat === 'bags' || cat === 'jewelry');
-    if (budget === 'aff') return ['SHEIN','H&M','Bershka','Temu','AliExpress'];
+    if (budget === 'aff') return ['SHEIN','H&M','ASOS','Uniqlo','AliExpress'];
     if (budget === 'mid') {
       if (beauty) return ['ASOS','Urban Outfitters','H&M'];
       if (acc)    return ['Zara','ASOS','COS','Urban Outfitters'];

@@ -13,6 +13,30 @@ const LOCAL_IMG_BASE = 'images';
 // If a style is in here, the platform uses its local files instead of Unsplash.
 const LOCAL_PACKED = ['classic', 'casual', 'streetwear', 'elegant', 'minimalist', 'korean', 'y2k', 'softgirl', 'vintage', 'hijabicore'];
 
+// Per-aesthetic slot exclusions — slots NOT yet shipped locally for an
+// aesthetic in LOCAL_PACKED. These slots fall back to the curated
+// Unsplash pool (IMG_POOLS) via slotImg() instead of pointing at a
+// missing file. Keeps newer aesthetics rendering cleanly while their
+// product/detail photography is still being commissioned.
+//
+// Hijabi Core (added 2026-05-24) ships with hero + accent + 8 outfit
+// photos. Detail crops, beauty/lookbook, and product-tier images are
+// not yet finalized — they use Unsplash fallback until shipped.
+const LOCAL_SLOT_EXCLUDE = {
+  hijabicore: [
+    'completeLook',
+    'detailFabric', 'detailAccessory', 'detailShoes',
+    'detailJewelry', 'detailMakeup', 'detailBag',
+    'beauty', 'lookbook',
+    'productClothingAff', 'productClothingMid', 'productClothingLux',
+    'productShoesAff',    'productShoesMid',    'productShoesLux',
+    'productBagsAff',     'productBagsMid',     'productBagsLux',
+    'productAccessoriesAff','productAccessoriesMid','productAccessoriesLux',
+    'productBeautyAff',   'productBeautyMid',   'productBeautyLux',
+    'productJewelryAff',  'productJewelryMid',  'productJewelryLux'
+  ]
+};
+
 // Slot → relative filename inside images/{aesthetic}/
 const SLOT_FILES = {
   hero: 'hero.jpg',
@@ -46,13 +70,22 @@ const SLOT_FILES = {
 };
 
 // Build an image URL for a (aesthetic, slot). Falls back to Unsplash if the
-// aesthetic isn't in LOCAL_PACKED yet.
+// aesthetic isn't in LOCAL_PACKED yet, OR if the slot is in
+// LOCAL_SLOT_EXCLUDE for this aesthetic (meaning the local file hasn't
+// been shipped yet — we route to the curated Unsplash pool instead of a
+// 404).
 function slotImg(aesthetic, slot, fallbackQuery) {
-  if (USE_LOCAL_IMAGES && LOCAL_PACKED.indexOf(aesthetic) !== -1 && SLOT_FILES[slot]) {
+  var excluded = LOCAL_SLOT_EXCLUDE[aesthetic] && LOCAL_SLOT_EXCLUDE[aesthetic].indexOf(slot) !== -1;
+  if (USE_LOCAL_IMAGES && LOCAL_PACKED.indexOf(aesthetic) !== -1 && SLOT_FILES[slot] && !excluded) {
     // Use encoded path to handle spaces / special chars safely
     return `${LOCAL_IMG_BASE}/${aesthetic}/${SLOT_FILES[slot]}`;
   }
-  // Fallback to the slug system
+  // Fallback to the curated editorial pool — use the aesthetic id as the
+  // primary key so the IMG_POOLS lookup hits the right pool (e.g.
+  // hijabicore → IMG_POOLS.hijabicore) instead of guessing from a query.
+  if (IMG_POOLS[aesthetic]) {
+    return img(aesthetic + ' ' + slot + ' ' + (fallbackQuery || ''));
+  }
   return localImgPath(fallbackQuery || (aesthetic + ' ' + slot));
 }
 
@@ -136,6 +169,17 @@ const IMG_POOLS = {
     '1492707892479-7bc8d5a4ee93', '1465495976277-4387d4b0b4c6',
     '1503944168849-8bf86fa6e2a8', '1539109136881-3be0616acf4b'
   ],
+  // Hijabi Core — warm neutrals, long-line coats, fluid abayas,
+  // pinstripe tailoring, satin hijab drape, leather totes, modest
+  // editorial. Curated for the slots that don't yet have local
+  // photography (see LOCAL_SLOT_EXCLUDE.hijabicore).
+  hijabicore: [
+    '1581044777550-4cfa60707c03', '1503944168849-8bf86fa6e2a8',
+    '1487412947147-5cebf100ffc2', '1469334031218-e382a71b716b',
+    '1530418877033-7b67e35bf03b', '1539109136881-3be0616acf4b',
+    '1551803091-e20673f15770',    '1496747611176-843222e1e57c',
+    '1490481651871-ab68de25d43d', '1518049362265-d5b2a6b00b37'
+  ],
   casual: [
     '1483985988355-763728e1935b', '1469334031218-e382a71b716b',
     '1496747611176-843222e1e57c', '1530418877033-7b67e35bf03b',
@@ -158,6 +202,7 @@ const IMG_FALLBACK = [
 function detectAesthetic(q) {
   q = q.toLowerCase();
   const map = [
+    ['hijabicore',   ['hijab', 'hijabi', 'modest', 'abaya', 'modest fashion', 'hijabicore', 'modest abaya', 'long sleeve modest', 'modest maxi']],
     ['oldmoney',     ['old money', 'quiet luxury', 'cashmere', 'tonal']],
     ['darkacademia', ['dark academia', 'darkacademia', 'tweed', 'oxford', 'library', 'plaid skirt', 'knit vest', 'satchel', 'wine', 'brick']],
     ['streetwear',   ['streetwear', 'sneaker', 'hoodie', 'cargo', 'bucket hat', 'air force', 'dunk', 'jordan', 'chunky', 'tracksuit']],
@@ -192,7 +237,6 @@ const STORE_URLS = {
   'Zara':            q => `https://www.zara.com/us/en/search?searchTerm=${encodeURIComponent(q)}`,
   'H&M':             q => `https://www2.hm.com/en_us/search-results.html?q=${encodeURIComponent(q)}`,
   'ASOS':            q => `https://www.asos.com/search/?q=${encodeURIComponent(q)}`,
-  'Bershka':         q => `https://www.bershka.com/us/search?searchTerm=${encodeURIComponent(q)}`,
   'SHEIN':           q => `https://us.shein.com/pdsearch/${encodeURIComponent(q)}/`,
   'Uniqlo':          q => `https://www.uniqlo.com/us/en/search?q=${encodeURIComponent(q)}`,
   'Nike':            q => `https://www.nike.com/w?q=${encodeURIComponent(q)}`,
@@ -300,17 +344,17 @@ classic: {
     shoes: [
       P('aff', 'H&M', 'Loafers', '$39', 'loafers women', 'loafers brown product'),
       P('mid', 'COS', 'Leather Loafers', '$99', 'leather loafers women', 'leather loafers product'),
-      P('lux', 'COS', 'Square-Toe Loafers', '$235', 'leather loafers', 'classic loafers brown product')
+      P('lux', 'A.P.C.', 'Iris Leather Loafers', '$445', 'iris leather loafers women', 'leather loafers brown product')
     ],
     bags: [
       P('aff', 'H&M', 'Faux-Leather Tote', '$29', 'leather tote bag', 'tan tote bag product'),
       P('mid', 'COS', 'Leather Shopper', '$129', 'leather shopper bag', 'leather tote bag product'),
-      P('lux', 'COS', 'Soft Leather Tote', '$245', 'leather tote', 'tan leather tote product')
+      P('lux', 'Polène', 'Numéro Un Mini', '$445', 'numero un mini leather bag camel', 'tan leather tote product')
     ],
     accessories: [
-      P('aff', 'SHEIN', 'Silk-Feel Scarf', '$12', 'silk scarf', 'silk scarf neutral product'),
-      P('mid', 'COS', 'Printed Silk Scarf', '$45', 'silk scarf', 'silk scarf product'),
-      P('lux', 'COS', 'Pure Silk Scarf', '$85', 'silk scarf', 'silk scarf elegant product')
+      P('aff', 'H&M', 'Silk-Feel Scarf', '$12', 'silk scarf neutral women', 'silk scarf neutral product'),
+      P('mid', 'COS', 'Printed Silk Scarf', '$45', 'printed silk scarf women', 'silk scarf product'),
+      P('lux', 'Acne Studios', 'Wool-Cashmere Scarf', '$230', 'acne studios wool cashmere scarf women', 'cashmere scarf cream product')
     ],
     beauty: [
       P('aff', 'Sephora', 'NYX Soft Matte Lip', '$7', 'NYX soft matte lip cream', 'nude lipstick product'),
@@ -320,7 +364,7 @@ classic: {
     jewelry: [
       P('aff', 'H&M', 'Pearl Stud Earrings', '$15', 'pearl earrings', 'pearl earrings product'),
       P('mid', 'COS', 'Gold Watch', '$79', 'gold watch women', 'gold watch product'),
-      P('lux', 'Mejuri', 'Pearl Studs', '$98', 'pearl studs', 'pearl earrings gold product')
+      P('lux', 'Mejuri', 'Pearl Drop Earrings', '$148', 'pearl drop earrings gold', 'pearl earrings gold product')
     ]
   }
 },
@@ -361,22 +405,22 @@ casual: {
     clothing: [
       P('aff', 'Uniqlo', 'Crew Sweatshirt', '$29', 'crew sweatshirt', 'grey sweatshirt product'),
       P('mid', 'Levis', '501 Original Jean', '$98', '501 original jeans', 'blue jeans product'),
-      P('lux', 'Everlane', 'Cashmere Crew', '$148', 'cashmere crew sweater', 'cashmere sweater beige product')
+      P('lux', 'A.P.C.', 'Cashmere Crewneck', '$385', 'apc cashmere crewneck sweater women', 'cashmere sweater beige product')
     ],
     shoes: [
-      P('aff', 'H&M', 'Canvas Sneakers', '$35', 'white sneakers', 'white sneakers product'),
-      P('mid', 'Adidas', 'Stan Smith', '$100', 'stan smith', 'stan smith sneakers product'),
-      P('lux', 'Nike', 'Cortez Leather', '$110', 'cortez leather', 'cortez sneakers product')
+      P('aff', 'H&M', 'Canvas Sneakers', '$35', 'white canvas sneakers women', 'white sneakers product'),
+      P('mid', 'Adidas', 'Stan Smith', '$100', 'stan smith sneakers', 'stan smith sneakers product'),
+      P('lux', 'A.P.C.', 'Plain Leather Sneakers', '$325', 'apc plain leather sneakers women', 'white leather sneakers product')
     ],
     bags: [
-      P('aff', 'SHEIN', 'Cotton Tote', '$12', 'cotton tote bag', 'canvas tote bag product'),
-      P('mid', 'COS', 'Crossbody Bag', '$59', 'crossbody bag', 'crossbody bag tan product'),
-      P('lux', 'COS', 'Mini Leather Bag', '$185', 'mini leather bag', 'mini leather bag product')
+      P('aff', 'H&M', 'Cotton Tote', '$12', 'cotton tote bag women', 'canvas tote bag product'),
+      P('mid', 'COS', 'Crossbody Bag', '$59', 'crossbody bag women tan', 'crossbody bag tan product'),
+      P('lux', 'A.P.C.', 'Demi-Lune Mini', '$295', 'apc demi lune mini leather bag', 'mini leather bag product')
     ],
     accessories: [
-      P('aff', 'ASOS', 'Baseball Cap', '$15', 'baseball cap', 'baseball cap product'),
-      P('mid', 'Nike', 'Heritage Cap', '$30', 'heritage cap', 'baseball cap white product'),
-      P('lux', 'COS', 'Wool Beanie', '$39', 'wool beanie', 'wool beanie cream product')
+      P('aff', 'ASOS', 'Baseball Cap', '$15', 'baseball cap women', 'baseball cap product'),
+      P('mid', 'Nike', 'Heritage Cap', '$30', 'nike heritage cap', 'baseball cap white product'),
+      P('lux', 'Acne Studios', 'Wool Bobble Beanie', '$170', 'acne studios wool beanie women', 'wool beanie cream product')
     ],
     beauty: [
       P('aff', 'Sephora', 'e.l.f. Lip Balm', '$5', 'elf lip balm', 'lip balm product'),
@@ -427,27 +471,27 @@ streetwear: {
     clothing: [
       P('aff', 'SHEIN', 'Oversized Hoodie', '$19', 'oversized hoodie', 'oversized hoodie black product'),
       P('mid', 'H&M', 'Cargo Pants', '$45', 'cargo pants', 'cargo pants product'),
-      P('lux', 'Adidas', 'Track Jacket', '$130', 'track jacket', 'track jacket product')
+      P('lux', 'Acne Studios', 'Oversized Logo Sweatshirt', '$380', 'acne studios oversized logo sweatshirt women', 'oversized sweatshirt product')
     ],
     shoes: [
-      P('aff', 'H&M', 'Chunky Sneakers', '$45', 'chunky sneakers', 'chunky sneakers product'),
-      P('mid', 'Nike', 'Air Force 1', '$115', 'air force 1', 'air force 1 sneakers product'),
-      P('lux', 'Nike', 'Dunk High', '$130', 'dunk high', 'dunk high sneakers product')
+      P('aff', 'H&M', 'Chunky Sneakers', '$45', 'chunky sneakers women', 'chunky sneakers product'),
+      P('mid', 'Nike', 'Air Force 1', '$115', 'air force 1 sneakers', 'air force 1 sneakers product'),
+      P('lux', 'Acne Studios', 'Leather Low-Top Sneakers', '$520', 'acne studios leather sneakers women', 'leather sneakers product')
     ],
     bags: [
-      P('aff', 'SHEIN', 'Sling Bag', '$15', 'sling bag', 'sling bag black product'),
-      P('mid', 'Adidas', 'Originals Sling', '$45', 'originals sling bag', 'sling crossbody product'),
-      P('lux', 'Nike', 'Heritage Backpack', '$95', 'heritage backpack', 'backpack streetwear product')
+      P('aff', 'H&M', 'Sling Bag', '$15', 'sling crossbody bag women', 'sling bag black product'),
+      P('mid', 'Adidas', 'Originals Sling', '$45', 'adidas originals sling bag', 'sling crossbody product'),
+      P('lux', 'Acne Studios', 'Musubi Mini Bag', '$1100', 'acne studios musubi mini leather bag', 'musubi leather bag product')
     ],
     accessories: [
-      P('aff', 'SHEIN', 'Bucket Hat', '$12', 'bucket hat', 'bucket hat product'),
-      P('mid', 'H&M', 'Wool Bucket Hat', '$25', 'wool bucket hat', 'bucket hat black product'),
-      P('lux', 'Adidas', 'Originals Cap', '$35', 'originals cap', 'baseball cap black product')
+      P('aff', 'H&M', 'Bucket Hat', '$12', 'bucket hat women', 'bucket hat product'),
+      P('mid', 'H&M', 'Wool Bucket Hat', '$25', 'wool bucket hat women', 'bucket hat black product'),
+      P('lux', 'Jacquemus', 'Logo Cap', '$160', 'jacquemus logo cap', 'logo cap black product')
     ],
     beauty: [
       P('aff', 'Sephora', 'NYX Butter Gloss', '$5', 'nyx butter gloss', 'lip gloss product'),
       P('mid', 'Sephora', 'Fenty Gloss Bomb', '$22', 'fenty gloss bomb', 'lip gloss product nude'),
-      P('lux', 'Sephora', 'Pat McGrath Gloss', '$32', 'pat mcgrath lip gloss', 'luxury lip gloss product')
+      P('lux', 'Sephora', 'Tom Ford Lip Spark', '$58', 'tom ford lip spark gloss', 'luxury lip gloss product')
     ],
     jewelry: [
       P('aff', 'SHEIN', 'Layered Chain Set', '$8', 'layered chain necklace', 'silver chain necklace product'),
@@ -493,22 +537,22 @@ minimalist: {
     clothing: [
       P('aff', 'Uniqlo', 'Linen Shirt', '$40', 'linen shirt women', 'linen shirt cream product'),
       P('mid', 'COS', 'Linen Trousers', '$69', 'linen trousers', 'linen trousers product'),
-      P('lux', 'COS', 'Wool Coat', '$295', 'wool coat', 'beige wool coat product')
+      P('lux', 'Toteme', 'Oversized Wool Coat', '$1495', 'toteme oversized wool coat women beige', 'beige wool coat product')
     ],
     shoes: [
-      P('aff', 'H&M', 'Square-Toe Loafers', '$39', 'square toe loafers', 'minimalist loafers product'),
-      P('mid', 'COS', 'Leather Mules', '$99', 'leather mules', 'leather mules product'),
-      P('lux', 'COS', 'Leather Loafers', '$235', 'leather loafers minimalist','leather loafers black product')
+      P('aff', 'H&M', 'Square-Toe Loafers', '$39', 'square toe loafers women', 'minimalist loafers product'),
+      P('mid', 'COS', 'Leather Mules', '$99', 'leather mules women', 'leather mules product'),
+      P('lux', 'A.P.C.', 'Iris Leather Loafers', '$445', 'apc iris leather loafers women minimalist','leather loafers black product')
     ],
     bags: [
-      P('aff', 'H&M', 'Structured Tote', '$29', 'structured tote', 'minimal tote bag product'),
-      P('mid', 'COS', 'Leather Sling', '$89', 'leather sling bag', 'leather sling bag product'),
-      P('lux', 'COS', 'Leather Tote', '$245', 'leather tote', 'minimalist leather tote product')
+      P('aff', 'H&M', 'Structured Tote', '$29', 'structured tote bag women', 'minimal tote bag product'),
+      P('mid', 'COS', 'Leather Sling', '$89', 'leather sling bag women', 'leather sling bag product'),
+      P('lux', 'Polène', 'Numéro Un Nano', '$345', 'polene numero un nano leather bag', 'minimalist leather tote product')
     ],
     accessories: [
-      P('aff', 'SHEIN', 'Linen Scarf', '$10', 'linen scarf', 'neutral scarf product'),
-      P('mid', 'COS', 'Wool-Blend Scarf', '$69', 'wool scarf', 'wool scarf beige product'),
-      P('lux', 'COS', 'Leather Belt', '$59', 'leather belt women', 'leather belt product')
+      P('aff', 'H&M', 'Linen Scarf', '$10', 'linen scarf women', 'neutral scarf product'),
+      P('mid', 'COS', 'Wool-Blend Scarf', '$69', 'wool blend scarf women', 'wool scarf beige product'),
+      P('lux', 'Toteme', 'Cashmere Scarf', '$375', 'toteme cashmere scarf women', 'cashmere scarf cream product')
     ],
     beauty: [
       P('aff', 'Sephora', 'e.l.f. Lip Stain', '$7', 'elf lip stain', 'berry lip stain product'),
@@ -559,22 +603,22 @@ elegant: {
     clothing: [
       P('aff', 'H&M', 'Satin Blouse', '$35', 'satin blouse', 'satin blouse blush product'),
       P('mid', 'COS', 'Lace-Trim Slip', '$89', 'lace slip dress', 'slip dress satin product'),
-      P('lux', 'Reformation', 'Silk Slip Dress', '$248', 'silk slip dress', 'silk slip dress product')
+      P('lux', 'Reformation', 'Silk Slip Dress', '$248', 'reformation silk slip dress women', 'silk slip dress product')
     ],
     shoes: [
-      P('aff', 'SHEIN', 'Kitten Heel Slingbacks', '$25', 'kitten heels', 'kitten heels product'),
-      P('mid', 'Zara', 'Slingback Pumps', '$79', 'slingback pumps', 'slingback heels product'),
-      P('lux', 'COS', 'Leather Kitten Heels', '$139', 'leather kitten heels', 'leather kitten heels product')
+      P('aff', 'H&M', 'Kitten Heel Slingbacks', '$25', 'kitten heel slingbacks women', 'kitten heels product'),
+      P('mid', 'Zara', 'Slingback Pumps', '$79', 'slingback pumps women', 'slingback heels product'),
+      P('lux', 'Jacquemus', 'Les Mules', '$475', 'jacquemus les mules slingback women', 'leather kitten heels product')
     ],
     bags: [
-      P('aff', 'ASOS', 'Top-Handle Bag', '$35', 'top handle bag', 'top handle bag pink product'),
-      P('mid', 'COS', 'Mini Top-Handle', '$89', 'mini top handle bag', 'mini top handle bag product'),
-      P('lux', 'COS', 'Leather Top-Handle', '$245', 'top handle leather bag', 'top handle leather bag product')
+      P('aff', 'ASOS', 'Top-Handle Bag', '$35', 'top handle bag women', 'top handle bag pink product'),
+      P('mid', 'Charles & Keith', 'Mini Top-Handle', '$89', 'mini top handle bag women', 'mini top handle bag product'),
+      P('lux', 'Polène', 'Numéro Un Nano', '$345', 'polene numero un nano leather bag elegant', 'top handle leather bag product')
     ],
     accessories: [
-      P('aff', 'SHEIN', 'Pearl Hair Clip', '$5', 'pearl hair clip', 'pearl hair clip product'),
-      P('mid', 'COS', 'Silk Hair Scarf', '$25', 'silk hair scarf', 'silk scarf hair product'),
-      P('lux', 'COS', 'Silk Twill Scarf', '$85', 'silk twill scarf', 'silk twill scarf product')
+      P('aff', 'H&M', 'Pearl Hair Clip', '$5', 'pearl hair clip women', 'pearl hair clip product'),
+      P('mid', 'COS', 'Silk Hair Scarf', '$25', 'silk hair scarf women', 'silk scarf hair product'),
+      P('lux', 'Acne Studios', 'Silk Twill Scarf', '$280', 'acne studios silk twill scarf women', 'silk twill scarf product')
     ],
     beauty: [
       P('aff', 'Sephora', 'NYX Matte Lipstick', '$7', 'nyx matte lipstick rose', 'pink lipstick product'),
@@ -582,9 +626,9 @@ elegant: {
       P('lux', 'Sephora', 'Chanel Rouge Allure', '$50', 'chanel rouge allure', 'chanel lipstick product')
     ],
     jewelry: [
-      P('aff', 'H&M', 'Pearl Studs', '$9', 'pearl studs', 'pearl studs product'),
-      P('mid', 'COS', 'Pearl Drop Earrings', '$29', 'pearl drop earrings', 'pearl drop earrings product'),
-      P('lux', 'Mejuri', 'Pearl Pendant', '$128', 'pearl pendant', 'pearl pendant necklace product')
+      P('aff', 'H&M', 'Pearl Studs', '$9', 'pearl studs women', 'pearl studs product'),
+      P('mid', 'COS', 'Pearl Drop Earrings', '$29', 'pearl drop earrings women', 'pearl drop earrings product'),
+      P('lux', 'Tiffany & Co.', 'Pearl Pendant Necklace', '$350', 'tiffany pearl pendant necklace women', 'pearl pendant necklace product')
     ]
   }
 }
@@ -632,22 +676,22 @@ korean: {
     clothing: [
       P('aff', 'SHEIN', 'Oversized Cardigan', '$18', 'oversized cardigan pastel', 'pastel cardigan product'),
       P('mid', 'Zara', 'Pleated Mini Skirt', '$39', 'pleated mini skirt', 'pleated skirt product'),
-      P('lux', 'COS', 'Knit Polo Sweater', '$99', 'knit polo sweater', 'knit polo product korean')
+      P('lux', 'Acne Studios', 'Wool Knit Polo', '$390', 'acne studios wool knit polo women', 'knit polo product korean')
     ],
     shoes: [
-      P('aff', 'H&M', 'Mary Jane Flats', '$35', 'mary jane flats', 'mary janes product'),
-      P('mid', 'Bershka', 'Platform Loafers', '$50', 'platform loafers', 'platform loafers product'),
-      P('lux', 'COS', 'Leather Mary Janes', '$99', 'leather mary janes', 'leather mary janes product')
+      P('aff', 'H&M', 'Mary Jane Flats', '$35', 'mary jane flats women', 'mary janes product'),
+      P('mid', 'H&M', 'Platform Loafers', '$50', 'platform loafers women', 'platform loafers product'),
+      P('lux', 'A.P.C.', 'Leather Mary Janes', '$425', 'apc leather mary janes women', 'leather mary janes product')
     ],
     bags: [
-      P('aff', 'SHEIN', 'Mini Shoulder Bag', '$14', 'mini shoulder bag korean', 'mini shoulder bag product'),
-      P('mid', 'Zara', 'Quilted Mini Bag', '$39', 'quilted mini bag', 'quilted mini bag product'),
-      P('lux', 'COS', 'Leather Mini', '$99', 'leather mini bag', 'mini leather bag pink product')
+      P('aff', 'H&M', 'Mini Shoulder Bag', '$14', 'mini shoulder bag korean women', 'mini shoulder bag product'),
+      P('mid', 'Zara', 'Quilted Mini Bag', '$39', 'quilted mini bag women', 'quilted mini bag product'),
+      P('lux', 'Polène', 'Béri Mini', '$395', 'polene beri mini leather bag', 'mini leather bag pink product')
     ],
     accessories: [
-      P('aff', 'SHEIN', 'Pearl Hair Clips Set', '$5', 'pearl hair clips', 'pearl hair clips product'),
-      P('mid', 'H&M', 'Knee-High Socks', '$12', 'knee high socks', 'knee high socks product'),
-      P('lux', 'Urban Outfitters', 'Bow Hair Clip', '$35', 'bow hair clip', 'bow hair clip product')
+      P('aff', 'H&M', 'Pearl Hair Clips Set', '$5', 'pearl hair clips women', 'pearl hair clips product'),
+      P('mid', 'H&M', 'Knee-High Socks', '$12', 'knee high socks women', 'knee high socks product'),
+      P('lux', 'Jacquemus', 'Bow Hair Clip', '$145', 'jacquemus bow hair clip', 'bow hair clip product')
     ],
     beauty: [
       P('aff', 'Sephora', 'Etude House Lip Tint', '$8', 'etude house lip tint', 'lip tint product'),
@@ -696,24 +740,24 @@ y2k: {
   },
   shop: {
     clothing: [
-      P('aff', 'SHEIN', 'Low-Rise Jeans', '$22', 'low rise jeans', 'low rise jeans product'),
-      P('mid', 'Bershka', 'Cropped Baby Tee', '$15', 'baby tee crop', 'baby tee product pink'),
-      P('lux', 'H&M', 'Low-Rise Cargo', '$50', 'low rise cargo', 'cargo pants y2k product')
+      P('aff', 'SHEIN', 'Low-Rise Jeans', '$22', 'low rise jeans women', 'low rise jeans product'),
+      P('mid', 'H&M', 'Cropped Baby Tee', '$15', 'baby tee crop women', 'baby tee product pink'),
+      P('lux', 'Acne Studios', 'Low-Rise Denim', '$390', 'acne studios low rise jeans women', 'low rise jeans denim product')
     ],
     shoes: [
-      P('aff', 'SHEIN', 'Chunky Platforms', '$32', 'chunky platform sneakers', 'platform sneakers product'),
-      P('mid', 'H&M', 'Platform Mary Janes', '$50', 'platform mary janes', 'platform mary janes product'),
-      P('lux', 'Adidas', 'Samba', '$100', 'samba', 'samba sneakers product')
+      P('aff', 'SHEIN', 'Chunky Platforms', '$32', 'chunky platform sneakers women', 'platform sneakers product'),
+      P('mid', 'H&M', 'Platform Mary Janes', '$50', 'platform mary janes women', 'platform mary janes product'),
+      P('lux', 'Jacquemus', 'Platform Slingbacks', '$590', 'jacquemus platform slingbacks women', 'platform shoes product')
     ],
     bags: [
-      P('aff', 'SHEIN', 'Baguette Bag', '$12', 'baguette bag', 'mini baguette bag pink product'),
-      P('mid', 'Urban Outfitters', 'Mini Shoulder Bag', '$45', 'mini shoulder bag y2k', 'mini shoulder bag rhinestone product'),
-      P('lux', 'ASOS', 'Embellished Baguette', '$95', 'embellished baguette bag', 'rhinestone bag product')
+      P('aff', 'SHEIN', 'Baguette Bag', '$12', 'baguette bag women', 'mini baguette bag pink product'),
+      P('mid', 'Urban Outfitters', 'Mini Shoulder Bag', '$45', 'mini shoulder bag y2k women', 'mini shoulder bag rhinestone product'),
+      P('lux', 'Jacquemus', 'Le Chiquito', '$695', 'jacquemus le chiquito mini bag', 'jacquemus mini bag product')
     ],
     accessories: [
-      P('aff', 'SHEIN', 'Butterfly Clips Set', '$4', 'butterfly hair clips', 'butterfly clips product'),
-      P('mid', 'Urban Outfitters', 'Tinted Shades', '$25', 'tinted oval sunglasses', 'tinted sunglasses pink product'),
-      P('lux', 'ASOS', 'Trucker Cap', '$22', 'trucker cap', 'trucker cap product')
+      P('aff', 'SHEIN', 'Butterfly Clips Set', '$4', 'butterfly hair clips women', 'butterfly clips product'),
+      P('mid', 'Urban Outfitters', 'Tinted Shades', '$25', 'tinted oval sunglasses women', 'tinted sunglasses pink product'),
+      P('lux', 'Le Specs', 'Bambi Tinted Sunglasses', '$95', 'le specs bambi tinted sunglasses', 'tinted sunglasses premium product')
     ],
     beauty: [
       P('aff', 'Sephora', 'NYX Lip Gloss', '$5', 'nyx lip gloss frosted', 'lip gloss frosted product'),
@@ -762,24 +806,24 @@ vintage: {
   },
   shop: {
     clothing: [
-      P('aff', 'SHEIN', 'Retro Print Blouse', '$25', 'retro print blouse', 'vintage style blouse product'),
-      P('mid', 'Depop', 'Vintage Levis 501', '$85', 'vintage levis 501', 'vintage jeans product'),
-      P('lux', 'Beyond Retro', 'Vintage Wool Cardigan', '$95', 'vintage wool cardigan', 'vintage cardigan product')
+      P('aff', 'SHEIN', 'Retro Print Blouse', '$25', 'retro print blouse women', 'vintage style blouse product'),
+      P('mid', 'Depop', 'Vintage Levis 501', '$85', 'vintage levis 501 jeans', 'vintage jeans product'),
+      P('lux', 'Reformation', 'Vintage-Inspired Wool Cardigan', '$228', 'reformation vintage wool cardigan women', 'wool cardigan vintage product')
     ],
     shoes: [
-      P('aff', 'H&M', 'Mary Jane Flats', '$40', 'mary jane flats', 'mary janes product'),
-      P('mid', 'COS', 'Leather Mary Janes', '$99', 'leather mary janes vintage', 'leather mary janes product'),
-      P('lux', 'Dr. Martens', '1461 Oxford', '$160', '1461 oxford', 'dr martens oxford product')
+      P('aff', 'H&M', 'Mary Jane Flats', '$40', 'mary jane flats women', 'mary janes product'),
+      P('mid', 'COS', 'Leather Mary Janes', '$99', 'leather mary janes vintage women', 'leather mary janes product'),
+      P('lux', 'Dr. Martens', '1461 Oxford', '$160', 'dr martens 1461 oxford women', 'dr martens oxford product')
     ],
     bags: [
-      P('aff', 'Depop', 'Vintage Shoulder Bag', '$35', 'vintage shoulder bag', 'vintage handbag product'),
-      P('mid', 'Etsy', 'Curated Leather Bag', '$85', 'vintage leather bag', 'vintage leather handbag product'),
-      P('lux', 'Beyond Retro', 'Vintage Coach', '$195', 'vintage coach bag', 'vintage coach bag product')
+      P('aff', 'Depop', 'Vintage Shoulder Bag', '$35', 'vintage shoulder bag women', 'vintage handbag product'),
+      P('mid', 'Etsy', 'Curated Vintage Leather Bag', '$85', 'vintage leather bag handmade', 'vintage leather handbag product'),
+      P('lux', 'A.P.C.', 'Demi-Lune Leather Bag', '$385', 'apc demi lune leather bag women', 'leather bag vintage product')
     ],
     accessories: [
-      P('aff', 'SHEIN', 'Cat-Eye Sunglasses', '$8', 'cat eye sunglasses', 'cat eye sunglasses product'),
-      P('mid', 'ASOS', 'ASOS Design Cat-Eye', '$25', 'cat eye sunglasses tortoise', 'tortoise sunglasses product'),
-      P('lux', 'Etsy', 'Vintage Brooch', '$45', 'vintage brooch', 'vintage brooch product')
+      P('aff', 'SHEIN', 'Cat-Eye Sunglasses', '$8', 'cat eye sunglasses women', 'cat eye sunglasses product'),
+      P('mid', 'ASOS', 'ASOS Design Cat-Eye', '$25', 'cat eye sunglasses tortoise women', 'tortoise sunglasses product'),
+      P('lux', 'Acne Studios', 'Wool Scarf', '$230', 'acne studios wool scarf vintage women', 'wool scarf vintage product')
     ],
     beauty: [
       P('aff', 'Sephora', 'NYX Liquid Suede', '$7', 'nyx liquid suede', 'red lipstick product'),
@@ -830,22 +874,22 @@ softgirl: {
     clothing: [
       P('aff', 'SHEIN', 'Floral Mini Dress', '$22', 'floral mini dress', 'floral dress pink product'),
       P('mid', 'H&M', 'Pastel Cardigan', '$48', 'pastel knit cardigan women', 'pink cardigan product'),
-      P('lux', 'Reformation', 'Lace-Trim Dress', '$248', 'lace trim midi dress', 'lace dress product')
+      P('lux', 'Reformation', 'Lace-Trim Midi Dress', '$248', 'reformation lace trim midi dress women', 'lace dress product')
     ],
     shoes: [
-      P('aff', 'H&M', 'Ballet Flats', '$30', 'ballet flats', 'pink ballet flats product'),
-      P('mid', 'Zara', 'Mary Janes', '$45', 'mary janes pink', 'pink mary janes product'),
-      P('lux', 'COS', 'Satin Ballet Flats', '$99', 'satin ballet flats', 'satin ballet flats product')
+      P('aff', 'H&M', 'Ballet Flats', '$30', 'ballet flats women pink', 'pink ballet flats product'),
+      P('mid', 'Zara', 'Mary Janes', '$45', 'mary janes women pink', 'pink mary janes product'),
+      P('lux', 'Sézane', 'Suzy Mary Janes', '$165', 'sezane suzy mary janes leather women', 'satin ballet flats product')
     ],
     bags: [
-      P('aff', 'SHEIN', 'Heart-Shaped Bag', '$14', 'heart shaped bag', 'heart bag pink product'),
-      P('mid', 'Princess Polly', 'Mini Heart Bag', '$45', 'mini heart bag', 'mini bag pink product'),
-      P('lux', 'ASOS', 'Pearl-Bead Bag', '$95', 'pearl bead bag', 'pearl bag product')
+      P('aff', 'SHEIN', 'Heart-Shaped Bag', '$14', 'heart shaped bag women', 'heart bag pink product'),
+      P('mid', 'Princess Polly', 'Mini Heart Bag', '$45', 'mini heart bag women', 'mini bag pink product'),
+      P('lux', 'Polène', 'Numéro Un Mini Pink', '$445', 'polene numero un mini leather bag pink', 'pink leather bag product')
     ],
     accessories: [
-      P('aff', 'SHEIN', 'Heart Sunglasses', '$6', 'heart sunglasses', 'heart sunglasses pink product'),
-      P('mid', 'H&M', 'Bow Hair Clips', '$18', 'bow hair clips set', 'bow hair clips product'),
-      P('lux', 'Urban Outfitters', 'Pearl Headband', '$35', 'pearl headband', 'pearl headband product')
+      P('aff', 'SHEIN', 'Heart Sunglasses', '$6', 'heart sunglasses women', 'heart sunglasses pink product'),
+      P('mid', 'H&M', 'Bow Hair Clips', '$18', 'bow hair clips set women', 'bow hair clips product'),
+      P('lux', 'Jacquemus', 'Padded Headband', '$220', 'jacquemus padded headband women', 'padded headband product')
     ],
     beauty: [
       P('aff', 'Sephora', 'e.l.f. Cream Blush', '$5', 'elf cream blush pink', 'cream blush product'),
@@ -896,22 +940,22 @@ hijabicore: {
     clothing: [
       P('aff', 'SHEIN', 'Long-Sleeve Modest Maxi Dress', '$24', 'long sleeve modest maxi dress women', 'modest maxi dress product'),
       P('mid', 'COS', 'Oversized Wool Coat', '$295', 'oversized wool coat camel women', 'wool coat camel product'),
-      P('lux', 'Modanisa', 'Premium Cashmere Abaya', '$189', 'cashmere abaya modest premium women', 'cashmere abaya product')
+      P('lux', 'Toteme', 'Long-Line Wool Coat', '$1095', 'toteme long line wool coat women camel modest', 'long camel wool coat product')
     ],
     shoes: [
       P('aff', 'H&M', 'Pointed Flats', '$32', 'pointed flats women nude', 'pointed flats nude product'),
       P('mid', 'Zara', 'Leather Ballet Flats', '$79', 'leather ballet flats women brown', 'ballet flats brown product'),
-      P('lux', 'COS', 'Leather Loafers', '$185', 'leather loafers women modest', 'leather loafers product')
+      P('lux', 'A.P.C.', 'Iris Leather Loafers', '$445', 'apc iris leather loafers women modest', 'leather loafers brown product')
     ],
     bags: [
       P('aff', 'H&M', 'Suede Tote Bag', '$45', 'suede tote bag women brown', 'suede tote bag product'),
       P('mid', 'Zara', 'Structured Leather Shopper', '$89', 'structured leather shopper bag women', 'leather shopper product'),
-      P('lux', 'COS', 'Soft Leather Tote', '$245', 'soft leather tote bag camel', 'soft leather tote product')
+      P('lux', 'Polène', 'Numéro Un', '$590', 'polene numero un leather bag camel', 'soft leather tote product')
     ],
     accessories: [
       P('aff', 'Modanisa', 'Premium Satin Hijab', '$15', 'premium satin hijab women', 'satin hijab product'),
       P('mid', 'Modanisa', 'Chiffon Hijab Set', '$35', 'chiffon hijab set women', 'chiffon hijab product'),
-      P('lux', 'COS', 'Pure Silk Scarf', '$95', 'pure silk scarf women neutral', 'silk scarf neutral product')
+      P('lux', 'Acne Studios', 'Wool-Silk Scarf', '$290', 'acne studios wool silk scarf women neutral', 'silk scarf neutral product')
     ],
     beauty: [
       P('aff', 'Sephora', 'NYX Soft Matte Lip', '$8', 'NYX soft matte lip cream rose', 'matte lip product'),

@@ -125,10 +125,17 @@ service cloud.firestore {
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions'])
         );
 
-      // Delete: post author + email-verified + still has access.
+      // Delete: post author + email-verified + still has access, OR
+      // any admin (server-trusted users/{uid}.isAdmin === true). Admins
+      // can moderate abusive content in any circle without needing to
+      // be the original author. The isAdmin() check is the same one
+      // used by canAccessCommunity() above — server-side only, no
+      // client-spoofable email comparison.
       allow delete: if isVerified()
-        && resource.data.authorId == request.auth.uid
-        && canAccessCommunity(aestheticId);
+        && (
+          (resource.data.authorId == request.auth.uid && canAccessCommunity(aestheticId))
+          || isAdmin()
+        );
 
       // ── Comments ──────────────────────────────────────────────
       match /comments/{commentId} {
@@ -143,9 +150,13 @@ service cloud.firestore {
           && request.resource.data.content.size() > 0
           && request.resource.data.content.size() <= 400;
 
+        // Delete: comment author OR admin (moderation). Same pattern as
+        // posts above — admins can remove abusive comments instantly.
         allow delete: if isVerified()
-          && resource.data.authorId == request.auth.uid
-          && canAccessCommunity(aestheticId);
+          && (
+            (resource.data.authorId == request.auth.uid && canAccessCommunity(aestheticId))
+            || isAdmin()
+          );
       }
     }
 
@@ -247,6 +258,41 @@ service cloud.firestore {
       allow read:   if request.auth != null && isAdmin();
       allow delete: if request.auth != null && isAdmin()
                     && resource.data.test == true;
+      allow update: if false;
+    }
+
+    // ── Waitlist (maintenance-page email capture) ────────────────
+    // Open create (guests can subscribe; that's the whole point) but
+    // with a strict schema so the collection can't be used as a
+    // free-form spam dump. Reads + deletes are admin-only; updates
+    // are never allowed.
+    //
+    // Schema:
+    //   email   string lowercase, <= 200 chars, must look like an email
+    //   ts      server timestamp (request.time) — clients can't backdate
+    //   lang    string <= 4 chars  ('en'/'es'/'ar'/'he')
+    //   source  string <= 32 chars (e.g. 'maintenance')
+    //   path    string <= 200 chars (entry path for attribution)
+    //
+    // No `uid`, no `name`, no extras — keeps PII surface minimal.
+    function validWaitlistEntry() {
+      let r = request.resource.data;
+      let allowed = ['email','ts','lang','source','path'];
+      return r.keys().hasOnly(allowed)
+        && r.email is string
+        && r.email.size() > 0 && r.email.size() <= 200
+        && r.email.lower() == r.email
+        && r.email.matches('[^@\\s]+@[^@\\s]+\\.[^@\\s]+')
+        && r.ts == request.time
+        && r.lang is string && r.lang.size() > 0 && r.lang.size() <= 4
+        && r.source is string && r.source.size() > 0 && r.source.size() <= 32
+        && r.path is string && r.path.size() <= 200;
+    }
+
+    match /waitlist/{entryId} {
+      allow create: if validWaitlistEntry();
+      allow read:   if request.auth != null && isAdmin();
+      allow delete: if request.auth != null && isAdmin();
       allow update: if false;
     }
 

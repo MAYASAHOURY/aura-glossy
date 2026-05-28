@@ -71,6 +71,154 @@
   var REMEMBERED_LABEL_KEY = 'aura_admin_last_label';
   var REMEMBERED_EMAIL_KEY = 'aura_admin_last_email';
 
+  /* ── Maintenance copy translations ──────────────────────────────
+        The maintenance gate runs synchronously BEFORE i18n.js loads,
+        so it carries its own tiny dictionary keyed on the lang attr
+        that the pre-paint script (in every HTML file's <head>) puts
+        on documentElement. Keeps EN/ES/AR/HE users seeing the right
+        voice + RTL direction the moment the page paints. */
+  /* Read the user's language directly from localStorage rather than
+     trusting documentElement.lang — maintenance.js runs BEFORE the
+     pre-paint lang setter in every HTML file's <head>, so the attr
+     hasn't been set yet at this point. Falls back to navigator.language
+     and finally 'en'. The exact same algorithm the pre-paint script
+     uses, just inlined here so RTL languages get correct mirror
+     layout from the very first paint. */
+  var MAINT_LANG = (function () {
+    try {
+      var l = null;
+      try { l = localStorage.getItem('aura_lang'); } catch (e) {}
+      if (!l) {
+        var nl = (navigator.language || 'en').toLowerCase().slice(0, 2);
+        l = (['en','es','ar','he'].indexOf(nl) >= 0) ? nl : 'en';
+      }
+      l = (l || 'en').toLowerCase().slice(0, 2);
+      return (['en','es','ar','he'].indexOf(l) >= 0) ? l : 'en';
+    } catch (e) { return 'en'; }
+  })();
+  var MAINT_IS_RTL = (MAINT_LANG === 'ar' || MAINT_LANG === 'he');
+  var MAINT_T = {
+    en: {
+      logo:       'Aura Glossy',
+      heading_a:  'We’re building something',
+      heading_em: 'beautiful',
+      sub:        'Aura is in a brief studio moment — refining the curation, the circles, the small details. We’ll be back soon.',
+      patience:   'Welcome to your editorial moment.',
+      waitlist_eyebrow: 'Be the first inside',
+      waitlist_label:   'Your email',
+      waitlist_placeholder: 'you@example.com',
+      waitlist_cta:     'Join the waitlist',
+      waitlist_invalid: 'Please enter a valid email.',
+      waitlist_sending: 'Saving…',
+      waitlist_success: 'You’re on the list ✦',
+      waitlist_success_sub: 'We’ll let you know the moment we open.',
+      waitlist_error:   'Couldn’t save your email. Try again in a moment.',
+      admin_enter: 'Admin enter',
+      admin_title: 'Admin access',
+      admin_sub:   'Sign in with your admin account to continue while the site is under maintenance.',
+      admin_email_label: 'Email',
+      admin_password_label: 'Password',
+      admin_submit: 'Enter',
+      admin_verifying: 'Verifying…',
+      admin_forgot: 'Forgot admin password?',
+      admin_send_reset_loading: 'Sending reset email…',
+      admin_close: 'Close',
+      welcome:    'Hii Bossy'
+    },
+    es: {
+      logo:       'Aura Glossy',
+      heading_a:  'Estamos creando algo',
+      heading_em: 'precioso',
+      sub:        'Aura está en un momento de estudio — refinando la curación, los círculos, los pequeños detalles. Volveremos pronto.',
+      patience:   'Bienvenida a tu momento editorial.',
+      waitlist_eyebrow: 'Sé la primera en entrar',
+      waitlist_label:   'Tu email',
+      waitlist_placeholder: 'tu@email.com',
+      waitlist_cta:     'Unirse a la lista',
+      waitlist_invalid: 'Introduce un email válido, por favor.',
+      waitlist_sending: 'Guardando…',
+      waitlist_success: 'Estás en la lista ✦',
+      waitlist_success_sub: 'Te avisaremos en el momento que abramos.',
+      waitlist_error:   'No pudimos guardar tu email. Inténtalo de nuevo.',
+      admin_enter: 'Entrar como admin',
+      admin_title: 'Acceso de admin',
+      admin_sub:   'Inicia sesión con tu cuenta de admin para continuar mientras el sitio está en mantenimiento.',
+      admin_email_label: 'Email',
+      admin_password_label: 'Contraseña',
+      admin_submit: 'Entrar',
+      admin_verifying: 'Verificando…',
+      admin_forgot: '¿Olvidaste la contraseña?',
+      admin_send_reset_loading: 'Enviando email…',
+      admin_close: 'Cerrar',
+      welcome:    'Hola Bossy'
+    },
+    ar: {
+      logo:       'أورا غلوسي',
+      heading_a:  'نحن نصنع شيئًا',
+      heading_em: 'جميلاً',
+      sub:        'أورا في لحظة استوديو قصيرة — نُحسّن التنسيق، الدوائر، والتفاصيل الصغيرة. سنعود قريبًا.',
+      patience:   'مرحبًا بكِ في لحظتكِ التحريريّة.',
+      waitlist_eyebrow: 'كوني أوّل من تدخل',
+      waitlist_label:   'بريدكِ الإلكتروني',
+      waitlist_placeholder: 'you@example.com',
+      waitlist_cta:     'انضمّي إلى القائمة',
+      waitlist_invalid: 'يرجى إدخال بريد صالح.',
+      waitlist_sending: 'يتم الحفظ…',
+      waitlist_success: 'أنتِ على القائمة ✦',
+      waitlist_success_sub: 'سنُعلمكِ في اللحظة التي نفتح فيها.',
+      waitlist_error:   'تعذّر حفظ بريدكِ. حاولي بعد قليل.',
+      admin_enter: 'دخول الأدمن',
+      admin_title: 'دخول الأدمن',
+      admin_sub:   'سجّلي الدخول بحساب الأدمن لمتابعة العمل خلال الصيانة.',
+      admin_email_label: 'البريد الإلكتروني',
+      admin_password_label: 'كلمة المرور',
+      admin_submit: 'دخول',
+      admin_verifying: 'جارٍ التحقق…',
+      admin_forgot: 'نسيتِ كلمة المرور؟',
+      admin_send_reset_loading: 'يتم الإرسال…',
+      admin_close: 'إغلاق',
+      welcome:    'مرحبًا بوسي'
+    },
+    he: {
+      logo:       'אורה גלוסי',
+      heading_a:  'אנחנו בונות משהו',
+      heading_em: 'יפהפה',
+      sub:        'אורה ברגע סטודיו קצר — מחדדות את האוצרות, החוגים והפרטים הקטנים. נחזור בקרוב.',
+      patience:   'ברוכה הבאה לרגע העריכה שלך.',
+      waitlist_eyebrow: 'להיות הראשונה בפנים',
+      waitlist_label:   'האימייל שלך',
+      waitlist_placeholder: 'you@example.com',
+      waitlist_cta:     'הצטרפות לרשימה',
+      waitlist_invalid: 'נא להזין אימייל תקין.',
+      waitlist_sending: 'שומרים…',
+      waitlist_success: 'את ברשימה ✦',
+      waitlist_success_sub: 'נעדכן אותך ברגע שנפתח.',
+      waitlist_error:   'לא הצלחנו לשמור את האימייל. נסי שוב.',
+      admin_enter: 'כניסת אדמין',
+      admin_title: 'כניסת אדמין',
+      admin_sub:   'התחברי עם חשבון האדמין שלך להמשיך בזמן התחזוקה.',
+      admin_email_label: 'אימייל',
+      admin_password_label: 'סיסמה',
+      admin_submit: 'כניסה',
+      admin_verifying: 'מאמתים…',
+      admin_forgot: 'שכחת סיסמה?',
+      admin_send_reset_loading: 'שולחים…',
+      admin_close: 'סגירה',
+      welcome:    'היי בוסי'
+    }
+  };
+  function MT(k) { return (MAINT_T[MAINT_LANG] && MAINT_T[MAINT_LANG][k]) || MAINT_T.en[k] || ''; }
+  /* HTML-escape for any value that comes from a translation string before
+     it lands in innerHTML. Translation files are author-controlled here,
+     but treating them as untrusted keeps a future contributor from
+     accidentally introducing a script-injection hole. */
+  function MTH(k) {
+    var s = MT(k) || '';
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   /* ── Admin bypass (URL flag, persisted in localStorage) ───────────────────
         ?admin=true   →  set localStorage.aura_admin_bypass = 'true'  + bypass
         ?admin=false  →  remove localStorage.aura_admin_bypass        + FORCE
@@ -187,8 +335,8 @@
     + '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">'
     + '<meta name="theme-color" content="#0d0905">'
     + '<meta name="robots" content="noindex, nofollow">'
-    + '<meta name="description" content="Aura Glossy is currently under maintenance. We will be back shortly.">'
-    + '<title>Aura Glossy — Under Maintenance</title>'
+    + '<meta name="description" content="' + MTH('sub') + '">'
+    + '<title>' + MTH('logo') + ' — ' + MTH('heading_em') + '</title>'
     + '<link rel="icon" type="image/svg+xml" href="/favicon.svg">'
     + '<link rel="preconnect" href="https://fonts.googleapis.com">'
     + '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
@@ -288,59 +436,103 @@
     + '  @media (prefers-reduced-motion: reduce){.aura-admin-welcome-inner{transition-duration:.001ms}.aura-admin-welcome::before,.aura-admin-welcome-spark{animation:none}}'
     + '  @media (max-width:520px){.aura-admin-welcome{padding:24px}.aura-admin-welcome-text{gap:10px}}'
     + '  @media (max-width:520px){.aura-admin-card{padding:30px 22px 24px}.aura-admin-title{font-size:22px}.aura-admin-trigger{bottom:20px;padding:14px 22px;letter-spacing:.28em}}'
+    /* ── Waitlist form (premium, inline, animates in after the sub copy) ── */
+    + '  .aura-waitlist{position:relative;margin-top:40px;width:100%;max-width:380px;animation:auraRise 2.2s 1.05s cubic-bezier(.2,.7,.2,1) both}'
+    + '  .aura-waitlist-eyebrow{display:block;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:9px;font-weight:500;letter-spacing:.42em;text-transform:uppercase;color:#c79a85;margin-bottom:12px;text-align:center}'
+    + '  .aura-waitlist-form{display:flex;align-items:stretch;gap:8px;width:100%}'
+    + '  .aura-waitlist-input{flex:1;min-width:0;background:rgba(255,255,255,.04);border:1px solid rgba(199,154,133,.22);border-radius:2px;padding:13px 14px;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:14px;color:#f0e5d6;outline:none;transition:border-color .24s ease,background .24s ease;-webkit-appearance:none;appearance:none}'
+    + '  .aura-waitlist-input::placeholder{color:rgba(138,122,108,.55)}'
+    + '  .aura-waitlist-input:focus{border-color:rgba(199,154,133,.55);background:rgba(255,255,255,.06)}'
+    + '  .aura-waitlist-btn{flex:0 0 auto;padding:12px 18px;background:linear-gradient(180deg,#c79a85 0%,#b08770 100%);border:none;border-radius:2px;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#1a0e08;cursor:pointer;transition:opacity .24s ease;white-space:nowrap}'
+    + '  .aura-waitlist-btn:hover,.aura-waitlist-btn:focus-visible{opacity:.92;outline:none}'
+    + '  .aura-waitlist-btn:disabled{opacity:.45;cursor:not-allowed}'
+    + '  .aura-waitlist-hint{margin-top:10px;min-height:16px;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:11px;line-height:1.5;text-align:center;color:#8a7a6c;transition:color .24s ease}'
+    + '  .aura-waitlist-hint.is-error{color:#d49a8c}'
+    + '  .aura-waitlist-hint.is-loading{color:#c79a85}'
+    + '  .aura-waitlist-hint.is-success{color:#e7c8b5}'
+    /* Success state — replaces the form with a single confirmation row */
+    + '  .aura-waitlist-success{display:none;align-items:center;justify-content:center;gap:10px;padding:14px 16px;background:rgba(231,200,181,.06);border:1px solid rgba(199,154,133,.28);border-radius:2px;animation:auraRise .6s ease-out both}'
+    + '  .aura-waitlist.is-success .aura-waitlist-form{display:none}'
+    + '  .aura-waitlist.is-success .aura-waitlist-success{display:flex}'
+    + '  .aura-waitlist-success-mark{font-family:"Playfair Display",serif;font-style:italic;color:#e7c8b5;font-size:18px;flex:0 0 auto}'
+    + '  .aura-waitlist-success-text{font-family:"Playfair Display",serif;font-style:italic;font-size:14px;line-height:1.4;color:#f5ede3}'
+    + '  .aura-waitlist-success-sub{display:block;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-style:normal;font-size:11px;letter-spacing:.04em;color:#8a7a6c;margin-top:4px}'
+    + '  @media (max-width:520px){.aura-waitlist{margin-top:32px;max-width:none}.aura-waitlist-form{flex-direction:column;gap:8px}.aura-waitlist-btn{padding:13px 16px}}'
+    /* ── RTL polish: flip arrows/letter-spacing where it matters. The
+          maintenance page is intentionally simple so most layout still
+          centres correctly under <html dir="rtl">. We just need the arrow
+          on the admin trigger to flip and the logo's letter-spacing to
+          ease so Arabic/Hebrew rendering stays calm. */
+    + '  html[dir="rtl"] .aura-admin-trigger .aura-admin-arrow{transform:scaleX(-1)}'
+    + '  html[dir="rtl"] .aura-admin-trigger:hover .aura-admin-arrow,html[dir="rtl"] .aura-admin-trigger:focus-visible .aura-admin-arrow{transform:scaleX(-1) translateX(3px)}'
+    + '  html[dir="rtl"] .aura-logo{letter-spacing:.18em}'
+    + '  html[dir="rtl"] .aura-admin-close{right:auto;left:10px}'
     + '</style>';
 
   var bodyHtml =
       '<div class="aura-vignette" aria-hidden="true"></div>'
     + '<main class="aura-maint" role="main">'
-    +   '<div class="aura-logo" aria-label="Aura Glossy">'
+    +   '<div class="aura-logo" aria-label="' + MTH('logo') + '">'
     +     '<span class="rule" aria-hidden="true"></span>'
-    +     '<span class="mark"><span class="star" aria-hidden="true">✦</span>Aura Glossy</span>'
+    +     '<span class="mark"><span class="star" aria-hidden="true">✦</span>' + MTH('logo') + '</span>'
     +     '<span class="rule" aria-hidden="true"></span>'
     +   '</div>'
-    +   '<h1 class="aura-maint">We’re currently under <em>maintenance</em>.</h1>'
-    +   '<p class="aura-sub">We’re making Aura even better and will be back shortly.</p>'
+    +   '<h1 class="aura-maint">' + MTH('heading_a') + ' <em>' + MTH('heading_em') + '</em>.</h1>'
+    +   '<p class="aura-sub">' + MTH('sub') + '</p>'
     +   '<div class="aura-shimmer" aria-hidden="true"></div>'
-    +   '<p class="aura-patience">Thank you for your patience.</p>'
+    +   '<div class="aura-waitlist" id="aura-waitlist">'
+    +     '<span class="aura-waitlist-eyebrow">' + MTH('waitlist_eyebrow') + '</span>'
+    +     '<form class="aura-waitlist-form" id="aura-waitlist-form" autocomplete="off" novalidate>'
+    +       '<label class="visually-hidden" for="aura-waitlist-email" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">' + MTH('waitlist_label') + '</label>'
+    +       '<input class="aura-waitlist-input" type="email" id="aura-waitlist-email" name="email" placeholder="' + MTH('waitlist_placeholder') + '" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="off" required>'
+    +       '<button type="submit" class="aura-waitlist-btn" id="aura-waitlist-btn">' + MTH('waitlist_cta') + '</button>'
+    +     '</form>'
+    +     '<div class="aura-waitlist-success" role="status" aria-live="polite">'
+    +       '<span class="aura-waitlist-success-mark" aria-hidden="true">✦</span>'
+    +       '<span class="aura-waitlist-success-text">' + MTH('waitlist_success') + '<span class="aura-waitlist-success-sub">' + MTH('waitlist_success_sub') + '</span></span>'
+    +     '</div>'
+    +     '<p class="aura-waitlist-hint" id="aura-waitlist-hint" aria-live="polite" aria-atomic="true"></p>'
+    +   '</div>'
+    +   '<p class="aura-patience">' + MTH('patience') + '</p>'
     +   '<button type="button" class="aura-admin-trigger" id="aura-admin-trigger" aria-haspopup="dialog" aria-controls="aura-admin-overlay">'
-    +     '<span>Admin enter</span>'
+    +     '<span>' + MTH('admin_enter') + '</span>'
     +     '<span class="aura-admin-arrow" aria-hidden="true">→</span>'
     +   '</button>'
     + '</main>'
     + '<div class="aura-admin-welcome" id="aura-admin-welcome" role="status" aria-live="polite" aria-hidden="true">'
     +   '<div class="aura-admin-welcome-inner">'
     +     '<h2 class="aura-admin-welcome-text">'
-    +       '<span>Hii Bossy</span>'
+    +       '<span>' + MTH('welcome') + '</span>'
     +       '<span class="aura-admin-welcome-spark" aria-hidden="true">✨</span>'
     +     '</h2>'
     +   '</div>'
     + '</div>'
     + '<div class="aura-admin-overlay" id="aura-admin-overlay" role="dialog" aria-modal="true" aria-labelledby="aura-admin-title" aria-hidden="true">'
     +   '<div class="aura-admin-card">'
-    +     '<button type="button" class="aura-admin-close" id="aura-admin-close" aria-label="Close">✕</button>'
-    +     '<div class="aura-admin-eyebrow">Aura Glossy</div>'
-    +     '<h2 class="aura-admin-title" id="aura-admin-title">Admin access</h2>'
-    +     '<p class="aura-admin-sub">Sign in with your admin account to continue while the site is under maintenance.</p>'
+    +     '<button type="button" class="aura-admin-close" id="aura-admin-close" aria-label="' + MTH('admin_close') + '">✕</button>'
+    +     '<div class="aura-admin-eyebrow">' + MTH('logo') + '</div>'
+    +     '<h2 class="aura-admin-title" id="aura-admin-title">' + MTH('admin_title') + '</h2>'
+    +     '<p class="aura-admin-sub">' + MTH('admin_sub') + '</p>'
     +     '<div class="aura-admin-identity" id="aura-admin-identity" aria-hidden="true">'
     +       '<span class="aura-admin-identity-avatar" id="aura-admin-identity-avatar">M</span>'
     +       '<span class="aura-admin-identity-name" id="aura-admin-identity-name">Maya Admin</span>'
     +     '</div>'
     +     '<form id="aura-admin-form" autocomplete="off" novalidate>'
     +       '<div class="aura-admin-field">'
-    +         '<label class="aura-admin-label" for="aura-admin-email">Email</label>'
+    +         '<label class="aura-admin-label" for="aura-admin-email">' + MTH('admin_email_label') + '</label>'
     +         '<input class="aura-admin-input" type="email" id="aura-admin-email" name="email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="off" required>'
     +       '</div>'
     +       '<div class="aura-admin-field">'
-    +         '<label class="aura-admin-label" for="aura-admin-password">Password</label>'
+    +         '<label class="aura-admin-label" for="aura-admin-password">' + MTH('admin_password_label') + '</label>'
     +         '<input class="aura-admin-input" type="password" id="aura-admin-password" name="password" autocomplete="current-password" required>'
     +       '</div>'
-    +       '<button type="submit" class="aura-admin-submit" id="aura-admin-submit">Enter</button>'
+    +       '<button type="submit" class="aura-admin-submit" id="aura-admin-submit">' + MTH('admin_submit') + '</button>'
     +       '<p class="aura-admin-hint" id="aura-admin-hint" aria-live="polite" aria-atomic="true"></p>'
-    +       '<button type="button" class="aura-admin-forgot" id="aura-admin-forgot">Forgot admin password?</button>'
+    +       '<button type="button" class="aura-admin-forgot" id="aura-admin-forgot">' + MTH('admin_forgot') + '</button>'
     +     '</form>'
     +   '</div>'
     + '</div>'
-    + '<noscript><p style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0d0905;color:#f0e5d6;font-family:Georgia,serif;font-style:italic;padding:32px;text-align:center;">Aura Glossy is currently under maintenance. We will be back shortly.</p></noscript>';
+    + '<noscript><p style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0d0905;color:#f0e5d6;font-family:Georgia,serif;font-style:italic;padding:32px;text-align:center;">' + MTH('sub') + '</p></noscript>';
 
   /* ── Stop the parser, then surgically replace head + body ──
         window.stop() aborts any pending source parsing, so the
@@ -349,6 +541,15 @@
         (which were mid-construction) and installs the maintenance
         content in one synchronous step — no FOUC, no flash. */
   try { window.stop(); } catch (e) {}
+
+  /* Lock the lang + dir attributes BEFORE we paint the maintenance
+     content so RTL languages get correct mirror layout from frame one.
+     The pre-paint script in the HTML head already set these, but we
+     re-affirm here in case maintenance was triggered before that ran. */
+  try {
+    document.documentElement.lang = MAINT_LANG;
+    document.documentElement.dir  = MAINT_IS_RTL ? 'rtl' : 'ltr';
+  } catch (e) {}
 
   try {
     document.documentElement.innerHTML = '<head>' + headHtml + '</head><body>' + bodyHtml + '</body>';
@@ -412,6 +613,97 @@
        to my unlocked phone and taps a button" attack path.
      ───────────────────────────────────────────────────────────────── */
   _wireAdminEntry();
+  _wireWaitlist();
+
+  /* ─────────────────────────────────────────────────────────────
+     WAITLIST — Firestore-backed email capture.
+
+     The maintenance screen is the most-trafficked surface during a
+     build window. Capturing emails turns that traffic into a real
+     "launch day" mailing list. Posts directly to the `waitlist`
+     collection — Firestore rules allow create-only with a strict
+     schema (email + ts + lang + path). No auth required: this is
+     intentionally open so guests can subscribe.
+
+     Defensive design:
+     - Client-side email regex catches obvious typos
+     - Firestore rules cap email length, require lowercase, and
+       reject any extra fields
+     - Duplicate emails are allowed at write time (Firestore can't
+       enforce uniqueness without auth); we de-dupe at send time
+       when we actually email the list
+     - Failures fall back to a soft error in the same hint area
+       used by the admin modal — never a hard crash
+     ───────────────────────────────────────────────────────────── */
+  function _wireWaitlist() {
+    var form    = document.getElementById('aura-waitlist-form');
+    var emailEl = document.getElementById('aura-waitlist-email');
+    var btnEl   = document.getElementById('aura-waitlist-btn');
+    var hintEl  = document.getElementById('aura-waitlist-hint');
+    var wrap    = document.getElementById('aura-waitlist');
+    if (!form || !emailEl || !btnEl) return;
+
+    var _busy = false;
+    function setHint(msg, state) {
+      if (!hintEl) return;
+      hintEl.textContent = msg || '';
+      hintEl.classList.remove('is-error');
+      hintEl.classList.remove('is-loading');
+      hintEl.classList.remove('is-success');
+      if (state === 'error')   hintEl.classList.add('is-error');
+      if (state === 'loading') hintEl.classList.add('is-loading');
+      if (state === 'success') hintEl.classList.add('is-success');
+    }
+    function setBusy(b) {
+      _busy = !!b;
+      if (btnEl) btnEl.disabled = _busy;
+      if (emailEl) emailEl.disabled = _busy;
+      if (btnEl) btnEl.textContent = _busy ? MT('waitlist_sending') : MT('waitlist_cta');
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (_busy) return;
+      var email = (emailEl.value || '').trim().toLowerCase();
+      /* Tight RFC-shaped regex — rejects obvious typos but stays
+         permissive enough not to false-reject real corporate emails. */
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
+        setHint(MT('waitlist_invalid'), 'error');
+        try { emailEl.focus(); } catch (_) {}
+        return;
+      }
+      setBusy(true);
+      setHint(MT('waitlist_sending'), 'loading');
+
+      _loadFirebase().then(function () {
+        var db = firebase.firestore();
+        return db.collection('waitlist').add({
+          email: email,
+          ts:    firebase.firestore.FieldValue.serverTimestamp(),
+          lang:  MAINT_LANG,
+          /* `source` lets the admin distinguish maintenance-page captures
+             from any future waitlist surface (e.g. a teaser banner once
+             we lift maintenance). String-capped via rules. */
+          source: 'maintenance',
+          /* Path the email arrived from — usually `/` but could be a
+             deep link. Helps measure which entry points convert. */
+          path:   (location.pathname || '/').slice(0, 200)
+        });
+      }).then(function () {
+        setBusy(false);
+        setHint('', '');
+        /* Reveal the success row + hide the form. No reload — the
+           visitor stays on the maintenance screen so they can read
+           the rest of the copy. */
+        if (wrap) wrap.classList.add('is-success');
+        try { emailEl.value = ''; } catch (_) {}
+      }).catch(function (err) {
+        setBusy(false);
+        setHint(MT('waitlist_error'), 'error');
+        try { console.warn('[waitlist] write failed:', err && err.code); } catch (_) {}
+      });
+    });
+  }
 
   /* Identity-memory helpers — separate from _wireAdminEntry so the
      hoisting order works regardless of where each is called. We store
