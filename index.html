@@ -19,12 +19,12 @@
 <link rel="canonical" href="https://auraglossy.com/">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <!-- ━━━━ MAINTENANCE GATE — must run FIRST. Toggle MAINTENANCE_MODE in js/maintenance.js. ━━━━ -->
-<script src="js/maintenance.js?v=13"></script>
+<script src="js/maintenance.js?v=14"></script>
 <script>
 /* Pre-paint lang/dir setter — chooses saved language, falls back to
    browser language (en/es/ar/he) then 'en'. Sets <html dir="rtl"> for
    ar/he so the page never flashes LTR before i18n.js runs. */
-(function(){try{var l=localStorage.getItem('aura_lang');if(!l){var nl=(navigator.language||'en').toLowerCase().slice(0,2);l=(['en','es','ar','he'].indexOf(nl)>=0)?nl:'en';}document.documentElement.lang=l;document.documentElement.dir=(l==='ar'||l==='he')?'rtl':'ltr';}catch(e){}})();
+(function(){try{var l=localStorage.getItem('aura_lang');if(!l||['en','es','ar','he'].indexOf(l)<0)l='en';document.documentElement.lang=l;document.documentElement.dir=(l==='ar'||l==='he')?'rtl':'ltr';}catch(e){}})();
 </script>
 <script>
 /* ─────────────────────────────────────────────────────────────────

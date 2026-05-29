@@ -8,7 +8,7 @@
 <title>Aura Glossy — Waitlist confirmation</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <!-- Pre-paint lang/dir setter — same pattern as the rest of the site. -->
-<script>(function(){try{var l=localStorage.getItem('aura_lang');if(!l){var nl=(navigator.language||'en').toLowerCase().slice(0,2);l=(['en','es','ar','he'].indexOf(nl)>=0)?nl:'en';}document.documentElement.lang=l;document.documentElement.dir=(l==='ar'||l==='he')?'rtl':'ltr';}catch(e){}})();</script>
+<script>(function(){try{var l=localStorage.getItem('aura_lang');if(!l||['en','es','ar','he'].indexOf(l)<0)l='en';document.documentElement.lang=l;document.documentElement.dir=(l==='ar'||l==='he')?'rtl':'ltr';}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">

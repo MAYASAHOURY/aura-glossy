@@ -77,23 +77,24 @@
         that the pre-paint script (in every HTML file's <head>) puts
         on documentElement. Keeps EN/ES/AR/HE users seeing the right
         voice + RTL direction the moment the page paints. */
-  /* Read the user's language directly from localStorage rather than
-     trusting documentElement.lang — maintenance.js runs BEFORE the
-     pre-paint lang setter in every HTML file's <head>, so the attr
-     hasn't been set yet at this point. Falls back to navigator.language
-     and finally 'en'. The exact same algorithm the pre-paint script
-     uses, just inlined here so RTL languages get correct mirror
-     layout from the very first paint. */
+  /* Language policy (user-facing surfaces):
+     - English is the universal default for first-time visitors.
+     - localStorage.aura_lang wins if the user has manually picked
+       a language via the switcher (we persist their choice there).
+     - navigator.language is NEVER trusted for auto-switching — too
+       many Israel/Saudi users have a Hebrew/Arabic OS locale even
+       though they expect the brand surface in English. Manual choice
+       only.
+     This matches the pre-paint <script> in every HTML <head>. */
   var MAINT_LANG = (function () {
     try {
       var l = null;
       try { l = localStorage.getItem('aura_lang'); } catch (e) {}
-      if (!l) {
-        var nl = (navigator.language || 'en').toLowerCase().slice(0, 2);
-        l = (['en','es','ar','he'].indexOf(nl) >= 0) ? nl : 'en';
+      if (l) {
+        l = (l || 'en').toLowerCase().slice(0, 2);
+        if (['en','es','ar','he'].indexOf(l) >= 0) return l;
       }
-      l = (l || 'en').toLowerCase().slice(0, 2);
-      return (['en','es','ar','he'].indexOf(l) >= 0) ? l : 'en';
+      return 'en';
     } catch (e) { return 'en'; }
   })();
   var MAINT_IS_RTL = (MAINT_LANG === 'ar' || MAINT_LANG === 'he');
@@ -476,16 +477,38 @@
     + '  .aura-waitlist-hint.is-loading{color:#c79a85}'
     + '  .aura-waitlist-hint.is-success{color:#e7c8b5}'
     /* Success state — replaces the form with a single confirmation row */
-    /* Soft-pink confirmation box — small, rounded, gentle.
-       Cream→rose gradient, rounded corners, slow elegant fade-in.
-       Designed to feel premium-feminine, not loud. Mobile-first padding
-       so it stays compact on iPhone. */
-    + '  .aura-waitlist-success{display:none;align-items:center;justify-content:center;gap:12px;padding:16px 20px;background:linear-gradient(180deg,rgba(255,200,215,.10),rgba(255,180,200,.05));border:1px solid rgba(255,180,200,.30);border-radius:14px;box-shadow:0 4px 18px rgba(255,180,200,.06);animation:auraRise .8s cubic-bezier(.2,.7,.2,1) both}'
+    /* Premium glassy soft-pink confirmation card.
+       - 3D depth: radial highlight + linear tint + backdrop-blur glass
+       - Halo: external ::before sits behind with bloom + filter blur
+       - Subtle inset top highlight (the Apple "glass edge" trick)
+       - Column layout so title + sub sit centered, never flexes wide
+       - box-sizing:border-box + width:100% + safe max-width = never
+         overflows on mobile, never clips on desktop
+       - text-align:center keeps RTL + LTR symmetrically composed
+       - Mark glyph hidden via display:none — title already carries ✨ */
+    + '  .aura-waitlist-success{display:none;position:relative;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;box-sizing:border-box;padding:22px 26px;background:radial-gradient(ellipse 110% 80% at 50% 0%,rgba(255,210,225,.18) 0%,transparent 60%),linear-gradient(180deg,rgba(255,200,215,.14) 0%,rgba(255,180,200,.06) 100%);border:1px solid rgba(255,190,210,.42);border-radius:18px;-webkit-backdrop-filter:blur(14px) saturate(120%);backdrop-filter:blur(14px) saturate(120%);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 10px 30px rgba(255,170,195,.14),0 3px 10px rgba(255,160,190,.08);animation:auraRiseGlow 1s cubic-bezier(.2,.7,.2,1) both}'
+    /* Halo bloom sitting behind the card to give it the editorial
+       luxury aura. Z-index 0 stays under the card content (which has
+       no z-index → forms a new stacking context inside the success
+       box once we add position:relative). Pointer-events none so it
+       never blocks a click. */
+    + '  .aura-waitlist-success::before{content:"";position:absolute;inset:-10px;border-radius:24px;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(255,180,200,.18) 0%,rgba(255,160,190,.02) 60%,transparent 100%);filter:blur(14px);z-index:-1;pointer-events:none;opacity:.85}'
+    /* Slow fade-in + soft rise + tiny shadow grow so the box doesn't
+       just "appear" — it earns its place. Keyframe defined separately
+       so the parent .aura-waitlist auraRise on initial mount stays clean. */
+    + '  @keyframes auraRiseGlow{from{opacity:0;transform:translateY(8px) scale(.985);box-shadow:inset 0 1px 0 rgba(255,255,255,.0),0 4px 18px rgba(255,170,195,.0),0 1px 4px rgba(255,160,190,.0)}to{opacity:1;transform:translateY(0) scale(1);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 10px 30px rgba(255,170,195,.14),0 3px 10px rgba(255,160,190,.08)}}'
     + '  .aura-waitlist.is-success .aura-waitlist-form{display:none}'
     + '  .aura-waitlist.is-success .aura-waitlist-success{display:flex}'
-    + '  .aura-waitlist-success-mark{font-family:"Playfair Display",serif;font-style:italic;color:#f4c2cf;font-size:18px;flex:0 0 auto;text-shadow:0 0 8px rgba(255,180,200,.32)}'
-    + '  .aura-waitlist-success-text{font-family:"Playfair Display",serif;font-style:italic;font-size:14px;line-height:1.45;color:#f5ede3;text-align:left}'
-    + '  .aura-waitlist-success-sub{display:block;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-style:normal;font-size:11.5px;letter-spacing:.02em;color:#c9a9b3;margin-top:5px;line-height:1.5}'
+    /* Mark glyph is decorative + redundant with ✨ in title — hide it
+       via display:none. aria-hidden on the markup already keeps screen
+       readers from announcing it. */
+    + '  .aura-waitlist-success-mark{display:none}'
+    /* Title: editorial serif italic, soft cream, gently larger now,
+       centered for the column layout. */
+    + '  .aura-waitlist-success-text{display:block;font-family:"Playfair Display",serif;font-style:italic;font-weight:400;font-size:16px;line-height:1.4;color:#f7e9ec;text-align:center;letter-spacing:.005em}'
+    /* Sub: muted rose sans, centered + slightly tighter under the
+       title. Generous max-width caps long sub copy on wide screens. */
+    + '  .aura-waitlist-success-sub{display:block;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-style:normal;font-size:12.5px;font-weight:400;letter-spacing:.01em;color:#d6b9c2;margin-top:6px;line-height:1.55;text-align:center;max-width:34ch;margin-left:auto;margin-right:auto}'
     + '  @media (max-width:520px){.aura-waitlist{margin-top:32px;max-width:none}.aura-waitlist-form{flex-direction:column;gap:8px}.aura-waitlist-btn{padding:13px 16px}}'
     /* ── RTL polish: flip arrows/letter-spacing where it matters. The
           maintenance page is intentionally simple so most layout still
