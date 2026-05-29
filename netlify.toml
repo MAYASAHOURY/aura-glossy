@@ -4,6 +4,17 @@
 
 [build.environment]
   NODE_ENV = "production"
+  # ── Explicit framework opt-out ──────────────────────────────────
+  # The repo's history once contained Next.js scaffold (package.json
+  # with "next" dep, src/app/*, a /public dir). Even after those are
+  # removed, Netlify's SITE-LEVEL framework flag persists and keeps
+  # the Next.js Runtime active across deploys until you tell it not to.
+  # NEXT_USE_NETLIFY_EDGE = "false" disables Next.js-on-Edge.
+  # NETLIFY_NEXT_PLUGIN_SKIP = "true" skips the auto-installed plugin.
+  # These two together force Netlify to treat this as a vanilla static
+  # site + Functions (which it always actually was).
+  NEXT_USE_NETLIFY_EDGE = "false"
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
 
 # ── Functions config — explicit so Netlify always bundles Node deps
 #    even though there's no root build step. esbuild is the modern
