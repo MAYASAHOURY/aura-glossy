@@ -64,9 +64,39 @@ async function sendBrevoVerification({ to, lang, verifyUrl }) {
     })
   });
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error('Brevo send failed (' + res.status + '): ' + text.slice(0, 300));
+  /* Diagnostic logging: surface enough in Netlify Function logs to
+     debug delivery without exposing the api-key or full email body.
+     Logs include:
+       - HTTP status code from Brevo
+       - response body text (capped at 600 chars — includes messageId
+         on success, error details on failure)
+       - the masked sender + masked recipient so the admin can match
+         an attempt to a row without leaking the full address
+     Cap text at 600 chars to keep the log readable. */
+  const respText = await res.text().catch(function () { return ''; });
+  const maskedTo  = String(to).replace(/^(..).*(@.*)$/, '$1***$2');
+  const maskedFrom= String(senderEmail).replace(/^(..).*(@.*)$/, '$1***$2');
+  if (res.ok) {
+    let messageId = null;
+    try { messageId = (JSON.parse(respText) || {}).messageId || null; } catch (_) {}
+    console.log('[brevo] SENT', JSON.stringify({
+      status:   res.status,
+      to:       maskedTo,
+      from:     maskedFrom,
+      subject:  subject.slice(0, 80),
+      messageId: messageId,
+      lang:     lang
+    }));
+  } else {
+    console.error('[brevo] FAILED', JSON.stringify({
+      status:  res.status,
+      to:      maskedTo,
+      from:    maskedFrom,
+      subject: subject.slice(0, 80),
+      lang:    lang,
+      body:    respText.slice(0, 600)
+    }));
+    throw new Error('Brevo send failed (' + res.status + '): ' + respText.slice(0, 300));
   }
 }
 

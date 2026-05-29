@@ -69,6 +69,23 @@ function getDb() {
    real addresses without rejecting common forms. */
 const EMAIL_RE = /^[a-z0-9._+\-]+@[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)+$/;
 
+/* RFC 2606 reserved test / example domains.
+   These addresses cannot actually receive email — Brevo's API will
+   accept them and return 2xx, then the message bounces silently from
+   the receiving server (there isn't one). If we don't block these,
+   the function returns "subscribed" but no email ever arrives — a
+   "false success" that breaks the truthfulness contract.
+
+   - example.com / .net / .org → IANA reserved (RFC 2606 §3)
+   - .test / .example / .invalid / .localhost → IANA reserved TLDs
+   - .local → Bonjour multicast DNS (Apple) — also unreachable */
+const RESERVED_TEST_DOMAINS = new Set([
+  'example.com','example.net','example.org','example.io'
+]);
+const RESERVED_TLDS = new Set([
+  'test','example','invalid','localhost','local'
+]);
+
 /* Known disposable / throwaway providers. Not exhaustive, but covers the
    most-used spam vectors in transactional flows. */
 const DISPOSABLE_DOMAINS = new Set([
@@ -110,6 +127,14 @@ function validateEmail(raw) {
   if (local.length > 64) return { ok: false, reason: 'invalid_format' };
   if (FAKE_LOCAL_PARTS.has(local)) return { ok: false, reason: 'fake_local' };
   if (DISPOSABLE_DOMAINS.has(domain)) return { ok: false, reason: 'disposable' };
+
+  /* RFC 2606 reserved — would never receive a real email. Catches
+     diagnostic typos and accidental "test@example.com" subscriptions
+     that would otherwise return false-positive "subscribed". */
+  if (RESERVED_TEST_DOMAINS.has(domain)) return { ok: false, reason: 'reserved_domain' };
+  const lastDot = domain.lastIndexOf('.');
+  const tld = lastDot >= 0 ? domain.slice(lastDot + 1) : '';
+  if (RESERVED_TLDS.has(tld)) return { ok: false, reason: 'reserved_domain' };
 
   /* Reject all-numeric local parts — they're either spam or test data */
   if (/^\d+$/.test(local)) return { ok: false, reason: 'fake_local' };
