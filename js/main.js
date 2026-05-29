@@ -39,6 +39,13 @@ function showToast(message) {
   toast._t = setTimeout(() => toast.classList.remove('show'), 2400);
 }
 
+// i18n helper for toast/feedback copy — falls back to English if i18n
+// hasn't loaded yet or the key is missing. Translations live in i18n.js.
+function _toastT(key, fallback) {
+  try { if (window.Aura && Aura.i18n && Aura.i18n.t) { var v = Aura.i18n.t(key); if (v && v !== key) return v; } } catch (e) {}
+  return fallback;
+}
+
 // ---- Reveal on scroll ----
 function initReveal() {
   const els = document.querySelectorAll('.reveal:not(.visible)');
@@ -95,7 +102,7 @@ function attachSaveButtons() {
           Aura.track('save_success', { aesthetic: (item.style || '').toLowerCase().slice(0, 32) || null });
         }
       } catch (e) {}
-      showToast(added ? 'Saved to moodboard ✦' : 'Removed from moodboard');
+      showToast(added ? _toastT('common.toast_saved', 'Saved to your moodboard ✦') : _toastT('common.toast_removed', 'Removed from your moodboard'));
     });
   });
 }
@@ -110,7 +117,7 @@ if (window.Aura && Aura.registerResume) {
       const added = toggleMoodboard(item);
       const btn = document.querySelector('[data-save-id="' + item.id + '"]');
       if (btn) btn.classList.toggle('saved', added);
-      showToast(added ? 'Saved to moodboard ✦' : 'Removed from moodboard');
+      showToast(added ? _toastT('common.toast_saved', 'Saved to your moodboard ✦') : _toastT('common.toast_removed', 'Removed from your moodboard'));
     } catch (e) { console.warn('save resume failed:', e); }
   });
 }

@@ -971,7 +971,7 @@ function _initComposerTabs() {
 function _submitPost() {
   var text = document.getElementById('composer-text').value.trim();
   if (!text) {
-    document.getElementById('composer-hint').textContent = 'Write something first.';
+    document.getElementById('composer-hint').textContent = _t('community.composer_empty', 'Share a few words first ✦');
     return;
   }
 
@@ -989,7 +989,7 @@ function _submitPost() {
   }
   if (!_currentUser) return;
   if (!_currentGroup) {
-    document.getElementById('composer-hint').textContent = 'Take the quiz to unlock your community first.';
+    document.getElementById('composer-hint').textContent = _t('community.composer_no_circle', 'Take the style quiz to unlock your circle ✦');
     return;
   }
 
@@ -1000,7 +1000,7 @@ function _submitPost() {
 
   var btn = document.getElementById('composer-post-btn');
   btn.disabled    = true;
-  btn.textContent = 'Posting…';
+  btn.textContent = _t('community.composer_posting', 'Posting…');
   document.getElementById('composer-hint').textContent = '';
 
   var name = _currentUser.displayName || _currentUser.email || 'Style Member';
@@ -1026,12 +1026,12 @@ function _submitPost() {
       document.querySelector('.ctab[data-type="thought"]').click();
     })
     .catch(function (e) {
-      document.getElementById('composer-hint').textContent = 'Could not post. Try again.';
+      document.getElementById('composer-hint').textContent = _t('community.composer_failed', "That didn't post — try once more.");
       console.warn('Post failed:', e.message);
     })
     .finally(function () {
       btn.disabled    = false;
-      btn.textContent = 'Post';
+      btn.textContent = _t('community.post_btn', 'Post');
     });
 }
 

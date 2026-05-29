@@ -56,7 +56,8 @@
         back: 'Back', next: 'Next →', skip: 'Skip', close: 'Close',
         loading: 'Loading…', save: 'Save', cancel: 'Cancel',
         confirm: 'Confirm', delete: 'Delete', remove: 'Remove',
-        share: 'Share', edit: 'Edit', done: 'Done', got_it: 'Got it ✦'
+        share: 'Share', edit: 'Edit', done: 'Done', got_it: 'Got it ✦',
+        toast_saved: 'Saved to your moodboard ✦', toast_removed: 'Removed from your moodboard'
       },
       nav: {
         home: 'Home', quiz: 'Style Quiz', aesthetics: 'Aesthetics',
@@ -229,6 +230,10 @@
         page_title_a: 'The', page_title_b: 'community.',
         composer_placeholder: 'Share an outfit, a look, a moment…',
         composer_img_placeholder: 'Add an image URL (optional)',
+        composer_empty: 'Share a few words first ✦',
+        composer_no_circle: 'Take the style quiz to unlock your circle ✦',
+        composer_posting: 'Posting…',
+        composer_failed: "That didn't post — try once more.",
         post_btn: 'Post',
         comment_placeholder: 'Add a comment…',
         comment_send: 'Send',
@@ -389,7 +394,8 @@
         back: 'Atrás', next: 'Siguiente →', skip: 'Saltar', close: 'Cerrar',
         loading: 'Cargando…', save: 'Guardar', cancel: 'Cancelar',
         confirm: 'Confirmar', delete: 'Eliminar', remove: 'Quitar',
-        share: 'Compartir', edit: 'Editar', done: 'Listo', got_it: 'Entendido ✦'
+        share: 'Compartir', edit: 'Editar', done: 'Listo', got_it: 'Entendido ✦',
+        toast_saved: 'Guardado en tu moodboard ✦', toast_removed: 'Eliminado de tu moodboard'
       },
       nav: {
         home: 'Inicio', quiz: 'Quiz de Estilo', aesthetics: 'Estéticas',
@@ -548,14 +554,18 @@
         page_title_a: 'La', page_title_b: 'comunidad.',
         composer_placeholder: 'Comparte un look, un outfit, un momento…',
         composer_img_placeholder: 'Añade una URL de imagen (opcional)',
+        composer_empty: 'Comparte unas palabras primero ✦',
+        composer_no_circle: 'Haz el quiz de estilo para desbloquear tu círculo ✦',
+        composer_posting: 'Publicando…',
+        composer_failed: 'No se pudo publicar — inténtalo otra vez.',
         post_btn: 'Publicar',
         comment_placeholder: 'Añade un comentario…',
         comment_send: 'Enviar',
         show_comments: 'Ver comentarios',
         hide_comments: 'Ocultar comentarios',
         empty_title: 'Tu círculo está en silencio.',
-        empty_body: 'Sé el primero en compartir un look.',
-        no_comments: 'Aún no hay comentarios. Sé el primero.',
+        empty_body: 'Sé la primera en compartir un look.',
+        no_comments: 'Aún no hay comentarios. Sé la primera.',
         delete_post: 'Eliminar publicación',
         delete_confirm: '¿Eliminar esta publicación?',
         liked: 'Me gusta', like: 'Me gusta',
@@ -652,7 +662,7 @@
         no_quiz_yet: 'Aún no realizado'
       },
       onboarding: {
-        welcome_headline:   'Bienvenido a Aura Glossy.',
+        welcome_headline:   'Bienvenida a Aura Glossy.',
         welcome_body:       'Te llevaremos por un tour rápido. Solo unos pasos.',
         next_show:          'Siguiente →',
         skip_tour:          'Saltar tour',
@@ -684,7 +694,8 @@
         back: 'رجوع', next: 'التالي ←', skip: 'تخطّي', close: 'إغلاق',
         loading: 'جارٍ التحميل…', save: 'حفظ', cancel: 'إلغاء',
         confirm: 'تأكيد', delete: 'حذف', remove: 'إزالة',
-        share: 'مشاركة', edit: 'تعديل', done: 'تم', got_it: 'حسناً ✦'
+        share: 'مشاركة', edit: 'تعديل', done: 'تم', got_it: 'حسناً ✦',
+        toast_saved: 'حُفِظ في لوحتكِ ✦', toast_removed: 'أُزيل من لوحتكِ'
       },
       nav: {
         home: 'الرئيسية', quiz: 'اختبار الستايل', aesthetics: 'الجماليات',
@@ -842,15 +853,19 @@
         page_eyebrow: 'دائرة أسلوبك',
         page_title_a: 'الـ', page_title_b: 'مجتمع.',
         composer_placeholder: 'شارك إطلالة، لوكاً، أو لحظة…',
-        composer_img_placeholder: 'أضف رابط صورة (اختياري)',
+        composer_img_placeholder: 'أضيفي رابط صورة (اختياري)',
+        composer_empty: 'شاركي بضع كلمات أولاً ✦',
+        composer_no_circle: 'أكملي اختبار الستايل لفتح دائرتكِ ✦',
+        composer_posting: 'جارٍ النشر…',
+        composer_failed: 'تعذّر النشر — حاولي مرة أخرى.',
         post_btn: 'نشر',
         comment_placeholder: 'أضف تعليقاً…',
         comment_send: 'إرسال',
         show_comments: 'عرض التعليقات',
         hide_comments: 'إخفاء التعليقات',
         empty_title: 'دائرتك هادئة.',
-        empty_body: 'كن أول من يشارك إطلالة.',
-        no_comments: 'لا توجد تعليقات بعد. كن الأول.',
+        empty_body: 'كوني أول من تشارك إطلالة.',
+        no_comments: 'لا توجد تعليقات بعد. كوني الأولى.',
         delete_post: 'حذف المنشور',
         delete_confirm: 'هل تريد حذف هذا المنشور؟',
         liked: 'أعجبني', like: 'إعجاب',
@@ -947,7 +962,7 @@
         no_quiz_yet: 'لم تأخذه بعد'
       },
       onboarding: {
-        welcome_headline:   'أهلاً بك في Aura Glossy.',
+        welcome_headline:   'أهلاً بكِ في Aura Glossy.',
         welcome_body:       'سنأخذك في جولة سريعة. خطوات قليلة فقط.',
         next_show:          'التالي ←',
         skip_tour:          'تخطّي الجولة',
@@ -979,7 +994,8 @@
         back: 'חזרה', next: 'הבא ←', skip: 'דלג', close: 'סגירה',
         loading: 'טוען…', save: 'שמירה', cancel: 'ביטול',
         confirm: 'אישור', delete: 'מחיקה', remove: 'הסרה',
-        share: 'שיתוף', edit: 'עריכה', done: 'סיום', got_it: 'הבנתי ✦'
+        share: 'שיתוף', edit: 'עריכה', done: 'סיום', got_it: 'הבנתי ✦',
+        toast_saved: 'נשמר ללוח שלך ✦', toast_removed: 'הוסר מהלוח שלך'
       },
       nav: {
         home: 'בית', quiz: 'חידון סגנון', aesthetics: 'אסתטיקות',
@@ -1137,6 +1153,10 @@
         page_title_a: 'הקהילה', page_title_b: '.',
         composer_placeholder: 'שתפי לוק, אאוטפיט, רגע…',
         composer_img_placeholder: 'הוסיפי קישור לתמונה (אופציונלי)',
+        composer_empty: 'שתפי כמה מילים קודם ✦',
+        composer_no_circle: 'עשי את חידון הסטייל כדי לפתוח את המעגל שלך ✦',
+        composer_posting: 'מפרסם…',
+        composer_failed: 'הפרסום נכשל — נסי שוב.',
         post_btn: 'פרסום',
         comment_placeholder: 'הוסיפי תגובה…',
         comment_send: 'שליחה',
