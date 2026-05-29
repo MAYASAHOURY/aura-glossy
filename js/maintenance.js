@@ -476,12 +476,16 @@
     + '  .aura-waitlist-hint.is-loading{color:#c79a85}'
     + '  .aura-waitlist-hint.is-success{color:#e7c8b5}'
     /* Success state — replaces the form with a single confirmation row */
-    + '  .aura-waitlist-success{display:none;align-items:center;justify-content:center;gap:10px;padding:14px 16px;background:rgba(231,200,181,.06);border:1px solid rgba(199,154,133,.28);border-radius:2px;animation:auraRise .6s ease-out both}'
+    /* Soft-pink confirmation box — small, rounded, gentle.
+       Cream→rose gradient, rounded corners, slow elegant fade-in.
+       Designed to feel premium-feminine, not loud. Mobile-first padding
+       so it stays compact on iPhone. */
+    + '  .aura-waitlist-success{display:none;align-items:center;justify-content:center;gap:12px;padding:16px 20px;background:linear-gradient(180deg,rgba(255,200,215,.10),rgba(255,180,200,.05));border:1px solid rgba(255,180,200,.30);border-radius:14px;box-shadow:0 4px 18px rgba(255,180,200,.06);animation:auraRise .8s cubic-bezier(.2,.7,.2,1) both}'
     + '  .aura-waitlist.is-success .aura-waitlist-form{display:none}'
     + '  .aura-waitlist.is-success .aura-waitlist-success{display:flex}'
-    + '  .aura-waitlist-success-mark{font-family:"Playfair Display",serif;font-style:italic;color:#e7c8b5;font-size:18px;flex:0 0 auto}'
-    + '  .aura-waitlist-success-text{font-family:"Playfair Display",serif;font-style:italic;font-size:14px;line-height:1.4;color:#f5ede3}'
-    + '  .aura-waitlist-success-sub{display:block;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-style:normal;font-size:11px;letter-spacing:.04em;color:#8a7a6c;margin-top:4px}'
+    + '  .aura-waitlist-success-mark{font-family:"Playfair Display",serif;font-style:italic;color:#f4c2cf;font-size:18px;flex:0 0 auto;text-shadow:0 0 8px rgba(255,180,200,.32)}'
+    + '  .aura-waitlist-success-text{font-family:"Playfair Display",serif;font-style:italic;font-size:14px;line-height:1.45;color:#f5ede3;text-align:left}'
+    + '  .aura-waitlist-success-sub{display:block;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-style:normal;font-size:11.5px;letter-spacing:.02em;color:#c9a9b3;margin-top:5px;line-height:1.5}'
     + '  @media (max-width:520px){.aura-waitlist{margin-top:32px;max-width:none}.aura-waitlist-form{flex-direction:column;gap:8px}.aura-waitlist-btn{padding:13px 16px}}'
     /* ── RTL polish: flip arrows/letter-spacing where it matters. The
           maintenance page is intentionally simple so most layout still

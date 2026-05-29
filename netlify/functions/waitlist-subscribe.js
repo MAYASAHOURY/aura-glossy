@@ -44,10 +44,10 @@ async function sendBrevoVerification({ to, lang, verifyUrl }) {
 
   const html = _buildEmailHtml({ verifyUrl, lang });
   const subject =
-    lang === 'es' ? 'Confirma tu lugar en la lista de Aura Glossy'
-  : lang === 'ar' ? 'تأكيد مكانكِ في قائمة الانتظار — Aura Glossy'
-  : lang === 'he' ? 'אישור הצטרפותך לרשימת ההמתנה של Aura Glossy'
-                  : 'Confirm your spot on the Aura Glossy waitlist';
+    lang === 'es' ? 'Confirma tu lugar en la lista de Aura Glossy ✨'
+  : lang === 'ar' ? 'تأكيد مكانكِ في قائمة Aura Glossy ✨'
+  : lang === 'he' ? 'אישור המקום שלך ב-Aura Glossy ✨'
+                  : 'Confirm your Aura Glossy waitlist spot ✨';
 
   const res = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
@@ -79,37 +79,44 @@ function _esc(s) {
 function _buildEmailHtml({ verifyUrl, lang }) {
   const isRtl = (lang === 'ar' || lang === 'he');
   const dir   = isRtl ? 'rtl' : 'ltr';
+  /* Email copy per the user spec:
+     - Subject: "Confirm your Aura Glossy waitlist spot ✨"
+     - Body line (single short question)
+     - Main button: "Yes, confirm my spot ✓"
+     - Small ignore-line below
+     - Tiny footer with expiry note
+     Kept short and elegant — no marketing copy, no extra paragraphs. */
   const t = {
     en: {
       eyebrow: 'Aura Glossy',
-      h1:      "You're almost in.",
-      body:    "One last step to confirm your spot on the Aura Glossy waitlist. We'll let you know the moment we open.",
-      cta:     'Confirm my spot ✓',
-      hint:    "If you didn't request this, you can safely ignore the message — your email won't be added to anything.",
-      foot:    "This link expires in 24 hours."
+      h1:      'Confirm your spot ✨',
+      body:    'Do you want to save your spot on the Aura Glossy waitlist?',
+      cta:     'Yes, confirm my spot ✓',
+      hint:    "If this wasn't you, you can ignore this email.",
+      foot:    'This link expires in 24 hours.'
     },
     es: {
       eyebrow: 'Aura Glossy',
-      h1:      'Casi estás dentro.',
-      body:    'Un último paso para confirmar tu lugar en la lista de Aura Glossy. Te avisaremos en el momento que abramos.',
-      cta:     'Confirmar mi lugar ✓',
-      hint:    'Si no solicitaste esto, puedes ignorar este mensaje — tu email no se añadirá a nada.',
+      h1:      'Confirma tu lugar ✨',
+      body:    '¿Quieres guardar tu lugar en la lista de Aura Glossy?',
+      cta:     'Sí, confirmar mi lugar ✓',
+      hint:    'Si esto no fuiste tú, puedes ignorar este email.',
       foot:    'Este enlace expira en 24 horas.'
     },
     ar: {
       eyebrow: 'Aura Glossy',
-      h1:      'كدتِ تدخلين.',
-      body:    'خطوة أخيرة لتأكيد مكانكِ في قائمة Aura Glossy. سنُعلمكِ في اللحظة التي نفتح فيها.',
-      cta:     'تأكيد مكاني ✓',
-      hint:    'إذا لم تطلبي هذا، يمكنكِ تجاهل الرسالة بأمان — لن نضيف بريدكِ إلى أي شيء.',
-      foot:    'تنتهي صلاحيّة الرابط خلال ٢٤ ساعة.'
+      h1:      'أكّدي مكانكِ ✨',
+      body:    'هل تريدين حفظ مكانكِ في قائمة Aura Glossy؟',
+      cta:     'نعم، تأكيد مكاني ✓',
+      hint:    'إذا لم تكوني أنتِ، يمكنكِ تجاهل هذا البريد.',
+      foot:    'ينتهي هذا الرابط خلال ٢٤ ساعة.'
     },
     he: {
       eyebrow: 'Aura Glossy',
-      h1:      'את כמעט בפנים.',
-      body:    'שלב אחרון לאישור הצטרפותך לרשימת ההמתנה של Aura Glossy. נעדכן אותך ברגע שניפתח.',
-      cta:     'אישור המקום שלי ✓',
-      hint:    'אם לא ביקשת זאת — אפשר להתעלם מההודעה. הדוא"ל שלך לא יתווסף לשום מקום.',
+      h1:      'אישור המקום שלך ✨',
+      body:    'האם תרצי לשמור את המקום שלך ברשימת Aura Glossy?',
+      cta:     'כן, אישור המקום שלי ✓',
+      hint:    'אם זו לא היית את, אפשר להתעלם מהמייל.',
       foot:    'הקישור פג תוקף בעוד 24 שעות.'
     }
   };
