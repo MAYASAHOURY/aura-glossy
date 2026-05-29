@@ -84,7 +84,7 @@ function _buildEmailHtml({ verifyUrl, lang }) {
       eyebrow: 'Aura Glossy',
       h1:      "You're almost in.",
       body:    "One last step to confirm your spot on the Aura Glossy waitlist. We'll let you know the moment we open.",
-      cta:     'Confirm my spot ✦',
+      cta:     'Confirm my spot ✓',
       hint:    "If you didn't request this, you can safely ignore the message — your email won't be added to anything.",
       foot:    "This link expires in 24 hours."
     },
@@ -92,7 +92,7 @@ function _buildEmailHtml({ verifyUrl, lang }) {
       eyebrow: 'Aura Glossy',
       h1:      'Casi estás dentro.',
       body:    'Un último paso para confirmar tu lugar en la lista de Aura Glossy. Te avisaremos en el momento que abramos.',
-      cta:     'Confirmar mi lugar ✦',
+      cta:     'Confirmar mi lugar ✓',
       hint:    'Si no solicitaste esto, puedes ignorar este mensaje — tu email no se añadirá a nada.',
       foot:    'Este enlace expira en 24 horas.'
     },
@@ -100,7 +100,7 @@ function _buildEmailHtml({ verifyUrl, lang }) {
       eyebrow: 'Aura Glossy',
       h1:      'كدتِ تدخلين.',
       body:    'خطوة أخيرة لتأكيد مكانكِ في قائمة Aura Glossy. سنُعلمكِ في اللحظة التي نفتح فيها.',
-      cta:     'تأكيد مكاني ✦',
+      cta:     'تأكيد مكاني ✓',
       hint:    'إذا لم تطلبي هذا، يمكنكِ تجاهل الرسالة بأمان — لن نضيف بريدكِ إلى أي شيء.',
       foot:    'تنتهي صلاحيّة الرابط خلال ٢٤ ساعة.'
     },
@@ -108,7 +108,7 @@ function _buildEmailHtml({ verifyUrl, lang }) {
       eyebrow: 'Aura Glossy',
       h1:      'את כמעט בפנים.',
       body:    'שלב אחרון לאישור הצטרפותך לרשימת ההמתנה של Aura Glossy. נעדכן אותך ברגע שניפתח.',
-      cta:     'אישור המקום שלי ✦',
+      cta:     'אישור המקום שלי ✓',
       hint:    'אם לא ביקשת זאת — אפשר להתעלם מההודעה. הדוא"ל שלך לא יתווסף לשום מקום.',
       foot:    'הקישור פג תוקף בעוד 24 שעות.'
     }
@@ -258,24 +258,56 @@ exports.handler = async function (event) {
   const verifyUrl = baseUrl + '/.netlify/functions/waitlist-verify?token=' + encodeURIComponent(token);
 
   /* ── 8. Send email via Brevo ───────────────────────────── */
+  /* Truthfulness contract: a 200 response promises the user that an
+     email actually shipped. If Brevo throws, we MUST NOT return 200.
+
+     Rollback policy:
+       - Fresh subscription (existing == null): delete the orphan
+         Firestore row entirely so the next retry creates a clean row.
+         No "ghost" pending entries that don't correspond to any sent
+         email. The user-facing UI shows a clear error.
+       - Resend on an existing row (existing != null): keep the row
+         (the original subscription is real and predates this send
+         attempt), but flag the failure on the doc so the admin can
+         see retry attempts in the report. */
+  const isFresh = !existing;
   try {
     await sendBrevoVerification({ to: email, lang, verifyUrl });
   } catch (e) {
-    /* Email send failure should NOT leak email details to the client,
-       but we do flag this server-side so the admin can replay. */
     console.error('[waitlist-subscribe] brevo failed:', e && e.message);
-    /* We've already written the Firestore row — mark it so admins
-       can see the email never sent. */
-    try {
-      await doc.set({
-        lastSendError:   String(e && e.message || 'send_failed').slice(0, 300),
-        lastSendErrorAt: lib.admin.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-    } catch (_) {}
+
+    if (isFresh) {
+      /* Roll back the orphan row so no fake-pending entries accumulate. */
+      try {
+        await doc.delete();
+        console.log('[waitlist-subscribe] rolled back orphan row', docId);
+      } catch (delErr) {
+        /* Rollback failed too — leave a marker so the admin can clean up. */
+        console.warn('[waitlist-subscribe] rollback delete failed:', delErr && delErr.message);
+        try {
+          await doc.set({
+            lastSendError:   String(e && e.message || 'send_failed').slice(0, 300),
+            lastSendErrorAt: lib.admin.firestore.FieldValue.serverTimestamp(),
+            rollbackFailed:  true
+          }, { merge: true });
+        } catch (_) {}
+      }
+    } else {
+      /* Existing row predates this send. Keep it; flag the failure. */
+      try {
+        await doc.set({
+          lastSendError:   String(e && e.message || 'send_failed').slice(0, 300),
+          lastSendErrorAt: lib.admin.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      } catch (_) {}
+    }
+
     return lib.json(500, { status: 'server_error', detail: 'email_send_failed' });
   }
 
   /* ── 9. Success response ───────────────────────────────── */
+  /* By contract: 200 means a Brevo email was sent + Firestore row is
+     in 'pending' state with isVerified=false + verifyToken set. */
   return lib.json(200, {
     status: existing ? 'verification_resent' : 'subscribed'
   });

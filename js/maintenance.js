@@ -110,13 +110,14 @@
       waitlist_cta:     'Join the waitlist',
       waitlist_invalid: 'Please enter a real, well-formed email.',
       waitlist_sending: 'Sending…',
-      waitlist_success: 'Check your inbox ✦',
-      waitlist_success_sub: 'We sent a one-click confirmation. Click it to lock in your spot.',
+      waitlist_success: 'Check your email ✨',
+      waitlist_success_sub: 'Confirm your spot — we’re waiting for you.',
       waitlist_already: 'You’re already on the list ✨',
       waitlist_already_sub: 'We’ll let you know the moment we open the doors.',
-      waitlist_resent:  'We sent a fresh link ✦',
-      waitlist_resent_sub: 'Your previous code expired. Check your inbox — the new link is valid for 24 hours.',
+      waitlist_resent:  'We sent a fresh link ✨',
+      waitlist_resent_sub: 'Your previous link expired. Check your email — the new one is valid for 24 hours.',
       waitlist_rate:    'Too many tries. Take a breath and try again in a minute.',
+      waitlist_email_failed: 'We couldn’t send the confirmation email. Please try again or check your address.',
       waitlist_error:   'Couldn’t save your email. Try again in a moment.',
       admin_enter: 'Admin enter',
       admin_title: 'Admin access',
@@ -142,13 +143,14 @@
       waitlist_cta:     'Unirse a la lista',
       waitlist_invalid: 'Introduce un email real y bien formado.',
       waitlist_sending: 'Enviando…',
-      waitlist_success: 'Revisa tu bandeja ✦',
-      waitlist_success_sub: 'Te enviamos un enlace de confirmación de un clic. Confírmalo para asegurar tu lugar.',
+      waitlist_success: 'Revisa tu email ✨',
+      waitlist_success_sub: 'Confirma tu lugar — te estamos esperando.',
       waitlist_already: 'Ya estás en la lista ✨',
       waitlist_already_sub: 'Te avisaremos en el momento que abramos las puertas.',
-      waitlist_resent:  'Enviamos un enlace nuevo ✦',
-      waitlist_resent_sub: 'Tu código anterior caducó. Revisa tu bandeja — el nuevo enlace es válido durante 24 horas.',
+      waitlist_resent:  'Enviamos un enlace nuevo ✨',
+      waitlist_resent_sub: 'Tu enlace anterior caducó. Revisa tu email — el nuevo es válido durante 24 horas.',
       waitlist_rate:    'Demasiados intentos. Respira y vuelve a intentarlo en un minuto.',
+      waitlist_email_failed: 'No pudimos enviar el email de confirmación. Inténtalo de nuevo o verifica tu dirección.',
       waitlist_error:   'No pudimos guardar tu email. Inténtalo de nuevo.',
       admin_enter: 'Entrar como admin',
       admin_title: 'Acceso de admin',
@@ -174,13 +176,14 @@
       waitlist_cta:     'انضمّي إلى القائمة',
       waitlist_invalid: 'يرجى إدخال بريد حقيقي وصحيح.',
       waitlist_sending: 'جارٍ الإرسال…',
-      waitlist_success: 'تحقّقي من بريدكِ ✦',
-      waitlist_success_sub: 'أرسلنا لكِ رابط تأكيد بنقرة واحدة. اضغطي عليه لتثبيت مكانكِ.',
+      waitlist_success: 'تحقّقي من بريدكِ ✨',
+      waitlist_success_sub: 'أكّدي مكانكِ — نحن بانتظاركِ.',
       waitlist_already: 'أنتِ بالفعل على القائمة ✨',
       waitlist_already_sub: 'سنُعلمكِ في اللحظة التي نفتح فيها الأبواب.',
-      waitlist_resent:  'أرسلنا رابطًا جديدًا ✦',
+      waitlist_resent:  'أرسلنا رابطًا جديدًا ✨',
       waitlist_resent_sub: 'انتهت صلاحيّة رابطكِ السابق. تحقّقي من بريدكِ — الرابط الجديد صالح لمدة 24 ساعة.',
       waitlist_rate:    'محاولات كثيرة. خذي نفسًا وحاولي بعد دقيقة.',
+      waitlist_email_failed: 'تعذّر إرسال بريد التأكيد. حاولي مرة أخرى أو تحقّقي من العنوان.',
       waitlist_error:   'تعذّر حفظ بريدكِ. حاولي بعد قليل.',
       admin_enter: 'دخول الأدمن',
       admin_title: 'دخول الأدمن',
@@ -206,13 +209,14 @@
       waitlist_cta:     'הצטרפות לרשימה',
       waitlist_invalid: 'נא להזין אימייל אמיתי ותקין.',
       waitlist_sending: 'שולחים…',
-      waitlist_success: 'בדקי את תיבת הדואר ✦',
-      waitlist_success_sub: 'שלחנו לך לינק אישור בלחיצה אחת. לחצי עליו כדי לקבוע את מקומך.',
+      waitlist_success: 'בדקי את האימייל ✨',
+      waitlist_success_sub: 'אישור המקום שלך — אנחנו מחכים לך.',
       waitlist_already: 'את כבר ברשימה ✨',
       waitlist_already_sub: 'נעדכן אותך ברגע שניפתח את הדלתות.',
-      waitlist_resent:  'שלחנו לך לינק חדש ✦',
-      waitlist_resent_sub: 'הלינק הקודם פג תוקף. בדקי את תיבת הדואר — הלינק החדש בתוקף ל-24 שעות.',
+      waitlist_resent:  'שלחנו לך לינק חדש ✨',
+      waitlist_resent_sub: 'הלינק הקודם פג תוקף. בדקי את האימייל — החדש בתוקף ל-24 שעות.',
       waitlist_rate:    'יותר מדי ניסיונות. קחי נשימה ונסי שוב בעוד דקה.',
+      waitlist_email_failed: 'לא הצלחנו לשלוח את האימייל. נסי שוב או בדקי את הכתובת.',
       waitlist_error:   'לא הצלחנו לשמור את האימייל. נסי שוב.',
       admin_enter: 'כניסת אדמין',
       admin_title: 'כניסת אדמין',
@@ -778,8 +782,12 @@
       }).then(function (out) {
         setBusy(false);
         var s = (out.data && out.data.status) || '';
+        var detail = (out.data && out.data.detail) || '';
         if (out.status >= 200 && out.status < 300) {
-          /* Normalize: any 200 status means we accept the response. */
+          /* Contract: 200 ONLY when Brevo actually sent the email
+             (the function rolls back the Firestore row on send fail
+             and returns 500). So a 200 here is a real success — we
+             can safely show "Check your email" without lying. */
           if (s === 'already_subscribed') {
             reveal('already_subscribed');
           } else if (s === 'verification_resent') {
@@ -802,10 +810,19 @@
           try { emailEl.focus(); } catch (_) {}
           return;
         }
+        /* 500 with detail 'email_send_failed' means: Firestore row was
+           either rolled back (fresh) or kept with a send-error flag
+           (resend). Either way, no confirmation email reached the user.
+           Show the explicit email-failed copy so we never claim success. */
+        if (detail === 'email_send_failed') {
+          setHint(MT('waitlist_email_failed'), 'error');
+          try { console.warn('[waitlist] brevo send failed (server-side)'); } catch (_) {}
+          return;
+        }
         /* Anything else — generic error. The function logs server-side
-           detail. */
+           detail (firestore_unavailable / firestore_write_failed / …). */
         setHint(MT('waitlist_error'), 'error');
-        try { console.warn('[waitlist] non-ok response:', out.status, s); } catch (_) {}
+        try { console.warn('[waitlist] non-ok response:', out.status, s, detail); } catch (_) {}
       }).catch(function (err) {
         setBusy(false);
         setHint(MT('waitlist_error'), 'error');
