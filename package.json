@@ -1,0 +1,12 @@
+{
+  "name": "aura-glossy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aura Glossy — vanilla HTML/CSS/JS fashion-editorial platform. This package.json exists ONLY so Netlify can resolve the firebase-admin dependency used by netlify/functions/. There is NO build step, NO framework, NO src/. Do not add other deps unless a Netlify Function genuinely needs them.",
+  "scripts": {
+    "_comment": "no build — Netlify serves the static files at root as-is"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}
