@@ -343,7 +343,7 @@ body {
     <a href="admin-report.html" class="back-link">← Admin Report</a>
   </div>
   <p class="app-sub">
-    Seeds <em>10 aesthetic circles</em> with 6 hand-written founding posts each — total 60.
+    Seeds <em>12 aesthetic circles</em> with 6 hand-written founding posts each — total 72.
     Each post uses a deterministic document ID so re-running the seed <em>skips already-written posts</em>
     instead of duplicating. Posts are stored under your admin uid with a rotating cohort of founding display names.
   </p>
@@ -351,7 +351,7 @@ body {
   <div class="status-panel">
     <div class="status-row">
       <span class="status-item is-state"><strong><span class="state-idle" id="state-label">Idle</span></strong></span>
-      <span class="status-item"><strong id="stat-total">60</strong> total</span>
+      <span class="status-item"><strong id="stat-total">72</strong> total</span>
       <span class="status-item is-written"><strong id="stat-written">0</strong> written</span>
       <span class="status-item is-skipped"><strong id="stat-skipped">0</strong> skipped</span>
       <span class="status-item is-failed"><strong id="stat-failed">0</strong> failed</span>
@@ -404,7 +404,7 @@ body {
     return 'https://images.unsplash.com/photo-' + id + '?w=900&h=1200&fit=crop&crop=faces,edges&auto=format&q=80';
   }
 
-  /* ── Aesthetic-specific starter posts (60 total) ──────────── */
+  /* ── Aesthetic-specific starter posts (72 total · 12 circles × 6) ── */
   var SEED = {
     classic: [
       { type:'thought',  content:"Found my forever uniform: tailored blazer, white tee, straight jeans, leather loafers. Twelve years of trends — nothing replaces the basics." },
@@ -511,6 +511,10 @@ body {
     casual:'Casual', hijabicore:'Hijabi Core', businesswoman:'Business Woman', darkacademic:'Dark Academic'
   };
   var AESTHETIC_ORDER = ['classic','minimalist','korean','streetwear','y2k','vintage','softgirl','elegant','casual','hijabicore','businesswoman','darkacademic'];
+  /* Total seed posts across all circles — derived from SEED so it stays
+     correct as aesthetics are added (was hardcoded 60 at 10 aesthetics;
+     now 12 × 6 = 72). Drives the "X total" stat + "Already seeded" check. */
+  var SEED_TOTAL = AESTHETIC_ORDER.reduce(function (n, id) { return n + (SEED[id] || []).length; }, 0);
 
   /* ── DOM ─────────────────────────────────────────────────── */
   function $(id) { return document.getElementById(id); }
@@ -651,7 +655,7 @@ body {
   function _recountExisting() {
     var aesthetics = AESTHETIC_ORDER.slice();
     var totals = { written:0, skipped:0, failed:0 };
-    setStats(60, 0, 0, 0);
+    setStats(SEED_TOTAL, 0, 0, 0);
     setState('Counting', 'run');
     disableButtons(true);
 
@@ -678,10 +682,10 @@ body {
         });
         log('Found ' + totals.skipped + ' existing seed rows across all circles.',
             totals.skipped > 0 ? 'skip' : 'info');
-        setState(totals.skipped === 60 ? 'Already seeded' :
+        setState(totals.skipped === SEED_TOTAL ? 'Already seeded' :
                  totals.skipped > 0    ? 'Partially seeded' : 'Idle',
-                 totals.skipped === 60 ? 'done' : 'idle');
-        setStats(60, 0, totals.skipped, 0);
+                 totals.skipped === SEED_TOTAL ? 'done' : 'idle');
+        setStats(SEED_TOTAL, 0, totals.skipped, 0);
         disableButtons(false);
         return;
       }
@@ -735,7 +739,7 @@ body {
         log('Written: ' + totals.written + ' · Skipped: ' + totals.skipped + ' · Failed: ' + totals.failed,
             totals.failed > 0 ? 'warn' : 'ok');
         setState(totals.failed > 0 ? 'Done (with failures)' : 'Done', totals.failed > 0 ? 'error' : 'done');
-        setStats(60, totals.written, totals.skipped, totals.failed);
+        setStats(SEED_TOTAL, totals.written, totals.skipped, totals.failed);
         disableButtons(false);
         return;
       }
@@ -748,7 +752,7 @@ body {
           totals.skipped++;
           perCircle[job.aestheticId]++;
           setCell(job.aestheticId, 'running', perCircle[job.aestheticId]);
-          setStats(60, totals.written, totals.skipped, totals.failed);
+          setStats(SEED_TOTAL, totals.written, totals.skipped, totals.failed);
           log(job.aestheticId + ' · post ' + (job.idx+1) + ' · already exists — skip', 'skip');
           return null;
         }
@@ -770,12 +774,12 @@ body {
           totals.written++;
           perCircle[job.aestheticId]++;
           setCell(job.aestheticId, 'running', perCircle[job.aestheticId]);
-          setStats(60, totals.written, totals.skipped, totals.failed);
+          setStats(SEED_TOTAL, totals.written, totals.skipped, totals.failed);
           log(job.aestheticId + ' · post ' + (job.idx+1) + ' · ' + authorName, 'ok');
         });
       }).catch(function (err) {
         totals.failed++;
-        setStats(60, totals.written, totals.skipped, totals.failed);
+        setStats(SEED_TOTAL, totals.written, totals.skipped, totals.failed);
         log(job.aestheticId + ' · post ' + (job.idx+1) + ' · FAILED: ' + (err && err.code), 'err');
       }).then(function () {
         setTimeout(next, 120);
@@ -812,7 +816,7 @@ body {
         log('Deleted: ' + totals.deleted + ' · Already gone: ' + totals.missing + ' · Failed: ' + totals.failed,
             totals.failed > 0 ? 'warn' : 'ok');
         setState(totals.failed > 0 ? 'Cleared (with failures)' : 'Cleared', 'done');
-        setStats(60, 0, 0, 0);
+        setStats(SEED_TOTAL, 0, 0, 0);
         disableButtons(false);
         return;
       }
