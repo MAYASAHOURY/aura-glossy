@@ -28,7 +28,8 @@
     vintage:    'Borrowed from another decade — 70s flares, prairie blouses, suede boots. Wear it to flea markets, brunches, and slow city wanderings.',
     softgirl:   'Sweet, romantic, and pastel-soft. Lace tops, mini skirts, ribbon hair clips. Perfect for picnics, first dates, and spring afternoons.',
     hijabicore: 'Modest fashion as quiet luxury. Long-line coats, layered satin hijabs, oversized blazers, and intentional draping. Editorial, composed, and unmistakably modern — for the everyday and everywhere.',
-    businesswoman: 'Power dressing for the modern professional. Sharp blazers, fluid suiting, crisp shirting, and one perfect bag. Neutral, precise, and quietly expensive — for the office, the meeting that matters, and everywhere you want to be taken seriously.'
+    businesswoman: 'Power dressing for the modern professional. Sharp blazers, fluid suiting, crisp shirting, and one perfect bag. Neutral, precise, and quietly expensive — for the office, the meeting that matters, and everywhere you want to be taken seriously.',
+    darkacademic: 'Old-world intellect, made wearable. Tweed blazers, pleated wool, vintage knits, oxblood leather, and a white collar under a dark coat. Made for libraries, lecture halls, rainy afternoons, and long evenings with a good book.'
   };
 
   const BREAKDOWNS = {
@@ -97,6 +98,12 @@
       bottom: 'Wide-leg suit trousers with a clean press, or a tailored pencil skirt for sharper days. High-waisted, always.',
       shoes: 'Pointed pumps, sleek loafers, or pointed mules — polished, and comfortable enough to command a room all day.',
       accessories: 'One structured leather top-handle bag, a slim watch, fine gold studs, and a silk tie or scarf when the look wants an edge.'
+    },
+    darkacademic: {
+      top: 'A white collared shirt under a tweed blazer, a vintage knit vest, or an oxblood sweater. Layer like the weather in an old library is unpredictable.',
+      bottom: 'A pleated wool skirt, plaid mini, or pressed trousers in espresso or charcoal. Add sheer tights and a knee sock.',
+      shoes: 'Leather loafers, Mary-Jane heels, or polished ankle boots. Worn-in, well-made, and a little scholarly.',
+      accessories: 'A knit tie, a check wool scarf, a leather satchel, a signet ring, and a stack of well-worn books.'
     }
   };
 
@@ -114,7 +121,8 @@
     vintage:    { acc: '#9a6430', bg: '#f8f0e4', brd: '#e0ccaa', text: '#2a1500' },
     softgirl:   { acc: '#e060a0', bg: '#fff0f8', brd: '#f8c8e0', text: '#2a0018' },
     hijabicore: { acc: '#8a6048', bg: '#faf5ed', brd: '#e0d0c0', text: '#2a1f0f' },
-    businesswoman: { acc: '#8a7a64', bg: '#f6f3ee', brd: '#ddd4c5', text: '#2a251c' }
+    businesswoman: { acc: '#8a7a64', bg: '#f6f3ee', brd: '#ddd4c5', text: '#2a251c' },
+    darkacademic: { acc: '#6e3b3b', bg: '#f4efe7', brd: '#dccfbb', text: '#241813' }
   };
   const theme = STYLE_THEME[s.id] || STYLE_THEME.classic;
 
@@ -423,6 +431,32 @@
         { category: 'Belt',      name: 'Black Leather Belt with Gold Buckle',         store: 'H&M',             price: '$20', q: 'black leather belt gold buckle women' },
         { category: 'Bag',       name: 'Black Structured Saddle Bag',                 store: 'ASOS',            price: '$45', q: 'black structured saddle shoulder bag women' },
         { category: 'Jewelry',   name: 'Gold Stacked Bangles',                        store: 'H&M',             price: '$18', q: 'gold stacked bangles bracelets women' }
+      ]}
+    ],
+
+    // DARK ACADEMIC — heroIdx:0=camel coat + wine knit + plaid · heroIdx:1=corduroy vest + plaid + boots · heroIdx:2=corduroy jacket + suede skirt + bookstore
+    darkacademic: [
+      { name: 'The Campus Coat', tier: 'mid', tag: 'Camel coat, wine knit and plaid', heroIdx: 0, pieces: [
+        { category: 'Coat',      name: 'Camel Wool Overcoat',                         store: 'Zara',            price: '$129', q: 'camel wool overcoat women long' },
+        { category: 'Top',       name: 'White Collared Oxford Shirt',                 store: 'Uniqlo',          price: '$30',  q: 'white oxford collared shirt women' },
+        { category: 'Knit',      name: 'Burgundy Intarsia Knit Sweater',              store: 'H&M',             price: '$35',  q: 'burgundy intarsia knit sweater women vintage' },
+        { category: 'Bottom',    name: 'Brown Plaid Pleated Mini Skirt',              store: 'Zara',            price: '$40',  q: 'brown plaid pleated mini skirt women' },
+        { category: 'Bag',       name: 'Black Quilted Chain Shoulder Bag',            store: 'ASOS',            price: '$45',  q: 'black quilted chain shoulder bag women' }
+      ]},
+      { name: 'The Library Vest', tier: 'aff', tag: 'Corduroy vest, plaid and knee boots', heroIdx: 1, pieces: [
+        { category: 'Vest',      name: 'Brown Corduroy Button Vest',                  store: 'H&M',             price: '$30',  q: 'brown corduroy button vest women' },
+        { category: 'Top',       name: 'White Puff-Sleeve Blouse',                    store: 'Zara',            price: '$40',  q: 'white puff sleeve blouse women' },
+        { category: 'Bottom',    name: 'Brown Check Plaid Mini Skirt',                store: 'Zara',            price: '$40',  q: 'brown check plaid mini skirt women' },
+        { category: 'Tights',    name: 'Black Sheer Tights',                          store: 'H&M',             price: '$12',  q: 'black sheer tights women 40 denier' },
+        { category: 'Boots',     name: 'Brown Knee-High Leather Boots',               store: 'ASOS',            price: '$75',  q: 'brown knee high leather boots women' },
+        { category: 'Bag',       name: 'Brown Suede Shoulder Bag',                    store: 'COS',             price: '$190', q: 'brown suede shoulder bag women' }
+      ]},
+      { name: 'The Bookshop Browse', tier: 'aff', tag: 'Corduroy jacket and suede mini', heroIdx: 2, pieces: [
+        { category: 'Jacket',    name: 'Cream Corduroy Cropped Jacket',               store: 'H&M',             price: '$40',  q: 'cream corduroy cropped jacket women' },
+        { category: 'Bottom',    name: 'Brown Suede Pleated Mini Skirt',              store: 'Zara',            price: '$50',  q: 'brown suede pleated mini skirt women' },
+        { category: 'Socks',     name: 'Sheer Knee-High Socks',                       store: 'ASOS',            price: '$10',  q: 'sheer knee high socks women' },
+        { category: 'Shoes',     name: 'Black Mary-Jane Block Heels',                 store: 'Charles & Keith', price: '$79',  q: 'black mary jane block heels women' },
+        { category: 'Bag',       name: 'Burgundy Leather Mini Bag',                   store: 'Charles & Keith', price: '$69',  q: 'burgundy leather mini bag women' }
       ]}
     ]
   };
@@ -772,6 +806,34 @@
         { category: 'Accessory', name: 'Rectangular Acetate Glasses',                 store: 'ASOS',            price: '$16', q: 'rectangular acetate glasses women' },
         { category: 'Jewelry',   name: 'Gold Hoop Earrings',                          store: 'H&M',             price: '$13', q: 'gold hoop earrings women medium' }
       ]}
+    ],
+
+    // DARK ACADEMIC — heroIdx:3=brown blazer + knit tie + books · heroIdx:4=black fur-collar coat + tie + glasses · heroIdx:5=black blazer + bow blouse + loafers
+    darkacademic: [
+      { name: 'The Tie & Tweed', tier: 'aff', tag: 'Brown blazer, knit tie and books', heroIdx: 3, pieces: [
+        { category: 'Blazer',    name: 'Brown Tweed Blazer',                          store: 'H&M',             price: '$45', q: 'brown tweed blazer women' },
+        { category: 'Top',       name: 'White Collared Oxford Shirt',                 store: 'Uniqlo',          price: '$30', q: 'white oxford collared shirt women' },
+        { category: 'Tie',       name: 'Brown Knit Wool Tie',                         store: 'ASOS',            price: '$14', q: 'brown knit wool tie women' },
+        { category: 'Bottom',    name: 'Grey Wool Mini Skirt',                        store: 'Zara',            price: '$40', q: 'grey wool mini skirt women' },
+        { category: 'Bag',       name: 'Brown Suede Tote',                            store: 'COS',             price: '$190', q: 'brown suede tote bag women' },
+        { category: 'Socks',     name: 'White Ribbed Knee Socks',                     store: 'ASOS',            price: '$10', q: 'white ribbed knee high socks women' }
+      ]},
+      { name: 'The Lecture Hall', tier: 'mid', tag: 'Fur-collar coat, tie and glasses', heroIdx: 4, pieces: [
+        { category: 'Coat',      name: 'Black Faux-Fur Collar Coat',                  store: 'Zara',            price: '$99', q: 'black faux fur collar coat women' },
+        { category: 'Top',       name: 'White Collared Shirt',                        store: 'Uniqlo',          price: '$30', q: 'white collared shirt women' },
+        { category: 'Tie',       name: 'Black Skinny Tie',                            store: 'ASOS',            price: '$12', q: 'black skinny tie women' },
+        { category: 'Bottom',    name: 'Black Tailored Mini Skirt',                   store: 'H&M',             price: '$25', q: 'black tailored mini skirt women' },
+        { category: 'Tights',    name: 'Black Thigh-High Stockings',                  store: 'ASOS',            price: '$14', q: 'black thigh high stockings women' },
+        { category: 'Accessory', name: 'Round Wire Glasses',                          store: 'ASOS',            price: '$16', q: 'round wire frame glasses women' }
+      ]},
+      { name: 'The Study Date', tier: 'aff', tag: 'Black blazer, bow blouse and loafers', heroIdx: 5, pieces: [
+        { category: 'Blazer',    name: 'Black Tailored Peplum Jacket',                store: 'Zara',            price: '$59', q: 'black tailored peplum jacket women' },
+        { category: 'Top',       name: 'White Pussy-Bow Blouse',                      store: 'H&M',             price: '$30', q: 'white pussy bow blouse women' },
+        { category: 'Bottom',    name: 'Black Mini Skirt',                            store: 'H&M',             price: '$25', q: 'black mini skirt women tailored' },
+        { category: 'Tights',    name: 'Black Sheer Tights',                          store: 'H&M',             price: '$12', q: 'black sheer tights women' },
+        { category: 'Shoes',     name: 'Black Leather Loafers',                       store: 'Charles & Keith', price: '$79', q: 'black leather loafers women' },
+        { category: 'Bag',       name: 'Black Top-Handle Bag',                        store: 'ASOS',            price: '$40', q: 'black structured top handle bag women' }
+      ]}
     ]
   };
 
@@ -841,6 +903,12 @@
       { tip: 'Tailoring beats the price tag.', detail: 'A $60 suit nipped at the waist and hemmed to the right length reads more expensive than an ill-fitting designer one. A good tailor is the real investment.' },
       { tip: 'One bag, all business.', detail: 'A single structured top-handle bag in black or taupe finishes every outfit and signals you came prepared. Let it be the one piece you splurge on.' },
       { tip: 'Add one sharp accent.', detail: 'A silk tie, tinted sunglasses, or a slim gold watch turns a plain suit into a statement. Pick one — the power is in the restraint.' }
+    ],
+    darkacademic: [
+      { tip: 'Build on dark neutrals.', detail: 'Espresso, charcoal, forest, and oxblood. One white collar is the only brightness the palette needs — let everything else stay in shadow.' },
+      { tip: 'Layer like a scholar.', detail: 'Shirt under knit under blazer under coat — every layer visible and intentional. The depth is the whole point of the look.' },
+      { tip: 'Texture over logo.', detail: 'Tweed, corduroy, wool, velvet, and worn leather. Dark academia is about how a fabric ages, never about a label.' },
+      { tip: 'Let one piece feel old.', detail: 'A vintage knit, a thrifted blazer, or a leather satchel with a patina. One genuinely old thing makes the whole outfit read intentional.' }
     ]
   };
 
@@ -899,6 +967,11 @@
       aff: { stores: 'H&M · Uniqlo · ASOS · SHEIN', note: 'H&M and ASOS carry structured blazers and tailored trousers that photograph far above their price. Uniqlo for the crisp shirts and fine knits that anchor every suit.' },
       mid: { stores: 'Zara · COS · Massimo Dutti · Charles & Keith', note: 'COS and Massimo Dutti are the modern professional\'s backbone — clean tailoring, real fabrics, quietly expensive cuts. Charles & Keith for the structured bag and pointed pumps.' },
       lux: { stores: 'Toteme · The Frankie Shop · Acne Studios · Polène', note: 'Toteme and The Frankie Shop define contemporary power dressing — sharp shoulders, fluid trousers, neutral palettes. Polène for the investment bag that lasts a whole career.' }
+    },
+    darkacademic: {
+      aff: { stores: 'H&M · SHEIN · Uniqlo · Depop', note: 'H&M and SHEIN cover tweed blazers, plaid skirts, and knit vests cheaply. Uniqlo for the white shirts and fine knits that anchor every layer; Depop for genuine vintage finds.' },
+      mid: { stores: 'Zara · COS · Urban Outfitters · & Other Stories', note: 'COS and & Other Stories do quiet, well-cut wool and pleats. Urban Outfitters for the corduroy, vintage-feel knits, and the slightly bookish pieces.' },
+      lux: { stores: 'Acne Studios · Toteme · Polène · Reformation', note: 'Acne Studios for tweed and heavyweight knits, Toteme for wool tailoring, Polène for a leather satchel that ages beautifully. Reformation for vintage-cut wool pieces.' }
     }
   };
 
@@ -1674,6 +1747,68 @@
         mid: [D('Le Labo Santal 33','Sephora','$185','le labo santal 33 eau de parfum'), D('Tom Ford Grey Vetiver','Sephora','$150','tom ford grey vetiver eau de parfum'), D('Maison Margiela Replica','Sephora','$155','maison margiela replica jazz club')],
         lux: [D('Tom Ford Oud Wood','Sephora','$295','tom ford oud wood eau de parfum'), D('Frederic Malle','Sephora','$345','frederic malle portrait of a lady'), D('Maison Francis Oud','Sephora','$395','maison francis kurkdjian oud satin mood')]
       }
+    },
+    darkacademic: {
+      tops: {
+        aff: [D('White Oxford Shirt','Uniqlo','$30','white oxford collared shirt women'), D('Knit Vest','H&M','$20','knit vest women argyle brown'), D('Oxblood Knit Sweater','SHEIN','$15','oxblood burgundy knit sweater women')],
+        mid: [D('Cable Knit Sweater','COS','$89','cable knit sweater women brown'), D('Pussy-Bow Blouse','Zara','$40','white pussy bow blouse women'), D('Argyle Knit Vest','Urban Outfitters','$49','argyle knit vest women')],
+        lux: [D('Cashmere Knit','Acne Studios','$450','acne studios cashmere knit women'), D('Silk Blouse','Toteme','$290','toteme silk blouse women'), D('Wool Turtleneck','Toteme','$320','toteme wool turtleneck women')]
+      },
+      pants: {
+        aff: [D('Pleated Wool Trousers','H&M','$35','pleated wool trousers women charcoal'), D('Tweed Trousers','SHEIN','$22','tweed trousers women brown'), D('Corduroy Trousers','Uniqlo','$40','corduroy trousers women brown')],
+        mid: [D('Wool Tailored Trousers','COS','$115','wool tailored trousers women charcoal'), D('Pleated Trousers','Zara','$50','pleated trousers women wool'), D('Tweed Trousers','& Other Stories','$95','tweed trousers women')],
+        lux: [D('Wool Trousers','Toteme','$390','toteme wool trousers women'), D('Tweed Trousers','Acne Studios','$480','acne studios tweed trousers women'), D('Pleated Wool Trousers','Reformation','$178','reformation pleated wool trousers women')]
+      },
+      skirts: {
+        aff: [D('Plaid Pleated Mini','Zara','$40','brown plaid pleated mini skirt women'), D('Wool Mini Skirt','H&M','$30','wool mini skirt women charcoal'), D('Corduroy Skirt','SHEIN','$20','brown corduroy mini skirt women')],
+        mid: [D('Pleated Wool Midi','COS','$89','pleated wool midi skirt women'), D('Plaid Wool Mini','Zara','$50','plaid wool mini skirt women'), D('Tweed Skirt','Urban Outfitters','$59','tweed mini skirt women')],
+        lux: [D('Wool Pleated Skirt','Toteme','$390','toteme wool pleated skirt women'), D('Tweed Skirt','Acne Studios','$420','acne studios tweed skirt women'), D('Wool Midi Skirt','Reformation','$168','reformation wool midi skirt women')]
+      },
+      dresses: {
+        aff: [D('Collared Mini Dress','H&M','$40','collared mini dress women dark academia'), D('Knit Sweater Dress','SHEIN','$24','knit sweater dress women brown'), D('Pinafore Dress','ASOS','$38','pinafore dress women corduroy')],
+        mid: [D('Wool Pinafore Dress','COS','$135','wool pinafore dress women'), D('Collared Shirt Dress','Zara','$69','collared shirt dress women dark'), D('Knit Midi Dress','& Other Stories','$110','knit midi dress women brown')],
+        lux: [D('Wool Dress','Toteme','$590','toteme wool dress women'), D('Knit Midi Dress','Acne Studios','$650','acne studios knit midi dress women'), D('Velvet Dress','Reformation','$298','reformation velvet midi dress women')]
+      },
+      jackets: {
+        aff: [D('Brown Tweed Blazer','H&M','$45','brown tweed blazer women'), D('Corduroy Jacket','SHEIN','$30','brown corduroy jacket women'), D('Wool Overcoat','Uniqlo','$129','camel wool overcoat women')],
+        mid: [D('Wool Blazer','COS','$190','wool blazer women brown'), D('Tweed Blazer','Zara','$99','tweed blazer women brown'), D('Fur-Collar Coat','& Other Stories','$175','faux fur collar coat women black')],
+        lux: [D('Tweed Blazer','Acne Studios','$650','acne studios tweed blazer women'), D('Wool Coat','Toteme','$890','toteme wool coat women camel'), D('Velvet Blazer','Reformation','$448','reformation velvet blazer women')]
+      },
+      shoes: {
+        aff: [D('Chunky Loafers','ASOS','$38','chunky leather loafers women black'), D('Mary-Jane Flats','H&M','$35','mary jane flats women black'), D('Penny Loafers','SHEIN','$25','penny loafers women brown')],
+        mid: [D('Leather Loafers','COS','$185','cos leather penny loafers women'), D('Mary-Jane Heels','Charles & Keith','$85','charles keith mary jane heels women black'), D('Oxford Brogues','Zara','$79','oxford brogues women leather')],
+        lux: [D('Penny Loafers','Toteme','$590','toteme leather loafers women'), D('Leather Brogues','Acne Studios','$560','acne studios leather brogues women'), D('Mary-Janes','Reformation','$268','reformation mary jane heels women')]
+      },
+      boots: {
+        aff: [D('Knee-High Boots','ASOS','$75','brown knee high leather boots women'), D('Chelsea Boots','H&M','$59','black chelsea boots women leather'), D('Lace-Up Boots','SHEIN','$45','lace up leather boots women black')],
+        mid: [D('Leather Knee Boots','Zara','$129','knee high leather boots women brown'), D('Riding Boots','COS','$225','leather riding boots women brown'), D('Lace-Up Leather Boots','Charles & Keith','$109','lace up leather boots women black')],
+        lux: [D('Riding Boots','Toteme','$890','toteme leather riding boots women'), D('Leather Boots','Acne Studios','$695','acne studios leather boots women'), D('Knee Boots','Reformation','$398','reformation knee high boots women')]
+      },
+      bags: {
+        aff: [D('Suede Satchel','H&M','$40','brown suede satchel bag women'), D('Top-Handle Bag','SHEIN','$25','structured top handle bag women brown'), D('Quilted Chain Bag','ASOS','$45','black quilted chain shoulder bag women')],
+        mid: [D('Leather Satchel','COS','$225','cos leather satchel bag women brown'), D('Briefcase Tote','Charles & Keith','$99','leather briefcase tote bag women'), D('Structured Bag','Zara','$89','structured leather bag women brown')],
+        lux: [D('Leather Satchel','Polène','$520','polene numero sept leather bag brown'), D('Structured Tote','Toteme','$895','toteme structured leather tote bag women'), D('Leather Bag','Acne Studios','$1100','acne studios leather bag women brown')]
+      },
+      jewelry: {
+        aff: [D('Gold Signet Ring','H&M','$13','gold signet ring women vintage'), D('Pearl Stud Earrings','ASOS','$12','pearl stud earrings women'), D('Gold Locket','SHEIN','$10','gold locket pendant necklace women')],
+        mid: [D('Pearl Drop Earrings','Mejuri','$75','mejuri pearl drop earrings women'), D('Gold Signet Ring','Mejuri','$120','mejuri gold signet ring women'), D('Locket Necklace','& Other Stories','$45','gold locket necklace women')],
+        lux: [D('Gold Locket','Mejuri','$250','mejuri gold locket necklace women'), D('Pearl Earrings','Tiffany & Co.','$400','tiffany pearl earrings women'), D('Vintage Ring','Mejuri','$295','mejuri vintage gold ring women')]
+      },
+      accessories: {
+        aff: [D('Knit Wool Tie','ASOS','$14','brown knit wool tie women'), D('Check Scarf','H&M','$20','brown check wool scarf women'), D('Leather Gloves','SHEIN','$15','brown leather gloves women')],
+        mid: [D('Wool Check Scarf','COS','$59','cos wool check scarf brown'), D('Knit Tie','Urban Outfitters','$25','knit tie women brown'), D('Leather Gloves','& Other Stories','$45','leather gloves women brown')],
+        lux: [D('Wool Scarf','Acne Studios','$220','acne studios wool scarf check'), D('Silk Tie','Toteme','$180','toteme silk tie women'), D('Cashmere Scarf','Reformation','$148','reformation cashmere scarf women')]
+      },
+      makeup: {
+        aff: [D('NYX Oxblood Lip','Sephora','$8','NYX soft matte lip cream oxblood wine'), D('Brown Eyeshadow','Sephora','$10','elf brown eyeshadow palette'), D('Brow Pencil','Sephora','$6','elf brow pencil dark')],
+        mid: [D('CT Lip Cheat Wine','Sephora','$25','charlotte tilbury lip liner wine'), D('NARS Eyeshadow','Sephora','$36','nars eyeshadow palette brown'), D('Matte Foundation','Sephora','$40','nars matte foundation')],
+        lux: [D('Tom Ford Deep Berry Lip','Sephora','$62','tom ford lip color deep berry wine'), D('Chanel Eyeshadow','Sephora','$70','chanel eyeshadow quad brown'), D('Dior Lip','Sephora','$45','dior rouge lipstick berry')]
+      },
+      fragrances: {
+        aff: [D('Library Body Mist','Sephora','$20','warm vanilla amber body mist women'), D('Vanilla Musk','Sephora','$18','vanilla musk body mist women'), D('Cedar Mist','Sephora','$24','cedar woody body mist women')],
+        mid: [D('MMM By the Fireplace','Sephora','$155','maison margiela replica by the fireplace'), D('Le Labo Santal 33','Sephora','$185','le labo santal 33 eau de parfum'), D('Diptyque Tam Dao','Sephora','$195','diptyque tam dao eau de parfum')],
+        lux: [D('Tom Ford Tobacco Vanille','Sephora','$295','tom ford tobacco vanille eau de parfum'), D('Frederic Malle','Sephora','$345','frederic malle musc ravageur'), D('Maison Francis Oud','Sephora','$395','maison francis kurkdjian oud satin mood')]
+      }
     }
   };
 
@@ -2007,6 +2142,26 @@
       // outfit-6 (Oversized Suit, heroIdx 5): seated in a white bouclé armchair facing camera, grey oversized
       // blazer, grey wide trousers, black mule on the crossed foot at lower-left, glasses on face, gold hoops.
       5: { Blazer:{x:48,y:42}, Bottom:{x:48,y:74}, Shoes:{x:34,y:88}, Accessory:{x:50,y:22}, Jewelry:{x:52,y:27} }
+    },
+    darkacademic: {
+      // outfit-1 (Campus Coat, heroIdx 0): walking, open camel coat, white collar at neck,
+      // wine intarsia knit on chest, brown plaid mini lower-center, black chain bag at left hip.
+      0: { Coat:{x:30,y:46}, Outer:{x:30,y:46}, Top:{x:48,y:18}, Knit:{x:47,y:40}, Bottom:{x:45,y:72}, Bag:{x:18,y:68} },
+      // outfit-2 (Library Vest, heroIdx 1): vintage room mirror selfie, brown corduroy vest on torso,
+      // white puff blouse on arms, plaid mini, black tights, brown knee boots, brown bag at right hip.
+      1: { Vest:{x:45,y:38}, Blazer:{x:45,y:38}, Top:{x:34,y:34}, Bottom:{x:46,y:55}, Tights:{x:46,y:72}, Boots:{x:45,y:90}, Bag:{x:63,y:50} },
+      // outfit-3 (Bookshop Browse, heroIdx 2): bookstore side view, cream corduroy jacket,
+      // brown suede pleated mini, sheer knee socks, black Mary-Jane heels, red bag held front.
+      2: { Jacket:{x:45,y:33}, Outer:{x:45,y:33}, Bottom:{x:42,y:52}, Socks:{x:48,y:80}, Shoes:{x:46,y:93}, Bag:{x:32,y:38} },
+      // outfit-4 (Tie & Tweed, heroIdx 3): close-up, brown blazer, white shirt + brown knit tie,
+      // grey skirt lower, brown suede tote at hip, white socks at feet (holding red books).
+      3: { Blazer:{x:34,y:46}, Top:{x:52,y:30}, Tie:{x:52,y:48}, Bottom:{x:50,y:80}, Bag:{x:24,y:72}, Socks:{x:60,y:95} },
+      // outfit-5 (Lecture Hall, heroIdx 4): full body, black fur-collar coat, white shirt + black tie,
+      // black mini, thigh-high stockings, headband + glasses at head (holding books).
+      4: { Coat:{x:42,y:44}, Outer:{x:42,y:44}, Top:{x:46,y:28}, Tie:{x:46,y:36}, Bottom:{x:45,y:62}, Tights:{x:45,y:82}, Accessory:{x:46,y:13} },
+      // outfit-6 (Study Date, heroIdx 5): studio full body, black tailored jacket, white pussy-bow blouse,
+      // black mini, sheer tights, white leg warmers + black loafers, black bag at right hand.
+      5: { Blazer:{x:46,y:35}, Top:{x:48,y:24}, Bottom:{x:47,y:50}, Tights:{x:46,y:72}, Shoes:{x:48,y:96}, Bag:{x:62,y:55} }
     }
   };
 
@@ -2250,6 +2405,19 @@
       jewelry:     ['gold stud earrings women minimal', 'bold gold hoop earrings women', 'slim gold watch women minimal'],
       makeup:      ['nude matte lip cream women', 'soft contour bronzer women neutral', 'clean satin foundation women neutral'],
       fragrances:  ['le labo santal 33 women', 'tom ford grey vetiver women', 'sophisticated woody perfume women']
+    },
+    darkacademic: {
+      tops:        ['white oxford collared shirt women', 'argyle knit vest women', 'oxblood knit sweater women vintage'],
+      bottoms:     ['pleated wool trousers women charcoal', 'brown plaid pleated mini skirt women', 'corduroy trousers women brown'],
+      dresses:     ['wool pinafore dress women', 'collared shirt dress women dark academia', 'knit sweater dress women brown'],
+      jackets:     ['brown tweed blazer women', 'camel wool overcoat women', 'brown corduroy jacket women'],
+      shoes:       ['leather penny loafers women', 'mary jane heels women black', 'oxford brogues women leather'],
+      boots:       ['brown knee high leather boots women', 'black leather chelsea boots women', 'leather riding boots women brown'],
+      bags:        ['brown leather satchel bag women', 'brown suede shoulder bag women', 'structured top handle bag women brown'],
+      accessories: ['brown knit wool tie women', 'wool check scarf brown', 'brown leather gloves women'],
+      jewelry:     ['gold signet ring women vintage', 'pearl drop earrings women', 'gold locket necklace women'],
+      makeup:      ['oxblood matte lip women', 'brown eyeshadow palette women', 'berry wine lipstick women'],
+      fragrances:  ['maison margiela by the fireplace', 'tom ford tobacco vanille', 'woody amber vanilla perfume women']
     }
   };
 

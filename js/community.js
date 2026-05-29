@@ -47,6 +47,10 @@ var COMM_GROUPS = [
      the quiz scoring map (which never produced it anyway). */
   { id: 'hijabicore',   name: 'Hijabi Core',      color: '#8a6048', tagline: 'Modest. Modern. Magnetic.', symbol: '☾' },
   { id: 'businesswoman', name: 'Business Woman',   color: '#8a7a64', tagline: 'Sharp. Polished. Powerful.', symbol: '❖' },
+  /* Dark Academic (added 2026-05-29) — a NEW, fully-supported aesthetic with
+     id 'darkacademic'. NOT the same as the removed legacy 'darkacademia'
+     (note the spelling); that one stays a "Legacy / Unknown" admin label only. */
+  { id: 'darkacademic', name: 'Dark Academic',     color: '#6e3b3b', tagline: 'Intellectual. Vintage. Timeless.', symbol: '❦' },
 ];
 
 var _currentUser   = null;   // Firebase user object

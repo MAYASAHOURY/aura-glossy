@@ -11,7 +11,7 @@ const LOCAL_IMG_BASE = 'images';
 
 // Which aesthetics have a complete local image pack installed.
 // If a style is in here, the platform uses its local files instead of Unsplash.
-const LOCAL_PACKED = ['classic', 'casual', 'streetwear', 'elegant', 'minimalist', 'korean', 'y2k', 'softgirl', 'vintage', 'hijabicore', 'businesswoman'];
+const LOCAL_PACKED = ['classic', 'casual', 'streetwear', 'elegant', 'minimalist', 'korean', 'y2k', 'softgirl', 'vintage', 'hijabicore', 'businesswoman', 'darkacademic'];
 
 // Per-aesthetic slot exclusions — slots NOT yet shipped locally for an
 // aesthetic in LOCAL_PACKED. These slots fall back to the curated
@@ -40,6 +40,21 @@ const LOCAL_SLOT_EXCLUDE = {
   // images are not yet finalized — they use the curated Unsplash fallback
   // (IMG_POOLS.businesswoman) until shipped.
   businesswoman: [
+    'completeLook',
+    'detailFabric', 'detailAccessory', 'detailShoes',
+    'detailJewelry', 'detailMakeup', 'detailBag',
+    'beauty', 'lookbook',
+    'productClothingAff', 'productClothingMid', 'productClothingLux',
+    'productShoesAff',    'productShoesMid',    'productShoesLux',
+    'productBagsAff',     'productBagsMid',     'productBagsLux',
+    'productAccessoriesAff','productAccessoriesMid','productAccessoriesLux',
+    'productBeautyAff',   'productBeautyMid',   'productBeautyLux',
+    'productJewelryAff',  'productJewelryMid',  'productJewelryLux'
+  ],
+  // Dark Academic (added 2026-05-29) ships with hero + accent + 6 outfit
+  // photos. Detail crops, complete-look, beauty/lookbook, and product-tier
+  // images use the curated Unsplash fallback (IMG_POOLS.darkacademic) until shipped.
+  darkacademic: [
     'completeLook',
     'detailFabric', 'detailAccessory', 'detailShoes',
     'detailJewelry', 'detailMakeup', 'detailBag',
@@ -207,6 +222,16 @@ const IMG_POOLS = {
     '1551803091-e20673f15770',    '1539109136881-3be0616acf4b',
     '1518049362265-d5b2a6b00b37', '1494790108377-be9c29b29330'
   ],
+  // Dark Academic — tweed, oxblood knits, leather-bound books, candlelit
+  // libraries, pleated wool, vintage tailoring, dark moody editorial.
+  // Curated for the product/detail slots that don't ship local photography
+  // yet (see LOCAL_SLOT_EXCLUDE.darkacademic).
+  darkacademic: [
+    '1481833761820-0509d3217039', '1452780212940-6f5c0d14d848',
+    '1454165804606-c3d57bc86b40', '1487412947147-5cebf100ffc2',
+    '1492707892479-7bc8d5a4ee93', '1465495976277-4387d4b0b4c6',
+    '1503944168849-8bf86fa6e2a8', '1539109136881-3be0616acf4b'
+  ],
   casual: [
     '1483985988355-763728e1935b', '1469334031218-e382a71b716b',
     '1496747611176-843222e1e57c', '1530418877033-7b67e35bf03b',
@@ -232,7 +257,8 @@ function detectAesthetic(q) {
     ['hijabicore',   ['hijab', 'hijabi', 'modest', 'abaya', 'modest fashion', 'hijabicore', 'modest abaya', 'long sleeve modest', 'modest maxi']],
     ['businesswoman',['business woman', 'businesswoman', 'business chic', 'power suit', 'pantsuit', 'power dressing', 'office siren', 'workwear', 'pinstripe suit', 'corporate', 'tailored suit women']],
     ['oldmoney',     ['old money', 'quiet luxury', 'cashmere', 'tonal']],
-    ['darkacademia', ['dark academia', 'darkacademia', 'tweed', 'oxford', 'library', 'plaid skirt', 'knit vest', 'satchel', 'wine', 'brick']],
+    ['darkacademic', ['dark academic', 'darkacademic', 'dark academia', 'tweed', 'oxford', 'library', 'bookish', 'corduroy', 'oxblood', 'tartan', 'scholarly', 'pleated wool', 'knit vest']],
+    ['darkacademia', ['darkacademia', 'plaid skirt', 'satchel', 'wine', 'brick']],
     ['streetwear',   ['streetwear', 'sneaker', 'hoodie', 'cargo', 'bucket hat', 'air force', 'dunk', 'jordan', 'chunky', 'tracksuit']],
     ['softgirl',     ['soft girl', 'softgirl', 'coquette', 'bow', 'pearl', 'heart', 'pink', 'pastel', 'floral', 'ribbon', 'mary jane', 'ballet flat']],
     ['korean',       ['korean', 'k-pop', 'kpop', 'cardigan', 'pleated', 'seoul']],
@@ -1060,6 +1086,70 @@ businesswoman: {
       P('lux', 'Mejuri', 'Diamond Tennis Bracelet', '$650', 'mejuri diamond tennis bracelet women', 'diamond tennis bracelet product')
     ]
   }
+},
+
+darkacademic: {
+  id: 'darkacademic', name: 'Dark Academic', tagline: 'old books. sharp minds. darker tailoring.', letter: 'D', mood: 'Intellectual',
+  short: 'Old-world intellect as fashion — tweed, leather-bound books, candlelit libraries, and darker tailoring.',
+  intro: 'Dark Academic is the romance of the library made wearable. Tweed blazers, pleated wool, vintage knits, oxblood leather, and a white collar peeking from a dark coat — every piece chosen like a passage worth underlining. The palette stays in shadow: espresso, charcoal, forest, oxblood, parchment. The silhouettes stay scholarly, and the mood stays quietly obsessed with beauty, books, and the life of the mind.',
+  metaMood: 'Intellectual', metaSeason: 'Autumn–Winter', metaPersonality: 'Curious',
+  heroImg: slotImg('darkacademic', 'hero', 'dark academia velvet blouse pleated skirt gallery woman'),
+  accentImg: slotImg('darkacademic', 'accent', 'dark academia library reading woman'),
+  outfits: [
+    { label: 'The Campus Coat',  img: slotImg('darkacademic', 'outfit1', 'camel coat plaid skirt wine knit sweater woman') },
+    { label: 'The Library Vest', img: slotImg('darkacademic', 'outfit2', 'corduroy vest plaid skirt knee boots vintage woman') },
+    { label: 'The Bookshop',     img: slotImg('darkacademic', 'outfit3', 'corduroy jacket suede skirt knee socks bookstore woman') },
+    { label: 'The Tie & Tweed',  img: slotImg('darkacademic', 'outfit4', 'brown blazer knit tie books bookshelf woman') },
+    { label: 'The Lecture Hall', img: slotImg('darkacademic', 'outfit5', 'black fur collar coat tie glasses books woman') },
+    { label: 'The Study Date',   img: slotImg('darkacademic', 'outfit6', 'black blazer bow blouse mini skirt loafers woman') }
+  ],
+  notes: {
+    makeup: ['Oxblood stained lip', 'Soft smoked brown eye', 'Matte skin finish', 'Defined natural brow', 'Berry-flushed cheek'],
+    hair:   ['Loose romantic waves', 'Velvet headband', 'Low ribbon-tied bun', 'Half-up with a claw clip'],
+    scent:  ['Le Labo Santal 33', 'Diptyque Tam Dao', 'Maison Margiela By the Fireplace']
+  },
+  palette: [
+    { hex: '#6e3b3b', name: 'Oxblood' },  { hex: '#5c4632', name: 'Tobacco' },
+    { hex: '#3c4a3a', name: 'Forest' },   { hex: '#e8dcc6', name: 'Parchment' },
+    { hex: '#36322c', name: 'Charcoal' }, { hex: '#1a1410', name: 'Ink' }
+  ],
+  completeLook: {
+    title: 'The Reading Room',
+    desc: 'A tweed or velvet blazer over a white collared shirt, a pleated wool skirt, sheer tights, leather loafers, and a stack of well-worn books under one arm.',
+    img: slotImg('darkacademic', 'completeLook', 'dark academia tweed blazer pleated skirt library editorial')
+  },
+  shop: {
+    clothing: [
+      P('aff', 'H&M', 'Brown Tweed Blazer', '$45', 'brown tweed blazer women', 'tweed blazer brown product'),
+      P('mid', 'Zara', 'Pleated Wool Plaid Midi Skirt', '$59', 'pleated wool plaid midi skirt women', 'pleated wool plaid skirt product'),
+      P('lux', 'Acne Studios', 'Wool Tweed Blazer', '$650', 'acne studios wool tweed blazer women', 'wool tweed blazer product')
+    ],
+    shoes: [
+      P('aff', 'ASOS', 'Chunky Leather Loafers', '$38', 'chunky leather loafers women black', 'chunky leather loafers product'),
+      P('mid', 'Charles & Keith', 'Mary-Jane Heels', '$85', 'charles keith mary jane heels women black', 'mary jane heels black product'),
+      P('lux', 'COS', 'Leather Penny Loafers', '$190', 'cos leather penny loafers women', 'leather penny loafers product')
+    ],
+    bags: [
+      P('aff', 'H&M', 'Brown Suede Satchel', '$40', 'brown suede satchel bag women', 'brown suede satchel product'),
+      P('mid', 'COS', 'Leather Briefcase Tote', '$225', 'cos leather briefcase tote bag women brown', 'leather briefcase tote product'),
+      P('lux', 'Polène', 'Numéro Sept', '$520', 'polene numero sept leather bag brown', 'structured leather satchel product')
+    ],
+    accessories: [
+      P('aff', 'ASOS', 'Knit Wool Tie', '$14', 'knit wool tie women brown', 'knit wool tie product'),
+      P('mid', 'COS', 'Wool Check Scarf', '$59', 'cos wool check scarf brown', 'wool check scarf product'),
+      P('lux', 'Acne Studios', 'Oversized Wool Check Scarf', '$220', 'acne studios oversized wool scarf check', 'wool check scarf product')
+    ],
+    beauty: [
+      P('aff', 'Sephora', 'NYX Matte Lip Oxblood', '$8', 'NYX soft matte lip cream oxblood wine', 'oxblood matte lip product'),
+      P('mid', 'Sephora', 'Charlotte Tilbury Lip Cheat Wine', '$25', 'charlotte tilbury lip liner wine berry', 'wine lip liner product'),
+      P('lux', 'Sephora', 'Tom Ford Lip Color Deep Berry', '$62', 'tom ford lip color deep berry wine', 'deep berry lipstick product')
+    ],
+    jewelry: [
+      P('aff', 'H&M', 'Gold Signet Ring', '$13', 'gold signet ring women vintage', 'gold signet ring product'),
+      P('mid', 'Mejuri', 'Pearl Drop Earrings', '$75', 'mejuri pearl drop earrings women', 'pearl drop earrings product'),
+      P('lux', 'Mejuri', 'Vintage Gold Locket Necklace', '$250', 'mejuri gold locket necklace women', 'gold locket necklace product')
+    ]
+  }
 }
 
 });
@@ -1073,8 +1163,8 @@ const QUIZ = [
     hint: 'Think about what you\'d actually wear on a free day — not what\'s trending, just what feels right.',
     helpText: 'There\'s no wrong answer here. Just picture opening your wardrobe on a relaxed morning — which energy are you most drawn to?',
     options: [
-      { icon: '💼', text: 'Sharp, powerful, in charge',  mood: 'tailored suits, structure, authority',      tag: 'businesswoman' },
-      { icon: '☁️', text: 'Easy and comfortable',         mood: 'soft fabrics, relaxed fits, casual ease',  tag: 'casual' },
+      { icon: '🎓', text: 'Scholarly and vintage',       mood: 'tweed, books, old-world charm',              tag: 'darkacademic' },
+      { icon: '🌙', text: 'Elegant, modest, covered',     mood: 'graceful layers, soft modest coverage',     tag: 'hijabicore' },
       { icon: '🔥', text: 'Bold and unapologetic',       mood: 'statement pieces, loud energy',             tag: 'streetwear' },
       { icon: '🤍', text: 'Quiet and minimal',           mood: 'neutral tones, simple cuts, nothing extra', tag: 'minimalist' }
     ]
@@ -1129,7 +1219,7 @@ const QUIZ = [
     helpText: 'How we layer says a lot about identity. There\'s no right answer — pick what feels honest to you on a typical morning.',
     options: [
       { icon: '✨', text: 'Soft layered coverage, head to toe',  mood: 'flowing pieces, abaya, intentional draping',  tag: 'hijabicore' },
-      { icon: '🤍', text: 'Refined modesty with elegant lines',  mood: 'tailored coverage, quiet confidence, polish', tag: 'hijabicore' },
+      { icon: '📖', text: 'Layered knits and a blazer',          mood: 'cardigan, collar, something bookish',         tag: 'darkacademic' },
       { icon: '🧥', text: 'Sharp tailoring that means business', mood: 'blazer, trousers, deliberate',                 tag: 'businesswoman' },
       { icon: '🌿', text: 'Effortless and breezy',               mood: 'light fabrics, easy movement, no fuss',       tag: 'casual' }
     ]
