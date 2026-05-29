@@ -11,7 +11,7 @@ const LOCAL_IMG_BASE = 'images';
 
 // Which aesthetics have a complete local image pack installed.
 // If a style is in here, the platform uses its local files instead of Unsplash.
-const LOCAL_PACKED = ['classic', 'casual', 'streetwear', 'elegant', 'minimalist', 'korean', 'y2k', 'softgirl', 'vintage', 'hijabicore'];
+const LOCAL_PACKED = ['classic', 'casual', 'streetwear', 'elegant', 'minimalist', 'korean', 'y2k', 'softgirl', 'vintage', 'hijabicore', 'businesswoman'];
 
 // Per-aesthetic slot exclusions — slots NOT yet shipped locally for an
 // aesthetic in LOCAL_PACKED. These slots fall back to the curated
@@ -24,6 +24,22 @@ const LOCAL_PACKED = ['classic', 'casual', 'streetwear', 'elegant', 'minimalist'
 // not yet finalized — they use Unsplash fallback until shipped.
 const LOCAL_SLOT_EXCLUDE = {
   hijabicore: [
+    'completeLook',
+    'detailFabric', 'detailAccessory', 'detailShoes',
+    'detailJewelry', 'detailMakeup', 'detailBag',
+    'beauty', 'lookbook',
+    'productClothingAff', 'productClothingMid', 'productClothingLux',
+    'productShoesAff',    'productShoesMid',    'productShoesLux',
+    'productBagsAff',     'productBagsMid',     'productBagsLux',
+    'productAccessoriesAff','productAccessoriesMid','productAccessoriesLux',
+    'productBeautyAff',   'productBeautyMid',   'productBeautyLux',
+    'productJewelryAff',  'productJewelryMid',  'productJewelryLux'
+  ],
+  // Business Woman (added 2026-05-29) ships with hero + accent + 6 outfit
+  // photos. Detail crops, complete-look, beauty/lookbook, and product-tier
+  // images are not yet finalized — they use the curated Unsplash fallback
+  // (IMG_POOLS.businesswoman) until shipped.
+  businesswoman: [
     'completeLook',
     'detailFabric', 'detailAccessory', 'detailShoes',
     'detailJewelry', 'detailMakeup', 'detailBag',
@@ -180,6 +196,17 @@ const IMG_POOLS = {
     '1551803091-e20673f15770',    '1496747611176-843222e1e57c',
     '1490481651871-ab68de25d43d', '1518049362265-d5b2a6b00b37'
   ],
+  // Business Woman — sharp tailoring, neutral suiting, cream/grey/taupe
+  // power dressing, structured leather bags, polished editorial. Curated
+  // for the product/detail slots that don't ship local photography yet
+  // (see LOCAL_SLOT_EXCLUDE.businesswoman).
+  businesswoman: [
+    '1490481651871-ab68de25d43d', '1487412947147-5cebf100ffc2',
+    '1496747611176-843222e1e57c', '1483985988355-763728e1935b',
+    '1469334031218-e382a71b716b', '1530418877033-7b67e35bf03b',
+    '1551803091-e20673f15770',    '1539109136881-3be0616acf4b',
+    '1518049362265-d5b2a6b00b37', '1494790108377-be9c29b29330'
+  ],
   casual: [
     '1483985988355-763728e1935b', '1469334031218-e382a71b716b',
     '1496747611176-843222e1e57c', '1530418877033-7b67e35bf03b',
@@ -203,6 +230,7 @@ function detectAesthetic(q) {
   q = q.toLowerCase();
   const map = [
     ['hijabicore',   ['hijab', 'hijabi', 'modest', 'abaya', 'modest fashion', 'hijabicore', 'modest abaya', 'long sleeve modest', 'modest maxi']],
+    ['businesswoman',['business woman', 'businesswoman', 'business chic', 'power suit', 'pantsuit', 'power dressing', 'office siren', 'workwear', 'pinstripe suit', 'corporate', 'tailored suit women']],
     ['oldmoney',     ['old money', 'quiet luxury', 'cashmere', 'tonal']],
     ['darkacademia', ['dark academia', 'darkacademia', 'tweed', 'oxford', 'library', 'plaid skirt', 'knit vest', 'satchel', 'wine', 'brick']],
     ['streetwear',   ['streetwear', 'sneaker', 'hoodie', 'cargo', 'bucket hat', 'air force', 'dunk', 'jordan', 'chunky', 'tracksuit']],
@@ -968,6 +996,70 @@ hijabicore: {
       P('lux', 'Mejuri', 'Diamond Layered Necklace', '$295', 'diamond layered necklace women', 'diamond necklace product')
     ]
   }
+},
+
+businesswoman: {
+  id: 'businesswoman', name: 'Business Woman', tagline: 'sharp. polished. in charge.', letter: 'B', mood: 'Powerful',
+  short: 'Power dressing as personal brand — sharp tailoring, neutral suiting, quiet luxury that means business.',
+  intro: 'Business Woman is power dressing for the modern professional. Sharp blazers, fluid suiting, crisp shirting, and one perfect bag — every piece chosen to read as competent, composed, and quietly expensive. The palette stays neutral and editorial — taupe, cream, charcoal, and black — the tailoring stays precise, and the energy stays unmistakably in charge.',
+  metaMood: 'Powerful', metaSeason: 'All year', metaPersonality: 'Ambitious',
+  heroImg: slotImg('businesswoman', 'hero', 'tailored grey suit power dressing woman'),
+  accentImg: slotImg('businesswoman', 'accent', 'burgundy structured blazer skirt woman'),
+  outfits: [
+    { label: 'The Ivory Suit', img: slotImg('businesswoman', 'outfit1', 'ivory cream tailored suit blazer trousers woman') },
+    { label: 'Menswear Edit',  img: slotImg('businesswoman', 'outfit2', 'cream cape blazer shirt tie tailored woman') },
+    { label: 'Boss Casual',    img: slotImg('businesswoman', 'outfit3', 'black pinstripe blazer white shirt jeans woman') },
+    { label: 'Smart Casual',   img: slotImg('businesswoman', 'outfit4', 'white blazer striped shirt tote working woman') },
+    { label: 'Quiet Power',    img: slotImg('businesswoman', 'outfit5', 'all black turtleneck trousers loafers woman') },
+    { label: 'Oversized Suit', img: slotImg('businesswoman', 'outfit6', 'grey oversized double breasted suit woman') }
+  ],
+  notes: {
+    makeup: ['Neutral matte lip', 'Soft sculpted contour', 'Defined brushed brow', 'Clean satin skin', 'Subtle bronze eye'],
+    hair:   ['Sleek low bun', 'Polished blowout', 'Slicked-back ponytail', 'Soft tucked-behind ends'],
+    scent:  ['Le Labo Santal 33', "Chanel No. 5 L'Eau", 'Tom Ford Grey Vetiver']
+  },
+  palette: [
+    { hex: '#8a7a64', name: 'Taupe' },    { hex: '#cabfa9', name: 'Oat' },
+    { hex: '#f0ebe2', name: 'Cream' },    { hex: '#3f4148', name: 'Charcoal' },
+    { hex: '#7a3b46', name: 'Bordeaux' }, { hex: '#1a1815', name: 'Ink' }
+  ],
+  completeLook: {
+    title: 'The Power Suit',
+    desc: 'A sharply tailored neutral blazer over matching wide-leg trousers, a crisp white shirt, pointed pumps, and one structured leather top-handle bag.',
+    img: slotImg('businesswoman', 'completeLook', 'tailored neutral power suit editorial woman')
+  },
+  shop: {
+    clothing: [
+      P('aff', 'H&M', 'Tailored Single-Breasted Blazer', '$49', 'tailored single breasted blazer women neutral', 'tailored blazer neutral product'),
+      P('mid', 'Zara', 'High-Waist Wide-Leg Suit Trousers', '$69', 'wide leg suit trousers women tailored neutral', 'tailored wide leg trousers product'),
+      P('lux', 'Toteme', 'Double-Breasted Wool Blazer', '$890', 'toteme double breasted wool blazer women', 'wool tailored blazer product')
+    ],
+    shoes: [
+      P('aff', 'H&M', 'Pointed Slingback Pumps', '$35', 'pointed slingback pumps women nude', 'pointed slingback pumps product'),
+      P('mid', 'Charles & Keith', 'Pointed Leather Pumps', '$89', 'charles keith pointed leather pumps women black', 'pointed leather pumps product'),
+      P('lux', 'COS', 'Leather Pointed Mules', '$190', 'cos leather pointed mules women', 'leather pointed mules product')
+    ],
+    bags: [
+      P('aff', 'Zara', 'Structured Top-Handle Bag', '$59', 'structured top handle bag women black', 'structured top handle bag product'),
+      P('mid', 'Charles & Keith', 'Structured Work Tote', '$99', 'charles keith structured work tote bag women', 'structured work tote bag product'),
+      P('lux', 'Polène', 'Numéro Un Mini', '$390', 'polene numero un mini leather bag women', 'structured leather top handle bag product')
+    ],
+    accessories: [
+      P('aff', 'ASOS', 'Silk-Look Skinny Tie', '$12', 'skinny silk tie women neutral', 'silk skinny tie product'),
+      P('mid', 'COS', 'Leather Waist Belt', '$59', 'cos leather waist belt women', 'leather belt product'),
+      P('lux', 'Acne Studios', 'Wool-Silk Scarf', '$290', 'acne studios wool silk scarf women neutral', 'wool silk scarf neutral product')
+    ],
+    beauty: [
+      P('aff', 'Sephora', 'NYX Matte Lip Cream Nude', '$8', 'NYX soft matte lip cream nude beige', 'nude matte lip product'),
+      P('mid', 'Sephora', 'Charlotte Tilbury Pillow Talk Lip Liner', '$25', 'charlotte tilbury pillow talk lip liner nude', 'nude lip liner product'),
+      P('lux', 'Sephora', 'Tom Ford Lip Color Nude', '$62', 'tom ford lip color nude beige', 'luxury nude lipstick product')
+    ],
+    jewelry: [
+      P('aff', 'H&M', 'Gold Stud Earrings Set', '$13', 'gold stud earrings set women minimal', 'gold stud earrings product'),
+      P('mid', 'Mejuri', 'Bold Gold Hoop Earrings', '$95', 'mejuri bold gold hoop earrings women', 'gold hoop earrings product'),
+      P('lux', 'Mejuri', 'Diamond Tennis Bracelet', '$650', 'mejuri diamond tennis bracelet women', 'diamond tennis bracelet product')
+    ]
+  }
 }
 
 });
@@ -981,7 +1073,7 @@ const QUIZ = [
     hint: 'Think about what you\'d actually wear on a free day — not what\'s trending, just what feels right.',
     helpText: 'There\'s no wrong answer here. Just picture opening your wardrobe on a relaxed morning — which energy are you most drawn to?',
     options: [
-      { icon: '🧥', text: 'Polished and put together',   mood: 'blazers, structure, clean lines',           tag: 'classic' },
+      { icon: '💼', text: 'Sharp, powerful, in charge',  mood: 'tailored suits, structure, authority',      tag: 'businesswoman' },
       { icon: '☁️', text: 'Easy and comfortable',         mood: 'soft fabrics, relaxed fits, casual ease',  tag: 'casual' },
       { icon: '🔥', text: 'Bold and unapologetic',       mood: 'statement pieces, loud energy',             tag: 'streetwear' },
       { icon: '🤍', text: 'Quiet and minimal',           mood: 'neutral tones, simple cuts, nothing extra', tag: 'minimalist' }
@@ -1016,7 +1108,7 @@ const QUIZ = [
     options: [
       { icon: '👟', text: 'White sneakers',              mood: 'clean, versatile, effortless',         tag: 'casual' },
       { icon: '🥿', text: 'Leather loafers',             mood: 'polished, quiet, timeless',            tag: 'classic' },
-      { icon: '👠', text: 'Heels or satin mules',        mood: 'elevated, feminine, intentional',      tag: 'elegant' },
+      { icon: '👠', text: 'Sharp pointed pumps',         mood: 'power, polish, presence',              tag: 'businesswoman' },
       { icon: '🎀', text: 'Mary Janes or ballet flats',  mood: 'soft, sweet, effortlessly pretty',     tag: 'softgirl' }
     ]
   },
@@ -1038,7 +1130,7 @@ const QUIZ = [
     options: [
       { icon: '✨', text: 'Soft layered coverage, head to toe',  mood: 'flowing pieces, abaya, intentional draping',  tag: 'hijabicore' },
       { icon: '🤍', text: 'Refined modesty with elegant lines',  mood: 'tailored coverage, quiet confidence, polish', tag: 'hijabicore' },
-      { icon: '🌸', text: 'A statement dress and minimal layers',mood: 'one piece does the work, less is more',       tag: 'elegant' },
+      { icon: '🧥', text: 'Sharp tailoring that means business', mood: 'blazer, trousers, deliberate',                 tag: 'businesswoman' },
       { icon: '🌿', text: 'Effortless and breezy',               mood: 'light fabrics, easy movement, no fuss',       tag: 'casual' }
     ]
   }

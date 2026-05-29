@@ -46,6 +46,7 @@ var COMM_GROUPS = [
      no longer includes it. Do not re-add without coordinating with
      the quiz scoring map (which never produced it anyway). */
   { id: 'hijabicore',   name: 'Hijabi Core',      color: '#8a6048', tagline: 'Modest. Modern. Magnetic.', symbol: '☾' },
+  { id: 'businesswoman', name: 'Business Woman',   color: '#8a7a64', tagline: 'Sharp. Polished. Powerful.', symbol: '❖' },
 ];
 
 var _currentUser   = null;   // Firebase user object

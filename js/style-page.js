@@ -27,7 +27,8 @@
     y2k:        'Glossy, playful, and unapologetically nostalgic. Low-rise jeans, baby tees, butterfly clips. Made for parties, weekend nights, and feeling young.',
     vintage:    'Borrowed from another decade — 70s flares, prairie blouses, suede boots. Wear it to flea markets, brunches, and slow city wanderings.',
     softgirl:   'Sweet, romantic, and pastel-soft. Lace tops, mini skirts, ribbon hair clips. Perfect for picnics, first dates, and spring afternoons.',
-    hijabicore: 'Modest fashion as quiet luxury. Long-line coats, layered satin hijabs, oversized blazers, and intentional draping. Editorial, composed, and unmistakably modern — for the everyday and everywhere.'
+    hijabicore: 'Modest fashion as quiet luxury. Long-line coats, layered satin hijabs, oversized blazers, and intentional draping. Editorial, composed, and unmistakably modern — for the everyday and everywhere.',
+    businesswoman: 'Power dressing for the modern professional. Sharp blazers, fluid suiting, crisp shirting, and one perfect bag. Neutral, precise, and quietly expensive — for the office, the meeting that matters, and everywhere you want to be taken seriously.'
   };
 
   const BREAKDOWNS = {
@@ -90,6 +91,12 @@
       bottom: 'A satin midi skirt, fluid wide-leg trousers, or a tailored maxi. Movement without bulk.',
       shoes: 'Pointed flats, leather loafers, or sleek ankle boots — quiet, well-made, and never loud.',
       accessories: 'A satin or chiffon hijab in a warm neutral, a structured leather tote, and gold layered chains.'
+    },
+    businesswoman: {
+      top: 'A crisp white shirt or a fine-knit shell under a sharp blazer — the blazer is the whole look, the rest is the foundation.',
+      bottom: 'Wide-leg suit trousers with a clean press, or a tailored pencil skirt for sharper days. High-waisted, always.',
+      shoes: 'Pointed pumps, sleek loafers, or pointed mules — polished, and comfortable enough to command a room all day.',
+      accessories: 'One structured leather top-handle bag, a slim watch, fine gold studs, and a silk tie or scarf when the look wants an edge.'
     }
   };
 
@@ -106,7 +113,8 @@
     y2k:        { acc: '#9050d0', bg: '#f8f0ff', brd: '#d8c0f0', text: '#1a0a28' },
     vintage:    { acc: '#9a6430', bg: '#f8f0e4', brd: '#e0ccaa', text: '#2a1500' },
     softgirl:   { acc: '#e060a0', bg: '#fff0f8', brd: '#f8c8e0', text: '#2a0018' },
-    hijabicore: { acc: '#8a6048', bg: '#faf5ed', brd: '#e0d0c0', text: '#2a1f0f' }
+    hijabicore: { acc: '#8a6048', bg: '#faf5ed', brd: '#e0d0c0', text: '#2a1f0f' },
+    businesswoman: { acc: '#8a7a64', bg: '#f6f3ee', brd: '#ddd4c5', text: '#2a251c' }
   };
   const theme = STYLE_THEME[s.id] || STYLE_THEME.classic;
 
@@ -388,6 +396,33 @@
         { category: 'Shoes',     name: 'White Leather Sneakers',                       store: 'Adidas',          price: '$85',  q: 'stan smith white women' },
         { category: 'Bag',       name: 'Black Woven Shoulder Bag',                     store: 'Zara',            price: '$49',  q: 'black woven shoulder bag women' },
         { category: 'Scarf',     name: 'Dark Gray Premium Hijab',                      store: 'Modanisa',        price: '$15',  q: 'dark gray hijab women' }
+      ]}
+    ],
+
+    // BUSINESS WOMAN — heroIdx:0=ivory suit at café · heroIdx:1=cream cape blazer + tie · heroIdx:2=black pinstripe + flared jeans
+    businesswoman: [
+      { name: 'The Ivory Suit', tier: 'mid', tag: 'Tonal power · ivory blazer and wide-leg trousers', heroIdx: 0, pieces: [
+        { category: 'Blazer',    name: 'Ivory Tailored Single-Breasted Blazer',       store: 'Zara',            price: '$89', q: 'ivory cream tailored single breasted blazer women' },
+        { category: 'Top',       name: 'White Silk Camisole',                         store: 'H&M',             price: '$25', q: 'white silk camisole women' },
+        { category: 'Bottom',    name: 'Ivory High-Waist Wide-Leg Trousers',          store: 'Zara',            price: '$69', q: 'ivory high waist wide leg tailored trousers women' },
+        { category: 'Bag',       name: 'Cream Structured Top-Handle Clutch',          store: 'Charles & Keith', price: '$79', q: 'cream structured top handle clutch bag women' },
+        { category: 'Shoes',     name: 'Nude Pointed Slingback Pumps',                store: 'Charles & Keith', price: '$89', q: 'nude pointed slingback pumps women' },
+        { category: 'Jewelry',   name: 'Gold Minimalist Watch',                       store: 'ASOS',            price: '$45', q: 'gold minimalist watch women' }
+      ]},
+      { name: 'The Menswear Edit', tier: 'mid', tag: 'Tailored with a tie · cream and grey', heroIdx: 1, pieces: [
+        { category: 'Blazer',    name: 'Cream Oversized Tailored Blazer',             store: 'COS',             price: '$190', q: 'cream oversized tailored blazer women' },
+        { category: 'Top',       name: 'Crisp White Cotton Shirt',                    store: 'Uniqlo',          price: '$40',  q: 'crisp white cotton button down shirt women' },
+        { category: 'Tie',       name: 'Grey Striped Silk Tie',                       store: 'ASOS',            price: '$15',  q: 'grey striped silk tie women' },
+        { category: 'Bottom',    name: 'Cream Wide-Leg Tailored Trousers',            store: 'COS',             price: '$115', q: 'cream wide leg tailored trousers women' },
+        { category: 'Accessory', name: 'Tinted Square Sunglasses',                    store: 'ASOS',            price: '$18',  q: 'tinted square sunglasses women' }
+      ]},
+      { name: 'The Boss Casual', tier: 'aff', tag: 'Pinstripe blazer over flared denim', heroIdx: 2, pieces: [
+        { category: 'Blazer',    name: 'Black Pinstripe Oversized Blazer',            store: 'H&M',             price: '$59', q: 'black pinstripe oversized blazer women' },
+        { category: 'Top',       name: 'White Poplin Shirt',                          store: 'Uniqlo',          price: '$30', q: 'white poplin shirt women' },
+        { category: 'Bottom',    name: 'Mid-Blue Wide Flared Jeans',                  store: 'Zara',            price: '$59', q: 'mid blue wide flared jeans women high waist' },
+        { category: 'Belt',      name: 'Black Leather Belt with Gold Buckle',         store: 'H&M',             price: '$20', q: 'black leather belt gold buckle women' },
+        { category: 'Bag',       name: 'Black Structured Saddle Bag',                 store: 'ASOS',            price: '$45', q: 'black structured saddle shoulder bag women' },
+        { category: 'Jewelry',   name: 'Gold Stacked Bangles',                        store: 'H&M',             price: '$18', q: 'gold stacked bangles bracelets women' }
       ]}
     ]
   };
@@ -712,6 +747,31 @@
         { category: 'Shoes',     name: 'Brown Pointed Leather Pumps',                  store: 'COS',             price: '$165', q: 'brown pointed leather pumps women' },
         { category: 'Scarf',     name: 'Chocolate Brown Modal Hijab',                  store: 'Modanisa',        price: '$18',  q: 'chocolate brown hijab women' }
       ]}
+    ],
+
+    // BUSINESS WOMAN — heroIdx:3=white blazer + striped shirt · heroIdx:4=all-black + loafers · heroIdx:5=grey oversized suit
+    businesswoman: [
+      { name: 'The Smart Casual', tier: 'aff', tag: 'White blazer and striped shirt for the desk', heroIdx: 3, pieces: [
+        { category: 'Blazer',    name: 'White Oversized Boyfriend Blazer',            store: 'H&M',             price: '$49', q: 'white oversized boyfriend blazer women' },
+        { category: 'Top',       name: 'Blue Striped Cotton Shirt',                   store: 'Uniqlo',          price: '$30', q: 'blue white striped cotton shirt women oversized' },
+        { category: 'Bottom',    name: 'Light-Wash Straight-Leg Jeans',               store: 'Zara',            price: '$49', q: 'light wash straight leg jeans women' },
+        { category: 'Bag',       name: 'Cream Structured Work Tote',                  store: 'Charles & Keith', price: '$99', q: 'cream structured work tote bag women large' },
+        { category: 'Accessory', name: 'Clear Rectangular Glasses',                   store: 'ASOS',            price: '$16', q: 'clear rectangular frame glasses women' }
+      ]},
+      { name: 'The Quiet Power', tier: 'mid', tag: 'All-black tailoring, off duty', heroIdx: 4, pieces: [
+        { category: 'Top',       name: 'Black Fine-Knit Turtleneck',                  store: 'Uniqlo',          price: '$39',  q: 'black fine knit turtleneck sweater women' },
+        { category: 'Bottom',    name: 'Black Tailored Cigarette Trousers',           store: 'COS',             price: '$115', q: 'black tailored cigarette trousers women' },
+        { category: 'Shoes',     name: 'Black Leather Loafers',                       store: 'Charles & Keith', price: '$89',  q: 'black leather loafers women' },
+        { category: 'Bag',       name: 'Black Leather Weekender',                     store: 'ASOS',            price: '$65',  q: 'black leather weekender holdall bag women' },
+        { category: 'Accessory', name: 'Black Angular Sunglasses',                    store: 'ASOS',            price: '$18',  q: 'black angular sunglasses women' }
+      ]},
+      { name: 'The Oversized Suit', tier: 'mid', tag: 'Grey double-breasted power suit', heroIdx: 5, pieces: [
+        { category: 'Blazer',    name: 'Grey Oversized Double-Breasted Blazer',       store: 'Zara',            price: '$99', q: 'grey oversized double breasted blazer women' },
+        { category: 'Bottom',    name: 'Grey Wide-Leg Suit Trousers',                 store: 'Zara',            price: '$69', q: 'grey wide leg suit trousers women' },
+        { category: 'Shoes',     name: 'Black Pointed Leather Mules',                 store: 'COS',             price: '$135', q: 'black pointed leather mules women' },
+        { category: 'Accessory', name: 'Rectangular Acetate Glasses',                 store: 'ASOS',            price: '$16', q: 'rectangular acetate glasses women' },
+        { category: 'Jewelry',   name: 'Gold Hoop Earrings',                          store: 'H&M',             price: '$13', q: 'gold hoop earrings women medium' }
+      ]}
     ]
   };
 
@@ -775,6 +835,12 @@
       { tip: 'Length is the silhouette.', detail: 'Build around one long line — a maxi coat, a fluid maxi skirt, a column-length abaya. The eye reads modesty as elegance the moment the proportion is right.' },
       { tip: 'Two textures, never three.', detail: 'Satin hijab with wool coat. Cotton hijab with linen jacket. Mixing more than two fabric weights at once breaks the calm of the look.' },
       { tip: 'Quality over coverage performance.', detail: 'A real silk hijab, a structured leather bag, a well-cut wool coat — pick the three pieces that touch the body the most and invest in them.' }
+    ],
+    businesswoman: [
+      { tip: 'Buy the best blazer you can.', detail: 'The blazer carries the entire look. One sharp, well-fitting blazer in a neutral tone elevates jeans, trousers, and dresses alike — spend here first.' },
+      { tip: 'Tailoring beats the price tag.', detail: 'A $60 suit nipped at the waist and hemmed to the right length reads more expensive than an ill-fitting designer one. A good tailor is the real investment.' },
+      { tip: 'One bag, all business.', detail: 'A single structured top-handle bag in black or taupe finishes every outfit and signals you came prepared. Let it be the one piece you splurge on.' },
+      { tip: 'Add one sharp accent.', detail: 'A silk tie, tinted sunglasses, or a slim gold watch turns a plain suit into a statement. Pick one — the power is in the restraint.' }
     ]
   };
 
@@ -828,6 +894,11 @@
       aff: { stores: 'SHEIN · H&M · Uniqlo · Modanisa', note: 'SHEIN and H&M cover long-sleeve maxi dresses, abaya-cut coats, and modest tops at the friendliest prices. Modanisa carries premium hijabs at affordable tier.' },
       mid: { stores: 'COS · Zara · Uniqlo · Modanisa · Charles & Keith', note: 'COS is the modest dresser\'s best friend — clean lines, generous cuts, and quality fabrics designed for layering. Zara for tailored coats, Modanisa for the right hijab fabrics.' },
       lux: { stores: 'Toteme · COS · Acne Studios · Modanisa Premium', note: 'Toteme and Acne Studios both excel at long lines and soft drape — a natural fit. Modanisa\'s premium tier carries silk hijabs and tailored abayas at investment quality.' }
+    },
+    businesswoman: {
+      aff: { stores: 'H&M · Uniqlo · ASOS · SHEIN', note: 'H&M and ASOS carry structured blazers and tailored trousers that photograph far above their price. Uniqlo for the crisp shirts and fine knits that anchor every suit.' },
+      mid: { stores: 'Zara · COS · Massimo Dutti · Charles & Keith', note: 'COS and Massimo Dutti are the modern professional\'s backbone — clean tailoring, real fabrics, quietly expensive cuts. Charles & Keith for the structured bag and pointed pumps.' },
+      lux: { stores: 'Toteme · The Frankie Shop · Acne Studios · Polène', note: 'Toteme and The Frankie Shop define contemporary power dressing — sharp shoulders, fluid trousers, neutral palettes. Polène for the investment bag that lasts a whole career.' }
     }
   };
 
@@ -1541,6 +1612,68 @@
         mid: [D('Le Labo Santal 33','Sephora','$185','le labo santal 33 eau de parfum'), D('Maison Margiela Replica','Sephora','$155','maison margiela replica beach walk'), D('Diptyque Tam Dao','Sephora','$195','diptyque tam dao eau de parfum')],
         lux: [D('Tom Ford Oud Wood','Sephora','$295','tom ford oud wood eau de parfum'), D('Frederic Malle','Sephora','$345','frederic malle musc ravageur'), D('Maison Francis Oud','Sephora','$395','maison francis kurkdjian oud satin mood')]
       }
+    },
+    businesswoman: {
+      tops: {
+        aff: [D('White Cotton Shirt','Uniqlo','$30','white cotton button down shirt women'), D('Fine-Knit Shell Top','H&M','$20','fine knit shell top women neutral'), D('Silk-Look Camisole','SHEIN','$12','silk camisole women neutral')],
+        mid: [D('Crisp Poplin Shirt','COS','$69','crisp white poplin shirt women'), D('Fine Merino Knit','Uniqlo','$50','fine merino wool knit women neutral'), D('Silk Blouse','Zara','$69','silk blouse women neutral tailored')],
+        lux: [D('Silk Shirt','Toteme','$390','toteme silk shirt women neutral'), D('Cashmere Knit','Acne Studios','$450','acne studios cashmere knit women'), D('Poplin Shirt','Reformation','$128','reformation poplin shirt women white')]
+      },
+      pants: {
+        aff: [D('Wide-Leg Suit Trousers','H&M','$35','wide leg suit trousers women neutral'), D('Tailored Cigarette Trousers','Zara','$40','tailored cigarette trousers women'), D('Pleated Trousers','Uniqlo','$45','pleated tailored trousers women neutral')],
+        mid: [D('Wide-Leg Tailored Trousers','COS','$115','wide leg tailored trousers women neutral'), D('Wool Cigarette Trousers','Zara','$69','wool cigarette trousers women tailored'), D('Pleated Suit Trousers','COS','$135','pleated suit trousers women neutral')],
+        lux: [D('Wool Wide-Leg Trousers','Toteme','$420','toteme wool wide leg trousers women'), D('Tailored Trousers','Acne Studios','$480','acne studios tailored trousers women'), D('Pleated Trousers','Reformation','$178','reformation pleated trousers women neutral')]
+      },
+      skirts: {
+        aff: [D('Tailored Pencil Skirt','H&M','$30','tailored pencil skirt women neutral'), D('Midi Pencil Skirt','Zara','$40','midi pencil skirt women tailored'), D('Pinstripe Mini Skirt','SHEIN','$20','pinstripe mini skirt women')],
+        mid: [D('Wool Pencil Skirt','COS','$89','wool pencil skirt women neutral'), D('Tailored Midi Skirt','Zara','$59','tailored midi skirt women neutral'), D('Pinstripe Skirt','COS','$99','pinstripe tailored skirt women')],
+        lux: [D('Wool Midi Skirt','Toteme','$390','toteme wool midi skirt women'), D('Tailored Skirt','Acne Studios','$420','acne studios tailored skirt women'), D('Pencil Skirt','Reformation','$148','reformation pencil skirt women neutral')]
+      },
+      dresses: {
+        aff: [D('Tailored Shirt Dress','H&M','$40','tailored shirt dress women neutral'), D('Blazer Dress','Zara','$59','blazer dress women tailored'), D('Midi Shift Dress','SHEIN','$24','midi shift dress women neutral')],
+        mid: [D('Tailored Blazer Dress','COS','$135','tailored blazer dress women neutral'), D('Shirt Midi Dress','Zara','$89','shirt midi dress women tailored'), D('Belted Shift Dress','COS','$115','belted shift dress women neutral')],
+        lux: [D('Tailored Midi Dress','Toteme','$590','toteme tailored midi dress women'), D('Shirt Dress','Acne Studios','$650','acne studios shirt dress women'), D('Blazer Dress','Reformation','$298','reformation blazer dress women neutral')]
+      },
+      jackets: {
+        aff: [D('Single-Breasted Blazer','H&M','$49','single breasted tailored blazer women neutral'), D('Oversized Blazer','Zara','$59','oversized blazer women neutral'), D('Pinstripe Blazer','SHEIN','$30','pinstripe blazer women')],
+        mid: [D('Tailored Wool Blazer','COS','$190','tailored wool blazer women neutral'), D('Double-Breasted Blazer','Zara','$99','double breasted blazer women tailored'), D('Oversized Blazer','COS','$175','oversized tailored blazer women neutral')],
+        lux: [D('Double-Breasted Wool Blazer','Toteme','$890','toteme double breasted wool blazer women'), D('Tailored Blazer','Acne Studios','$950','acne studios tailored blazer women'), D('Wool Blazer','Reformation','$448','reformation wool blazer women neutral')]
+      },
+      shoes: {
+        aff: [D('Pointed Slingback Pumps','H&M','$35','pointed slingback pumps women nude'), D('Pointed Mules','Zara','$40','pointed mules women neutral'), D('Leather Loafers','ASOS','$32','leather loafers women black')],
+        mid: [D('Pointed Leather Pumps','Charles & Keith','$89','charles keith pointed leather pumps women'), D('Leather Loafers','COS','$185','cos leather loafers women'), D('Pointed Mules','COS','$135','cos pointed leather mules women')],
+        lux: [D('Leather Pumps','Toteme','$590','toteme leather pumps women'), D('Pointed Loafers','Acne Studios','$595','acne studios pointed loafers women'), D('Leather Mules','Reformation','$268','reformation leather mules women')]
+      },
+      boots: {
+        aff: [D('Pointed Ankle Boots','H&M','$59','pointed ankle boots women black'), D('Heeled Ankle Boots','Zara','$59','heeled ankle boots women neutral'), D('Chelsea Boots','ASOS','$45','leather chelsea boots women black')],
+        mid: [D('Leather Ankle Boots','COS','$195','cos leather ankle boots women'), D('Heeled Ankle Boots','Charles & Keith','$109','charles keith heeled ankle boots women'), D('Knee-High Boots','Zara','$129','knee high leather boots women black')],
+        lux: [D('Leather Ankle Boots','Toteme','$690','toteme leather ankle boots women'), D('Heeled Boots','Acne Studios','$695','acne studios heeled ankle boots women'), D('Knee-High Boots','Reformation','$398','reformation knee high boots women')]
+      },
+      bags: {
+        aff: [D('Structured Top-Handle Bag','Zara','$59','structured top handle bag women black'), D('Work Tote','H&M','$45','structured work tote bag women'), D('Structured Shoulder Bag','SHEIN','$25','structured shoulder bag women neutral')],
+        mid: [D('Structured Work Tote','Charles & Keith','$99','charles keith structured work tote bag women'), D('Leather Top-Handle','COS','$245','cos leather top handle bag women'), D('Structured Shopper','Zara','$89','structured leather shopper bag women')],
+        lux: [D('Numéro Un','Polène','$390','polene numero un leather bag women'), D('Structured Leather Tote','Toteme','$895','toteme structured leather tote bag women'), D('Leather Top-Handle','Acne Studios','$1295','acne studios leather top handle bag women')]
+      },
+      jewelry: {
+        aff: [D('Gold Stud Earrings','H&M','$13','gold stud earrings women minimal'), D('Gold Hoop Earrings','ASOS','$12','gold hoop earrings women small'), D('Slim Gold Watch','ASOS','$45','slim gold watch women minimal')],
+        mid: [D('Bold Gold Hoops','Mejuri','$95','mejuri bold gold hoop earrings women'), D('Gold Signet Ring','Mejuri','$120','mejuri gold signet ring women'), D('Layered Chain Necklace','Mejuri','$98','mejuri gold layered chain necklace women')],
+        lux: [D('Diamond Tennis Bracelet','Mejuri','$650','mejuri diamond tennis bracelet women'), D('Diamond Stud Earrings','Tiffany & Co.','$1200','tiffany diamond stud earrings women'), D('Gold Chain Necklace','Mejuri','$245','mejuri gold thick chain necklace women')]
+      },
+      accessories: {
+        aff: [D('Silk-Look Skinny Tie','ASOS','$12','skinny silk tie women neutral'), D('Leather Belt','H&M','$20','leather belt women black gold buckle'), D('Tinted Sunglasses','ASOS','$16','tinted square sunglasses women')],
+        mid: [D('Leather Waist Belt','COS','$59','cos leather waist belt women'), D('Silk Tie','ASOS','$25','silk tie women grey striped'), D('Square Sunglasses','Urban Outfitters','$35','square frame sunglasses women')],
+        lux: [D('Wool-Silk Scarf','Acne Studios','$290','acne studios wool silk scarf women neutral'), D('Silk Twill Scarf','Toteme','$290','toteme silk twill scarf women neutral'), D('Leather Belt','Reformation','$128','reformation leather belt women')]
+      },
+      makeup: {
+        aff: [D('NYX Matte Lip Nude','Sephora','$8','NYX soft matte lip cream nude beige'), D('e.l.f. Brow Gel','Sephora','$6','elf clear brow gel'), D('Setting Powder','Sephora','$12','elf halo glow setting powder')],
+        mid: [D('CT Pillow Talk Liner','Sephora','$25','charlotte tilbury pillow talk lip liner nude'), D('NARS Blush','Sephora','$32','nars blush orgasm'), D('NARS Soft Matte Foundation','Sephora','$48','nars soft matte foundation')],
+        lux: [D('Tom Ford Lip Color','Sephora','$62','tom ford lip color nude'), D('Chanel Les Beiges','Sephora','$68','chanel les beiges blush'), D('La Mer Lip','Sephora','$80','la mer lip balm')]
+      },
+      fragrances: {
+        aff: [D('Clean Reserve Mist','Sephora','$30','clean reserve body mist women'), D('Sol de Janeiro Mist','Sephora','$26','sol de janeiro brazilian crush body mist'), D('Body Mist Musk','Sephora','$18','white musk body mist women')],
+        mid: [D('Le Labo Santal 33','Sephora','$185','le labo santal 33 eau de parfum'), D('Tom Ford Grey Vetiver','Sephora','$150','tom ford grey vetiver eau de parfum'), D('Maison Margiela Replica','Sephora','$155','maison margiela replica jazz club')],
+        lux: [D('Tom Ford Oud Wood','Sephora','$295','tom ford oud wood eau de parfum'), D('Frederic Malle','Sephora','$345','frederic malle portrait of a lady'), D('Maison Francis Oud','Sephora','$395','maison francis kurkdjian oud satin mood')]
+      }
     }
   };
 
@@ -1854,6 +1987,26 @@
       // outfit-6: hotel hallway mirror selfie, brown hijab on head, structured dark jacket on torso,
       // wide dark jeans lower half, brown LV monogram mini bag at left hip, brown pointed pumps at feet.
       5: { Scarf:{x:45,y:23}, Jacket:{x:43,y:45}, Outer:{x:43,y:45}, Bottom:{x:40,y:78}, Bag:{x:25,y:70}, Shoes:{x:38,y:95} }
+    },
+    businesswoman: {
+      // outfit-1 (Ivory Suit, heroIdx 0): seated at café window on the left, ivory blazer on torso,
+      // white cami at neck, ivory trousers on lap/legs, structured clutch on the counter at right, gold watch on wrist.
+      0: { Blazer:{x:35,y:44}, Top:{x:42,y:30}, Bottom:{x:38,y:80}, Bag:{x:78,y:52}, Shoes:{x:34,y:95}, Jewelry:{x:55,y:54} },
+      // outfit-2 (Menswear Edit, heroIdx 1): seated centered in a cane chair, cream cape blazer over shoulders,
+      // white shirt + grey striped tie down the center, cream trousers on legs, sunglasses on face, espresso held.
+      1: { Blazer:{x:36,y:50}, Top:{x:50,y:42}, Tie:{x:50,y:56}, Bottom:{x:50,y:84}, Accessory:{x:50,y:22} },
+      // outfit-3 (Boss Casual, heroIdx 2): standing in an office, black pinstripe blazer, white shirt,
+      // blue flared jeans, leather belt at waist, black saddle bag held at chest, gold bangles on wrist.
+      2: { Blazer:{x:34,y:38}, Top:{x:41,y:34}, Bottom:{x:35,y:80}, Belt:{x:38,y:58}, Bag:{x:31,y:44}, Jewelry:{x:29,y:50} },
+      // outfit-4 (Smart Casual, heroIdx 3): seated working on a laptop on the right, white blazer,
+      // blue striped shirt, light jeans, clear glasses, large cream tote in the bottom-left foreground.
+      3: { Blazer:{x:55,y:46}, Top:{x:55,y:50}, Bottom:{x:55,y:83}, Bag:{x:22,y:72}, Accessory:{x:55,y:30} },
+      // outfit-5 (Quiet Power, heroIdx 4): seated in a private jet in profile, all-black turtleneck,
+      // black trousers, black loafers, sunglasses, dark weekender bag at left, laptop on lap.
+      4: { Top:{x:42,y:38}, Bottom:{x:42,y:66}, Shoes:{x:40,y:92}, Bag:{x:16,y:58}, Accessory:{x:40,y:28} },
+      // outfit-6 (Oversized Suit, heroIdx 5): seated in a white bouclé armchair facing camera, grey oversized
+      // blazer, grey wide trousers, black mule on the crossed foot at lower-left, glasses on face, gold hoops.
+      5: { Blazer:{x:48,y:42}, Bottom:{x:48,y:74}, Shoes:{x:34,y:88}, Accessory:{x:50,y:22}, Jewelry:{x:52,y:27} }
     }
   };
 
@@ -2084,6 +2237,19 @@
       jewelry:     ['gold layered pendant necklace women delicate', 'pearl hoop earrings gold women', 'gold stacking rings set women minimal'],
       makeup:      ['rose tinted lip balm warm women', 'bronzed cheek blush warm women', 'soft brown eyeshadow palette women'],
       fragrances:  ['le labo santal 33 women', 'maison margiela replica beach walk', 'diptyque tam dao eau de parfum']
+    },
+    businesswoman: {
+      tops:        ['white tailored shirt women', 'fine knit shell top women neutral', 'silk blouse women neutral'],
+      bottoms:     ['wide leg suit trousers women neutral', 'tailored cigarette trousers women', 'pleated trousers women neutral'],
+      dresses:     ['tailored blazer dress women', 'shirt midi dress women tailored', 'belted shift dress women neutral'],
+      jackets:     ['tailored single breasted blazer women neutral', 'oversized blazer women neutral', 'double breasted wool blazer women'],
+      shoes:       ['pointed slingback pumps women', 'pointed leather mules women', 'leather loafers women black'],
+      boots:       ['pointed leather ankle boots women', 'heeled ankle boots women neutral', 'knee high leather boots women black'],
+      bags:        ['structured top handle bag women black', 'structured work tote bag women', 'leather top handle bag women neutral'],
+      accessories: ['silk skinny tie women neutral', 'leather waist belt women', 'tinted square sunglasses women'],
+      jewelry:     ['gold stud earrings women minimal', 'bold gold hoop earrings women', 'slim gold watch women minimal'],
+      makeup:      ['nude matte lip cream women', 'soft contour bronzer women neutral', 'clean satin foundation women neutral'],
+      fragrances:  ['le labo santal 33 women', 'tom ford grey vetiver women', 'sophisticated woody perfume women']
     }
   };
 

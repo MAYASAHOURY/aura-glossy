@@ -9,19 +9,19 @@
 (function () {
   'use strict';
 
-  /* Active aesthetics — 10 supported circles. Dark Academia removed
-     2026-05-26; legacy events that reference 'darkacademia' still
-     render via COMM_LABELS below but no longer appear in the
-     per-aesthetic table or filter dropdown. */
+  /* Active aesthetics — 11 supported circles. Business Woman added
+     2026-05-29. Dark Academia removed 2026-05-26; legacy events that
+     reference 'darkacademia' still render via COMM_LABELS below but no
+     longer appear in the per-aesthetic table or filter dropdown. */
   var COMM_GROUPS = [
     'classic','casual','streetwear','minimalist','elegant',
-    'korean','y2k','vintage','softgirl','hijabicore'
+    'korean','y2k','vintage','softgirl','hijabicore','businesswoman'
   ];
   var COMM_LABELS = {
     classic: 'Classic', casual: 'Casual', streetwear: 'Streetwear',
     minimalist: 'Minimalist', elegant: 'Elegant', korean: 'Korean',
     y2k: 'Y2K', vintage: 'Vintage', softgirl: 'Soft Girl',
-    hijabicore: 'Hijabi Core',
+    hijabicore: 'Hijabi Core', businesswoman: 'Business Woman',
     /* Display-only label for legacy events. Keeps the Latest events
        table readable without resurrecting Dark Academia as an active
        aesthetic. */

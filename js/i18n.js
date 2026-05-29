@@ -184,8 +184,8 @@
             q:        'What kind of outfits make you feel most like yourself?',
             hint:     "Think about what you'd actually wear on a free day — not what's trending, just what feels right.",
             helpText: "There's no wrong answer here. Just picture opening your wardrobe on a relaxed morning — which energy are you most drawn to?",
-            options:  ['Polished and put together', 'Easy and comfortable', 'Bold and unapologetic', 'Quiet and minimal'],
-            moods:    ['blazers, structure, clean lines', 'soft fabrics, relaxed fits, casual ease', 'statement pieces, loud energy', 'neutral tones, simple cuts, nothing extra']
+            options:  ['Sharp, powerful, in charge', 'Easy and comfortable', 'Bold and unapologetic', 'Quiet and minimal'],
+            moods:    ['tailored suits, structure, authority', 'soft fabrics, relaxed fits, casual ease', 'statement pieces, loud energy', 'neutral tones, simple cuts, nothing extra']
           },
           {
             q:        'Which color world feels most like home?',
@@ -205,8 +205,8 @@
             q:        'If you could only wear one pair of shoes forever…',
             hint:     'Forget practicality — which one just feels most like you?',
             helpText: "Shoes are one of the most honest parts of an outfit. Your instinctive pick says a lot about your real style personality.",
-            options:  ['White sneakers', 'Leather loafers', 'Heels or satin mules', 'Mary Janes or ballet flats'],
-            moods:    ['clean, versatile, effortless', 'polished, quiet, timeless', 'elevated, feminine, intentional', 'soft, sweet, effortlessly pretty']
+            options:  ['White sneakers', 'Leather loafers', 'Sharp pointed pumps', 'Mary Janes or ballet flats'],
+            moods:    ['clean, versatile, effortless', 'polished, quiet, timeless', 'power, polish, presence', 'soft, sweet, effortlessly pretty']
           },
           {
             q:        "Whose style makes you think \"I wish that was mine\"?",
@@ -219,8 +219,8 @@
             q:        'When you dress in the morning, you reach for…',
             hint:     "Just the most natural picture of you getting dressed — coverage, comfort, layering, mood.",
             helpText: "How we layer says a lot about identity. There's no right answer — pick what feels honest to you on a typical morning.",
-            options:  ['Soft layered coverage, head to toe', 'Refined modesty with elegant lines', 'A statement dress and minimal layers', 'Effortless and breezy'],
-            moods:    ['flowing pieces, abaya, intentional draping', 'tailored coverage, quiet confidence, polish', 'one piece does the work, less is more', 'light fabrics, easy movement, no fuss']
+            options:  ['Soft layered coverage, head to toe', 'Refined modesty with elegant lines', 'Sharp tailoring that means business', 'Effortless and breezy'],
+            moods:    ['flowing pieces, abaya, intentional draping', 'tailored coverage, quiet confidence, polish', 'blazer, trousers, deliberate', 'light fabrics, easy movement, no fuss']
           }
         ]
       },
@@ -306,7 +306,8 @@
         casual:     'Effortless is a full-time job.',
         softgirl:   'Sweetness is never out of season.',
         vintage:    'Old souls wear the best things.',
-        hijabicore: 'Modesty is the loudest kind of grace.'
+        hijabicore: 'Modesty is the loudest kind of grace.',
+        businesswoman: 'Dress like you run the room.'
       },
       /* Signup-gate modal copy. Aura.requireAuth(opts) picks the block
          that matches opts.pending.key (save/shop/quiz/community/verify),
@@ -501,8 +502,8 @@
             q:        '¿Qué tipo de outfits te hacen sentir más tú misma?',
             hint:     "Piensa en lo que realmente te pondrías un día libre — no lo que está de moda, solo lo que se siente bien.",
             helpText: "Aquí no hay respuestas equivocadas. Imagina abrir tu armario en una mañana tranquila — ¿a qué energía te sientes más atraída?",
-            options:  ['Pulido y elegante', 'Cómodo y relajado', 'Atrevido y sin disculpas', 'Silencioso y minimalista'],
-            moods:    ['blazers, estructura, líneas limpias', 'tejidos suaves, cortes relajados, comodidad casual', 'piezas con statement, energía intensa', 'tonos neutros, cortes simples, nada de más']
+            options:  ['Firme, poderosa, al mando', 'Cómodo y relajado', 'Atrevido y sin disculpas', 'Silencioso y minimalista'],
+            moods:    ['trajes a medida, estructura, autoridad', 'tejidos suaves, cortes relajados, comodidad casual', 'piezas con statement, energía intensa', 'tonos neutros, cortes simples, nada de más']
           },
           {
             q:        '¿Qué mundo de color te siente más como en casa?',
@@ -522,8 +523,8 @@
             q:        'Si solo pudieras llevar un par de zapatos para siempre…',
             hint:     'Olvida la practicidad — ¿cuál se siente más como tú?',
             helpText: "Los zapatos son una de las partes más honestas de un outfit. Tu elección instintiva dice mucho de tu verdadera personalidad de estilo.",
-            options:  ['Zapatillas blancas', 'Mocasines de cuero', 'Tacones o mules de satén', 'Mary Janes o bailarinas'],
-            moods:    ['limpias, versátiles, sin esfuerzo', 'pulidos, silenciosos, atemporales', 'elevado, femenino, intencional', 'suave, dulce, bonito sin esfuerzo']
+            options:  ['Zapatillas blancas', 'Mocasines de cuero', 'Tacones puntiagudos', 'Mary Janes o bailarinas'],
+            moods:    ['limpias, versátiles, sin esfuerzo', 'pulidos, silenciosos, atemporales', 'poder, pulido, presencia', 'suave, dulce, bonito sin esfuerzo']
           },
           {
             q:        "¿De quién es el estilo que te hace pensar \"ojalá fuera el mío\"?",
@@ -536,8 +537,8 @@
             q:        '¿Qué es lo primero que eliges al vestirte por la mañana?',
             hint:     'La imagen más natural de ti vistiéndote — cobertura, comodidad, capas, ánimo.',
             helpText: 'Cómo nos vestimos en capas dice mucho sobre la identidad. No hay respuesta incorrecta — elige lo que te resulta más honesto.',
-            options:  ['Cobertura suave en capas, de pies a cabeza', 'Modestia refinada con líneas elegantes', 'Un vestido statement con mínimas capas', 'Ligero y con flow'],
-            moods:    ['piezas fluidas, abaya, drapeados intencionales', 'cobertura sartorial, confianza silenciosa, pulido', 'una pieza lo dice todo, menos es más', 'tejidos ligeros, movimiento fácil, sin esfuerzo']
+            options:  ['Cobertura suave en capas, de pies a cabeza', 'Modestia refinada con líneas elegantes', 'Sastrería firme que impone', 'Ligero y con flow'],
+            moods:    ['piezas fluidas, abaya, drapeados intencionales', 'cobertura sartorial, confianza silenciosa, pulido', 'blazer, pantalón, decisión', 'tejidos ligeros, movimiento fácil, sin esfuerzo']
           }
         ]
       },
@@ -608,7 +609,8 @@
         casual:     'Lo natural es un trabajo a tiempo completo.',
         softgirl:   'La dulzura nunca pasa de temporada.',
         vintage:    'Las almas viejas llevan lo mejor.',
-        hijabicore: 'La modestia es la forma más alta de elegancia.'
+        hijabicore: 'La modestia es la forma más alta de elegancia.',
+        businesswoman: 'Vístete como si la sala fuera tuya.'
       },
       gate: {
         save:      { eyebrow: 'Guardar look',       title: 'Guarda esto en tu moodboard',           sub: 'Crea tu perfil de Aura para tener todos tus looks favoritos en un solo lugar.' },
@@ -794,8 +796,8 @@
             q:        'ما نوع الملابس التي تجعلك تشعرين بأنك أنتِ نفسك؟',
             hint:     'فكّري فيما قد ترتدينه فعلاً في يوم حر — ليس ما هو رائج، فقط ما يبدو صحيحاً لك.',
             helpText: 'لا توجد إجابة خاطئة هنا. تخيّلي أنك تفتحين خزانتك في صباح هادئ — أي طاقة تجذبك أكثر؟',
-            options:  ['أنيق ومُتقَن', 'سهل ومريح', 'جريء وبلا اعتذار', 'هادئ وبسيط'],
-            moods:    ['بليزرات، بنية، خطوط نظيفة', 'أقمشة ناعمة، قصّات مريحة، هدوء يومي', 'قطع لافتة، طاقة قوية', 'ألوان محايدة، قصّات بسيطة، بلا زوائد']
+            options:  ['حازمة، قوية، في القيادة', 'سهل ومريح', 'جريء وبلا اعتذار', 'هادئ وبسيط'],
+            moods:    ['بدلات مفصّلة، بنية، سُلطة', 'أقمشة ناعمة، قصّات مريحة، هدوء يومي', 'قطع لافتة، طاقة قوية', 'ألوان محايدة، قصّات بسيطة، بلا زوائد']
           },
           {
             q:        'أي عالم من الألوان يشبه شعور البيت أكثر؟',
@@ -815,8 +817,8 @@
             q:        'لو كان عليكِ ارتداء زوج حذاء واحد إلى الأبد…',
             hint:     'انسي الجانب العملي — أيها يبدو الأقرب إليكِ؟',
             helpText: 'الأحذية من أصدق أجزاء الإطلالة. اختياركِ التلقائي يكشف الكثير عن شخصيتك الستايلية الحقيقية.',
-            options:  ['أحذية رياضية بيضاء', 'لوفر جلدي', 'كعب عالٍ أو ميول ساتان', 'ماري جين أو باليرينا'],
-            moods:    ['نظيفة، متعدّدة الاستخدامات، بلا مجهود', 'أنيق، هادئ، خالد', 'راقٍ، أنثوي، مقصود', 'ناعم، حلو، جميل بطبيعته']
+            options:  ['أحذية رياضية بيضاء', 'لوفر جلدي', 'كعب مدبّب حاد', 'ماري جين أو باليرينا'],
+            moods:    ['نظيفة، متعدّدة الاستخدامات، بلا مجهود', 'أنيق، هادئ، خالد', 'قوة، صقل، حضور', 'ناعم، حلو، جميل بطبيعته']
           },
           {
             q:        "أسلوب من يجعلك تفكرين \"أتمنى لو كان لي\"؟",
@@ -829,8 +831,8 @@
             q:        'صباحًا، ما الذي تختارينه أولاً؟',
             hint:     'الصورة الأكثر طبيعية لكِ وأنتِ تستعدّين — تغطية، راحة، تنسيق، مزاج.',
             helpText: 'الطريقة التي نُكوِّن بها طبقاتنا تقول الكثير عن هويّتنا. لا توجد إجابة خاطئة — اختاري ما يبدو الأصدق إليكِ.',
-            options:  ['طبقات ناعمة وكاملة من الرأس للقدمين', 'احتشام مصقول بخطوط أنيقة', 'فستان مميّز مع طبقات قليلة', 'انسيابي وخفيف'],
-            moods:    ['قطع منسابة، عباية، طيّات مقصودة', 'تغطية مُفصّلة، ثقة هادئة، لمسة راقية', 'قطعة واحدة تقول كل شيء', 'أقمشة خفيفة، حركة سهلة، بلا تكلّف']
+            options:  ['طبقات ناعمة وكاملة من الرأس للقدمين', 'احتشام مصقول بخطوط أنيقة', 'تفصيل حازم يعني الجدّية', 'انسيابي وخفيف'],
+            moods:    ['قطع منسابة، عباية، طيّات مقصودة', 'تغطية مُفصّلة، ثقة هادئة، لمسة راقية', 'بليزر، بنطلون، حسم', 'أقمشة خفيفة، حركة سهلة، بلا تكلّف']
           }
         ]
       },
@@ -901,7 +903,8 @@
         casual:     'البساطة عمل بدوام كامل.',
         softgirl:   'الحلاوة لا موسم لها.',
         vintage:    'الأرواح القديمة تختار الأفضل.',
-        hijabicore: 'الاحتشام هو أعلى مراتب الأناقة.'
+        hijabicore: 'الاحتشام هو أعلى مراتب الأناقة.',
+        businesswoman: 'ارتدي وكأنكِ صاحبة المكان.'
       },
       gate: {
         save:      { eyebrow: 'حفظ اللوك',         title: 'احفظي هذا في الموودبورد',          sub: 'أنشئي ملفّكِ في أورا لتجمعي كل اللوكات المفضلة في مكان واحد.' },
@@ -1086,8 +1089,8 @@
             q:        'איזה סגנון בגדים גורם לך להרגיש הכי "את עצמך"?',
             hint:     'חשבי על מה היית באמת לובשת ביום פנוי — לא מה שטרנדי, רק מה שמרגיש נכון.',
             helpText: "אין כאן תשובה לא נכונה. דמייני שאת פותחת את הארון בבוקר רגוע — לאיזו אנרגיה את הכי נמשכת?",
-            options:  ['מטופח ומאורגן', 'נוח וקל', 'נועז ובלי התנצלויות', 'שקט ומינימליסטי'],
-            moods:    ['בלייזרים, מבנה, קווים נקיים', 'בדים רכים, גזרות רפויות, נינוחות יומיומית', 'פריטי סטייטמנט, אנרגיה עוצמתית', 'גוונים נייטרליים, גזרות פשוטות, בלי תוספות']
+            options:  ['חדה, חזקה, בשליטה', 'נוח וקל', 'נועז ובלי התנצלויות', 'שקט ומינימליסטי'],
+            moods:    ['חליפות תפורות, מבנה, סמכות', 'בדים רכים, גזרות רפויות, נינוחות יומיומית', 'פריטי סטייטמנט, אנרגיה עוצמתית', 'גוונים נייטרליים, גזרות פשוטות, בלי תוספות']
           },
           {
             q:        "איזה עולם צבעים מרגיש לך הכי 'בית'?",
@@ -1107,8 +1110,8 @@
             q:        'אם היית יכולה ללבוש רק זוג נעליים אחד לנצח…',
             hint:     'תשכחי מפרקטיות — איזה זוג הכי מרגיש כמוך?',
             helpText: "נעליים הן אחד החלקים הכי כנים בלוק. הבחירה האינסטינקטיבית שלך מספרת הרבה על אישיות הסטייל האמיתית שלך.",
-            options:  ['סניקרס לבנים', 'לופרים מעור', 'עקבים או נעלי סאטן', "מארי ג'יין או נעלי בלט"],
-            moods:    ['נקי, מגוון, ללא מאמץ', 'מטופח, שקט, על-זמני', 'מורם, נשי, מכוון', 'רך, מתוק, יפה ללא מאמץ']
+            options:  ['סניקרס לבנים', 'לופרים מעור', 'עקבים מחודדים', "מארי ג'יין או נעלי בלט"],
+            moods:    ['נקי, מגוון, ללא מאמץ', 'מטופח, שקט, על-זמני', 'עוצמה, ליטוש, נוכחות', 'רך, מתוק, יפה ללא מאמץ']
           },
           {
             q:        "של מי הסטייל גורם לך לחשוב 'הלוואי שזה היה שלי'?",
@@ -1121,8 +1124,8 @@
             q:        "בבוקר, מה את לוקחת קודם?",
             hint:     "הציור הכי טבעי שלך מתלבשת — כיסוי, נוחות, שכבות, מצב רוח.",
             helpText: "האופן שבו אנחנו לובשות בשכבות מספר הרבה על הזהות שלנו. אין תשובה נכונה — בחרי את מה שמרגיש לך הכי כן.",
-            options:  ['כיסוי שכבתי רך, מהראש ועד הרגליים', 'צניעות מעודנת עם קווים אלגנטיים', 'שמלת סטייטמנט ושכבות מינימליות', 'קליל ואוורירי'],
-            moods:    ['פריטים זורמים, עבאיה, דרייפ מכוון', 'כיסוי תפור, ביטחון שקט, גימור', 'פריט אחד עושה את העבודה', 'בדים קלים, תנועה קלה, ללא מאמץ']
+            options:  ['כיסוי שכבתי רך, מהראש ועד הרגליים', 'צניעות מעודנת עם קווים אלגנטיים', 'גזרה חדה שמשדרת רצינות', 'קליל ואוורירי'],
+            moods:    ['פריטים זורמים, עבאיה, דרייפ מכוון', 'כיסוי תפור, ביטחון שקט, גימור', 'בלייזר, מכנסיים, נחישות', 'בדים קלים, תנועה קלה, ללא מאמץ']
           }
         ]
       },
@@ -1193,7 +1196,8 @@
         casual:     'מראה טבעי הוא עבודה במשרה מלאה.',
         softgirl:   'מתיקות אף פעם לא יוצאת מהעונה.',
         vintage:    'נשמות ישנות לובשות את הדברים הכי טובים.',
-        hijabicore: 'הצניעות היא הצורה הגבוהה ביותר של חן.'
+        hijabicore: 'הצניעות היא הצורה הגבוהה ביותר של חן.',
+        businesswoman: 'התלבשי כאילו החדר כולו שלך.'
       },
       gate: {
         save:      { eyebrow: 'שמירת לוק',         title: 'שמרי את זה למודבורד שלך',            sub: 'צרי את הפרופיל שלך באורה כדי לשמור את כל הלוקים האהובים במקום אחד.' },
