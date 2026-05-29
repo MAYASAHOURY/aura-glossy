@@ -111,14 +111,16 @@
       waitlist_cta:     'Join the waitlist',
       waitlist_invalid: 'Please enter a real, well-formed email.',
       waitlist_sending: 'Sending…',
-      waitlist_success: 'Check your email ✨',
-      waitlist_success_sub: 'Confirm your spot — we’re waiting for you.',
+      waitlist_success: 'We sent you an email ✨',
+      waitlist_success_sub: 'Go confirm your spot — we’re waiting for you.',
       waitlist_already: 'You’re already on the list ✨',
       waitlist_already_sub: 'We’ll let you know the moment we open the doors.',
       waitlist_resent:  'We sent a fresh link ✨',
       waitlist_resent_sub: 'Your previous link expired. Check your email — the new one is valid for 24 hours.',
       waitlist_rate:    'Too many tries. Take a breath and try again in a minute.',
-      waitlist_email_failed: 'We couldn’t send the confirmation email. Please try again or check your address.',
+      waitlist_email_failed: 'We couldn’t send the email',
+      waitlist_email_failed_sub: 'Please check your address and try again.',
+      waitlist_try_again: 'Try again',
       waitlist_error:   'Couldn’t save your email. Try again in a moment.',
       admin_enter: 'Admin enter',
       admin_title: 'Admin access',
@@ -144,14 +146,16 @@
       waitlist_cta:     'Unirse a la lista',
       waitlist_invalid: 'Introduce un email real y bien formado.',
       waitlist_sending: 'Enviando…',
-      waitlist_success: 'Revisa tu email ✨',
-      waitlist_success_sub: 'Confirma tu lugar — te estamos esperando.',
+      waitlist_success: 'Te enviamos un email ✨',
+      waitlist_success_sub: 'Ve a confirmar tu lugar — te estamos esperando.',
       waitlist_already: 'Ya estás en la lista ✨',
       waitlist_already_sub: 'Te avisaremos en el momento que abramos las puertas.',
       waitlist_resent:  'Enviamos un enlace nuevo ✨',
       waitlist_resent_sub: 'Tu enlace anterior caducó. Revisa tu email — el nuevo es válido durante 24 horas.',
       waitlist_rate:    'Demasiados intentos. Respira y vuelve a intentarlo en un minuto.',
-      waitlist_email_failed: 'No pudimos enviar el email de confirmación. Inténtalo de nuevo o verifica tu dirección.',
+      waitlist_email_failed: 'No pudimos enviar el email',
+      waitlist_email_failed_sub: 'Revisa tu dirección y vuelve a intentarlo.',
+      waitlist_try_again: 'Intentar de nuevo',
       waitlist_error:   'No pudimos guardar tu email. Inténtalo de nuevo.',
       admin_enter: 'Entrar como admin',
       admin_title: 'Acceso de admin',
@@ -177,14 +181,16 @@
       waitlist_cta:     'انضمّي إلى القائمة',
       waitlist_invalid: 'يرجى إدخال بريد حقيقي وصحيح.',
       waitlist_sending: 'جارٍ الإرسال…',
-      waitlist_success: 'تحقّقي من بريدكِ ✨',
-      waitlist_success_sub: 'أكّدي مكانكِ — نحن بانتظاركِ.',
+      waitlist_success: 'أرسلنا لكِ بريدًا ✨',
+      waitlist_success_sub: 'اذهبي لتأكيد مكانكِ — نحن بانتظاركِ.',
       waitlist_already: 'أنتِ بالفعل على القائمة ✨',
       waitlist_already_sub: 'سنُعلمكِ في اللحظة التي نفتح فيها الأبواب.',
       waitlist_resent:  'أرسلنا رابطًا جديدًا ✨',
       waitlist_resent_sub: 'انتهت صلاحيّة رابطكِ السابق. تحقّقي من بريدكِ — الرابط الجديد صالح لمدة 24 ساعة.',
       waitlist_rate:    'محاولات كثيرة. خذي نفسًا وحاولي بعد دقيقة.',
-      waitlist_email_failed: 'تعذّر إرسال بريد التأكيد. حاولي مرة أخرى أو تحقّقي من العنوان.',
+      waitlist_email_failed: 'تعذّر إرسال البريد',
+      waitlist_email_failed_sub: 'تحقّقي من العنوان وحاولي مرة أخرى.',
+      waitlist_try_again: 'حاولي مرة أخرى',
       waitlist_error:   'تعذّر حفظ بريدكِ. حاولي بعد قليل.',
       admin_enter: 'دخول الأدمن',
       admin_title: 'دخول الأدمن',
@@ -210,14 +216,16 @@
       waitlist_cta:     'הצטרפות לרשימה',
       waitlist_invalid: 'נא להזין אימייל אמיתי ותקין.',
       waitlist_sending: 'שולחים…',
-      waitlist_success: 'בדקי את האימייל ✨',
-      waitlist_success_sub: 'אישור המקום שלך — אנחנו מחכים לך.',
+      waitlist_success: 'שלחנו לך אימייל ✨',
+      waitlist_success_sub: 'לכי לאשר את המקום שלך — אנחנו מחכים לך.',
       waitlist_already: 'את כבר ברשימה ✨',
       waitlist_already_sub: 'נעדכן אותך ברגע שניפתח את הדלתות.',
       waitlist_resent:  'שלחנו לך לינק חדש ✨',
       waitlist_resent_sub: 'הלינק הקודם פג תוקף. בדקי את האימייל — החדש בתוקף ל-24 שעות.',
       waitlist_rate:    'יותר מדי ניסיונות. קחי נשימה ונסי שוב בעוד דקה.',
-      waitlist_email_failed: 'לא הצלחנו לשלוח את האימייל. נסי שוב או בדקי את הכתובת.',
+      waitlist_email_failed: 'לא הצלחנו לשלוח את האימייל',
+      waitlist_email_failed_sub: 'בדקי את הכתובת ונסי שוב.',
+      waitlist_try_again: 'נסי שוב',
       waitlist_error:   'לא הצלחנו לשמור את האימייל. נסי שוב.',
       admin_enter: 'כניסת אדמין',
       admin_title: 'כניסת אדמין',
@@ -477,38 +485,57 @@
     + '  .aura-waitlist-hint.is-loading{color:#c79a85}'
     + '  .aura-waitlist-hint.is-success{color:#e7c8b5}'
     /* Success state — replaces the form with a single confirmation row */
-    /* Premium glassy soft-pink confirmation card.
-       - 3D depth: radial highlight + linear tint + backdrop-blur glass
-       - Halo: external ::before sits behind with bloom + filter blur
-       - Subtle inset top highlight (the Apple "glass edge" trick)
-       - Column layout so title + sub sit centered, never flexes wide
-       - box-sizing:border-box + width:100% + safe max-width = never
-         overflows on mobile, never clips on desktop
-       - text-align:center keeps RTL + LTR symmetrically composed
-       - Mark glyph hidden via display:none — title already carries ✨ */
-    + '  .aura-waitlist-success{display:none;position:relative;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;box-sizing:border-box;padding:22px 26px;background:radial-gradient(ellipse 110% 80% at 50% 0%,rgba(255,210,225,.18) 0%,transparent 60%),linear-gradient(180deg,rgba(255,200,215,.14) 0%,rgba(255,180,200,.06) 100%);border:1px solid rgba(255,190,210,.42);border-radius:18px;-webkit-backdrop-filter:blur(14px) saturate(120%);backdrop-filter:blur(14px) saturate(120%);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 10px 30px rgba(255,170,195,.14),0 3px 10px rgba(255,160,190,.08);animation:auraRiseGlow 1s cubic-bezier(.2,.7,.2,1) both}'
-    /* Halo bloom sitting behind the card to give it the editorial
-       luxury aura. Z-index 0 stays under the card content (which has
-       no z-index → forms a new stacking context inside the success
-       box once we add position:relative). Pointer-events none so it
-       never blocks a click. */
-    + '  .aura-waitlist-success::before{content:"";position:absolute;inset:-10px;border-radius:24px;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(255,180,200,.18) 0%,rgba(255,160,190,.02) 60%,transparent 100%);filter:blur(14px);z-index:-1;pointer-events:none;opacity:.85}'
-    /* Slow fade-in + soft rise + tiny shadow grow so the box doesn't
-       just "appear" — it earns its place. Keyframe defined separately
-       so the parent .aura-waitlist auraRise on initial mount stays clean. */
-    + '  @keyframes auraRiseGlow{from{opacity:0;transform:translateY(8px) scale(.985);box-shadow:inset 0 1px 0 rgba(255,255,255,.0),0 4px 18px rgba(255,170,195,.0),0 1px 4px rgba(255,160,190,.0)}to{opacity:1;transform:translateY(0) scale(1);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 10px 30px rgba(255,170,195,.14),0 3px 10px rgba(255,160,190,.08)}}'
+    /* ── Waitlist success: FOCUSED MODAL ──────────────────────
+       Layer A: full-viewport overlay with dim + blur backdrop —
+                kills focus on hero/form behind it.
+       Layer B: a centered glassy rose card in the middle.
+       Layer C: subtle halo bloom behind the card (::before).
+       z-index 60 sits above main (z:2), vignette (z:1), and admin
+       trigger (which we bump to z:70 below so it stays accessible). */
+    + '  .aura-waitlist-success{display:none}'
+    + '  .aura-waitlist.is-success .aura-waitlist-success{display:flex;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse 90% 70% at 50% 50%,rgba(80,32,52,.55) 0%,rgba(13,9,5,.88) 70%);-webkit-backdrop-filter:blur(18px) saturate(115%);backdrop-filter:blur(18px) saturate(115%);animation:auraOverlayIn .55s cubic-bezier(.2,.7,.2,1) both}'
+    /* The card — premium glassy rose, 3D elevation, halo */
+    + '  .aura-waitlist-success-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;max-width:380px;box-sizing:border-box;padding:32px 28px 30px;background:radial-gradient(ellipse 110% 80% at 50% 0%,rgba(255,210,225,.22) 0%,transparent 60%),linear-gradient(180deg,rgba(255,200,215,.18) 0%,rgba(255,180,200,.08) 100%);border:1px solid rgba(255,190,210,.50);border-radius:22px;-webkit-backdrop-filter:blur(20px) saturate(125%);backdrop-filter:blur(20px) saturate(125%);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 22px 60px rgba(255,170,195,.18),0 6px 18px rgba(255,160,190,.10);animation:auraCardRise .8s .15s cubic-bezier(.2,.7,.2,1) both;opacity:0}'
+    + '  .aura-waitlist-success-card::before{content:"";position:absolute;inset:-14px;border-radius:28px;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(255,170,195,.24) 0%,rgba(255,150,180,.04) 55%,transparent 100%);filter:blur(18px);z-index:-1;pointer-events:none;opacity:.9}'
+    /* Softer ERROR variant — same architecture, dustier rose so it
+       reads as "gentle problem" not alarm. */
+    + '  .aura-waitlist-success.is-error .aura-waitlist-success-card{background:radial-gradient(ellipse 110% 80% at 50% 0%,rgba(230,170,180,.20) 0%,transparent 60%),linear-gradient(180deg,rgba(220,165,180,.16) 0%,rgba(200,150,170,.08) 100%);border:1px solid rgba(220,170,185,.48);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 22px 60px rgba(220,140,165,.18),0 6px 18px rgba(220,140,165,.10)}'
+    + '  .aura-waitlist-success.is-error .aura-waitlist-success-card::before{background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(220,150,170,.22) 0%,rgba(220,150,170,.04) 55%,transparent 100%)}'
+    /* Close affordance — gently retreats from the card; click + Esc
+       both call dismiss(). Hidden by default; shown only on error
+       state OR via the Try-again button at the bottom of the card. */
+    + '  .aura-waitlist-success-close{position:absolute;top:10px;right:10px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:rgba(247,233,236,.55);font-size:18px;font-family:inherit;cursor:pointer;border-radius:50%;transition:color .24s ease,background .24s ease;visibility:hidden;opacity:0}'
+    + '  .aura-waitlist-success.is-error .aura-waitlist-success-close,.aura-waitlist-success-close:focus-visible{visibility:visible;opacity:1}'
+    + '  .aura-waitlist-success-close:hover,.aura-waitlist-success-close:focus-visible{color:rgba(247,233,236,.95);background:rgba(255,255,255,.06);outline:none}'
+    + '  html[dir="rtl"] .aura-waitlist-success-close{right:auto;left:10px}'
+    /* Try-again button (error state only) */
+    + '  .aura-waitlist-success-retry{display:none;margin-top:16px;padding:11px 22px;background:linear-gradient(180deg,rgba(220,170,185,.95) 0%,rgba(200,150,170,.95) 100%);border:1px solid rgba(230,180,195,.6);border-radius:999px;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:#2a1418;cursor:pointer;transition:opacity .24s ease}'
+    + '  .aura-waitlist-success.is-error .aura-waitlist-success-retry{display:inline-block}'
+    + '  .aura-waitlist-success-retry:hover{opacity:.92}'
+    /* Overlay fade-in: backdrop establishes first, card rises after */
+    + '  @keyframes auraOverlayIn{from{opacity:0;-webkit-backdrop-filter:blur(0) saturate(100%);backdrop-filter:blur(0) saturate(100%)}to{opacity:1;-webkit-backdrop-filter:blur(18px) saturate(115%);backdrop-filter:blur(18px) saturate(115%)}}'
+    + '  @keyframes auraCardRise{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}'
+    /* When success modal is up, eyebrow + hint quietly retreat
+       (they'd peek over the dim otherwise). */
+    + '  .aura-waitlist.is-success .aura-waitlist-eyebrow,.aura-waitlist.is-success .aura-waitlist-hint{visibility:hidden;opacity:0;transition:opacity .3s ease}'
+    /* Bump admin trigger above the modal so it stays accessible
+       (user spec). It naturally sits at the bottom — never overlaps
+       the centered card. */
+    + '  .aura-admin-trigger{z-index:72}'
     + '  .aura-waitlist.is-success .aura-waitlist-form{display:none}'
     + '  .aura-waitlist.is-success .aura-waitlist-success{display:flex}'
-    /* Mark glyph is decorative + redundant with ✨ in title — hide it
-       via display:none. aria-hidden on the markup already keeps screen
-       readers from announcing it. */
+    /* Mark glyph hidden — title carries ✨ */
     + '  .aura-waitlist-success-mark{display:none}'
-    /* Title: editorial serif italic, soft cream, gently larger now,
-       centered for the column layout. */
-    + '  .aura-waitlist-success-text{display:block;font-family:"Playfair Display",serif;font-style:italic;font-weight:400;font-size:16px;line-height:1.4;color:#f7e9ec;text-align:center;letter-spacing:.005em}'
-    /* Sub: muted rose sans, centered + slightly tighter under the
-       title. Generous max-width caps long sub copy on wide screens. */
-    + '  .aura-waitlist-success-sub{display:block;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-style:normal;font-size:12.5px;font-weight:400;letter-spacing:.01em;color:#d6b9c2;margin-top:6px;line-height:1.55;text-align:center;max-width:34ch;margin-left:auto;margin-right:auto}'
+    /* Title — bigger serif italic now that the modal commands the
+       viewport, soft cream, centered. clamp() keeps it elegant on
+       both small phones and desktop. */
+    + '  .aura-waitlist-success-text{display:block;font-family:"Playfair Display","Times New Roman",serif;font-style:italic;font-weight:400;font-size:clamp(20px,3.4vw,26px);line-height:1.25;color:#f9ecef;text-align:center;letter-spacing:-.005em;text-shadow:0 1px 14px rgba(255,180,200,.12);background:linear-gradient(180deg,#f9ecef 0%,#f0d8df 100%);-webkit-background-clip:text;background-clip:text;color:transparent}'
+    /* Sub — slightly muted rose sans, centered, max-width caps so it
+       never wraps awkwardly inside the 380px card. */
+    + '  .aura-waitlist-success-sub{display:block;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-style:normal;font-size:clamp(12.5px,1.5vw,13.5px);font-weight:400;letter-spacing:.012em;color:#d4b8c2;margin-top:10px;line-height:1.6;text-align:center;max-width:30ch;margin-left:auto;margin-right:auto}'
+    /* Mobile tuning — keep the card tight and breathable on small
+       phones; tighter padding so the title doesn't get cropped. */
+    + '  @media (max-width:520px){.aura-waitlist.is-success .aura-waitlist-success{padding:20px 18px}.aura-waitlist-success-card{padding:28px 22px 26px;border-radius:20px}.aura-waitlist-success-card::before{inset:-10px;border-radius:24px}.aura-waitlist-success-sub{margin-top:8px}}'
     + '  @media (max-width:520px){.aura-waitlist{margin-top:32px;max-width:none}.aura-waitlist-form{flex-direction:column;gap:8px}.aura-waitlist-btn{padding:13px 16px}}'
     /* ── RTL polish: flip arrows/letter-spacing where it matters. The
           maintenance page is intentionally simple so most layout still
@@ -542,13 +569,20 @@
     +       '<input class="aura-waitlist-hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">'
     +       '<button type="submit" class="aura-waitlist-btn" id="aura-waitlist-btn">' + MTH('waitlist_cta') + '</button>'
     +     '</form>'
-    /* Success row — dynamic title + subtitle populated by _wireWaitlist
-       based on the server response (subscribed / already_subscribed /
-       verification_resent / etc.). The default copy from i18n is shown
-       on first render but overwritten on every submit. */
-    +     '<div class="aura-waitlist-success" role="status" aria-live="polite">'
-    +       '<span class="aura-waitlist-success-mark" aria-hidden="true">✦</span>'
-    +       '<span class="aura-waitlist-success-text" id="aura-waitlist-success-text">' + MTH('waitlist_success') + '<span class="aura-waitlist-success-sub" id="aura-waitlist-success-sub">' + MTH('waitlist_success_sub') + '</span></span>'
+    /* Focused success modal — full-viewport overlay + centered card.
+       JS _wireWaitlist() swaps in the right title/sub for each state
+       (subscribed / verification_resent / already_subscribed /
+       email_send_failed). Close X + Try-again button only show in
+       error state; success states stay open until the user follows
+       their email link or navigates away. */
+    +     '<div class="aura-waitlist-success" role="dialog" aria-modal="true" aria-live="polite" aria-labelledby="aura-waitlist-success-text" aria-hidden="true">'
+    +       '<div class="aura-waitlist-success-card">'
+    +         '<button type="button" class="aura-waitlist-success-close" id="aura-waitlist-success-close" aria-label="' + MTH('admin_close') + '">✕</button>'
+    +         '<span class="aura-waitlist-success-mark" aria-hidden="true">✦</span>'
+    +         '<h2 class="aura-waitlist-success-text" id="aura-waitlist-success-text">' + MTH('waitlist_success') + '</h2>'
+    +         '<p class="aura-waitlist-success-sub" id="aura-waitlist-success-sub">' + MTH('waitlist_success_sub') + '</p>'
+    +         '<button type="button" class="aura-waitlist-success-retry" id="aura-waitlist-success-retry">' + MTH('waitlist_try_again') + '</button>'
+    +       '</div>'
     +     '</div>'
     +     '<p class="aura-waitlist-hint" id="aura-waitlist-hint" aria-live="polite" aria-atomic="true"></p>'
     +   '</div>'
@@ -700,14 +734,17 @@
      - server_error           → generic error hint
      ───────────────────────────────────────────────────────────── */
   function _wireWaitlist() {
-    var form     = document.getElementById('aura-waitlist-form');
-    var emailEl  = document.getElementById('aura-waitlist-email');
-    var btnEl    = document.getElementById('aura-waitlist-btn');
-    var hintEl   = document.getElementById('aura-waitlist-hint');
-    var wrap     = document.getElementById('aura-waitlist');
-    var titleEl  = document.getElementById('aura-waitlist-success-text');
-    var subEl    = document.getElementById('aura-waitlist-success-sub');
-    var hpEl     = form && form.querySelector('input[name="website"]');
+    var form      = document.getElementById('aura-waitlist-form');
+    var emailEl   = document.getElementById('aura-waitlist-email');
+    var btnEl     = document.getElementById('aura-waitlist-btn');
+    var hintEl    = document.getElementById('aura-waitlist-hint');
+    var wrap      = document.getElementById('aura-waitlist');
+    var successEl = document.querySelector('.aura-waitlist-success');
+    var titleEl   = document.getElementById('aura-waitlist-success-text');
+    var subEl     = document.getElementById('aura-waitlist-success-sub');
+    var closeBtn  = document.getElementById('aura-waitlist-success-close');
+    var retryBtn  = document.getElementById('aura-waitlist-success-retry');
+    var hpEl      = form && form.querySelector('input[name="website"]');
     if (!form || !emailEl || !btnEl) return;
 
     /* t0 = the moment the form rendered. Anything submitted faster than
@@ -734,36 +771,76 @@
       if (emailEl) emailEl.disabled = _busy;
       if (btnEl)   btnEl.textContent = _busy ? MT('waitlist_sending') : MT('waitlist_cta');
     }
-    /* Swap the success row's title + subtitle based on the response
-       status, then reveal it. Cleaner than maintaining 3 separate
-       success DOM elements. */
+    /* reveal(state) — swap copy + show the focused modal.
+       The title (<h2>) and sub (<p>) are now SIBLINGS inside the
+       card, so setting textContent is straightforward — no manual
+       DOM surgery to preserve a nested span like the old layout. */
     function reveal(state) {
-      var titleKey, subKey;
+      var titleKey, subKey, isError = false;
       if (state === 'already_subscribed') {
         titleKey = 'waitlist_already';
         subKey   = 'waitlist_already_sub';
       } else if (state === 'verification_resent') {
         titleKey = 'waitlist_resent';
         subKey   = 'waitlist_resent_sub';
+      } else if (state === 'email_send_failed') {
+        titleKey = 'waitlist_email_failed';
+        subKey   = 'waitlist_email_failed_sub';
+        isError  = true;
       } else {
         /* default — fresh subscribe */
         titleKey = 'waitlist_success';
         subKey   = 'waitlist_success_sub';
       }
       try {
-        /* Preserve the inner subtitle <span> when we set the title,
-           since the original markup nests <sub> inside <text>. We do
-           it manually to keep the DOM stable. */
-        if (titleEl) {
-          /* Remove children, then re-insert title text + the sub span. */
-          while (titleEl.firstChild) titleEl.removeChild(titleEl.firstChild);
-          titleEl.appendChild(document.createTextNode(MT(titleKey)));
-          if (subEl) titleEl.appendChild(subEl);
-        }
-        if (subEl) subEl.textContent = MT(subKey);
+        if (titleEl) titleEl.textContent = MT(titleKey);
+        if (subEl)   subEl.textContent   = MT(subKey);
+        if (retryBtn) retryBtn.textContent = MT('waitlist_try_again');
       } catch (_) {}
+      if (successEl) {
+        successEl.classList.toggle('is-error', isError);
+        successEl.setAttribute('aria-hidden', 'false');
+      }
       if (wrap) wrap.classList.add('is-success');
+      /* Hint area used by inline errors (invalid/rate). Clear it on
+         modal reveal so we don't leave a stale message under the
+         hidden form. */
+      setHint('', '');
+      /* Move focus into the modal for keyboard users. Card has tabindex
+         so focus call works even without the close button visible. */
+      try {
+        var firstFocus = (isError && closeBtn) ? closeBtn : (titleEl || successEl);
+        if (firstFocus && firstFocus.focus) firstFocus.focus();
+      } catch (_) {}
     }
+
+    /* dismiss() — close the modal, restore the form view. Used by
+       the close X, the Try-again button, click on backdrop, and Esc.
+       Resets the time-trap baseline so a retry doesn't trip the bot
+       check. */
+    function dismiss() {
+      if (wrap) wrap.classList.remove('is-success');
+      if (successEl) {
+        successEl.classList.remove('is-error');
+        successEl.setAttribute('aria-hidden', 'true');
+      }
+      try { if (emailEl) emailEl.focus(); } catch (_) {}
+      t0 = Date.now();
+    }
+
+    /* Dismiss handlers */
+    if (closeBtn) closeBtn.addEventListener('click', dismiss);
+    if (retryBtn) retryBtn.addEventListener('click', dismiss);
+    if (successEl) {
+      successEl.addEventListener('click', function (e) {
+        /* Click on the backdrop (not the card) dismisses. */
+        if (e.target === successEl) dismiss();
+      });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      if (wrap && wrap.classList.contains('is-success')) dismiss();
+    });
 
     /* Tight client-side regex — rejects obvious typos but stays
        permissive enough not to false-reject real corporate emails.
@@ -840,9 +917,11 @@
         /* 500 with detail 'email_send_failed' means: Firestore row was
            either rolled back (fresh) or kept with a send-error flag
            (resend). Either way, no confirmation email reached the user.
-           Show the explicit email-failed copy so we never claim success. */
+           Surface this through the focused modal (softer rose variant)
+           so the truthfulness contract is honored AND the visual weight
+           matches the success states — no fake success, no buried error. */
         if (detail === 'email_send_failed') {
-          setHint(MT('waitlist_email_failed'), 'error');
+          reveal('email_send_failed');
           try { console.warn('[waitlist] brevo send failed (server-side)'); } catch (_) {}
           return;
         }
