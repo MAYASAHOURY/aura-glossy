@@ -299,6 +299,26 @@ service cloud.firestore {
       allow delete: if request.auth != null && isAdmin();
     }
 
+    // ── VIP capacity counter (server-only writes) ───────────────
+    // waitlist_meta/counters holds the authoritative VIP spot count:
+    //   verifiedCount  number  — confirmed VIP members (spots taken)
+    //   capacity       number  — current VIP cap (mirrored from the
+    //                            VIP_WAITLIST_CAPACITY server constant)
+    //   updatedAt / lastVerifiedAt  server timestamps
+    //
+    // Writes happen ONLY inside the waitlist-verify transaction via the
+    // Firebase Admin SDK (which bypasses these rules). Clients can never
+    // write it. Admins may READ it so the admin-report dashboard can
+    // show the live cap + spots remaining. The public spot indicator on
+    // the maintenance page reads aggregate counts through the
+    // waitlist-status Function instead — never directly — so this stays
+    // admin-only without breaking the front-end.
+    match /waitlist_meta/{docId} {
+      allow create, update: if false;   // server-only via Firebase Admin SDK
+      allow read:   if request.auth != null && isAdmin();
+      allow delete: if request.auth != null && isAdmin();
+    }
+
     // ── Deny everything else ─────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;

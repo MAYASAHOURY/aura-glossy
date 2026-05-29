@@ -13,6 +13,69 @@
 const crypto = require('crypto');
 const admin  = require('firebase-admin');
 
+/* ════════════════════════════════════════════════════════════════
+   VIP EARLY ACCESS CAPACITY — single source of truth.
+
+   ★ TO CHANGE THE NUMBER OF VIP SPOTS, EDIT THIS ONE CONSTANT. ★
+
+   Only VERIFIED emails count toward this cap. Pending (un-clicked)
+   subscriptions do NOT reserve a spot — a spot is occupied only when
+   the user confirms via the email link, and the count is enforced
+   inside a Firestore transaction at confirmation time (see
+   waitlist-verify.js) so two simultaneous confirmations can never
+   produce a duplicate spot number or exceed the cap.
+
+   The value is mirrored into the `waitlist_meta/counters` Firestore
+   doc on every confirmation so the admin report and the public
+   status endpoint always read the LIVE cap — nothing else hardcodes
+   300. Raising it later takes effect immediately on the next deploy;
+   already-assigned spot numbers are never reshuffled.
+   ════════════════════════════════════════════════════════════════ */
+const VIP_WAITLIST_CAPACITY = 300;
+
+/* Firestore location of the atomic spot counter. A single doc whose
+   `verifiedCount` field is the authoritative number of VIP spots
+   handed out. Incremented only inside the verify transaction. */
+const COUNTER_COLLECTION = 'waitlist_meta';
+const COUNTER_DOC        = 'counters';
+
+function counterRef(db) {
+  return db.collection(COUNTER_COLLECTION).doc(COUNTER_DOC);
+}
+
+/* countVerifiedRows — aggregation count of rows that hold a VIP spot.
+   Used ONLY to seed the counter doc the first time (e.g. right after
+   this feature deploys onto a waitlist that already has confirmed
+   members). After the counter exists it is the source of truth and we
+   never recount. Returns a number, or null if the aggregation API is
+   unavailable (older Admin SDK) so callers can fall back to 0. */
+async function countVerifiedRows(db) {
+  try {
+    const agg = await db.collection('waitlist').where('status', '==', 'verified').count().get();
+    const n = agg.data().count;
+    return typeof n === 'number' ? n : 0;
+  } catch (e) {
+    try { console.warn('[waitlist] count() aggregation unavailable:', e && e.message); } catch (_) {}
+    return null;
+  }
+}
+
+/* getVerifiedCount — current number of occupied VIP spots.
+   Prefers the authoritative counter doc; if it doesn't exist yet
+   (pre-seed), falls back to a live aggregation count of verified rows.
+   Read-only — never writes. Used by the subscribe capacity gate and
+   the public status endpoint. */
+async function getVerifiedCount(db) {
+  let snap = null;
+  try { snap = await counterRef(db).get(); } catch (_) { snap = null; }
+  if (snap && snap.exists) {
+    const v = (snap.data() || {}).verifiedCount;
+    if (typeof v === 'number' && v >= 0) return v;
+  }
+  const counted = await countVerifiedRows(db);
+  return counted == null ? 0 : counted;
+}
+
 /* ── Firebase Admin SDK boot ────────────────────────────────
    Credentials are loaded from environment in this priority:
      1. FIREBASE_SERVICE_ACCOUNT_JSON  — single var with full JSON
@@ -232,5 +295,10 @@ module.exports = {
   json,
   redirect,
   clientIp,
-  userAgent
+  userAgent,
+  /* VIP capacity */
+  VIP_WAITLIST_CAPACITY,
+  counterRef,
+  countVerifiedRows,
+  getVerifiedCount
 };

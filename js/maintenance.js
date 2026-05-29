@@ -105,18 +105,26 @@
       heading_em: 'beautiful',
       sub:        'Aura is in a brief studio moment — refining the curation, the circles, the small details. We’ll be back soon.',
       patience:   'Welcome to your editorial moment.',
-      waitlist_eyebrow: 'Be the first inside',
+      waitlist_eyebrow: 'VIP Early Access',
+      waitlist_subhead: 'Join the first 300 Aura insiders and get invited before everyone else.',
+      waitlist_spots:   'Limited early access · 300 VIP spots',
+      waitlist_spots_remaining: 'Only {n} VIP spots remaining',
       waitlist_label:   'Your email',
-      waitlist_placeholder: 'you@example.com',
-      waitlist_cta:     'Join the waitlist',
+      waitlist_placeholder: 'Enter your email for VIP access',
+      waitlist_cta:     'Join VIP Waitlist',
+      waitlist_notify_cta: 'Notify me if a spot opens',
       waitlist_invalid: 'Please enter a real, well-formed email.',
       waitlist_sending: 'Sending…',
-      waitlist_success: 'We sent you an email ✨',
-      waitlist_success_sub: 'Go confirm your spot — we’re waiting for you.',
-      waitlist_already: 'You’re already on the list ✨',
-      waitlist_already_sub: 'We’ll let you know the moment we open the doors.',
+      waitlist_success: 'Check your email ✨',
+      waitlist_success_sub: 'Confirm your VIP spot — we’re waiting for you.',
+      waitlist_already: 'You’re already on the VIP list ✨',
+      waitlist_already_sub: 'Nothing more to do — we’ll see you at early access.',
       waitlist_resent:  'We sent a fresh link ✨',
       waitlist_resent_sub: 'Your previous link expired. Check your email — the new one is valid for 24 hours.',
+      waitlist_full_eyebrow: 'VIP spots are currently full',
+      waitlist_full_sub: 'Leave your email and we’ll notify you if more spots open.',
+      waitlist_full_success: 'You’re on the notify list ✨',
+      waitlist_full_success_sub: 'If a VIP spot opens, you’ll be the first to know.',
       waitlist_rate:    'Too many tries. Take a breath and try again in a minute.',
       waitlist_email_failed: 'We couldn’t send the email',
       waitlist_email_failed_sub: 'Please check your address and try again.',
@@ -140,18 +148,26 @@
       heading_em: 'precioso',
       sub:        'Aura está en un momento de estudio — refinando la curación, los círculos, los pequeños detalles. Volveremos pronto.',
       patience:   'Bienvenida a tu momento editorial.',
-      waitlist_eyebrow: 'Sé la primera en entrar',
+      waitlist_eyebrow: 'Acceso VIP anticipado',
+      waitlist_subhead: 'Únete a las primeras 300 insiders de Aura y recibe la invitación antes que nadie.',
+      waitlist_spots:   'Acceso anticipado limitado · 300 lugares VIP',
+      waitlist_spots_remaining: 'Solo quedan {n} lugares VIP',
       waitlist_label:   'Tu email',
-      waitlist_placeholder: 'tu@email.com',
-      waitlist_cta:     'Unirse a la lista',
+      waitlist_placeholder: 'Introduce tu email para acceso VIP',
+      waitlist_cta:     'Unirme a la lista VIP',
+      waitlist_notify_cta: 'Avisarme si se abre un lugar',
       waitlist_invalid: 'Introduce un email real y bien formado.',
       waitlist_sending: 'Enviando…',
-      waitlist_success: 'Te enviamos un email ✨',
-      waitlist_success_sub: 'Ve a confirmar tu lugar — te estamos esperando.',
-      waitlist_already: 'Ya estás en la lista ✨',
-      waitlist_already_sub: 'Te avisaremos en el momento que abramos las puertas.',
+      waitlist_success: 'Revisa tu email ✨',
+      waitlist_success_sub: 'Confirma tu lugar VIP — te estamos esperando.',
+      waitlist_already: 'Ya estás en la lista VIP ✨',
+      waitlist_already_sub: 'Nada más que hacer — nos vemos en el acceso anticipado.',
       waitlist_resent:  'Enviamos un enlace nuevo ✨',
       waitlist_resent_sub: 'Tu enlace anterior caducó. Revisa tu email — el nuevo es válido durante 24 horas.',
+      waitlist_full_eyebrow: 'Los lugares VIP están llenos',
+      waitlist_full_sub: 'Deja tu email y te avisaremos si se abren más lugares.',
+      waitlist_full_success: 'Estás en la lista de avisos ✨',
+      waitlist_full_success_sub: 'Si se abre un lugar VIP, serás la primera en saberlo.',
       waitlist_rate:    'Demasiados intentos. Respira y vuelve a intentarlo en un minuto.',
       waitlist_email_failed: 'No pudimos enviar el email',
       waitlist_email_failed_sub: 'Revisa tu dirección y vuelve a intentarlo.',
@@ -175,18 +191,26 @@
       heading_em: 'جميلاً',
       sub:        'أورا في لحظة استوديو قصيرة — نُحسّن التنسيق، الدوائر، والتفاصيل الصغيرة. سنعود قريبًا.',
       patience:   'مرحبًا بكِ في لحظتكِ التحريريّة.',
-      waitlist_eyebrow: 'كوني أوّل من تدخل',
+      waitlist_eyebrow: 'وصول VIP مبكّر',
+      waitlist_subhead: 'انضمّي إلى أوّل ٣٠٠ من رائدات أورا واحصلي على الدعوة قبل الجميع.',
+      waitlist_spots:   'وصول مبكّر محدود · ٣٠٠ مقعد VIP',
+      waitlist_spots_remaining: 'بقي {n} مقعد VIP فقط',
       waitlist_label:   'بريدكِ الإلكتروني',
-      waitlist_placeholder: 'you@example.com',
-      waitlist_cta:     'انضمّي إلى القائمة',
+      waitlist_placeholder: 'أدخلي بريدكِ للوصول المميّز',
+      waitlist_cta:     'انضمّي إلى قائمة VIP',
+      waitlist_notify_cta: 'أعلِميني عند توفّر مكان',
       waitlist_invalid: 'يرجى إدخال بريد حقيقي وصحيح.',
       waitlist_sending: 'جارٍ الإرسال…',
-      waitlist_success: 'أرسلنا لكِ بريدًا ✨',
-      waitlist_success_sub: 'اذهبي لتأكيد مكانكِ — نحن بانتظاركِ.',
-      waitlist_already: 'أنتِ بالفعل على القائمة ✨',
-      waitlist_already_sub: 'سنُعلمكِ في اللحظة التي نفتح فيها الأبواب.',
+      waitlist_success: 'تحقّقي من بريدكِ ✨',
+      waitlist_success_sub: 'أكّدي مقعدكِ المميّز — نحن بانتظاركِ.',
+      waitlist_already: 'أنتِ بالفعل على قائمة VIP ✨',
+      waitlist_already_sub: 'لا شيء آخر يُفعَل — نراكِ عند الوصول المبكّر.',
       waitlist_resent:  'أرسلنا رابطًا جديدًا ✨',
       waitlist_resent_sub: 'انتهت صلاحيّة رابطكِ السابق. تحقّقي من بريدكِ — الرابط الجديد صالح لمدة 24 ساعة.',
+      waitlist_full_eyebrow: 'مقاعد VIP ممتلئة حاليًا',
+      waitlist_full_sub: 'اتركي بريدكِ وسنُعلمكِ إذا توفّرت مقاعد إضافيّة.',
+      waitlist_full_success: 'أنتِ على قائمة الإشعار ✨',
+      waitlist_full_success_sub: 'إذا توفّر مقعد VIP، ستكونين أوّل من يعلم.',
       waitlist_rate:    'محاولات كثيرة. خذي نفسًا وحاولي بعد دقيقة.',
       waitlist_email_failed: 'تعذّر إرسال البريد',
       waitlist_email_failed_sub: 'تحقّقي من العنوان وحاولي مرة أخرى.',
@@ -210,18 +234,26 @@
       heading_em: 'יפהפה',
       sub:        'אורה ברגע סטודיו קצר — מחדדות את האוצרות, החוגים והפרטים הקטנים. נחזור בקרוב.',
       patience:   'ברוכה הבאה לרגע העריכה שלך.',
-      waitlist_eyebrow: 'להיות הראשונה בפנים',
+      waitlist_eyebrow: 'גישה מוקדמת VIP',
+      waitlist_subhead: 'הצטרפי ל-300 הראשונות של אורה וקבלי הזמנה לפני כולן.',
+      waitlist_spots:   'גישה מוקדמת מוגבלת · 300 מקומות VIP',
+      waitlist_spots_remaining: 'נותרו רק {n} מקומות VIP',
       waitlist_label:   'האימייל שלך',
-      waitlist_placeholder: 'you@example.com',
-      waitlist_cta:     'הצטרפות לרשימה',
+      waitlist_placeholder: 'הזיני אימייל לגישת VIP',
+      waitlist_cta:     'הצטרפות לרשימת VIP',
+      waitlist_notify_cta: 'עדכנו אותי אם יתפנה מקום',
       waitlist_invalid: 'נא להזין אימייל אמיתי ותקין.',
       waitlist_sending: 'שולחים…',
-      waitlist_success: 'שלחנו לך אימייל ✨',
-      waitlist_success_sub: 'לכי לאשר את המקום שלך — אנחנו מחכים לך.',
-      waitlist_already: 'את כבר ברשימה ✨',
-      waitlist_already_sub: 'נעדכן אותך ברגע שניפתח את הדלתות.',
+      waitlist_success: 'בדקי את האימייל ✨',
+      waitlist_success_sub: 'אשרי את מקום ה-VIP שלך — אנחנו מחכים לך.',
+      waitlist_already: 'את כבר ברשימת ה-VIP ✨',
+      waitlist_already_sub: 'אין מה לעשות — ניפגש בגישה המוקדמת.',
       waitlist_resent:  'שלחנו לך לינק חדש ✨',
       waitlist_resent_sub: 'הלינק הקודם פג תוקף. בדקי את האימייל — החדש בתוקף ל-24 שעות.',
+      waitlist_full_eyebrow: 'מקומות ה-VIP מלאים כרגע',
+      waitlist_full_sub: 'השאירי אימייל ונעדכן אותך אם יתפנו מקומות נוספים.',
+      waitlist_full_success: 'את ברשימת ההתראות ✨',
+      waitlist_full_success_sub: 'אם יתפנה מקום VIP, תהיי הראשונה לדעת.',
       waitlist_rate:    'יותר מדי ניסיונות. קחי נשימה ונסי שוב בעוד דקה.',
       waitlist_email_failed: 'לא הצלחנו לשלוח את האימייל',
       waitlist_email_failed_sub: 'בדקי את הכתובת ונסי שוב.',
@@ -473,6 +505,13 @@
     + '  .aura-waitlist-hp{position:absolute;left:-9999px;top:auto;width:1px;height:1px;opacity:0;pointer-events:none}' /* honeypot — bots fill it, humans never see it */
     + '  .aura-waitlist{position:relative;margin-top:40px;width:100%;max-width:380px;animation:auraRise 2.2s 1.05s cubic-bezier(.2,.7,.2,1) both}'
     + '  .aura-waitlist-eyebrow{display:block;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:9px;font-weight:500;letter-spacing:.42em;text-transform:uppercase;color:#c79a85;margin-bottom:12px;text-align:center}'
+    /* VIP value-prop line + limited-spots indicator (sits above the form) */
+    + '  .aura-waitlist-subhead{display:block;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:13px;font-weight:300;line-height:1.6;letter-spacing:.01em;color:#b8a99a;margin:0 auto 14px;max-width:34ch;text-align:center}'
+    + '  .aura-waitlist-spots{display:inline-flex;align-items:center;gap:.55em;margin:0 0 18px;padding:6px 15px;border:1px solid rgba(199,154,133,.26);border-radius:999px;background:rgba(199,154,133,.05);font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:9.5px;font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:rgba(231,200,181,.82);transition:color .4s ease,border-color .4s ease}'
+    + '  .aura-waitlist-spots-dot{width:5px;height:5px;border-radius:50%;background:#c79a85;box-shadow:0 0 8px rgba(199,154,133,.6);flex:0 0 5px}'
+    + '  .aura-waitlist-spots.is-scarce{border-color:rgba(212,154,140,.5);color:#e7c8b5}'
+    + '  .aura-waitlist-spots.is-scarce .aura-waitlist-spots-dot{background:#e7c8b5;box-shadow:0 0 10px rgba(231,200,181,.85);animation:auraTwinkle 3.2s ease-in-out infinite}'
+    + '  .aura-waitlist-spots.is-full{border-color:rgba(212,154,140,.5);color:#d4b0a4}'
     + '  .aura-waitlist-form{display:flex;align-items:stretch;gap:8px;width:100%}'
     + '  .aura-waitlist-input{flex:1;min-width:0;background:rgba(255,255,255,.04);border:1px solid rgba(199,154,133,.22);border-radius:2px;padding:13px 14px;font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-size:14px;color:#f0e5d6;outline:none;transition:border-color .24s ease,background .24s ease;-webkit-appearance:none;appearance:none}'
     + '  .aura-waitlist-input::placeholder{color:rgba(138,122,108,.55)}'
@@ -561,6 +600,8 @@
     +   '<div class="aura-shimmer" aria-hidden="true"></div>'
     +   '<div class="aura-waitlist" id="aura-waitlist">'
     +     '<span class="aura-waitlist-eyebrow">' + MTH('waitlist_eyebrow') + '</span>'
+    +     '<span class="aura-waitlist-subhead" id="aura-waitlist-subhead">' + MTH('waitlist_subhead') + '</span>'
+    +     '<div class="aura-waitlist-spots" id="aura-waitlist-spots"><span class="aura-waitlist-spots-dot" aria-hidden="true"></span><span id="aura-waitlist-spots-text">' + MTH('waitlist_spots') + '</span></div>'
     +     '<form class="aura-waitlist-form" id="aura-waitlist-form" autocomplete="off" novalidate>'
     +       '<label class="visually-hidden" for="aura-waitlist-email" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">' + MTH('waitlist_label') + '</label>'
     +       '<input class="aura-waitlist-input" type="email" id="aura-waitlist-email" name="email" placeholder="' + MTH('waitlist_placeholder') + '" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="off" required>'
@@ -744,6 +785,9 @@
     var subEl     = document.getElementById('aura-waitlist-success-sub');
     var closeBtn  = document.getElementById('aura-waitlist-success-close');
     var retryBtn  = document.getElementById('aura-waitlist-success-retry');
+    var subheadEl = document.getElementById('aura-waitlist-subhead');
+    var spotsEl   = document.getElementById('aura-waitlist-spots');
+    var spotsTxt  = document.getElementById('aura-waitlist-spots-text');
     var hpEl      = form && form.querySelector('input[name="website"]');
     if (!form || !emailEl || !btnEl) return;
 
@@ -753,6 +797,17 @@
        are never caught by it. */
     var t0 = Date.now();
     var MIN_RENDER_MS = 2 * 1000;
+
+    /* When the live status endpoint reports the VIP list is full, the
+       form becomes an overflow "notify me" capture instead of a VIP
+       signup. _fullMode tracks that so the submit handler and the
+       success modal show the truthful copy. */
+    var _fullMode = false;
+    /* Show the live remaining count only once spots are genuinely
+       scarce — never reveal an embarrassingly low early count, and
+       never imply scarcity that isn't real (per the truthfulness
+       contract). Below this many spots left, surface the real number. */
+    var SCARCITY_THRESHOLD = 50;
 
     var _busy = false;
     function setHint(msg, state) {
@@ -769,7 +824,10 @@
       _busy = !!b;
       if (btnEl)   btnEl.disabled  = _busy;
       if (emailEl) emailEl.disabled = _busy;
-      if (btnEl)   btnEl.textContent = _busy ? MT('waitlist_sending') : MT('waitlist_cta');
+      /* Idle label depends on mode: VIP signup vs. overflow "notify me". */
+      if (btnEl)   btnEl.textContent = _busy
+        ? MT('waitlist_sending')
+        : (_fullMode ? MT('waitlist_notify_cta') : MT('waitlist_cta'));
     }
     /* reveal(state) — swap copy + show the focused modal.
        The title (<h2>) and sub (<p>) are now SIBLINGS inside the
@@ -783,6 +841,11 @@
       } else if (state === 'verification_resent') {
         titleKey = 'waitlist_resent';
         subKey   = 'waitlist_resent_sub';
+      } else if (state === 'waitlist_full') {
+        /* All VIP spots taken — they were added to the overflow notify
+           list. No email is sent, so we never claim one was. */
+        titleKey = 'waitlist_full_success';
+        subKey   = 'waitlist_full_success_sub';
       } else if (state === 'email_send_failed') {
         titleKey = 'waitlist_email_failed';
         subKey   = 'waitlist_email_failed_sub';
@@ -896,6 +959,12 @@
             reveal('already_subscribed');
           } else if (s === 'verification_resent') {
             reveal('verification_resent');
+          } else if (s === 'waitlist_full') {
+            /* Spots filled — they're on the overflow notify list. Lock
+               the form into full mode so the copy stays truthful if they
+               come back, and show the "notify list" confirmation. */
+            applyFullMode(true);
+            reveal('waitlist_full');
           } else {
             reveal('subscribed');
           }
@@ -935,6 +1004,62 @@
         try { console.warn('[waitlist] network error:', err && err.message); } catch (_) {}
       });
     });
+
+    /* applyFullMode(on) — switch the form between VIP-signup and
+       overflow "notify me" presentation. Only ever called with on=true
+       when the cap is genuinely reached (live status endpoint OR the
+       server's waitlist_full response). */
+    function applyFullMode(on) {
+      _fullMode = !!on;
+      if (spotsEl) {
+        spotsEl.classList.toggle('is-full', _fullMode);
+        if (_fullMode) spotsEl.classList.remove('is-scarce');
+      }
+      if (_fullMode) {
+        if (spotsTxt)  spotsTxt.textContent  = MT('waitlist_full_eyebrow');
+        if (subheadEl) subheadEl.textContent = MT('waitlist_full_sub');
+      } else {
+        if (spotsTxt)  spotsTxt.textContent  = MT('waitlist_spots');
+        if (subheadEl) subheadEl.textContent = MT('waitlist_subhead');
+      }
+      if (!_busy && btnEl) {
+        btnEl.textContent = _fullMode ? MT('waitlist_notify_cta') : MT('waitlist_cta');
+      }
+    }
+
+    /* applyScarcity(remaining) — when spots are genuinely low, replace
+       the calm "Limited early access" line with the real remaining
+       count. Never fabricates urgency: shown only when remaining is
+       positive AND at/below the scarcity threshold. */
+    function applyScarcity(remaining) {
+      if (_fullMode) return;
+      if (typeof remaining !== 'number' || remaining <= 0) return;
+      if (remaining > SCARCITY_THRESHOLD) return;
+      if (spotsEl)  spotsEl.classList.add('is-scarce');
+      if (spotsTxt) spotsTxt.textContent = MT('waitlist_spots_remaining').replace('{n}', String(remaining));
+    }
+
+    /* Fetch the live VIP capacity once on load. Read-only, public, no
+       PII. Pure progressive enhancement — if it fails, the static
+       "Limited to 300 VIP spots" copy stays, and we NEVER flip to the
+       full state on a transient error (the endpoint itself fails open). */
+    (function _loadStatus() {
+      try {
+        fetch('/.netlify/functions/waitlist-status', {
+          method: 'GET', mode: 'same-origin', cache: 'no-store'
+        }).then(function (res) {
+          return res.ok ? res.json() : null;
+        }).then(function (data) {
+          if (!data || data.ok === false) return;
+          if (wrap && wrap.classList.contains('is-success')) return; /* don't disturb an open modal */
+          if (data.isFull === true) {
+            applyFullMode(true);
+          } else if (typeof data.spotsRemaining === 'number') {
+            applyScarcity(data.spotsRemaining);
+          }
+        }).catch(function () { /* keep static copy */ });
+      } catch (e) { /* keep static copy */ }
+    })();
   }
 
   /* Identity-memory helpers — separate from _wireAdminEntry so the

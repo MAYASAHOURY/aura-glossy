@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- ━━━━ MAINTENANCE GATE — must run FIRST. ━━━━ -->
-<script src="js/maintenance.js?v=15"></script>
+<script src="js/maintenance.js?v=16"></script>
 <!-- ━━━━ Synchronous head-gate: this is the only strict-gated page
      besides settings.html. We bounce non-authed users straight to
      login.html before Firebase even loads. The real admin check
@@ -375,6 +375,49 @@ body {
   text-align: right;
   min-width: 36px;
 }
+
+/* ── VIP capacity headline ───────────────────────────────── */
+.ar-vip-card { background: linear-gradient(180deg, rgba(199,154,133,0.05), transparent); }
+.ar-vip-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ar-vip-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+.ar-vip-status.is-full { color: var(--red); }
+.ar-vip-status.is-full .dot { background: var(--red); }
+.ar-vip-status.is-open { color: var(--green); }
+.ar-vip-headline {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  margin: 6px 0 14px;
+}
+.ar-vip-big {
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+  font-size: 34px; line-height: 1; color: var(--ink); font-weight: 500;
+}
+.ar-vip-big .of { color: var(--ink-mute); font-size: 20px; }
+.ar-vip-headline-label { font-size: 12px; color: var(--ink-mute); }
+.ar-vip-headline-label strong { color: var(--gold); font-weight: 600; }
+.ar-vip-bar {
+  position: relative; height: 10px; border-radius: 999px;
+  background: var(--line); overflow: hidden; margin-bottom: 4px;
+}
+.ar-vip-bar-fill {
+  position: absolute; inset: 0 auto 0 0;
+  background: linear-gradient(90deg, var(--gold), var(--rose));
+  border-radius: 999px; transition: width 0.5s ease; min-width: 2px;
+}
+.ar-vip-bar-fill.is-full { background: linear-gradient(90deg, var(--red), var(--gold)); }
+.ar-vip-pct { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); text-align: right; }
+.ar-vip-note {
+  margin-top: 10px; font-size: 11px; line-height: 1.5; color: var(--ink-mute);
+  border-top: 1px solid var(--line); padding-top: 10px;
+}
+.ar-vip-note code {
+  font-family: var(--font-mono); font-size: 10.5px;
+  background: var(--line); padding: 1px 5px; border-radius: 3px; color: var(--ink-soft);
+}
+.ar-vip-warn { color: var(--red); }
 
 /* ── Funnel ──────────────────────────────────────────────── */
 .ar-funnel { display: flex; flex-direction: column; gap: 4px; }
@@ -774,10 +817,28 @@ body {
     <section class="ar-section">
       <div class="ar-section-head">
         <span class="ar-section-num">04</span>
-        <h2 class="ar-section-title">Waitlist</h2>
-        <span class="ar-section-sub" id="ar-waitlist-meta">Double opt-in via Brevo</span>
+        <h2 class="ar-section-title">VIP Waitlist</h2>
+        <span class="ar-section-sub" id="ar-waitlist-meta">Limited VIP early access · double opt-in</span>
       </div>
-      <div class="ar-kpi-grid" id="ar-waitlist-kpis"></div>
+
+      <!-- VIP Early Access capacity headline. Numbers come from the
+           authoritative waitlist_meta/counters doc (verifiedCount +
+           capacity), cross-checked against the row data. -->
+      <div class="ar-card ar-vip-card">
+        <div class="ar-card-head">
+          <span class="ar-card-title">VIP Early Access capacity</span>
+          <span class="ar-vip-status" id="ar-vip-status"><span class="dot"></span><span id="ar-vip-status-text">—</span></span>
+        </div>
+        <div class="ar-vip-headline">
+          <span class="ar-vip-big" id="ar-vip-big">—</span>
+          <span class="ar-vip-headline-label" id="ar-vip-headline-label"></span>
+        </div>
+        <div class="ar-vip-bar"><div class="ar-vip-bar-fill" id="ar-vip-bar-fill" style="width:0%"></div></div>
+        <div class="ar-vip-pct" id="ar-vip-pct"></div>
+        <div class="ar-vip-note" id="ar-vip-note"></div>
+      </div>
+
+      <div class="ar-kpi-grid" id="ar-waitlist-kpis" style="margin-top:14px"></div>
       <div class="ar-cols-2" style="margin-top:14px">
         <div class="ar-card">
           <div class="ar-card-head"><span class="ar-card-title">Signups by language</span></div>
@@ -788,9 +849,15 @@ body {
           <div class="ar-bar-list" id="ar-waitlist-sources"></div>
         </div>
       </div>
-      <div class="ar-card" style="margin-top:14px">
-        <div class="ar-card-head"><span class="ar-card-title">Latest waitlist entries</span><span class="ar-card-meta" id="ar-waitlist-table-meta"></span></div>
-        <div id="ar-waitlist-table"></div>
+      <div class="ar-cols-2" style="margin-top:14px">
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Latest signups</span><span class="ar-card-meta" id="ar-waitlist-table-meta"></span></div>
+          <div id="ar-waitlist-table"></div>
+        </div>
+        <div class="ar-card">
+          <div class="ar-card-head"><span class="ar-card-title">Latest confirmed VIP members</span><span class="ar-card-meta" id="ar-waitlist-verified-meta"></span></div>
+          <div id="ar-waitlist-verified-table"></div>
+        </div>
       </div>
     </section>
 
@@ -992,7 +1059,7 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="js/firebase.js?v=23"></script>
-<script src="js/admin-report.js?v=9"></script>
+<script src="js/admin-report.js?v=10"></script>
 
 </body>
 </html>

@@ -44,10 +44,10 @@ async function sendBrevoVerification({ to, lang, verifyUrl }) {
 
   const html = _buildEmailHtml({ verifyUrl, lang });
   const subject =
-    lang === 'es' ? 'Confirma tu lugar en la lista de Aura Glossy ✨'
-  : lang === 'ar' ? 'تأكيد مكانكِ في قائمة Aura Glossy ✨'
-  : lang === 'he' ? 'אישור המקום שלך ב-Aura Glossy ✨'
-                  : 'Confirm your Aura Glossy waitlist spot ✨';
+    lang === 'es' ? 'Confirma tu lugar VIP en Aura Glossy ✨'
+  : lang === 'ar' ? 'أكّدي مكانكِ المميّز (VIP) في Aura Glossy ✨'
+  : lang === 'he' ? 'אישור מקום ה-VIP שלך ב-Aura Glossy ✨'
+                  : 'Confirm your Aura Glossy VIP spot ✨';
 
   const res = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
@@ -118,34 +118,34 @@ function _buildEmailHtml({ verifyUrl, lang }) {
      Kept short and elegant — no marketing copy, no extra paragraphs. */
   const t = {
     en: {
-      eyebrow: 'Aura Glossy',
-      h1:      'Confirm your spot ✨',
-      body:    'Do you want to save your spot on the Aura Glossy waitlist?',
-      cta:     'Yes, confirm my spot ✓',
+      eyebrow: 'Aura Glossy · VIP Early Access',
+      h1:      'Confirm your VIP spot ✨',
+      body:    'Your VIP early access spot is waiting. Confirm to join the first 300 Aura insiders — early access, first previews, and priority invitations.',
+      cta:     'Yes, confirm my VIP spot ✓',
       hint:    "If this wasn't you, you can ignore this email.",
       foot:    'This link expires in 24 hours.'
     },
     es: {
-      eyebrow: 'Aura Glossy',
-      h1:      'Confirma tu lugar ✨',
-      body:    '¿Quieres guardar tu lugar en la lista de Aura Glossy?',
-      cta:     'Sí, confirmar mi lugar ✓',
+      eyebrow: 'Aura Glossy · Acceso VIP anticipado',
+      h1:      'Confirma tu lugar VIP ✨',
+      body:    'Tu lugar de acceso VIP anticipado te espera. Confírmalo para unirte a las primeras 300 insiders de Aura — acceso anticipado, primeras vistas previas e invitaciones prioritarias.',
+      cta:     'Sí, confirmar mi lugar VIP ✓',
       hint:    'Si esto no fuiste tú, puedes ignorar este email.',
       foot:    'Este enlace expira en 24 horas.'
     },
     ar: {
-      eyebrow: 'Aura Glossy',
-      h1:      'أكّدي مكانكِ ✨',
-      body:    'هل تريدين حفظ مكانكِ في قائمة Aura Glossy؟',
-      cta:     'نعم، تأكيد مكاني ✓',
+      eyebrow: 'Aura Glossy · وصول VIP مبكّر',
+      h1:      'أكّدي مكانكِ المميّز ✨',
+      body:    'مكانكِ في الوصول المبكّر (VIP) بانتظاركِ. أكّديه للانضمام إلى أوّل ٣٠٠ من رائدات أورا — وصول مبكّر، أوّل المعاينات، ودعوات ذات أولويّة.',
+      cta:     'نعم، تأكيد مكاني المميّز ✓',
       hint:    'إذا لم تكوني أنتِ، يمكنكِ تجاهل هذا البريد.',
       foot:    'ينتهي هذا الرابط خلال ٢٤ ساعة.'
     },
     he: {
-      eyebrow: 'Aura Glossy',
-      h1:      'אישור המקום שלך ✨',
-      body:    'האם תרצי לשמור את המקום שלך ברשימת Aura Glossy?',
-      cta:     'כן, אישור המקום שלי ✓',
+      eyebrow: 'Aura Glossy · גישה מוקדמת VIP',
+      h1:      'אישור מקום ה-VIP שלך ✨',
+      body:    'מקום הגישה המוקדמת (VIP) שלך ממתין. אשרי כדי להצטרף ל-300 הראשונות של אורה — גישה מוקדמת, הצצות ראשונות, והזמנות בעדיפות.',
+      cta:     'כן, אישור מקום ה-VIP שלי ✓',
       hint:    'אם זו לא היית את, אפשר להתעלם מהמייל.',
       foot:    'הקישור פג תוקף בעוד 24 שעות.'
     }
@@ -247,8 +247,63 @@ exports.handler = async function (event) {
   let payload;
 
   if (existing && existing.isVerified === true) {
-    /* Already verified — surface this state. No email is sent. */
+    /* Already a confirmed VIP — they already hold a spot. Surface
+       this state regardless of capacity. No email is sent. */
     return lib.json(200, { status: 'already_subscribed' });
+  }
+
+  /* ── 6b. VIP capacity gate ──────────────────────────────────
+     Only VERIFIED emails occupy a VIP spot (the cap counts confirmed
+     members, never pending ones). If every spot is already claimed
+     there is nothing to confirm, so we MUST NOT send a confirmation
+     email — that would promise a VIP spot that doesn't exist. Instead
+     we store the address as an overflow 'full_waitlist' entry (the
+     "notify me if more spots open" list) and return a distinct
+     waitlist_full state. We are NOT claiming an email was sent, so the
+     truthfulness contract holds. The hard 300 cap is re-enforced
+     atomically inside the verify transaction, so even if the count is
+     briefly stale here it can never be exceeded. */
+  let verifiedCount = 0;
+  try {
+    verifiedCount = await lib.getVerifiedCount(db);
+  } catch (e) {
+    /* Fail OPEN to the normal opt-in flow rather than wrongly telling a
+       real user the list is full — the verify-time transaction is the
+       authoritative cap, so a missed gate here costs at most one extra
+       confirmation email, never an over-count. */
+    console.warn('[waitlist-subscribe] verified count read failed:', e && e.message);
+    verifiedCount = 0;
+  }
+
+  if (verifiedCount >= lib.VIP_WAITLIST_CAPACITY) {
+    const overflow = {
+      lang:           lang,
+      sourcePage:     sourcePage,
+      userAgent:      lib.userAgent(event),
+      ip:             ip ? ip.slice(0, 80) : null,
+      isVerified:     false,
+      status:         'full_waitlist',
+      fullWaitlistAt: lib.admin.firestore.FieldValue.serverTimestamp(),
+      /* No spot to confirm → drop any stale verify token. */
+      verifyToken:          lib.admin.firestore.FieldValue.delete(),
+      verifyTokenExpiresAt: lib.admin.firestore.FieldValue.delete()
+    };
+    if (!existing) {
+      overflow.email     = email;
+      overflow.emailHash = docId;
+      overflow.createdAt = lib.admin.firestore.FieldValue.serverTimestamp();
+    }
+    try {
+      await doc.set(overflow, { merge: true });
+    } catch (e) {
+      console.error('[waitlist-subscribe] overflow write failed:', e && e.message);
+      return lib.json(500, { status: 'server_error', detail: 'firestore_write_failed' });
+    }
+    return lib.json(200, {
+      status:         'waitlist_full',
+      capacity:       lib.VIP_WAITLIST_CAPACITY,
+      spotsRemaining: 0
+    });
   }
 
   if (existing && !existing.isVerified) {
@@ -342,10 +397,24 @@ exports.handler = async function (event) {
     return lib.json(500, { status: 'server_error', detail: 'email_send_failed' });
   }
 
+  /* Stamp lastEmailSentAt only AFTER a confirmed successful send, so
+     the field never lies about an email that didn't ship. Best-effort:
+     the email already went out, so a failed metadata write must not
+     fail the request. */
+  try {
+    await doc.set({
+      lastEmailSentAt: lib.admin.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+  } catch (e) {
+    console.warn('[waitlist-subscribe] lastEmailSentAt write failed (non-fatal):', e && e.message);
+  }
+
   /* ── 9. Success response ───────────────────────────────── */
   /* By contract: 200 means a Brevo email was sent + Firestore row is
      in 'pending' state with isVerified=false + verifyToken set. */
   return lib.json(200, {
-    status: existing ? 'verification_resent' : 'subscribed'
+    status:         existing ? 'verification_resent' : 'subscribed',
+    capacity:       lib.VIP_WAITLIST_CAPACITY,
+    spotsRemaining: Math.max(0, lib.VIP_WAITLIST_CAPACITY - verifiedCount)
   });
 };

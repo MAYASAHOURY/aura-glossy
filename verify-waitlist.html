@@ -121,6 +121,28 @@ p.sub {
   color: #b8a99a;
   animation: rise 1.6s 0.7s cubic-bezier(.2,.7,.2,1) both;
 }
+/* VIP spot badge — only rendered when a confirmed spot number exists.
+   A quiet rose-gold pill that makes the membership feel real. */
+.vip-spot {
+  margin-top: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 9px 18px;
+  border: 1px solid rgba(199,154,133,0.5);
+  border-radius: 999px;
+  background: radial-gradient(ellipse 120% 100% at 50% 0%, rgba(231,200,181,.16) 0%, transparent 70%), rgba(199,154,133,0.07);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #e7c8b5;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 0 22px rgba(199,154,133,.10);
+  animation: rise 1.7s 0.8s cubic-bezier(.2,.7,.2,1) both;
+}
+.vip-spot[hidden] { display: none; }
+.vip-spot .vip-spot-star { color: #c79a85; letter-spacing: 0; animation: twinkle 4.4s ease-in-out infinite; }
 .shimmer {
   position: relative;
   margin-top: 36px;
@@ -211,6 +233,7 @@ p.sub {
   <div class="icon-wrap" id="icon" aria-hidden="true">✦</div>
   <h1 id="title">—</h1>
   <p class="sub" id="sub">—</p>
+  <div class="vip-spot" id="vip-spot" hidden></div>
   <div class="shimmer" aria-hidden="true"></div>
   <div class="actions" id="actions"></div>
 </main>
@@ -223,34 +246,44 @@ p.sub {
    Translations bundled inline since this is a single-purpose page;
    no need to load js/i18n.js just for four strings per language. */
 
+/* spotLabel: per-language prefix for the "VIP Spot #N" badge. Rendered
+   only on verified / already_verified states when a number is present. */
 var COPY = {
   en: {
-    verified:         { icon: '✓', cls: 'is-success', h1: 'You’re in <em>✨</em>',  sub: 'Welcome to Aura.', cta: 'Back to Aura Glossy', foot: 'We’ll let you know the moment we open the doors.' },
-    already_verified: { icon: '✦', cls: 'is-info',    h1: 'You’re already in.',  sub: 'Looks like this email is already on the list. Nothing more to do — we’ll see you at the launch.', cta: 'Back to Aura Glossy', foot: 'Thank you for the patience.' },
+    spotLabel: 'VIP Spot #',
+    verified:         { icon: '✓', cls: 'is-success', h1: 'You’re in <em>✨</em>',  sub: 'Your VIP spot is confirmed. Welcome to the first 300 Aura insiders.', cta: 'Back to Aura Glossy', foot: 'We’ll email you the moment early access opens.' },
+    already_verified: { icon: '✦', cls: 'is-info',    h1: 'You’re already on the VIP list <em>✨</em>',  sub: 'This email is already a confirmed VIP. Nothing more to do — we’ll see you at early access.', cta: 'Back to Aura Glossy', foot: 'Thank you for the patience.' },
+    full:             { icon: '✦', cls: 'is-info',    h1: 'The VIP list just <em>filled up</em>.', sub: 'All 300 VIP spots were claimed. You’re on the priority notify list — we’ll email you the moment a spot opens.', cta: 'Back to Aura Glossy', foot: 'Aura Glossy · auraglossy.com' },
     expired:          { icon: '◐', cls: 'is-warn',    h1: 'This link <em>expired</em>.', sub: 'Verification links are valid for 24 hours. Pop your email in again and we’ll send a fresh one.', cta: 'Try again', ctaGhost: true, foot: 'Aura Glossy · auraglossy.com' },
     not_found:        { icon: '?', cls: 'is-warn',    h1: 'We couldn’t find this link.', sub: 'It may have already been used, or it doesn’t match anything in our list. You can re-enter your email to start fresh.', cta: 'Back to the waitlist', foot: 'Aura Glossy · auraglossy.com' },
     invalid:          { icon: '?', cls: 'is-warn',    h1: 'This link is invalid.',    sub: 'The verification link looks broken. Go back and re-enter your email — we’ll send a fresh one.', cta: 'Back to the waitlist', foot: 'Aura Glossy · auraglossy.com' },
     server_error:     { icon: '!', cls: 'is-warn',    h1: 'Something went wrong.',    sub: 'A temporary problem on our side. Please try the link again in a moment, or pop your email back in.', cta: 'Back to the waitlist', foot: 'Aura Glossy · auraglossy.com' }
   },
   es: {
-    verified:         { icon: '✓', cls: 'is-success', h1: 'Estás dentro <em>✨</em>', sub: 'Bienvenida a Aura.', cta: 'Volver a Aura Glossy', foot: 'Te avisaremos en el momento que abramos las puertas.' },
-    already_verified: { icon: '✦', cls: 'is-info',    h1: 'Ya estabas dentro.',      sub: 'Este email ya está en la lista. Nada más que hacer — nos vemos en el lanzamiento.', cta: 'Volver a Aura Glossy', foot: 'Gracias por la paciencia.' },
+    spotLabel: 'Lugar VIP n.º ',
+    verified:         { icon: '✓', cls: 'is-success', h1: 'Estás dentro <em>✨</em>', sub: 'Tu lugar VIP está confirmado. Bienvenida a las primeras 300 insiders de Aura.', cta: 'Volver a Aura Glossy', foot: 'Te avisaremos en el momento que abra el acceso anticipado.' },
+    already_verified: { icon: '✦', cls: 'is-info',    h1: 'Ya estás en la lista VIP <em>✨</em>',      sub: 'Este email ya es VIP confirmado. Nada más que hacer — nos vemos en el acceso anticipado.', cta: 'Volver a Aura Glossy', foot: 'Gracias por la paciencia.' },
+    full:             { icon: '✦', cls: 'is-info',    h1: 'La lista VIP se acaba de <em>llenar</em>.', sub: 'Los 300 lugares VIP se han ocupado. Estás en la lista de notificación prioritaria — te avisaremos en cuanto se abra un lugar.', cta: 'Volver a Aura Glossy', foot: 'Aura Glossy · auraglossy.com' },
     expired:          { icon: '◐', cls: 'is-warn',    h1: 'Este enlace <em>caducó</em>.', sub: 'Los enlaces son válidos durante 24 horas. Introduce tu email de nuevo y te enviaremos uno fresco.', cta: 'Intentar de nuevo', foot: 'Aura Glossy · auraglossy.com' },
     not_found:        { icon: '?', cls: 'is-warn',    h1: 'No encontramos este enlace.', sub: 'Puede que ya se haya usado, o no coincide con nada en nuestra lista. Vuelve a introducir tu email para empezar de nuevo.', cta: 'Volver a la lista', foot: 'Aura Glossy · auraglossy.com' },
     invalid:          { icon: '?', cls: 'is-warn',    h1: 'Enlace no válido.',  sub: 'El enlace parece estar roto. Vuelve a introducir tu email y te enviaremos uno fresco.', cta: 'Volver a la lista', foot: 'Aura Glossy · auraglossy.com' },
     server_error:     { icon: '!', cls: 'is-warn',    h1: 'Algo salió mal.',     sub: 'Un problema temporal de nuestro lado. Por favor inténtalo de nuevo en un momento.', cta: 'Volver a la lista', foot: 'Aura Glossy · auraglossy.com' }
   },
   ar: {
-    verified:         { icon: '✓', cls: 'is-success', h1: 'أنتِ بالداخل <em>✨</em>', sub: 'أهلاً بكِ في أورا.', cta: 'العودة إلى Aura Glossy', foot: 'سنُعلمكِ في اللحظة التي نفتح فيها الأبواب.' },
-    already_verified: { icon: '✦', cls: 'is-info',    h1: 'أنتِ بالفعل على القائمة.', sub: 'هذا البريد موجود مسبقًا على القائمة. لا شيء آخر يُفعَل — نراكِ عند الإطلاق.', cta: 'العودة إلى Aura Glossy', foot: 'شكراً لصبركِ.' },
+    spotLabel: 'مقعد VIP رقم ',
+    verified:         { icon: '✓', cls: 'is-success', h1: 'أنتِ بالداخل <em>✨</em>', sub: 'تم تأكيد مقعدكِ المميّز (VIP). أهلاً بكِ ضمن أوّل ٣٠٠ من رائدات أورا.', cta: 'العودة إلى Aura Glossy', foot: 'سنُراسلكِ في اللحظة التي يُفتح فيها الوصول المبكّر.' },
+    already_verified: { icon: '✦', cls: 'is-info',    h1: 'أنتِ بالفعل على قائمة VIP <em>✨</em>', sub: 'هذا البريد عضو VIP مؤكّد بالفعل. لا شيء آخر يُفعَل — نراكِ عند الوصول المبكّر.', cta: 'العودة إلى Aura Glossy', foot: 'شكراً لصبركِ.' },
+    full:             { icon: '✦', cls: 'is-info',    h1: 'اكتملت قائمة VIP للتوّ.', sub: 'تم حجز جميع المقاعد الـ٣٠٠ المميّزة. أنتِ على قائمة الإشعار ذات الأولويّة — سنُراسلكِ فور توفّر مكان.', cta: 'العودة إلى Aura Glossy', foot: 'Aura Glossy · auraglossy.com' },
     expired:          { icon: '◐', cls: 'is-warn',    h1: 'هذا الرابط <em>منتهي الصلاحيّة</em>.', sub: 'الروابط صالحة لمدة 24 ساعة. أدخلي بريدكِ من جديد وسنرسل واحدًا جديدًا.', cta: 'حاولي مرّة أخرى', foot: 'Aura Glossy · auraglossy.com' },
     not_found:        { icon: '?', cls: 'is-warn',    h1: 'لم نعثر على هذا الرابط.',   sub: 'قد يكون قد استُخدم بالفعل، أو لا يتطابق مع شيء في قائمتنا. أعيدي إدخال بريدكِ للبدء من جديد.', cta: 'العودة إلى القائمة', foot: 'Aura Glossy · auraglossy.com' },
     invalid:          { icon: '?', cls: 'is-warn',    h1: 'الرابط غير صالح.',          sub: 'يبدو أن الرابط مكسور. عودي وأدخلي بريدكِ من جديد، وسنرسل واحدًا جديدًا.', cta: 'العودة إلى القائمة', foot: 'Aura Glossy · auraglossy.com' },
     server_error:     { icon: '!', cls: 'is-warn',    h1: 'حدث خطأ.',                 sub: 'مشكلة مؤقّتة من جهتنا. حاولي بعد قليل.', cta: 'العودة إلى القائمة', foot: 'Aura Glossy · auraglossy.com' }
   },
   he: {
-    verified:         { icon: '✓', cls: 'is-success', h1: 'את בפנים <em>✨</em>',       sub: 'ברוכה הבאה לאורה.', cta: 'חזרה ל-Aura Glossy', foot: 'נעדכן אותך ברגע שנפתח את הדלתות.' },
-    already_verified: { icon: '✦', cls: 'is-info',    h1: 'את כבר ברשימה.',          sub: 'הדוא"ל הזה כבר נמצא ברשימה. אין מה לעשות — ניפגש בהשקה.', cta: 'חזרה ל-Aura Glossy', foot: 'תודה על הסבלנות.' },
+    spotLabel: 'מקום VIP מס׳ ',
+    verified:         { icon: '✓', cls: 'is-success', h1: 'את בפנים <em>✨</em>',       sub: 'מקום ה-VIP שלך אושר. ברוכה הבאה ל-300 הראשונות של אורה.', cta: 'חזרה ל-Aura Glossy', foot: 'נעדכן אותך ברגע שהגישה המוקדמת תיפתח.' },
+    already_verified: { icon: '✦', cls: 'is-info',    h1: 'את כבר ברשימת ה-VIP <em>✨</em>',          sub: 'הדוא"ל הזה כבר VIP מאומת. אין מה לעשות — ניפגש בגישה המוקדמת.', cta: 'חזרה ל-Aura Glossy', foot: 'תודה על הסבלנות.' },
+    full:             { icon: '✦', cls: 'is-info',    h1: 'רשימת ה-VIP בדיוק <em>התמלאה</em>.', sub: 'כל 300 מקומות ה-VIP נתפסו. את ברשימת ההתראה בעדיפות — נעדכן אותך ברגע שיתפנה מקום.', cta: 'חזרה ל-Aura Glossy', foot: 'Aura Glossy · auraglossy.com' },
     expired:          { icon: '◐', cls: 'is-warn',    h1: 'הקישור <em>פג תוקף</em>.', sub: 'הקישורים בתוקף ל-24 שעות. הזיני את הדוא"ל שוב ונשלח קישור חדש.', cta: 'לנסות שוב', foot: 'Aura Glossy · auraglossy.com' },
     not_found:        { icon: '?', cls: 'is-warn',    h1: 'לא מצאנו את הקישור הזה.',  sub: 'יכול להיות שכבר שימש, או לא תואם רשומה ברשימה. הזיני את הדוא"ל מחדש כדי להתחיל מחדש.', cta: 'חזרה לרשימה', foot: 'Aura Glossy · auraglossy.com' },
     invalid:          { icon: '?', cls: 'is-warn',    h1: 'הקישור לא תקין.',          sub: 'נראה ששבר. חזרי והזיני את הדוא"ל מחדש — נשלח קישור חדש.', cta: 'חזרה לרשימה', foot: 'Aura Glossy · auraglossy.com' },
@@ -261,8 +294,16 @@ var COPY = {
 var lang = (document.documentElement.lang || 'en').slice(0, 2);
 if (!COPY[lang]) lang = 'en';
 
-var state = (new URLSearchParams(window.location.search).get('state') || 'invalid').toLowerCase();
+var _params = new URLSearchParams(window.location.search);
+var state = (_params.get('state') || 'invalid').toLowerCase();
 if (!COPY[lang][state]) state = 'invalid';
+
+/* Optional VIP spot number — only trusted for the success states.
+   Parse to a positive integer; anything else hides the badge. */
+var spotRaw = _params.get('spot');
+var spotNum = spotRaw != null ? parseInt(spotRaw, 10) : NaN;
+var hasSpot = (state === 'verified' || state === 'already_verified')
+  && isFinite(spotNum) && spotNum > 0 && spotNum <= 100000;
 
 var L = COPY[lang][state];
 
@@ -271,6 +312,7 @@ document.title = 'Aura Glossy — ' + (L.h1 || 'Waitlist').replace(/<[^>]+>/g, '
 var iconEl    = document.getElementById('icon');
 var titleEl   = document.getElementById('title');
 var subEl     = document.getElementById('sub');
+var spotEl    = document.getElementById('vip-spot');
 var actionsEl = document.getElementById('actions');
 var footEl    = document.getElementById('foot');
 
@@ -279,6 +321,25 @@ iconEl.classList.add(L.cls);
 titleEl.innerHTML  = L.h1;
 subEl.textContent  = L.sub;
 footEl.textContent = L.foot;
+
+/* Render the VIP Spot #N badge for confirmed members. The star glyph
+   is decorative; the number is built with textContent so it can never
+   inject markup. */
+if (spotEl) {
+  if (hasSpot) {
+    var star = document.createElement('span');
+    star.className = 'vip-spot-star';
+    star.setAttribute('aria-hidden', 'true');
+    star.textContent = '✦';
+    var label = document.createElement('span');
+    label.textContent = (COPY[lang].spotLabel || 'VIP Spot #') + spotNum;
+    spotEl.appendChild(star);
+    spotEl.appendChild(label);
+    spotEl.hidden = false;
+  } else {
+    spotEl.hidden = true;
+  }
+}
 
 /* CTA. For success/already_verified → primary back to /. For warnings → ghost back to /. */
 var btn = document.createElement('a');

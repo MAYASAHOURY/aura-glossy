@@ -31,6 +31,9 @@
 [functions.waitlist-verify]
   included_files = ["netlify/functions/_lib/**"]
 
+[functions.waitlist-status]
+  included_files = ["netlify/functions/_lib/**"]
+
 # ── Firebase Auth handler: no CSP (proxied from Firebase, needs its own scripts) ──
 [[headers]]
   for = "/__/auth/*"
@@ -88,7 +91,7 @@
   for = "/.netlify/functions/*"
   [headers.values]
     Access-Control-Allow-Origin = "https://auraglossy.com"
-    Access-Control-Allow-Methods = "POST, OPTIONS"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type"
 
 # ── Firebase Auth handler proxy ──────────────────────────────────

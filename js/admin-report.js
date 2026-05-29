@@ -37,6 +37,8 @@
   var _events   = [];   /* current loaded events (capped) */
   var _users    = [];   /* most-recent users sample */
   var _waitlist = [];   /* hardened-waitlist entries (server-only writes) */
+  var _waitlistMeta = null; /* waitlist_meta/counters doc: { verifiedCount, capacity, ... } */
+  var VIP_CAPACITY_FALLBACK = 300; /* used only if the counter doc has no capacity field yet */
   var _loading = false;
   var _lastUpdated = null; /* HH:MM:SS string for the Data quality strip */
 
@@ -225,11 +227,19 @@
         /* If the older `ts` field still exists from pre-hardening rows,
            fall back to no order so the dashboard still shows them. */
         return _db.collection('waitlist').limit(500).get().catch(function () { return { docs: [] }; });
+      }),
+      /* VIP capacity counter — authoritative verifiedCount + capacity.
+         Admin-only read per rules. May not exist until the first
+         confirmation seeds it; treat a missing doc as null. */
+      _db.collection('waitlist_meta').doc('counters').get().catch(function (e) {
+        console.warn('waitlist_meta load failed:', e && e.code);
+        return null;
       })
     ]).then(function (results) {
       var evSnap = results[0];
       var uSnap  = results[1];
       var wSnap  = results[2];
+      var mSnap  = results[3];
       _events = evSnap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
       _users  = uSnap.docs.map(function (d) {
         var data = d.data() || {};
@@ -237,6 +247,7 @@
         return data;
       });
       _waitlist = wSnap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+      _waitlistMeta = (mSnap && mSnap.exists) ? (mSnap.data() || {}) : null;
       _render();
     }).catch(function (e) {
       $('ar-status').className = 'ar-status is-error';
@@ -601,8 +612,8 @@
        Total, Verified, Pending, Today, 7d, 30d, Verify conversion %
      Plus breakdowns by language + sourcePage + the latest 30 rows. */
   function _renderWaitlist() {
-    var kpisEl = $('ar-waitlist-kpis');
-    var meta   = $('ar-waitlist-meta');
+    var kpisEl  = $('ar-waitlist-kpis');
+    var meta    = $('ar-waitlist-meta');
     var langsEl = $('ar-waitlist-langs');
     var srcEl   = $('ar-waitlist-sources');
     var tableEl = $('ar-waitlist-table');
@@ -611,32 +622,54 @@
     var rows = _waitlist || [];
     var now = Date.now();
     var DAY = 86400 * 1000;
-    function _ms(r) {
-      var t = r.createdAt;
+    function _ms(r, field) {
+      var t = r[field || 'createdAt'];
       if (t && typeof t.toMillis === 'function') return t.toMillis();
       if (t && typeof t.toDate === 'function')   return t.toDate().getTime();
       return 0;
     }
+    /* status is server-written; fall back to isVerified for any legacy
+       row that predates the status field. */
+    function _statusOf(r) {
+      if (r.status) return r.status;
+      return r.isVerified === true ? 'verified' : 'pending';
+    }
+    function _agoShort(ms) {
+      if (!ms) return '—';
+      var d = now - ms; if (d < 0) d = 0;
+      var min = Math.floor(d / 60000);
+      if (min < 1)  return 'just now';
+      if (min < 60) return min + 'm ago';
+      var hr = Math.floor(min / 60);
+      if (hr < 24)  return hr + 'h ago';
+      return Math.floor(hr / 24) + 'd ago';
+    }
+
     var totals = {
       total:    rows.length,
-      verified: 0,
-      pending:  0,
-      today:    0,
-      week:     0,
-      month:    0,
+      verified: 0,   /* confirmed VIP — holds a spot */
+      pending:  0,   /* awaiting email confirmation */
+      overflow: 0,   /* full_waitlist — joined after cap reached */
+      cancelled:0,
+      today:    0, week: 0, month: 0,
       err:      0
     };
     var byLang   = {};
     var bySource = {};
+    var lastEmailMs = 0;
     rows.forEach(function (r) {
-      var ms = _ms(r);
-      var verified = r.isVerified === true;
-      if (verified) totals.verified++;
-      else          totals.pending++;
+      var ms = _ms(r, 'createdAt');
+      var st = _statusOf(r);
+      if      (st === 'verified')      totals.verified++;
+      else if (st === 'full_waitlist') totals.overflow++;
+      else if (st === 'cancelled')     totals.cancelled++;
+      else                             totals.pending++;
       if (ms && now - ms < DAY)        totals.today++;
       if (ms && now - ms < 7 * DAY)    totals.week++;
       if (ms && now - ms < 30 * DAY)   totals.month++;
       if (r.lastSendError) totals.err++;
+      var em = _ms(r, 'lastEmailSentAt');
+      if (em > lastEmailMs) lastEmailMs = em;
       var L = r.lang || 'unknown';
       byLang[L] = (byLang[L] || 0) + 1;
       var S = r.sourcePage || '/';
@@ -644,21 +677,73 @@
       var sKey = S.split('#')[0].split('?')[0].slice(0, 60) || '/';
       bySource[sKey] = (bySource[sKey] || 0) + 1;
     });
-    var convRate = totals.total > 0 ? Math.round((totals.verified / totals.total) * 100) : 0;
 
-    if (meta) {
-      meta.textContent = totals.total + ' total · verify rate ' + convRate + '% · ' + totals.err + ' send errors';
+    /* ── Authoritative VIP capacity ──────────────────────────────
+       verifiedCount + capacity come from the waitlist_meta/counters
+       doc the verify transaction maintains. Until it's seeded we fall
+       back to the row-derived verified count + the constant. */
+    var capacity = (_waitlistMeta && typeof _waitlistMeta.capacity === 'number' && _waitlistMeta.capacity > 0)
+      ? _waitlistMeta.capacity : VIP_CAPACITY_FALLBACK;
+    var verifiedVip = (_waitlistMeta && typeof _waitlistMeta.verifiedCount === 'number')
+      ? _waitlistMeta.verifiedCount : totals.verified;
+    var spotsRemaining = Math.max(0, capacity - verifiedVip);
+    var pctFull = capacity > 0 ? Math.round((verifiedVip / capacity) * 100) : 0;
+    if (pctFull > 100) pctFull = 100;
+    var isFull = verifiedVip >= capacity;
+
+    /* Confirm rate (pending → verified): of everyone who subscribed and
+       could confirm a spot, how many did. Overflow/cancelled excluded —
+       they never had a confirmable VIP spot. */
+    var convDenom = totals.verified + totals.pending;
+    var convRate = convDenom > 0 ? Math.round((totals.verified / convDenom) * 100) : 0;
+
+    /* ── VIP capacity headline card ──────────────────────────── */
+    var bigEl    = $('ar-vip-big');
+    var bigLabel = $('ar-vip-headline-label');
+    var barFill  = $('ar-vip-bar-fill');
+    var pctEl    = $('ar-vip-pct');
+    var statusEl = $('ar-vip-status');
+    var statusTx = $('ar-vip-status-text');
+    var noteEl   = $('ar-vip-note');
+    if (bigEl)    bigEl.innerHTML = fmtNum(verifiedVip) + ' <span class="of">/ ' + fmtNum(capacity) + '</span>';
+    if (bigLabel) bigLabel.innerHTML = 'confirmed VIP members · <strong>' + fmtNum(spotsRemaining) + '</strong> spots remaining';
+    if (barFill) { barFill.style.width = pctFull + '%'; barFill.classList.toggle('is-full', isFull); }
+    if (pctEl)    pctEl.textContent = pctFull + '% full';
+    if (statusEl && statusTx) {
+      statusEl.classList.remove('is-full', 'is-open');
+      if (isFull) { statusEl.classList.add('is-full'); statusTx.textContent = 'List full'; }
+      else        { statusEl.classList.add('is-open'); statusTx.textContent = 'Open'; }
+    }
+    if (noteEl) {
+      var note = '';
+      if (!_waitlistMeta) {
+        note += 'Counter not seeded yet — showing the live verified count from rows. It seeds automatically on the first confirmation. ';
+      } else if (typeof _waitlistMeta.verifiedCount === 'number' && totals.verified !== _waitlistMeta.verifiedCount) {
+        note += '<span class="ar-vip-warn">Heads up: the counter says ' + fmtNum(_waitlistMeta.verifiedCount) +
+                ' but ' + fmtNum(totals.verified) + ' verified rows appear in the latest ' + fmtNum(rows.length) +
+                '-row sample — older verified rows are likely beyond the 500-row cap, which is expected.</span> ';
+      }
+      note += 'Capacity is set by <code>VIP_WAITLIST_CAPACITY</code> in <code>netlify/functions/_lib/waitlist-shared.js</code> — change it there and redeploy. ';
+      note += isFull
+        ? 'The list is full; raise that constant to open more spots.'
+        : 'Only confirmed emails take a spot — ' + fmtNum(totals.pending) + ' pending and ' + fmtNum(totals.overflow) + ' on the overflow notify list do not.';
+      noteEl.innerHTML = note;
     }
 
-    /* KPI grid */
+    if (meta) {
+      meta.textContent = fmtNum(verifiedVip) + ' / ' + fmtNum(capacity) + ' VIP confirmed · ' +
+        fmtNum(totals.pending) + ' pending · ' + fmtNum(totals.err) + ' send errors';
+    }
+
+    /* KPI grid — VIP-focused. */
     if (kpisEl) {
       var kpis = [
-        { label: 'Total signups',  value: fmtNum(totals.total),    foot: 'All time' },
-        { label: 'Verified',       value: fmtNum(totals.verified), foot: '<strong>' + convRate + '%</strong> conversion' },
-        { label: 'Pending verify', value: fmtNum(totals.pending),  foot: 'Not yet clicked' },
-        { label: 'Today',          value: fmtNum(totals.today),    foot: 'Last 24h' },
-        { label: '7 days',         value: fmtNum(totals.week),     foot: 'Trailing week' },
-        { label: '30 days',        value: fmtNum(totals.month),    foot: 'Trailing month' }
+        { label: 'VIP capacity',    value: fmtNum(capacity),       foot: 'Max confirmed spots' },
+        { label: 'Confirmed VIP',   value: fmtNum(verifiedVip),    foot: '<strong>' + pctFull + '%</strong> full' },
+        { label: 'Spots remaining', value: fmtNum(spotsRemaining), foot: isFull ? 'List full' : 'Open' },
+        { label: 'Pending verify',  value: fmtNum(totals.pending), foot: '<strong>' + convRate + '%</strong> confirm rate' },
+        { label: 'Overflow list',   value: fmtNum(totals.overflow),foot: 'Joined after cap' },
+        { label: 'Last email sent', value: _agoShort(lastEmailMs), foot: totals.err ? ('<strong>' + fmtNum(totals.err) + '</strong> send error' + (totals.err === 1 ? '' : 's')) : 'No send errors' }
       ];
       kpisEl.innerHTML = kpis.map(function (k) {
         return '<div class="ar-kpi">' +
@@ -693,7 +778,19 @@
     barList(langsEl, byLang, { en:'English', es:'Español', ar:'العربية', he:'עברית', unknown:'Unknown' });
     barList(srcEl,   bySource);
 
-    /* Latest entries table — newest first, capped at 30. */
+    /* Status tag for a row — verified / pending / full / cancelled. */
+    function _statusTag(r) {
+      var st = _statusOf(r);
+      if (st === 'verified') {
+        var spot = (typeof r.vipSpotNumber === 'number') ? ' #' + r.vipSpotNumber : '';
+        return '<span class="ar-tag is-user">VIP' + spot + '</span>';
+      }
+      if (st === 'full_waitlist') return '<span class="ar-tag" style="color:var(--ink-mute)">overflow</span>';
+      if (st === 'cancelled')     return '<span class="ar-tag" style="color:var(--ink-mute)">cancelled</span>';
+      return '<span class="ar-tag" style="color:var(--gold)">pending</span>';
+    }
+
+    /* Latest signups table — newest first, capped at 30. */
     if (tableEl) {
       if (!rows.length) {
         tableEl.innerHTML = '<div class="ar-stub">No waitlist entries yet. The form on the maintenance screen writes here once people subscribe.</div>';
@@ -702,26 +799,58 @@
         var sorted = rows.slice().sort(function (a, b) { return _ms(b) - _ms(a); }).slice(0, 30);
         if (tableMeta) tableMeta.textContent = 'Showing latest ' + sorted.length + ' of ' + rows.length;
         var html = '<table class="ar-table"><thead><tr>' +
-          '<th>Email</th><th>Status</th><th>Lang</th><th>Source</th><th>Sent error?</th><th>Created</th>' +
+          '<th>Email</th><th>Status</th><th>Lang</th><th>Sent error?</th><th>Created</th>' +
           '</tr></thead><tbody>' +
           sorted.map(function (r) {
-            var statusTag = r.isVerified === true
-              ? '<span class="ar-tag is-user">verified</span>'
-              : '<span class="ar-tag" style="color:var(--gold)">pending</span>';
             var err = r.lastSendError
-              ? '<span class="ar-tag" style="color:var(--red);max-width:200px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom" title="' + txt(r.lastSendError) + '">⚠ send failed</span>'
+              ? '<span class="ar-tag" style="color:var(--red);max-width:160px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom" title="' + txt(r.lastSendError) + '">⚠ send failed</span>'
               : '<span class="dim">—</span>';
             return '<tr>' +
               '<td class="mono trunc">' + txt(r.email || '—') + '</td>' +
-              '<td>' + statusTag + '</td>' +
+              '<td>' + _statusTag(r) + '</td>' +
               '<td class="dim">' + txt(r.lang || '—') + '</td>' +
-              '<td class="mono trunc">' + txt(r.sourcePage || '/') + '</td>' +
               '<td>' + err + '</td>' +
               '<td class="dim">' + (r.createdAt ? fmtTime(r.createdAt) : '—') + '</td>' +
             '</tr>';
           }).join('') +
           '</tbody></table>';
         tableEl.innerHTML = html;
+      }
+    }
+
+    /* Latest confirmed VIP members — newest confirmation first, with
+       spot number. Separate table so the owner can see who's actually
+       in, distinct from raw signups. */
+    var vTableEl = $('ar-waitlist-verified-table');
+    var vMetaEl  = $('ar-waitlist-verified-meta');
+    if (vTableEl) {
+      var verifiedRows = rows.filter(function (r) { return _statusOf(r) === 'verified'; });
+      if (!verifiedRows.length) {
+        vTableEl.innerHTML = '<div class="ar-stub">No confirmed VIP members yet. A row appears here once someone clicks their email confirmation link.</div>';
+        if (vMetaEl) vMetaEl.textContent = '';
+      } else {
+        verifiedRows.sort(function (a, b) {
+          var d = _ms(b, 'verifiedAt') - _ms(a, 'verifiedAt');
+          if (d !== 0) return d;
+          return (b.vipSpotNumber || 0) - (a.vipSpotNumber || 0);
+        });
+        var vShown = verifiedRows.slice(0, 30);
+        if (vMetaEl) vMetaEl.textContent = 'Showing latest ' + vShown.length + ' of ' + verifiedVip;
+        vTableEl.innerHTML = '<table class="ar-table"><thead><tr>' +
+          '<th>Spot</th><th>Email</th><th>Lang</th><th>Confirmed</th>' +
+          '</tr></thead><tbody>' +
+          vShown.map(function (r) {
+            var spot = (typeof r.vipSpotNumber === 'number')
+              ? '<span class="ar-tag is-user">#' + r.vipSpotNumber + '</span>'
+              : '<span class="dim">—</span>';
+            return '<tr>' +
+              '<td>' + spot + '</td>' +
+              '<td class="mono trunc">' + txt(r.email || '—') + '</td>' +
+              '<td class="dim">' + txt(r.lang || '—') + '</td>' +
+              '<td class="dim">' + (r.verifiedAt ? fmtTime(r.verifiedAt) : '—') + '</td>' +
+            '</tr>';
+          }).join('') +
+          '</tbody></table>';
       }
     }
   }
